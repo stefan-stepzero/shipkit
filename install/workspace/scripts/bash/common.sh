@@ -22,6 +22,7 @@ declare -A SKILL_PREREQUISITES=(
   # Prod Skills (Async - no strict prereqs but benefit from having context)
   ["prod-communicator"]=""                                    # Checks for any available artifacts
   ["prod-trade-off-analysis"]=""                             # Can run anytime
+  ["prod-discussion"]=""                                      # Conversational trade-off facilitation
 
   # Dev Skills (to be added later)
   # ["dev-specify"]="dev-constitution-builder"
