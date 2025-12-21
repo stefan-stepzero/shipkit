@@ -52,7 +52,7 @@ When the user asks something, match their intent to the appropriate skill:
 | "User stories", "Requirements", "Features list" | `/user-stories` | Interaction design exists |
 | "Risks", "Assumptions", "What could go wrong" | `/assumptions-and-risks` | User stories exist |
 | "KPIs", "Success metrics", "How do we measure" | `/success-metrics` | Assumptions exist |
-| "Should we build X?", "Prioritize features", "ROI", "Trade-offs" | `/trade-off-analysis` | Any time (async) |
+| "Should we build X?", "Prioritize features", "ROI", "Trade-offs" | `/discussion` | Any time (async) |
 | "Stakeholder update", "Investor deck", "Team summary" | `/communicator` | Any time (async) |
 
 ### Technical Specification Triggers

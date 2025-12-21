@@ -21,7 +21,6 @@ declare -A SKILL_PREREQUISITES=(
 
   # Prod Skills (Async - no strict prereqs but benefit from having context)
   ["prod-communicator"]=""                                    # Checks for any available artifacts
-  ["prod-trade-off-analysis"]=""                             # Can run anytime
   ["prod-discussion"]=""                                      # Conversational trade-off facilitation
 
   # Dev Skills (to be added later)
@@ -44,7 +43,7 @@ declare -A SKILL_OUTPUT_FILES=(
   ["prod-assumptions-and-risks"]="prod-assumptions-and-risks/outputs/assumptions-and-risks.md"
   ["prod-success-metrics"]="prod-success-metrics/outputs/success-metrics.md"
   ["prod-communicator"]="prod-communicator/outputs/"  # Multiple timestamped files
-  ["prod-trade-off-analysis"]="prod-trade-off-analysis/outputs/trade-off-analysis.md"
+  # prod-discussion has no output files (conversational only)
 )
 
 # =============================================================================

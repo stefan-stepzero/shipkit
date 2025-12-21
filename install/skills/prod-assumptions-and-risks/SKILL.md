@@ -330,7 +330,7 @@ The template uses **token-lean tables** for efficiency:
 
 **After this skill:**
 - `/prod-success-metrics` → Define how you'll measure if assumptions hold
-- `/prod-trade-off-analysis` → Make decisions when risks conflict
+- `/prod-discussion` → Make decisions when risks conflict
 
 **Throughout development:**
 - Update assumptions as you learn

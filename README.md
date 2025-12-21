@@ -29,7 +29,7 @@ Plus **6 agent personas** that specialize behaviors for different workflow stage
 10. prod-success-metrics - KPIs and instrumentation
 
 **Async Skills (2):**
-- prod-trade-off-analysis - Feature prioritization and ROI
+- prod-discussion - Conversational trade-off analysis and decision facilitation
 - prod-communicator - Stakeholder communications (5 templates)
 
 ### Development Skills (16 skills)
@@ -292,7 +292,7 @@ These are prompts, not forced - user can decline.
 
 **Async skills** (call anytime):
 - /any-brainstorming - Can interrupt ANY skill when ambiguity detected
-- /prod-trade-off-analysis - Prioritize features by ROI
+- /prod-discussion - Facilitate product decisions through trade-off analysis
 - /prod-communicator - Generate stakeholder communications
 
 **Output:** Complete product context in .shipkit/skills/prod-*/outputs/
