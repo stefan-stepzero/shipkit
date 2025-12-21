@@ -18,7 +18,7 @@ Shift to hybrid architecture with protected outputs:
 ### Meta Skills (1)
 - ✅ **shipkit-master** - Session-start enforcement (skill usage discipline)
 
-### Prodkit Skills (8)
+### Prodkit Skills (9)
 - ✅ **prod-strategic-thinking** - Business canvas with 4 sections
 - ✅ **prod-constitution-builder** - Context-based product principles (POC/MVP/Established × B2C/B2B)
 - ✅ **prod-personas** - User personas with integrated empathy mapping
@@ -26,6 +26,7 @@ Shift to hybrid architecture with protected outputs:
 - ✅ **prod-market-analysis** - Competitive landscape analysis
 - ✅ **prod-brand-guidelines** - Brand personality, voice, tone, and visual direction
 - ✅ **prod-interaction-design** - User journeys (7 stages), interaction patterns, screen flows
+- ✅ **prod-user-stories** - INVEST stories with Given-When-Then acceptance criteria, MoSCoW prioritization
 - ✅ **prod-communicator** - Stakeholder communications (5 templates: investor/exec/team/customer/board)
 
 **Structure per skill:**
@@ -45,23 +46,19 @@ Shift to hybrid architecture with protected outputs:
 
 ---
 
-## Remaining Prod Skills 🔜 (4)
+## Remaining Prod Skills 🔜 (3)
 
 ### Sequential Workflow Skills
-1. **prod-user-stories** ← NEXT
-   - User stories with acceptance criteria
-   - Templates: user-story-template.md
-
-2. **prod-assumptions-and-risks**
+1. **prod-assumptions-and-risks**
    - Strategic assumptions and risk mitigation
    - Templates: assumptions-risks-template.md
 
-3. **prod-success-metrics**
+2. **prod-success-metrics**
    - KPIs, success criteria
    - Templates: success-definition-template.md
 
 ### Async Skills
-4. **prod-trade-off-analysis**
+3. **prod-trade-off-analysis**
    - Feature prioritization, ROI analysis
    - Templates: tradeoff-matrix-template.md
 
@@ -159,7 +156,7 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 ## Remaining Tasks
 
 ### Immediate (Current Sprint)
-- [ ] Create 4 remaining prod skill packages
+- [ ] Create 3 remaining prod skill packages
 - [ ] Update all SKILL.md frontmatter paths to reference new locations
 - [ ] Update installer to copy new structure
 
@@ -178,7 +175,7 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 
 ## Progress Tracker
 
-**Prod Skills:** 8/12 complete (67%)
+**Prod Skills:** 9/12 complete (75%)
 - ✅ strategic-thinking
 - ✅ constitution-builder
 - ✅ personas
@@ -187,8 +184,8 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 - ✅ brand-guidelines
 - ✅ interaction-design
 - ✅ communicator (async)
-- ⏳ user-stories (NEXT)
-- ⏳ assumptions-and-risks
+- ✅ user-stories
+- ⏳ assumptions-and-risks (NEXT)
 - ⏳ success-metrics
 - ⏳ trade-off-analysis (async)
 
@@ -197,7 +194,7 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 **Meta Skills:** 1/1 complete (100%)
 - ✅ shipkit-master
 
-**Overall:** 9/29 skills complete (31%)
+**Overall:** 10/29 skills complete (34%)
 
 ---
 

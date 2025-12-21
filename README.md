@@ -378,9 +378,9 @@ These are prompts, not forced - user can decline.
 
 ## Current Status
 
-**Completed: 9/29 skills (31%)**
+**Completed: 10/29 skills (34%)**
 
-**Product Skills:** 8/12 complete (67%)
+**Product Skills:** 9/12 complete (75%)
 - ✅ prod-strategic-thinking
 - ✅ prod-constitution-builder
 - ✅ prod-personas
@@ -388,8 +388,9 @@ These are prompts, not forced - user can decline.
 - ✅ prod-market-analysis
 - ✅ prod-brand-guidelines
 - ✅ prod-interaction-design
+- ✅ prod-user-stories
 - ✅ prod-communicator
-- 🔜 user-stories, assumptions-and-risks, success-metrics, trade-off-analysis
+- 🔜 assumptions-and-risks, success-metrics, trade-off-analysis
 
 **Development Skills:** 0/16 complete (0%)
 - 🔜 All 16 skills need restructuring to match new architecture
