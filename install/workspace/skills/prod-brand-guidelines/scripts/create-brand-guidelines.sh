@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# create-jtbd.sh - Create Jobs-to-be-Done mapping
-# Part of shipkit prod-jobs-to-be-done skill
+# create-brand-guidelines.sh - Create brand personality and visual direction
+# Part of shipkit prod-brand-guidelines skill
 
 set -e
 
@@ -41,7 +41,7 @@ while [[ $# -gt 0 ]]; do
       echo "Usage: $0 [--update|--archive|--skip-prereqs|--cancel]"
       echo ""
       echo "Flags:"
-      echo "  --update        Update existing JTBD mapping"
+      echo "  --update        Update existing brand guidelines"
       echo "  --archive       Archive current and create new version"
       echo "  --skip-prereqs  Skip prerequisite checks"
       echo "  --cancel        Cancel operation"
@@ -55,52 +55,38 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Check prerequisites
-check_skill_prerequisites "prod-jobs-to-be-done" "$SKIP_PREREQS"
+check_skill_prerequisites "prod-brand-guidelines" "$SKIP_PREREQS"
 
 # Ensure output directory exists
 mkdir -p "$OUTPUT_DIR"
 
 # Output file location
-OUTPUT_FILE="$OUTPUT_DIR/jobs-to-be-done.md"
+OUTPUT_FILE="$OUTPUT_DIR/brand-guidelines.md"
 
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${CYAN}    Jobs-to-be-Done Mapping${NC}"
+echo -e "${CYAN}    Brand Guidelines${NC}"
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
 # Check if file exists and handle decision
-check_output_exists "$OUTPUT_FILE" "Jobs-to-be-Done mapping" "$UPDATE" "$ARCHIVE"
+check_output_exists "$OUTPUT_FILE" "Brand guidelines" "$UPDATE" "$ARCHIVE"
 
 # Check if template exists
-TEMPLATE_FILE="$TEMPLATE_DIR/jtbd-template.md"
+TEMPLATE_FILE="$TEMPLATE_DIR/brand-guidelines-template.md"
 if [[ ! -f "$TEMPLATE_FILE" ]]; then
   echo -e "${RED}✗${NC} Template not found: $TEMPLATE_FILE"
   exit 1
 fi
 
-# If this is a new file, create it with header
-if [[ ! -f "$OUTPUT_FILE" ]]; then
-  cat > "$OUTPUT_FILE" << 'EOF'
-# Jobs-to-be-Done Mapping
+# Copy template to output
+cp "$TEMPLATE_FILE" "$OUTPUT_FILE"
 
-**Generated:** $(date +%Y-%m-%d)
-**Last Updated:** $(date +%Y-%m-%d)
-
----
-
-EOF
-  echo -e "${GREEN}✓${NC} Created: $OUTPUT_FILE"
-else
-  # Update timestamp
-  sed -i "s/\*\*Last Updated:\*\*.*/\*\*Last Updated:\*\* $(date +%Y-%m-%d)/" "$OUTPUT_FILE"
-  echo -e "${GREEN}✓${NC} Updated: $OUTPUT_FILE"
-fi
-
+echo -e "${GREEN}✓${NC} Created brand guidelines at: $OUTPUT_FILE"
 echo ""
 echo -e "${CYAN}Template available at:${NC} $TEMPLATE_FILE"
 echo -e "${CYAN}References available in:${NC} $SKILL_DIR/references/"
 echo ""
-echo -e "${GREEN}✓${NC} Ready to map jobs-to-be-done"
+echo "Define your brand personality, voice, tone, and visual direction."
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 

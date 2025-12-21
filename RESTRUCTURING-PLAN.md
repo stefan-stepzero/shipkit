@@ -18,11 +18,13 @@ Shift to hybrid architecture with protected outputs:
 ### Meta Skills (1)
 - ✅ **shipkit-master** - Session-start enforcement (skill usage discipline)
 
-### Prodkit Skills (5)
+### Prodkit Skills (7)
 - ✅ **prod-strategic-thinking** - Business canvas with 4 sections
 - ✅ **prod-constitution-builder** - Context-based product principles (POC/MVP/Established × B2C/B2B)
 - ✅ **prod-personas** - User personas with integrated empathy mapping
 - ✅ **prod-jobs-to-be-done** - JTBD framework with forces diagram
+- ✅ **prod-market-analysis** - Competitive landscape analysis
+- ✅ **prod-brand-guidelines** - Brand personality, voice, tone, and visual direction
 - ✅ **prod-communicator** - Stakeholder communications (5 templates: investor/exec/team/customer/board)
 
 **Structure per skill:**
@@ -42,30 +44,22 @@ Shift to hybrid architecture with protected outputs:
 
 ---
 
-## Remaining Prod Skills 🔜 (7)
+## Remaining Prod Skills 🔜 (5)
 
 ### Sequential Workflow Skills
-1. **prod-market-analysis** ← NEXT
-   - Competitive landscape analysis
-   - Template: market-analysis-template.md
-
-2. **prod-brand-guidelines**
-   - Brand personality, visual direction
-   - Templates: brand-template.md
-
-3. **prod-interaction-design**
+1. **prod-interaction-design** ← NEXT
    - User journeys, interaction patterns
    - Templates: journey-template.md
 
-4. **prod-user-stories**
+2. **prod-user-stories**
    - User stories with acceptance criteria
    - Templates: user-story-template.md
 
-5. **prod-assumptions-and-risks**
+3. **prod-assumptions-and-risks**
    - Strategic assumptions and risk mitigation
    - Templates: assumptions-risks-template.md
 
-6. **prod-success-metrics**
+4. **prod-success-metrics**
    - KPIs, success criteria
    - Templates: success-definition-template.md
 
@@ -187,15 +181,15 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 
 ## Progress Tracker
 
-**Prod Skills:** 5/12 complete (42%)
+**Prod Skills:** 7/12 complete (58%)
 - ✅ strategic-thinking
 - ✅ constitution-builder
 - ✅ personas
 - ✅ jobs-to-be-done
+- ✅ market-analysis
+- ✅ brand-guidelines
 - ✅ communicator (meta)
-- 🔜 market-analysis (NEXT)
-- ⏳ brand-guidelines
-- ⏳ interaction-design
+- ⏳ interaction-design (NEXT)
 - ⏳ user-stories
 - ⏳ assumptions-and-risks
 - ⏳ success-metrics
@@ -206,7 +200,7 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 **Meta Skills:** 1/1 complete (100%)
 - ✅ shipkit-master
 
-**Overall:** 6/29 skills complete (21%)
+**Overall:** 8/29 skills complete (28%)
 
 ---
 

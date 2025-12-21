@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# create-communication.sh - Generate stakeholder communications
+# Part of shipkit prod-communicator skill
+
 set -e
 
 # Source shared utilities
@@ -10,6 +13,50 @@ source "$REPO_ROOT/.shipkit/scripts/bash/common.sh"
 SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUTPUT_DIR="$SKILL_DIR/outputs"
 TEMPLATE_DIR="$SKILL_DIR/templates"
+
+# Parse flags
+COMM_TYPE=""
+SKIP_PREREQS=false
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --type)
+      COMM_TYPE="$2"
+      shift 2
+      ;;
+    --skip-prereqs)
+      SKIP_PREREQS=true
+      shift
+      ;;
+    --cancel)
+      echo "Cancelled."
+      exit 0
+      ;;
+    --help|-h)
+      echo "Usage: $0 [--type <type>] [--skip-prereqs|--cancel]"
+      echo ""
+      echo "Communication types:"
+      echo "  investor-one-pager    High-level strategy + traction"
+      echo "  exec-summary          Strategic brief for leadership"
+      echo "  team-update          Product vision + roadmap for team"
+      echo "  customer-announcement External product launch"
+      echo "  board-deck           Structured presentation outline"
+      echo ""
+      echo "Flags:"
+      echo "  --skip-prereqs  Skip prerequisite checks (continue with available artifacts)"
+      echo "  --cancel        Cancel operation"
+      exit 0
+      ;;
+    *)
+      echo -e "${RED}Unknown flag: $1${NC}" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Check prerequisites (communicator doesn't have strict prereqs, but benefits from artifacts)
+# We'll skip the strict check and instead scan for available artifacts
+check_skill_prerequisites "prod-communicator" "$SKIP_PREREQS"
 
 # Ensure output directory exists
 mkdir -p "$OUTPUT_DIR"
@@ -46,6 +93,11 @@ if [[ -f "$SKILLS_DIR/prod-constitution-builder/outputs/product-constitution.md"
   AVAILABLE_SOURCES+=("constitution")
 fi
 
+if [[ -f "$SKILLS_DIR/prod-market-analysis/outputs/market-analysis.md" ]]; then
+  echo -e "${GREEN}✓${NC} Market Analysis"
+  AVAILABLE_SOURCES+=("market-analysis")
+fi
+
 # Check for other potential sources
 for skill_output in "$SKILLS_DIR"/prod-*/outputs/*.md; do
   if [[ -f "$skill_output" ]]; then
@@ -58,59 +110,61 @@ for skill_output in "$SKILLS_DIR"/prod-*/outputs/*.md; do
 done
 
 if [[ ${#AVAILABLE_SOURCES[@]} -eq 0 ]]; then
-  echo -e "${YELLOW}⚠${NC}  No prod skill outputs found yet."
-  echo ""
-  echo "Run product discovery skills first:"
-  echo "  /prod-strategic-thinking"
-  echo "  /prod-personas"
-  echo "  /prod-jobs-to-be-done"
-  echo ""
-  exit 1
+  if [[ "$SKIP_PREREQS" != "true" ]]; then
+    output_decision "NO_ARTIFACTS" \
+      "No prod skill outputs found yet. Run product discovery skills first." \
+      "--skip-prereqs (Continue anyway)"
+    exit $EXIT_PREREQ_MISSING
+  else
+    echo -e "${YELLOW}⚠${NC}  No artifacts found, continuing with minimal context..."
+  fi
 fi
 
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-# Prompt for communication type
-echo "What type of communication do you want to create?"
-echo ""
-echo "  1. Investor One-Pager (high-level strategy + traction)"
-echo "  2. Executive Summary (strategic brief for leadership)"
-echo "  3. Team Update (product vision + roadmap for team)"
-echo "  4. Customer Announcement (external product launch)"
-echo "  5. Board Deck Outline (structured presentation outline)"
-echo ""
-read -p "Choice [1-5]: " comm_choice
+# Prompt for communication type if not provided
+if [[ -z "$COMM_TYPE" ]]; then
+  echo "What type of communication do you want to create?"
+  echo ""
+  echo "  1. Investor One-Pager (high-level strategy + traction)"
+  echo "  2. Executive Summary (strategic brief for leadership)"
+  echo "  3. Team Update (product vision + roadmap for team)"
+  echo "  4. Customer Announcement (external product launch)"
+  echo "  5. Board Deck Outline (structured presentation outline)"
+  echo ""
 
-case $comm_choice in
-  1)
-    COMM_TYPE="investor-one-pager"
+  output_decision "COMM_TYPE_NEEDED" \
+    "Select communication type" \
+    "--type investor-one-pager | --type exec-summary | --type team-update | --type customer-announcement | --type board-deck"
+  exit $EXIT_DECISION_NEEDED
+fi
+
+# Map type to template and name
+case $COMM_TYPE in
+  investor-one-pager)
     COMM_NAME="Investor One-Pager"
     TEMPLATE_FILE="$TEMPLATE_DIR/investor-one-pager-template.md"
     ;;
-  2)
-    COMM_TYPE="exec-summary"
+  exec-summary)
     COMM_NAME="Executive Summary"
     TEMPLATE_FILE="$TEMPLATE_DIR/exec-summary-template.md"
     ;;
-  3)
-    COMM_TYPE="team-update"
+  team-update)
     COMM_NAME="Team Update"
     TEMPLATE_FILE="$TEMPLATE_DIR/team-update-template.md"
     ;;
-  4)
-    COMM_TYPE="customer-announcement"
+  customer-announcement)
     COMM_NAME="Customer Announcement"
     TEMPLATE_FILE="$TEMPLATE_DIR/customer-announcement-template.md"
     ;;
-  5)
-    COMM_TYPE="board-deck"
+  board-deck)
     COMM_NAME="Board Deck Outline"
     TEMPLATE_FILE="$TEMPLATE_DIR/board-deck-template.md"
     ;;
   *)
-    echo "Invalid choice. Cancelled."
+    echo -e "${RED}Invalid communication type: $COMM_TYPE${NC}" >&2
     exit 1
     ;;
 esac
@@ -149,3 +203,5 @@ echo ""
 echo -e "${YELLOW}Claude will now read your source artifacts and fill the template...${NC}"
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+
+exit 0

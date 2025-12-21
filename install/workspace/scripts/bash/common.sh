@@ -1,6 +1,165 @@
 #!/usr/bin/env bash
 # Common functions and variables for all scripts
 
+# =============================================================================
+# SKILL PREREQUISITE CHAIN (Declarative)
+# =============================================================================
+
+# Map: skill-name -> prerequisite-skill-name
+declare -A SKILL_PREREQUISITES=(
+  # Prod Skills (Sequential)
+  ["prod-strategic-thinking"]=""                              # No prereq (first)
+  ["prod-constitution-builder"]="prod-strategic-thinking"     # Reads strategy context
+  ["prod-personas"]="prod-strategic-thinking"                 # Needs business context
+  ["prod-jobs-to-be-done"]="prod-personas"                    # Needs user definition
+  ["prod-market-analysis"]="prod-jobs-to-be-done"            # Needs JTBD context
+  ["prod-brand-guidelines"]="prod-market-analysis"            # Needs market positioning
+  ["prod-interaction-design"]="prod-brand-guidelines"         # Needs brand identity
+  ["prod-user-stories"]="prod-interaction-design"             # Needs journey mapping
+  ["prod-assumptions-and-risks"]="prod-user-stories"         # Needs requirements
+  ["prod-success-metrics"]="prod-user-stories"               # Needs requirements
+
+  # Prod Skills (Async - no strict prereqs but benefit from having context)
+  ["prod-communicator"]=""                                    # Checks for any available artifacts
+  ["prod-trade-off-analysis"]=""                             # Can run anytime
+
+  # Dev Skills (to be added later)
+  # ["dev-specify"]="dev-constitution-builder"
+  # ["dev-plan"]="dev-specify"
+  # ["dev-tasks"]="dev-plan"
+  # ["dev-implement"]="dev-tasks"
+)
+
+# Map: skill-name -> output-file-path (relative to .shipkit/skills/)
+declare -A SKILL_OUTPUT_FILES=(
+  ["prod-strategic-thinking"]="prod-strategic-thinking/outputs/business-canvas.md"
+  ["prod-constitution-builder"]="prod-constitution-builder/outputs/product-constitution.md"
+  ["prod-personas"]="prod-personas/outputs/personas.md"
+  ["prod-jobs-to-be-done"]="prod-jobs-to-be-done/outputs/jobs-to-be-done.md"
+  ["prod-market-analysis"]="prod-market-analysis/outputs/market-analysis.md"
+  ["prod-brand-guidelines"]="prod-brand-guidelines/outputs/brand-guidelines.md"
+  ["prod-interaction-design"]="prod-interaction-design/outputs/interaction-design.md"
+  ["prod-user-stories"]="prod-user-stories/outputs/user-stories.md"
+  ["prod-assumptions-and-risks"]="prod-assumptions-and-risks/outputs/assumptions-and-risks.md"
+  ["prod-success-metrics"]="prod-success-metrics/outputs/success-metrics.md"
+  ["prod-communicator"]="prod-communicator/outputs/"  # Multiple timestamped files
+  ["prod-trade-off-analysis"]="prod-trade-off-analysis/outputs/trade-off-analysis.md"
+)
+
+# =============================================================================
+# DECISION EXIT CODES
+# =============================================================================
+
+EXIT_DECISION_NEEDED=10
+EXIT_PREREQ_MISSING=11
+
+# =============================================================================
+# COLORS
+# =============================================================================
+
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+# =============================================================================
+# STRUCTURED OUTPUT HELPERS
+# =============================================================================
+
+# Output structured decision message for Claude to parse
+output_decision() {
+  local type="$1"
+  local message="$2"
+  local options="$3"
+
+  echo "DECISION_NEEDED: $type"
+  echo "MESSAGE: $message"
+  echo "OPTIONS: $options"
+}
+
+# =============================================================================
+# PREREQUISITE CHECKING
+# =============================================================================
+
+# Check if skill prerequisites are met
+# Usage: check_skill_prerequisites "prod-personas"
+check_skill_prerequisites() {
+  local skill_name="$1"
+  local skip_prereqs="${2:-false}"  # Optional override
+
+  # Skip if flag set
+  if [[ "$skip_prereqs" == "true" ]]; then
+    echo -e "${YELLOW}⚠${NC} Skipping prerequisite checks (--skip-prereqs)"
+    return 0
+  fi
+
+  # Get prerequisite for this skill
+  local prereq="${SKILL_PREREQUISITES[$skill_name]}"
+
+  # No prerequisite required
+  if [[ -z "$prereq" ]]; then
+    return 0
+  fi
+
+  # Check if prerequisite output exists
+  local prereq_file="${SKILL_OUTPUT_FILES[$prereq]}"
+  local repo_root=$(get_repo_root)
+  local full_path="$repo_root/.shipkit/skills/$prereq_file"
+
+  if [[ ! -f "$full_path" ]]; then
+    output_decision "PREREQUISITE_MISSING" \
+      "This skill works best after: /$prereq (missing: $prereq_file)" \
+      "--skip-prereqs (Continue anyway)"
+    exit $EXIT_PREREQ_MISSING
+  else
+    echo -e "${GREEN}✓${NC} Prerequisite found: /$prereq"
+  fi
+}
+
+# =============================================================================
+# FILE EXISTENCE CHECKING
+# =============================================================================
+
+# Check if output file exists and prompt for action
+# Usage: check_output_exists "$OUTPUT_FILE" "Strategy"
+check_output_exists() {
+  local output_file="$1"
+  local artifact_name="$2"
+  local update_flag="${3:-false}"
+  local archive_flag="${4:-false}"
+
+  if [[ ! -f "$output_file" ]]; then
+    return 0  # File doesn't exist, proceed
+  fi
+
+  # If flags already set, skip decision
+  if [[ "$update_flag" == "true" ]]; then
+    echo -e "${GREEN}✓${NC} Updating existing $artifact_name"
+    return 0
+  fi
+
+  if [[ "$archive_flag" == "true" ]]; then
+    TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+    local dir=$(dirname "$output_file")
+    local base=$(basename "$output_file" .md)
+    local archive_file="$dir/${base}-${TIMESTAMP}.md"
+    mv "$output_file" "$archive_file"
+    echo -e "${GREEN}✓${NC} Archived existing $artifact_name to: $archive_file"
+    return 0
+  fi
+
+  # No flag set - need decision
+  output_decision "FILE_EXISTS" \
+    "$artifact_name already exists at: $output_file" \
+    "--update (Update existing) | --archive (Create new version) | --cancel (Cancel operation)"
+  exit $EXIT_DECISION_NEEDED
+}
+
+# =============================================================================
+# REPOSITORY HELPERS
+# =============================================================================
+
 # Get repository root, with fallback for non-git repositories
 get_repo_root() {
     if git rev-parse --show-toplevel >/dev/null 2>&1; then

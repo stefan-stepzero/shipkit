@@ -1,432 +1,413 @@
-# ShipKit - Complete Product Development Framework
+# Shipkit - Complete Product Development Framework
 
-A curated collection of **Claude Code skills** combining **DevKit** (technical specs + development workflow) and **ProdKit** (product discovery) for end-to-end product development.
+A curated collection of **Claude Code skills** for end-to-end product development, from strategy to shipped code.
+
+**30 skills** organized in three categories:
+- **Prod Skills** (12) - Product discovery & strategy
+- **Dev Skills** (16) - Technical specs & development workflow
+- **Meta Skills** (2) - Enforcement & cross-cutting concerns
+
+Plus **6 agent personas** that specialize behaviors for different workflow stages.
+
+---
 
 ## What's Inside
 
-### 🎯 DevKit (23 skills)
+### Product Skills (12 skills)
+**Product discovery and strategy - research-driven, template-based**
+
+**Sequential Workflow (10 skills):**
+1. prod-strategic-thinking - Business strategy and value proposition
+2. prod-constitution-builder - Product principles (POC/MVP/Established × B2C/B2B)
+3. prod-personas - Target user definition with empathy mapping
+4. prod-jobs-to-be-done - JTBD framework with forces diagram
+5. prod-market-analysis - Competitive landscape (research-intensive)
+6. prod-brand-guidelines - Visual direction and personality
+7. prod-interaction-design - Future state user journeys
+8. prod-user-stories - Actionable requirements
+9. prod-assumptions-and-risks - Strategic risk identification
+10. prod-success-metrics - KPIs and instrumentation
+
+**Async Skills (2):**
+- prod-trade-off-analysis - Feature prioritization and ROI
+- prod-communicator - Stakeholder communications (5 templates)
+
+### Development Skills (16 skills)
 **Specification-driven development pipeline + quality workflow**
 
 **Core Pipeline:**
-- constitution, constitution-builder, specify, plan, tasks, implement
-- analyze, clarify, checklist, taskstoissues
+- dev-constitution, dev-constitution-builder, dev-specify, dev-plan, dev-tasks, dev-implement
+- dev-analyze, dev-clarify, dev-checklist, dev-taskstoissues
 
 **Quality & Testing:**
-- test-driven-development, verification-before-completion, systematic-debugging
+- dev-test-driven-development, dev-verification-before-completion, dev-systematic-debugging
 
 **Workflow & Collaboration:**
-- using-git-worktrees, brainstorming (async - can interrupt any skill)
-- finishing-a-development-branch, requesting-code-review, receiving-code-review
-- dispatching-parallel-agents, subagent-driven-development, writing-plans
+- dev-using-git-worktrees, dev-finishing-a-development-branch
+- dev-requesting-code-review, dev-receiving-code-review
+- dev-dispatching-parallel-agents, dev-subagent-driven-development
+- dev-writing-plans, dev-writing-skills
 
-**Meta:**
-- writing-skills, using-devkit
+**Key feature:** /dev-implement integrates TDD, verification, debugging, and two-stage code review automatically.
 
-**Key feature:** `/implement` integrates TDD, verification, debugging, and two-stage code review automatically.
+### Meta Skills (2)
+**Enforcement and cross-cutting concerns**
 
-Inspired by: [GitHub's Spec-Kit](https://github.com/github/spec-kit) | [obra's Superpowers](https://github.com/anthropics/claude-code-superpowers)
+- shipkit-master - Skill enforcement (auto-loaded at session start)
+- any-brainstorming - Can interrupt ANY workflow when ambiguity detected
 
-### 🏭 ProdKit (11 skills)
-**Product discovery and strategy**
-
-**Sequential Workflow (9 skills)**:
-1. strategic-thinking - Business strategy and value proposition
-2. personas - Target user definition
-3. jobs-to-be-done - Current state analysis
-4. market-analysis - Competitive landscape (Porter's Five Forces)
-5. brand-guidelines - Visual direction and personality
-6. interaction-design - Future state user journeys
-7. user-stories - Actionable requirements
-8. assumptions-and-risks - Strategic risk identification
-9. success-metrics - KPIs and instrumentation
-
-**Async (2 skills)**:
-- trade-off-analysis - Feature prioritization and ROI
-- communicator - Stakeholder communications (HTML generation)
-
-### 🤖 Agent Personas (5 agents)
+### Agent Personas (6)
 **Specialized behaviors for different workflow stages**
 
 | Agent | Used For |
 |-------|----------|
-| Discovery | Product discovery, brainstorming, user research |
-| Architect | Technical planning, specs, architecture |
-| Implementer | TDD-focused coding, minimal implementation |
-| Reviewer | Two-stage code review (spec compliance + quality) |
-| Researcher | Deep research, competitive intel, cross-referencing |
+| prod-product-manager | Product discovery, strategic thinking |
+| prod-product-designer | User research, interaction design |
+| dev-architect | Technical planning, specs, architecture |
+| dev-implementer | TDD-focused coding, minimal implementation |
+| dev-reviewer | Two-stage code review (spec compliance + quality) |
+| any-researcher | Deep research, competitive intel, web search |
 
-Skills automatically load the appropriate agent persona.
+---
+
+## Architecture Overview
+
+### Hybrid Structure
+
+**Skill Definitions** → .claude/skills/[skill-name]/SKILL.md
+- Instructions Claude reads
+- <500 lines each (progressive disclosure)
+- Reference implementation files
+
+**Skill Implementation** → .shipkit/skills/[skill-name]/
+- scripts/ - Automation (sources shared utilities)
+- templates/ - Single adaptive template per skill
+- references/ - Extended docs (reference.md, examples.md, user PDFs)
+- outputs/ - Protected artifacts (read-only via settings.json)
+
+**Shared Utilities** → .shipkit/scripts/bash/
+- common.sh - Shared functions (sourced by all skills)
+- check-prerequisites.sh - Validation (called by skills)
+
+### File Protection
+
+settings.json enforces read-only access to:
+- .shipkit/skills/*/outputs/** - Only skill scripts can modify
+- .shipkit/skills/*/templates/** - Protected templates
+- .shipkit/skills/*/scripts/** - Protected automation
+
+**This forces workflow discipline:** You can't bypass skills by editing outputs directly.
+
+### Session Enforcement
+
+**SessionStart hook** automatically loads shipkit-master meta-skill, which:
+- Requires checking for skills before EVERY response
+- Prevents rationalizing away from skill usage
+- Enforces prerequisite checks
+- Mandates TodoWrite for skill checklists
+
+**Result:** Skills are non-optional. If a skill exists for the task, Claude uses it.
 
 ---
 
 ## Quick Start
 
-### Installation
-
-**Two installation modes available:**
-
-#### Option 1: Local Installation (Recommended for Development)
-
-Structure your projects like this:
-```
-Projects/
-├── shipkit/          # This repo (clone once)
-└── your-project/          # Your project
-```
-
-Then install:
-```bash
-cd Projects/your-project
-bash ../shipkit/install.sh --preset solo
-```
-
-#### Option 2: GitHub Installation (One-Command Setup)
-
-Install directly from GitHub (public or private repo):
+Clone this repo next to your projects, then install:
 
 ```bash
-# Public repository
 cd your-project
-bash install.sh --github https://github.com/user/shipkit.git --preset solo
-
-# Private repository (requires SSH access)
-bash install.sh --github git@github.com:user/shipkit.git --preset solo
-
-# One-liner (requires curl)
-curl -fsSL https://raw.githubusercontent.com/user/shipkit/main/install.sh | bash -s -- --github https://github.com/user/shipkit.git --preset solo
+bash ../shipkit/install.sh
 ```
 
-### Installation Options
-
-```bash
-# Everything (34 skills + full infrastructure)
-bash ../shipkit/install.sh --all
-
-# Solo preset (all 34 skills - recommended)
-bash ../shipkit/install.sh --preset solo
-
-# Just DevKit (23 skills)
-bash ../shipkit/install.sh --devkit-only
-
-# Just ProdKit (11 skills)
-bash ../shipkit/install.sh --prodkit-only
-
-# From GitHub with specific branch
-bash install.sh --github https://github.com/user/shipkit.git --branch dev --all
-
-# Help
-bash ../shipkit/install.sh --help
-```
+This creates:
+- .claude/skills/ - Skill definitions (Claude reads)
+- .claude/agents/ - Agent personas
+- .claude/hooks/ - Session enforcement
+- .claude/settings.json - File protections + hooks
+- .shipkit/skills/ - Skill implementations + outputs
+- .shipkit/scripts/ - Shared utilities
+- CLAUDE.md - Skill routing guide
 
 ---
 
-## Repository Structure
+## Repository Structure (Source)
 
 ```
 shipkit/
-├── install.sh                      # One-command installer
-├── README.md                       # This file
-├── CLAUDE.md                       # Project instructions template (copied to projects)
+├── install.sh                          # One-command installer
+├── install/                            # Everything that gets installed
+│   ├── CLAUDE.md                       # Skill routing template
+│   ├── settings.json                   # Protections + SessionStart hook
+│   ├── skills/                         # Skill SKILL.md files
+│   │   ├── shipkit-master/SKILL.md
+│   │   ├── prod-strategic-thinking/SKILL.md
+│   │   └── [28 other skills...]
+│   ├── workspace/                      # Skill implementations
+│   │   ├── scripts/bash/common.sh
+│   │   └── skills/
+│   │       ├── prod-strategic-thinking/
+│   │       │   ├── scripts/create-strategy.sh
+│   │       │   ├── templates/business-canvas-template.md
+│   │       │   ├── references/
+│   │       │   │   ├── reference.md
+│   │       │   │   ├── examples.md
+│   │       │   │   └── README.md
+│   │       │   └── outputs/
+│   │       └── [other skills...]
+│   ├── agents/
+│   │   ├── prod-product-manager-agent.md
+│   │   └── [5 other agents...]
+│   └── hooks/
+│       ├── session-start.sh
+│       └── run-hook.cmd
 │
-├── agents/                         # Agent persona definitions
-│   ├── discovery-agent.md          # Product discovery specialist
-│   ├── architect-agent.md          # Technical planning specialist
-│   ├── implementer-agent.md        # TDD implementation specialist
-│   ├── reviewer-agent.md           # Code review specialist
-│   ├── researcher-agent.md         # Research specialist
-│   └── README.md                   # Agent documentation
-│
-├── hooks/                          # Session start hooks (enforcement layer)
-│   ├── hooks.json                  # Hook configuration
-│   ├── session-start.sh            # Injects meta-skill at session start
-│   └── run-hook.cmd                # Windows wrapper
-│
-├── help/                           # Documentation & tools
-│   ├── generate-reference.py       # Generate skills reference HTML
-│   ├── system-overview.html        # Visual workflow guide (start here!)
-│   └── skills-overview.html        # Detailed prompt reference (maintainers)
-│
-├── skills/                         # Source: Claude Code skill definitions
-│   ├── meta/                       # Meta-skill (enforcement - injected at session start)
-│   │   └── using-shipkit.md
-│   ├── devkit/                     # 23 skills (flat structure)
-│   └── prodkit/
-│       ├── sequential/             # 9 numbered skills (1-9)
-│       └── async/                  # 2 anytime skills
-│
-├── devkit-files/                   # DevKit infrastructure
-│   ├── scripts/
-│   │   ├── bash/                   # Automation scripts
-│   │   └── powershell/             # Automation scripts
-│   └── templates/                  # Document templates + constitution
-│
-└── prodkit-files/                  # ProdKit infrastructure
-    ├── scripts/
-    │   └── bash/                   # Automation scripts
-    └── templates/
-        ├── structure/              # Markdown templates
-        └── communication/          # HTML templates
+├── CLAUDE.md                           # Development guide (this repo)
+├── README.md                           # This file
+├── RESTRUCTURING-PLAN.md               # Implementation tracker
+└── help/
+    ├── system-overview.html
+    └── skills-summary.html
 ```
 
 ---
 
 ## What Gets Installed
 
-After running `install.sh --preset solo`, your project structure:
+After install.sh, your project structure:
 
 ```
 your-project/
-│
-├── CLAUDE.md                       # Project instructions (Claude reads at session start)
+├── CLAUDE.md                           # Skill routing + workflow
 ├── .claude/
-│   ├── settings.json               # Hook configuration (auto-injects at session start)
-│   ├── constitution.md             # Project rules (created by /constitution-builder)
-│   ├── agents/                     # Agent persona definitions
-│   │   ├── discovery-agent.md
-│   │   ├── architect-agent.md
-│   │   ├── implementer-agent.md
-│   │   ├── reviewer-agent.md
-│   │   └── researcher-agent.md
-│   ├── hooks/                      # Session start scripts
-│   │   ├── hooks.json
-│   │   ├── session-start.sh
-│   │   └── run-hook.cmd
-│   └── skills/                     # Skill definitions
-│       ├── meta/                   # Meta-skill (enforcement layer)
-│       ├── devkit/                 # 23 DevKit skills
-│       └── prodkit/
-│           ├── sequential/         # 9 skills
-│           └── async/              # 2 skills
+│   ├── settings.json                   # Protections + SessionStart
+│   ├── skills/                         # Definitions
+│   │   ├── shipkit-master/SKILL.md
+│   │   └── [29 other skills...]
+│   ├── agents/
+│   │   └── [6 agent personas...]
+│   └── hooks/
+│       ├── session-start.sh
+│       └── run-hook.cmd
 │
-├── .devkit/                        # DevKit workspace
-│   ├── scripts/                    # Automation scripts
-│   ├── templates/                  # Document templates
-│   └── specs/                      # Feature specifications
-│       └── 001-feature-name/
-│           ├── spec.md
-│           ├── plan.md
-│           └── tasks.md
-│
-└── .prodkit/                       # ProdKit workspace
-    ├── scripts/                    # Automation scripts
-    ├── templates/                  # Markdown + HTML templates
-    ├── inputs/                     # Drop research files here
-    ├── strategy/                   # Generated artifacts
-    ├── discovery/
-    ├── brand/
-    ├── design/
-    ├── requirements/
-    ├── metrics/
-    └── comms/                      # Generated HTML communications
+└── .shipkit/                           # Implementations + outputs
+    ├── scripts/bash/common.sh
+    └── skills/
+        ├── prod-strategic-thinking/
+        │   ├── scripts/create-strategy.sh
+        │   ├── templates/business-canvas-template.md
+        │   ├── references/
+        │   │   ├── reference.md
+        │   │   ├── examples.md
+        │   │   └── README.md
+        │   └── outputs/
+        │       └── business-canvas.md  # PROTECTED
+        └── [other skills...]
 ```
 
-**Everything stays hidden** under dot-folders - no pollution of your project root!
+**Everything under dot-folders** - no project root pollution!
 
 ---
 
 ## How It Works
 
-### 1. This is Your Source Repo
-`shipkit` is your **source of truth** - maintain and update it over time.
+### 1. Session Start Hook Enforces Skills
 
-### 2. Install Into Projects
-When starting a new project, choose your installation method:
+When Claude Code starts:
+1. Runs .claude/hooks/session-start.sh
+2. Loads shipkit-master/SKILL.md into Claude's context
+3. This makes skill checking mandatory before EVERY response
 
-**Local installation** (faster, no network needed):
-```bash
-cd my-new-project/
-bash ../shipkit/install.sh --preset solo
-```
-
-**GitHub installation** (works from anywhere):
-```bash
-cd my-new-project/
-bash install.sh --github https://github.com/user/shipkit.git --preset solo
-```
-
-Both create:
-- `.claude/skills/` - 30+ skill definitions (including meta-skill)
-- `.claude/hooks/` - Session start hooks (enforcement layer)
-- `.devkit/` - devkit workspace with scripts/templates
-- `.prodkit/` - ProdKit workspace with scripts/templates
-
-### 3. Session Start Hook Injects Enforcement
-When Claude Code starts, the session hook:
-- Runs `.claude/hooks/session-start.sh`
-- Injects the meta-skill (`using-shipkit.md`) into Claude's context
-- This makes skill checking **mandatory before any response**
-
-The meta-skill tells Claude:
-- Check for applicable skills before ANY response
-- Even 1% chance = use the skill
+The shipkit-master meta-skill tells Claude:
+- "If there's even a 1% chance a skill applies, you MUST use it"
 - Check prerequisites before invoking skills
-- Read constitution before implementation work
+- Use TodoWrite for skill checklists
+- Never rationalize away from skill usage
 
-### 4. Claude Also Reads CLAUDE.md
-Claude Code reads `CLAUDE.md` at session start as backup, which:
-- Contains routing tables (user intent → skill)
-- Lists prerequisites for each skill
-- Documents the ProdKit → devkit integration
+**Result:** Skills are enforced, not optional.
 
-### 5. Claude Code Discovers Skills
-Claude Code automatically reads skills from:
-- `.claude/skills/` (project-specific)
-- `~/.claude/skills/` (global)
+### 2. Skills Reference Implementation Files
 
-### 6. Skills Call Scripts
-Skills are **instructions** that tell Claude:
-- When to trigger
-- What questions to ask
-- **Which script to call** (enforces consistency)
+Each SKILL.md tells Claude to:
+1. Run the skill's script (e.g., .shipkit/skills/prod-personas/scripts/create-persona.sh)
+2. Use the skill's template
+3. Read the skill's references for extended guidance
 
-Example: `/strategic-thinking` skill tells Claude to:
-1. Ask Playing to Win questions
-2. Call `.prodkit/scripts/bash/create-strategy.sh`
-3. Never create files manually
+**Scripts ensure consistency:**
+- Create files in correct locations
+- Use templates (never freestyle)
+- Validate inputs
+- Handle updates/archiving
 
-**Scripts ensure:**
-- Consistent file structure
-- Template usage
-- Validation
-- No freestyle file creation
+### 3. Outputs Are Protected
+
+settings.json denies Claude write access to:
+- .shipkit/skills/*/outputs/**
+- .shipkit/skills/*/templates/**
+- .shipkit/skills/*/scripts/**
+
+**To update outputs, you MUST re-run the skill.** This prevents bypassing workflows.
+
+### 4. Skills Chain Together
+
+Skills have prerequisites (checked automatically):
+
+```
+/prod-strategic-thinking
+  → checks: none (always first)
+  → creates: .shipkit/skills/prod-strategic-thinking/outputs/business-canvas.md
+
+/prod-personas
+  → checks: business-canvas.md exists
+  → creates: .shipkit/skills/prod-personas/outputs/personas.md
+```
+
+If prerequisites are missing, Claude suggests running them first.
+
+### 5. Session Hooks Prompt Next Steps
+
+After completing certain skills, hooks prompt:
+- After /prod-strategic-thinking → "Next: /prod-constitution-builder"
+- After any prod skill → "Create stakeholder communication? Run /prod-communicator"
+
+These are prompts, not forced - user can decline.
 
 ---
 
 ## Complete Workflow
 
-For a new product/feature:
-
-### Phase 1: Product Discovery (ProdKit)
+### Phase 1: Product Discovery
 
 ```
-/strategic-thinking
-        ↓
-/constitution-builder --product    ← Define product principles
-        ↓
-/personas → /jobs-to-be-done → /market-analysis
-        ↓
-/brand-guidelines → /interaction-design
-        ↓
-/user-stories → /assumptions-and-risks → /success-metrics
+/prod-strategic-thinking                 # Business canvas
+  → /prod-constitution-builder           # Product principles
+  → /prod-personas                       # User personas
+  → /prod-jobs-to-be-done                # JTBD framework
+  → /prod-market-analysis                # Competitive research
+  → /prod-brand-guidelines               # Visual direction
+  → /prod-interaction-design             # User journeys
+  → /prod-user-stories                   # Requirements
+  → /prod-assumptions-and-risks          # Risk mitigation
+  → /prod-success-metrics                # KPIs
 ```
 
 **Async skills** (call anytime):
-- **/brainstorming** - Can interrupt ANY skill when ambiguity detected
-- **/trade-off-analysis** - Prioritize features by ROI
-- **/communicator** - Generate stakeholder HTML docs
+- /any-brainstorming - Can interrupt ANY skill when ambiguity detected
+- /prod-trade-off-analysis - Prioritize features by ROI
+- /prod-communicator - Generate stakeholder communications
 
-**Output**: Complete product context in `.prodkit/`
+**Output:** Complete product context in .shipkit/skills/prod-*/outputs/
 
-### Phase 2: Technical Specification (devkit)
+### Phase 2: Technical Specification
 
 ```
-/constitution-builder --technical  ← Define technical standards
-        ↓
-/specify → /plan → /tasks
+/dev-constitution-builder                # Technical standards
+  → /dev-specify                         # Feature spec
+  → /dev-plan                            # Implementation plan
+  → /dev-tasks                           # Executable tasks
 ```
 
-**Output**: Technical specs in `.devkit/specs/001-feature-name/`
+**Output:** Technical specs in .shipkit/skills/dev-*/outputs/
 
 ### Phase 3: Development
 
 ```
-/using-git-worktrees              ← Create isolated branch
-        ↓
-/implement                        ← Executes with:
-  ├── TDD (RED → GREEN → REFACTOR)
-  ├── Spec Compliance Review
-  ├── Code Quality Review
-  └── Verification before completion
-        ↓
-/finishing-a-development-branch   ← Merge/PR workflow
+/dev-using-git-worktrees                 # Create isolated branch
+  → /dev-implement                       # TDD + reviews + verification
+  → /dev-finishing-a-development-branch  # Merge/PR workflow
 ```
 
-**/implement** automatically integrates TDD, reviews, and verification. For 6+ tasks, it offers subagent execution mode.
+/dev-implement automatically integrates TDD, reviews, and verification.
 
-**Output**: Shipped feature
-
----
-
-## Presets Explained
-
-### `--preset solo` (Default - Recommended)
-**Installs:** DevKit + ProdKit + Agent Personas
-**Total:** 34 skills + 5 agents
-**Best for:** Solo developers, full-stack SaaS
-**Includes:** Complete product-to-code workflow
-
-### `--all` (Everything)
-**Installs:** All 34 skills + all infrastructure
-**Best for:** Teams, maximum flexibility
-**Includes:** Full subagent capabilities, advanced review workflows
-
-### `--devkit-only`
-**Installs:** Just DevKit
-**Total:** 23 skills + 5 agents
-**Best for:** Already have product specs, just need development workflow
-
-### `--prodkit-only`
-**Installs:** Just ProdKit
-**Total:** 11 skills
-**Best for:** Product discovery only, no technical specs
+**Output:** Shipped feature
 
 ---
 
 ## Key Features
 
-### ✅ No External Dependencies
-- All 34 skills work 100% locally
-- No APIs required (except optional WebSearch for market research)
-- Optional GitHub integration for `taskstoissues` and PR creation
+### Enforced Workflow Discipline
 
-### ✅ Script-Enforced Consistency
-- Claude never creates files manually
-- Scripts use templates
-- Validate inputs
-- Ensure file structure
+**Session hooks** load shipkit-master enforcement:
+- Skills are non-optional (if skill exists, Claude uses it)
+- Prerequisites are checked automatically
+- TodoWrite is mandatory for checklists
+- No rationalizing away from workflows
 
-### ✅ Separation of Concerns
-- `.claude/` - Skills only (what Claude reads)
-- `.devkit/` - DevKit workspace (technical specs)
-- `.prodkit/` - ProdKit workspace (product discovery)
+**File protections** prevent shortcuts:
+- Outputs are read-only
+- Must re-run skill to update
+- Templates are protected
+- Scripts are protected
 
-### ✅ Cross-Platform
+### Research-Driven Product Discovery
+
+**Product skills emphasize real data:**
+- /prod-market-analysis requires WebSearch
+- Competitor pricing must be specific ($X/mo, not "affordable")
+- Customer reviews must be quoted
+- Every claim needs a source
+
+**Templates have "RESEARCH REQUIRED" callouts** to prevent guessing.
+
+### Single Adaptive Templates
+
+**No template explosion:**
+- One template per skill (not lite/full variants)
+- Templates adapt based on context (POC vs MVP vs Established, B2C vs B2B)
+- Sections can be marked "Deferred" when not applicable
+
+### Progressive Disclosure
+
+**SKILL.md files are <500 lines:**
+- Core instructions only
+- Extended guidance in references/ folder
+- Users can add their own references (PDFs, research, etc.)
+- Claude reads all files in references/ when running skill
+
+### No External Dependencies
+
+- All skills work 100% locally
+- Optional: WebSearch (for /prod-market-analysis)
+- Optional: GitHub (for /dev-taskstoissues, /dev-finishing-branch)
+
+### Cross-Platform
+
 - Bash scripts (Mac, Linux, Git Bash on Windows)
-- PowerShell scripts coming soon
+- PowerShell versions (where applicable)
 
-### ✅ Hidden by Default
-- Everything under dot-folders
-- No project root pollution
-- Git-friendly
+---
+
+## Current Status
+
+**Completed: 7/30 skills (23%)**
+
+**Product Skills:** 6/12 complete (50%)
+- ✅ prod-strategic-thinking
+- ✅ prod-constitution-builder
+- ✅ prod-personas
+- ✅ prod-jobs-to-be-done
+- ✅ prod-communicator
+- ✅ prod-market-analysis
+- 🔜 brand-guidelines, interaction-design, user-stories, assumptions-and-risks, success-metrics, trade-off-analysis
+
+**Development Skills:** 0/16 complete (0%)
+- 🔜 All 16 skills need restructuring to match new architecture
+
+**Meta Skills:** 1/2 complete (50%)
+- ✅ shipkit-master (enforcement)
+- 🔜 any-brainstorming
+
+See [RESTRUCTURING-PLAN.md](RESTRUCTURING-PLAN.md) for detailed progress.
 
 ---
 
 ## Advanced Usage
 
-### Set Up Project Constitution
-
-Use the two-phase constitution builder for comprehensive project rules:
-
-```bash
-# After /strategic-thinking - define product principles
-/constitution-builder --product
-
-# Before /specify - define technical standards
-/constitution-builder --technical
-```
-
-This creates `.claude/constitution.md` with:
-- **Product phase**: Brand voice, UX principles, accessibility requirements
-- **Technical phase**: Tech stack, architecture patterns, code standards
-
-Claude reads this during all devkit skills.
-
 ### Customize Agent Personas
 
-Agent personas in `.claude/agents/` define specialized behaviors. Customize them for your team:
+Edit agents in .claude/agents/ for your team:
 
 ```markdown
-# .claude/agents/implementer-agent.md
+# .claude/agents/dev-implementer-agent.md
 
 ## Constraints (customize these)
 - Our team uses Vitest, not Jest
@@ -434,7 +415,20 @@ Agent personas in `.claude/agents/` define specialized behaviors. Customize them
 - All API calls go through our SDK
 ```
 
-Skills automatically load the appropriate persona.
+### Add Custom References
+
+Drop PDFs, research, docs into any skill's references/ folder:
+
+```
+.shipkit/skills/prod-personas/references/
+├── reference.md                  # Built-in
+├── examples.md                   # Built-in
+├── README.md                     # Built-in
+├── our-user-interviews.pdf       # YOUR research
+└── competitor-personas.pdf       # YOUR intel
+```
+
+Claude reads all files when running /prod-personas.
 
 ### Generate Stakeholder Communications
 
@@ -442,130 +436,179 @@ After product discovery:
 
 ```
 User: "Create an investor one-pager"
-Claude: [Reads .prodkit/ artifacts, uses /communicator skill]
-        [Calls generate-communication.sh]
-        [Creates .prodkit/comms/2024-12-20-investors-onepager.html]
+Claude: [Runs /prod-communicator skill]
+        [Reads prod-strategic-thinking, prod-personas, prod-jobs-to-be-done outputs]
+        [Creates .shipkit/skills/prod-communicator/outputs/investor-one-pager-YYYYMMDD.md]
 ```
 
-Output: Print-ready HTML with strategy, market, traction.
+5 communication templates:
+- Investor one-pager
+- Executive summary
+- Team update
+- Customer announcement
+- Board deck outline
 
-### Run Trade-off Analysis
+---
 
-After devkit generates `tasks.md`:
+## Skill Script Pattern
 
+All skill scripts follow a consistent pattern for Claude Code automation:
+
+### Script Structure
+
+```bash
+#!/usr/bin/env bash
+# Script header with description
+
+set -e
+
+# Source common utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../../.." && pwd)"
+source "$REPO_ROOT/.shipkit/scripts/bash/common.sh"
+
+# Parse flags (--update, --archive, --skip-prereqs, --cancel)
+# ... flag parsing logic ...
+
+# Check prerequisites (declarative, from common.sh)
+check_skill_prerequisites "skill-name" "$SKIP_PREREQS"
+
+# Check if output exists (handles --update, --archive flags)
+check_output_exists "$OUTPUT_FILE" "Artifact Name" "$UPDATE" "$ARCHIVE"
+
+# Create/update output file
+# ... skill-specific logic ...
 ```
-User: "Should we build real-time collaboration?"
-Claude: [Uses /trade-off-analysis skill]
-        [Reads user stories, strategy, effort estimates]
-        [Calls calculate-tradeoffs.sh]
-        [Recommends BUILD/DEFER/CUT based on ROI]
+
+### Decision-Based Flow
+
+Scripts use **structured output** for Claude Code to parse:
+
+1. **Script runs** without flags
+2. **Encounters decision point** (file exists, prereq missing)
+3. **Exits with structured message**:
+   ```
+   DECISION_NEEDED: FILE_EXISTS
+   MESSAGE: Strategy already exists at: .../business-canvas.md
+   OPTIONS: --update (Update existing) | --archive (Create new version) | --cancel (Cancel)
+   ```
+4. **Claude reads output**, presents options to user
+5. **User chooses** (e.g., "update")
+6. **Claude reruns** with flag: `./create-strategy.sh --update`
+7. **Script executes** chosen action
+
+### Common Flags
+
+All scripts support:
+- `--update` - Update existing file
+- `--archive` - Archive current, create new version
+- `--skip-prereqs` - Skip prerequisite checks
+- `--cancel` - Cancel operation
+- `--help` - Show usage
+
+### Prerequisite Chain
+
+Managed declaratively in `common.sh`:
+
+```bash
+SKILL_PREREQUISITES=(
+  ["prod-strategic-thinking"]=""                    # No prereq
+  ["prod-personas"]="prod-strategic-thinking"      # Requires strategy
+  ["prod-jobs-to-be-done"]="prod-personas"         # Requires personas
+  # ... etc
+)
 ```
+
+One line in script:
+```bash
+check_skill_prerequisites "prod-personas" "$SKIP_PREREQS"
+```
+
+If prerequisite missing, exits with:
+```
+DECISION_NEEDED: PREREQUISITE_MISSING
+MESSAGE: This skill works best after: /prod-strategic-thinking
+OPTIONS: --skip-prereqs (Continue anyway)
+```
+
+### Why This Pattern?
+
+1. **Non-interactive** - Works with Claude Code's Bash tool
+2. **User control** - Claude presents decisions, user chooses
+3. **Explicit** - Flags make behavior clear
+4. **Maintainable** - Prerequisite chain in one place
+5. **Consistent** - Same pattern for all 30 skills
 
 ---
 
 ## Maintenance
 
 ### Updating This Repo
-When upstream repos update:
-1. Pull latest from devkit and devkit
-2. Update files in `skills/`
-3. Update HTML overview
-4. Commit changes
-5. Push to GitHub (if using GitHub installation mode)
+
+When you improve a skill:
+1. Edit files in install/
+2. Test in a sample project
+3. Commit changes
+4. Re-install in your projects
 
 ### Updating Projects
-When you update shipkit, re-run the installer:
 
-**Local installation:**
+Re-run installer to get latest skills:
+
 ```bash
 cd your-project
-bash ../shipkit/install.sh --preset solo
+bash ../shipkit/install.sh
 ```
 
-**GitHub installation:**
-```bash
-cd your-project
-bash install.sh --github https://github.com/user/shipkit.git --preset solo
-```
+**Preserves:**
+- Existing outputs (.shipkit/skills/*/outputs/)
+- User customizations
+- Project-specific constitutions
 
-The installer preserves existing files (won't overwrite customized constitution or project artifacts).
-
----
-
-## Integration Requirements
-
-### Works 100% Locally
-- ✅ All 9 devkit skills (except `taskstoissues`)
-- ✅ All 13 devkit skills
-- ✅ All 11 prodkit skills
-
-### Optional Integrations
-- ⚠️ **GitHub**: `taskstoissues`, `finishing-branch` (can push/PR)
-- ⚠️ **WebSearch**: `/market-analysis` uses WebSearch for competitive research (optional)
-
-**For solo development, everything works without external dependencies.**
+**Updates:**
+- Skill definitions (.claude/skills/)
+- Templates (.shipkit/skills/*/templates/)
+- Scripts (.shipkit/skills/*/scripts/)
+- References (.shipkit/skills/*/references/)
 
 ---
 
 ## Documentation
 
-### User Documentation
-
 📖 **[System Overview](help/system-overview.html)** - **START HERE!**
-- Visual workflow guide for end users
-- Shows how ProdKit → devkit → Development works together
-- Installation presets explained
-- Complete workflow walkthrough
+- Visual workflow guide
+- Shows how product → dev → implementation works
 
-### Maintainer References
+📖 **[Skills Summary](help/skills-summary.html)**
+- Browse all skill prompts
+- Implementation progress tracker
 
-📖 **[Skills Overview](help/skills-overview.html)** (For prompt editing)
-- Browse all 11 ProdKit prompts in detail
-- View raw prompt files for editing
-- Scripts shown as visual pseudocode
-- **Generate**: `python help/generate-reference.py`
-
----
-
-## Sources & Credits
-
-This framework combines:
-- **[devkit](https://github.com/github/devkit)** by GitHub - Technical specification framework
-- **[devkit](https://github.com/obra/devkit)** by Jesse Vincent - Development workflow enhancements
-- **prodkit** - Product discovery framework (new, built for this repo)
+📖 **[Restructuring Plan](RESTRUCTURING-PLAN.md)**
+- Detailed progress tracker
+- Architecture decisions
+- Remaining tasks
 
 ---
 
 ## License
 
-- **devkit skills**: Retain original license from GitHub
-- **devkit skills**: Retain original license from obra
-- **ProdKit skills and infrastructure**: MIT License
-- **Collection structure**: MIT License
+MIT License
 
 ---
 
 ## Support
 
-- **Quick Start Guide**: `help/system-overview.html`
-- **Prompt Reference**: `help/skills-overview.html`
-- **devkit Docs**: https://github.com/github/devkit
-- **devkit Docs**: https://github.com/obra/devkit
-- **Issues**: [Your issue tracker]
+- **Quick Start**: help/system-overview.html
+- **Progress**: RESTRUCTURING-PLAN.md
+- **Development**: CLAUDE.md
 
 ---
 
 **Ready to ship products faster?**
 
-**Local installation:**
 ```bash
 cd your-next-project
-bash ../shipkit/install.sh --preset solo
-```
-
-**GitHub installation (one-liner):**
-```bash
-curl -fsSL https://raw.githubusercontent.com/user/shipkit/main/install.sh | bash -s -- --github https://github.com/user/shipkit.git --preset solo
+bash ../shipkit/install.sh
 ```
 
 **From strategy to shipped code, all guided by AI.**

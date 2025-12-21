@@ -14,11 +14,48 @@ SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUTPUT_DIR="$SKILL_DIR/outputs"
 TEMPLATE_DIR="$SKILL_DIR/templates"
 
-# Colors
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+# Parse flags
+UPDATE=false
+ARCHIVE=false
+SKIP_PREREQS=false
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --update)
+      UPDATE=true
+      shift
+      ;;
+    --archive)
+      ARCHIVE=true
+      shift
+      ;;
+    --skip-prereqs)
+      SKIP_PREREQS=true
+      shift
+      ;;
+    --cancel)
+      echo "Cancelled."
+      exit 0
+      ;;
+    --help|-h)
+      echo "Usage: $0 [--update|--archive|--skip-prereqs|--cancel]"
+      echo ""
+      echo "Flags:"
+      echo "  --update        Update existing strategy"
+      echo "  --archive       Archive current and create new version"
+      echo "  --skip-prereqs  Skip prerequisite checks"
+      echo "  --cancel        Cancel operation"
+      exit 0
+      ;;
+    *)
+      echo -e "${RED}Unknown flag: $1${NC}" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Check prerequisites (strategic-thinking has none, but this shows the pattern)
+check_skill_prerequisites "prod-strategic-thinking" "$SKIP_PREREQS"
 
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
@@ -26,37 +63,8 @@ mkdir -p "$OUTPUT_DIR"
 # Output file location
 OUTPUT_FILE="$OUTPUT_DIR/business-canvas.md"
 
-# Check if file already exists
-if [[ -f "$OUTPUT_FILE" ]]; then
-  echo -e "${YELLOW}⚠${NC}  Strategy already exists at: $OUTPUT_FILE"
-  echo ""
-  echo "Options:"
-  echo "  1. Update existing strategy"
-  echo "  2. Create new version (archive current)"
-  echo "  3. Cancel"
-  read -p "Choice [1-3]: " choice
-
-  case $choice in
-    1)
-      echo -e "${GREEN}✓${NC} Proceeding with update to existing strategy"
-      ;;
-    2)
-      # Archive existing
-      TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
-      ARCHIVE_FILE="$OUTPUT_DIR/business-canvas-${TIMESTAMP}.md"
-      mv "$OUTPUT_FILE" "$ARCHIVE_FILE"
-      echo -e "${GREEN}✓${NC} Archived existing strategy to: $ARCHIVE_FILE"
-      ;;
-    3)
-      echo "Cancelled."
-      exit 0
-      ;;
-    *)
-      echo -e "${RED}Invalid choice${NC}"
-      exit 1
-      ;;
-  esac
-fi
+# Check if file exists and handle decision
+check_output_exists "$OUTPUT_FILE" "Strategy" "$UPDATE" "$ARCHIVE"
 
 # Use template
 TEMPLATE="$TEMPLATE_DIR/business-canvas-template.md"

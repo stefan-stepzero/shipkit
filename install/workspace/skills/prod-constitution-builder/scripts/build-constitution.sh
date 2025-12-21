@@ -14,32 +14,60 @@ SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUTPUT_DIR="$SKILL_DIR/outputs"
 TEMPLATE_DIR="$SKILL_DIR/templates"
 
-# Colors
-GREEN='\033[0;32m'
-CYAN='\033[0;36m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
-
-# Parse arguments
+# Parse flags
+UPDATE=false
+ARCHIVE=false
+SKIP_PREREQS=false
 MATURITY=""
 BUSINESS_MODEL=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
-    --maturity) MATURITY="$2"; shift 2;;
-    --business-model) BUSINESS_MODEL="$2"; shift 2;;
+    --update)
+      UPDATE=true
+      shift
+      ;;
+    --archive)
+      ARCHIVE=true
+      shift
+      ;;
+    --skip-prereqs)
+      SKIP_PREREQS=true
+      shift
+      ;;
+    --maturity)
+      MATURITY="$2"
+      shift 2
+      ;;
+    --business-model)
+      BUSINESS_MODEL="$2"
+      shift 2
+      ;;
+    --cancel)
+      echo "Cancelled."
+      exit 0
+      ;;
     --help|-h)
-      echo "Usage: $0 [--maturity <poc|mvp|v1|established>] [--business-model <b2c|b2b|marketplace|side-project>]"
+      echo "Usage: $0 [options]"
       echo ""
-      echo "If not provided, will attempt to read from strategic-thinking output"
+      echo "Flags:"
+      echo "  --update              Update existing constitution"
+      echo "  --archive             Archive current and create new version"
+      echo "  --skip-prereqs        Skip prerequisite checks"
+      echo "  --maturity <value>    Set maturity: poc|mvp|v1|established"
+      echo "  --business-model <v>  Set model: b2c|b2b|marketplace|side-project"
+      echo "  --cancel              Cancel operation"
       exit 0
       ;;
     *)
-      echo "Unknown argument: $1" >&2
+      echo -e "${RED}Unknown flag: $1${NC}" >&2
       exit 1
       ;;
   esac
 done
+
+# Check prerequisites
+check_skill_prerequisites "prod-constitution-builder" "$SKIP_PREREQS"
 
 # Try to detect from strategic-thinking output if not provided
 STRATEGY_FILE="$REPO_ROOT/.shipkit/skills/prod-strategic-thinking/outputs/business-canvas.md"
@@ -97,32 +125,8 @@ fi
 # Output file
 OUTPUT_FILE="$OUTPUT_DIR/product-constitution.md"
 
-# Check if constitution already exists
-if [[ -f "$OUTPUT_FILE" ]]; then
-  echo -e "${YELLOW}⚠${NC}  Constitution already exists at: $OUTPUT_FILE"
-  echo ""
-  echo "Options:"
-  echo "  1. Update with new template (archive current)"
-  echo "  2. Keep existing"
-  read -p "Choice [1-2]: " choice
-
-  case $choice in
-    1)
-      TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
-      ARCHIVE_FILE="$OUTPUT_DIR/product-constitution-${TIMESTAMP}.md"
-      mv "$OUTPUT_FILE" "$ARCHIVE_FILE"
-      echo -e "${GREEN}✓${NC} Archived existing constitution to: $ARCHIVE_FILE"
-      ;;
-    2)
-      echo "Keeping existing constitution."
-      exit 0
-      ;;
-    *)
-      echo "Invalid choice"
-      exit 1
-      ;;
-  esac
-fi
+# Check if file exists and handle decision
+check_output_exists "$OUTPUT_FILE" "Constitution" "$UPDATE" "$ARCHIVE"
 
 # Copy template to output
 if [[ -f "$TEMPLATE_PATH" ]]; then
@@ -136,7 +140,7 @@ if [[ -f "$TEMPLATE_PATH" ]]; then
   echo "This constitution will guide all product decisions."
   echo "Reference it in all prod-* skills."
 else
-  echo -e "ERROR: Template not found: $TEMPLATE_PATH" >&2
+  echo -e "${RED}✗${NC} Template not found: $TEMPLATE_PATH" >&2
   exit 1
 fi
 
