@@ -18,7 +18,7 @@ Shift to hybrid architecture with protected outputs:
 ### Meta Skills (1)
 - ✅ **shipkit-master** - Session-start enforcement (skill usage discipline)
 
-### Prodkit Skills (9)
+### Prodkit Skills (10)
 - ✅ **prod-strategic-thinking** - Business canvas with 4 sections
 - ✅ **prod-constitution-builder** - Context-based product principles (POC/MVP/Established × B2C/B2B)
 - ✅ **prod-personas** - User personas with integrated empathy mapping
@@ -27,6 +27,7 @@ Shift to hybrid architecture with protected outputs:
 - ✅ **prod-brand-guidelines** - Brand personality, voice, tone, and visual direction
 - ✅ **prod-interaction-design** - User journeys (7 stages), interaction patterns, screen flows
 - ✅ **prod-user-stories** - INVEST stories with Given-When-Then acceptance criteria, MoSCoW prioritization
+- ✅ **prod-assumptions-and-risks** - Token-lean assumptions validation and risk assessment with Likelihood × Impact scoring
 - ✅ **prod-communicator** - Stakeholder communications (5 templates: investor/exec/team/customer/board)
 
 **Structure per skill:**
@@ -46,19 +47,15 @@ Shift to hybrid architecture with protected outputs:
 
 ---
 
-## Remaining Prod Skills 🔜 (3)
+## Remaining Prod Skills 🔜 (2)
 
 ### Sequential Workflow Skills
-1. **prod-assumptions-and-risks**
-   - Strategic assumptions and risk mitigation
-   - Templates: assumptions-risks-template.md
-
-2. **prod-success-metrics**
+1. **prod-success-metrics**
    - KPIs, success criteria
    - Templates: success-definition-template.md
 
 ### Async Skills
-3. **prod-trade-off-analysis**
+2. **prod-trade-off-analysis**
    - Feature prioritization, ROI analysis
    - Templates: tradeoff-matrix-template.md
 
@@ -175,7 +172,7 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 
 ## Progress Tracker
 
-**Prod Skills:** 9/12 complete (75%)
+**Prod Skills:** 10/12 complete (83%)
 - ✅ strategic-thinking
 - ✅ constitution-builder
 - ✅ personas
@@ -185,8 +182,8 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 - ✅ interaction-design
 - ✅ communicator (async)
 - ✅ user-stories
-- ⏳ assumptions-and-risks (NEXT)
-- ⏳ success-metrics
+- ✅ assumptions-and-risks
+- ⏳ success-metrics (NEXT)
 - ⏳ trade-off-analysis (async)
 
 **Dev Skills:** 0/16 complete (0%)
@@ -194,7 +191,7 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 **Meta Skills:** 1/1 complete (100%)
 - ✅ shipkit-master
 
-**Overall:** 10/29 skills complete (34%)
+**Overall:** 11/29 skills complete (38%)
 
 ---
 
