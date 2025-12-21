@@ -1,6 +1,6 @@
 # Shipkit Skill Restructuring Plan
 
-**Status: IN PROGRESS** (Updated 2024-12-21)
+**Status: IN PROGRESS** (Updated 2025-12-21)
 
 ## Goal
 
@@ -18,13 +18,14 @@ Shift to hybrid architecture with protected outputs:
 ### Meta Skills (1)
 - ✅ **shipkit-master** - Session-start enforcement (skill usage discipline)
 
-### Prodkit Skills (7)
+### Prodkit Skills (8)
 - ✅ **prod-strategic-thinking** - Business canvas with 4 sections
 - ✅ **prod-constitution-builder** - Context-based product principles (POC/MVP/Established × B2C/B2B)
 - ✅ **prod-personas** - User personas with integrated empathy mapping
 - ✅ **prod-jobs-to-be-done** - JTBD framework with forces diagram
 - ✅ **prod-market-analysis** - Competitive landscape analysis
 - ✅ **prod-brand-guidelines** - Brand personality, voice, tone, and visual direction
+- ✅ **prod-interaction-design** - User journeys (7 stages), interaction patterns, screen flows
 - ✅ **prod-communicator** - Stakeholder communications (5 templates: investor/exec/team/customer/board)
 
 **Structure per skill:**
@@ -44,27 +45,23 @@ Shift to hybrid architecture with protected outputs:
 
 ---
 
-## Remaining Prod Skills 🔜 (5)
+## Remaining Prod Skills 🔜 (4)
 
 ### Sequential Workflow Skills
-1. **prod-interaction-design** ← NEXT
-   - User journeys, interaction patterns
-   - Templates: journey-template.md
-
-2. **prod-user-stories**
+1. **prod-user-stories** ← NEXT
    - User stories with acceptance criteria
    - Templates: user-story-template.md
 
-3. **prod-assumptions-and-risks**
+2. **prod-assumptions-and-risks**
    - Strategic assumptions and risk mitigation
    - Templates: assumptions-risks-template.md
 
-4. **prod-success-metrics**
+3. **prod-success-metrics**
    - KPIs, success criteria
    - Templates: success-definition-template.md
 
 ### Async Skills
-7. **prod-trade-off-analysis**
+4. **prod-trade-off-analysis**
    - Feature prioritization, ROI analysis
    - Templates: tradeoff-matrix-template.md
 
@@ -162,7 +159,7 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 ## Remaining Tasks
 
 ### Immediate (Current Sprint)
-- [ ] Create 7 remaining prod skill packages
+- [ ] Create 4 remaining prod skill packages
 - [ ] Update all SKILL.md frontmatter paths to reference new locations
 - [ ] Update installer to copy new structure
 
@@ -181,26 +178,26 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 
 ## Progress Tracker
 
-**Prod Skills:** 7/12 complete (58%)
+**Prod Skills:** 8/12 complete (67%)
 - ✅ strategic-thinking
 - ✅ constitution-builder
 - ✅ personas
 - ✅ jobs-to-be-done
 - ✅ market-analysis
 - ✅ brand-guidelines
-- ✅ communicator (meta)
-- ⏳ interaction-design (NEXT)
-- ⏳ user-stories
+- ✅ interaction-design
+- ✅ communicator (async)
+- ⏳ user-stories (NEXT)
 - ⏳ assumptions-and-risks
 - ⏳ success-metrics
-- ⏳ trade-off-analysis
+- ⏳ trade-off-analysis (async)
 
 **Dev Skills:** 0/16 complete (0%)
 
 **Meta Skills:** 1/1 complete (100%)
 - ✅ shipkit-master
 
-**Overall:** 8/29 skills complete (28%)
+**Overall:** 9/29 skills complete (31%)
 
 ---
 
