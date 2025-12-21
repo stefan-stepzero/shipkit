@@ -18,7 +18,7 @@ Shift to hybrid architecture with protected outputs:
 ### Meta Skills (1)
 - ✅ **shipkit-master** - Session-start enforcement (skill usage discipline)
 
-### Prodkit Skills (10)
+### Prodkit Skills (11)
 - ✅ **prod-strategic-thinking** - Business canvas with 4 sections
 - ✅ **prod-constitution-builder** - Context-based product principles (POC/MVP/Established × B2C/B2B)
 - ✅ **prod-personas** - User personas with integrated empathy mapping
@@ -28,6 +28,7 @@ Shift to hybrid architecture with protected outputs:
 - ✅ **prod-interaction-design** - User journeys (7 stages), interaction patterns, screen flows
 - ✅ **prod-user-stories** - INVEST stories with Given-When-Then acceptance criteria, MoSCoW prioritization
 - ✅ **prod-assumptions-and-risks** - Token-lean assumptions validation and risk assessment with Likelihood × Impact scoring
+- ✅ **prod-success-metrics** - KPIs, North Star metric, OKRs, instrumentation (HEART/AARRR frameworks)
 - ✅ **prod-communicator** - Stakeholder communications (5 templates: investor/exec/team/customer/board)
 
 **Structure per skill:**
@@ -47,15 +48,10 @@ Shift to hybrid architecture with protected outputs:
 
 ---
 
-## Remaining Prod Skills 🔜 (2)
-
-### Sequential Workflow Skills
-1. **prod-success-metrics**
-   - KPIs, success criteria
-   - Templates: success-definition-template.md
+## Remaining Prod Skills 🔜 (1)
 
 ### Async Skills
-2. **prod-trade-off-analysis**
+1. **prod-trade-off-analysis**
    - Feature prioritization, ROI analysis
    - Templates: tradeoff-matrix-template.md
 
@@ -172,7 +168,7 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 
 ## Progress Tracker
 
-**Prod Skills:** 10/12 complete (83%)
+**Prod Skills:** 11/12 complete (92%)
 - ✅ strategic-thinking
 - ✅ constitution-builder
 - ✅ personas
@@ -183,15 +179,15 @@ prodkit-files/templates/structure/strategy/business-canvas.template.md
 - ✅ communicator (async)
 - ✅ user-stories
 - ✅ assumptions-and-risks
-- ⏳ success-metrics (NEXT)
-- ⏳ trade-off-analysis (async)
+- ✅ success-metrics
+- ⏳ trade-off-analysis (NEXT - async)
 
 **Dev Skills:** 0/16 complete (0%)
 
 **Meta Skills:** 1/1 complete (100%)
 - ✅ shipkit-master
 
-**Overall:** 11/29 skills complete (38%)
+**Overall:** 12/29 skills complete (41%)
 
 ---
 
