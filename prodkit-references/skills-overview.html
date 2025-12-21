@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>shipkit - Complete Skills Reference</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 { font-size: 48px; font-weight: 700; margin-bottom: 12px; }
+        .header .subtitle { font-size: 20px; opacity: 0.9; }
+        .header .meta { margin-top: 20px; font-size: 14px; opacity: 0.8; }
+
+        .tabs {
+            background: white;
+            border-bottom: 2px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .tab-buttons {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 20px 30px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover { background: #f8fafc; color: #2563eb; }
+        .tab-button.active { color: #2563eb; border-bottom-color: #2563eb; }
+
+        .tab-content {
+            display: none;
+            max-width: 1600px;
+            margin: 40px auto;
+            padding: 0 40px 80px 40px;
+        }
+
+        .tab-content.active { display: block; }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+        }
+
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .skill-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .skill-card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .skill-number {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 32px;
+            height: 32px;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .skill-card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+            padding-right: 45px;
+        }
+
+        .skill-card-description {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: #dbeafe;
+            color: #1e40af;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-top: 12px;
+        }
+
+        .badge.sequential { background: #d1fae5; color: #065f46; }
+        .badge.async { background: #fef3c7; color: #92400e; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            max-width: 1000px;
+            width: 100%;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            padding: 30px;
+            border-bottom: 2px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f172a;
+            padding-right: 40px;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 30px;
+            top: 30px;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #64748b;
+            line-height: 1;
+        }
+
+        .modal-close:hover { color: #0f172a; }
+
+        .modal-body {
+            padding: 30px;
+            max-height: calc(90vh - 200px);
+            overflow-y: auto;
+        }
+
+        .prompt-content {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 30px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-x: auto;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-primary:hover { background: #1e40af; }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-secondary:hover { background: #e2e8f0; }
+
+        .tree-item {
+            font-family: 'Courier New', monospace;
+            padding: 4px 0;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .tree-item.folder { color: #2563eb; font-weight: 600; }
+        .indent-1 { padding-left: 24px; }
+        .indent-2 { padding-left: 48px; }
+        .indent-3 { padding-left: 72px; }
+
+        .script-flow {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .script-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 24px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .flow-step {
+            position: relative;
+            padding: 20px 20px 20px 50px;
+            background: white;
+            border-left: 4px solid #2563eb;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .flow-step-number {
+            position: absolute;
+            left: -18px;
+            top: 20px;
+            width: 36px;
+            height: 36px;
+            background: #2563eb;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+        }
+
+        .flow-step-title {
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .flow-step-content {
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .flow-params {
+            background: #fffbeb;
+            border: 1px solid #fef3c7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .flow-params-title {
+            font-weight: 700;
+            color: #92400e;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .flow-param {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #78350f;
+            margin: 6px 4px;
+            padding: 4px 8px;
+            background: #fef9c3;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        .flow-output {
+            background: #ecfdf5;
+            border: 1px solid #d1fae5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .flow-output-title {
+            font-weight: 700;
+            color: #065f46;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .flow-output-file {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #064e3b;
+            padding: 4px 8px;
+            background: #d1fae5;
+            border-radius: 3px;
+            display: inline-block;
+            margin: 4px 4px 4px 0;
+        }
+
+        @media (max-width: 768px) {
+            .skill-grid { grid-template-columns: 1fr; }
+            .tab-buttons { overflow-x: scroll; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>shipkit</h1>
+        <div class="subtitle">Complete Product Development Framework</div>
+        <div class="meta">Generated 2025-12-21 12:40</div>
+    </div>
+
+    <div class="tabs">
+        <div class="tab-buttons">
+            <button class="tab-button active" onclick="switchTab('overview')">Overview</button>
+            <button class="tab-button" onclick="switchTab('prodkit')">ProdKit Prompts (11)</button>
+            <button class="tab-button" onclick="switchTab('scripts')">Scripts (Visual)</button>
+            <button class="tab-button" onclick="switchTab('other')">devkit & devkit</button>
+        </div>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-content active" id="overview">
+        <div class="section">
+            <h2 class="section-title">Repository Structure</h2>
+            <div class="tree-item folder">shipkit/</div>
+            <div class="tree-item file indent-1">├── install.sh</div>
+            <div class="tree-item file indent-1">├── README.md</div>
+            <div class="tree-item folder indent-1">├── agents/ - 5 agent personas</div>
+            <div class="tree-item folder indent-1">├── skills/ - Claude Code skills</div>
+            <div class="tree-item folder indent-2">│   ├── devkit/ - 10 skills (includes constitution-builder)</div>
+            <div class="tree-item folder indent-2">│   ├── devkit/</div>
+            <div class="tree-item folder indent-3">│   │   ├── essential/ - 8 skills (brainstorming is async)</div>
+            <div class="tree-item folder indent-3">│   │   └── advanced/ - 5 skills</div>
+            <div class="tree-item folder indent-2">│   └── prodkit/</div>
+            <div class="tree-item folder indent-3">│       ├── sequential/ - 9 workflow skills</div>
+            <div class="tree-item folder indent-3">│       └── async/ - 2 anytime skills</div>
+            <div class="tree-item folder indent-1">├── devkit-files/scripts/bash/</div>
+            <div class="tree-item folder indent-1">├── prodkit-files/scripts/bash/</div>
+            <div class="tree-item folder indent-1">└── help/</div>
+            <div class="tree-item file indent-2">    └── skills-overview.html</div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">What is shipkit?</h2>
+            <p style="font-size: 16px; color: #475569; margin-bottom: 20px; line-height: 1.8;">
+                <strong>Claude Code skills + Agent Personas</strong> for end-to-end product development
+            </p>
+            <ul style="padding-left: 24px; color: #475569; font-size: 16px; line-height: 2;">
+                <li><strong>devkit (10)</strong> - Technical specification pipeline (/implement integrates TDD, reviews)</li>
+                <li><strong>devkit (13)</strong> - Quality & workflow enhancements (key skills integrated into /implement)</li>
+                <li><strong>ProdKit (11)</strong> - Product discovery & strategy (/brainstorming is async)</li>
+                <li><strong>Agent Personas (5)</strong> - Discovery, Architect, Implementer, Reviewer, Researcher</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">How to Use This Reference</h2>
+            <p style="font-size: 16px; color: #475569; line-height: 1.8;">
+                <strong>ProdKit Prompts:</strong> Browse all 11 skills. Click to view full prompt content for discussing changes.<br><br>
+                <strong>Scripts:</strong> Visual pseudocode showing what each script does.<br><br>
+                <strong>Other:</strong> File paths for devkit and devkit.
+            </p>
+        </div>
+    </div>
+
+    <!-- PRODKIT PROMPTS TAB -->
+    <div class="tab-content" id="prodkit">
+        <div class="section">
+            <h2 class="section-title">Sequential Workflow (Steps 1-9)</h2>
+            <div class="skill-grid">
+                <div class="skill-card" onclick="showPrompt('1-strategic-thinking')">
+                    <div class="skill-number">1</div>
+                    <div class="skill-card-title">Strategic Thinking</div>
+                    <div class="skill-card-description">Business strategy using Playing to Win + Lean Canvas</div>
+                    <span class="badge sequential">Sequential</span>
+                </div>
+                <div class="skill-card" onclick="showPrompt('2-personas')">
+                    <div class="skill-number">2</div>
+                    <div class="skill-card-title">Personas</div>
+                    <div class="skill-card-description">Target user demographics, goals, pain points</div>
+                    <span class="badge sequential">Sequential</span>
+                </div>
+                <div class="skill-card" onclick="showPrompt('3-jobs-to-be-done')">
+                    <div class="skill-number">3</div>
+                    <div class="skill-card-title">Jobs-to-be-Done</div>
+                    <div class="skill-card-description">Current state AS-IS analysis</div>
+                    <span class="badge sequential">Sequential</span>
+                </div>
+                <div class="skill-card" onclick="showPrompt('4-market-analysis')">
+                    <div class="skill-number">4</div>
+                    <div class="skill-card-title">Market Analysis</div>
+                    <div class="skill-card-description">Porter's Five Forces</div>
+                    <span class="badge sequential">Sequential</span>
+                </div>
+                <div class="skill-card" onclick="showPrompt('5-brand-guidelines')">
+                    <div class="skill-number">5</div>
+                    <div class="skill-card-title">Brand Guidelines</div>
+                    <div class="skill-card-description">Visual direction, personality, patterns</div>
+                    <span class="badge sequential">Sequential</span>
+                </div>
+                <div class="skill-card" onclick="showPrompt('6-interaction-design')">
+                    <div class="skill-number">6</div>
+                    <div class="skill-card-title">Interaction Design</div>
+                    <div class="skill-card-description">Future state TO-BE journeys</div>
+                    <span class="badge sequential">Sequential</span>
+                </div>
+                <div class="skill-card" onclick="showPrompt('7-user-stories')">
+                    <div class="skill-number">7</div>
+                    <div class="skill-card-title">User Stories</div>
+                    <div class="skill-card-description">Requirements with MoSCoW prioritization</div>
+                    <span class="badge sequential">Sequential</span>
+                </div>
+                <div class="skill-card" onclick="showPrompt('8-assumptions-and-risks')">
+                    <div class="skill-number">8</div>
+                    <div class="skill-card-title">Assumptions and Risks</div>
+                    <div class="skill-card-description">Strategic risk identification</div>
+                    <span class="badge sequential">Sequential</span>
+                </div>
+                <div class="skill-card" onclick="showPrompt('9-success-metrics')">
+                    <div class="skill-number">9</div>
+                    <div class="skill-card-title">Success Metrics</div>
+                    <div class="skill-card-description">KPIs, AARRR framework, instrumentation</div>
+                    <span class="badge sequential">Sequential</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Async Skills</h2>
+            <div class="skill-grid">
+                <div class="skill-card" onclick="showPrompt('trade-off-analysis')">
+                    <div class="skill-card-title">Trade-Off Analysis</div>
+                    <div class="skill-card-description">Feature prioritization, ROI, build/defer/cut</div>
+                    <span class="badge async">Async</span>
+                </div>
+                <div class="skill-card" onclick="showPrompt('communicator')">
+                    <div class="skill-card-title">Communicator</div>
+                    <div class="skill-card-description">Generate stakeholder HTML communications</div>
+                    <span class="badge async">Async</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS TAB -->
+    <div class="tab-content" id="scripts">
+        <div class="section">
+            <h2 class="section-title">ProdKit Scripts - Visual Pseudocode</h2>
+            <p style="margin-bottom: 30px; color: #64748b;">Scripts enforce consistency using templates and validation</p>
+
+            <div class="script-flow">
+                <div class="script-title">create-strategy.sh</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">1</div>
+                    <div class="flow-step-title">Accept Parameters</div>
+                    <div class="flow-step-content">Parse 14 command-line parameters</div>
+                    <div class="flow-params">
+                        <div class="flow-params-title">Parameters</div>
+                        <span class="flow-param">--winning-aspiration</span>
+                        <span class="flow-param">--where-to-play</span>
+                        <span class="flow-param">--how-to-win</span>
+                        <span class="flow-param">--capabilities</span>
+                        <span class="flow-param">--systems</span>
+                        <span class="flow-param">--problem</span>
+                        <span class="flow-param">--segments</span>
+                        <span class="flow-param">--value-prop</span>
+                        <span class="flow-param">--solution</span>
+                        <span class="flow-param">--channels</span>
+                        <span class="flow-param">--revenue</span>
+                        <span class="flow-param">--costs</span>
+                        <span class="flow-param">--metrics</span>
+                        <span class="flow-param">--unfair-advantage</span>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-number">2</div>
+                    <div class="flow-step-title">Validate</div>
+                    <div class="flow-step-content">Ensure required fields exist</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-number">3</div>
+                    <div class="flow-step-title">Create Directory</div>
+                    <div class="flow-step-content">mkdir -p .prodkit/strategy</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-step-number">4</div>
+                    <div class="flow-step-title">Use Template or Generate</div>
+                    <div class="flow-step-content">Apply template if exists, otherwise create structured markdown</div>
+                    <div class="flow-output">
+                        <div class="flow-output-title">Outputs</div>
+                        <span class="flow-output-file">.prodkit/strategy/business-canvas.md</span>
+                        <span class="flow-output-file">.prodkit/strategy/value-proposition.md</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="script-flow">
+                <div class="script-title">All Other Scripts Follow Similar Patterns</div>
+                <div class="flow-step">
+                    <div class="flow-step-number">▶</div>
+                    <div class="flow-step-title">Common Flow</div>
+                    <div class="flow-step-content">
+                        1. Accept parameters<br>
+                        2. Validate required fields<br>
+                        3. Create directory<br>
+                        4. Use template or generate markdown<br>
+                        5. Write to .prodkit/ structure
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OTHER TAB -->
+    <div class="tab-content" id="other">
+        <div class="section">
+            <h2 class="section-title">devkit (9) & devkit (13)</h2>
+            <p style="margin-bottom: 20px; color: #64748b;">File locations:</p>
+            <div style="font-family: 'Courier New', monospace; color: #475569; line-height: 2; font-size: 14px;">
+                skills/devkit/*.md (9 files)<br>
+                skills/devkit/essential/*.md (8 files)<br>
+                skills/devkit/advanced/*.md (5 files)
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="promptModal" class="modal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+                <div class="modal-title" id="modalTitle"></div>
+            </div>
+            <div class="modal-body">
+                <pre class="prompt-content" id="promptContent"></pre>
+                <div class="button-row">
+                    <button class="btn btn-primary" onclick="copyPrompt()">Copy Prompt</button>
+                    <button class="btn btn-secondary" onclick="copyFilePath()">Copy File Path</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Embedded prompts
+        const PROMPTS = {
+        "1-strategic-thinking": "---\ndescription: \"Use when defining product strategy, business model, or value proposition\"\n---\n\n# Strategic Thinking\n\n## Agent Persona\n\n**Load:** `.claude/agents/discovery-agent.md`\n\nAdopt: Strategic lens, challenges assumptions, explores \"what if\", keeps user at center.\n\n## Purpose\nDefine the product's strategic direction, business model, and value proposition using the Playing to Win framework combined with Lean Canvas.\n\n## When to Trigger\nUser says:\n- \"What should we build?\"\n- \"Let's define our strategy\"\n- \"What's our product strategy?\"\n- \"Help me figure out our business model\"\n- \"What's our value proposition?\"\n\n## Inputs\n- User conversation about business goals\n- Market research (optional, from .prodkit/inputs/strategy/)\n- Competitive context (optional)\n\n## Process\n\n### 1. Ask Playing to Win Questions\n\nAsk the user about:\n\n**Winning Aspiration**: What does success look like in 3-5 years?\n- Example: \"Be the #1 async collaboration tool for remote engineering teams\"\n\n**Where to Play**: Which market segment/customers?\n- Example: \"Remote-first engineering teams, 10-100 people, Series A-C startups\"\n\n**How to Win**: What's your unique advantage?\n- Example: \"AI-powered digest that cuts morning catchup from 2 hours to 5 minutes\"\n\n**Core Capabilities**: What must you be great at?\n- Example: \"AI summarization, Slack/email integration, contextual understanding\"\n\n**Management Systems**: How will you measure/reinforce this?\n- Example: \"Weekly user interviews, NPS tracking, time-saved metrics\"\n\n### 2. Gather Lean Canvas Elements\n\nAsk about:\n\n**Problem** (top 3):\n- What are the biggest pain points?\n\n**Customer Segments**:\n- Who specifically has this problem?\n\n**Unique Value Proposition**:\n- One sentence: What outcome do you deliver?\n\n**Solution** (top 3 features):\n- What will solve the problem?\n\n**Channels**:\n- How will customers discover you?\n\n**Revenue Streams**:\n- How will you make money?\n\n**Cost Structure**:\n- What are the major costs?\n\n**Key Metrics**:\n- What numbers matter most?\n\n**Unfair Advantage**:\n- What can't be easily copied?\n\n### 3. Call Script\n\nOnce you have all information, call the script:\n\n```bash\n.prodkit/scripts/bash/create-strategy.sh \\\n  --winning-aspiration \"...\" \\\n  --where-to-play \"...\" \\\n  --how-to-win \"...\" \\\n  --capabilities \"...\" \\\n  --systems \"...\" \\\n  --problem \"...\" \\\n  --segments \"...\" \\\n  --value-prop \"...\" \\\n  --solution \"...\" \\\n  --channels \"...\" \\\n  --revenue \"...\" \\\n  --costs \"...\" \\\n  --metrics \"...\" \\\n  --unfair-advantage \"...\"\n```\n\n## Outputs\n- `.prodkit/strategy/business-canvas.md`\n- `.prodkit/strategy/value-proposition.md`\n\n## Constraints\n- **DO NOT** create files manually\n- **ALWAYS** use `create-strategy.sh` script\n- **ENSURE** all Playing to Win questions are answered\n- **EXTRACT** value proposition for easy reference\n\n## Next Step\n\n**After completing this skill, suggest:**\n\n```\n\u2705 Strategic thinking complete.\n\n\ud83d\udcc1 Created:\n- .prodkit/strategy/business-canvas.md\n- .prodkit/strategy/value-proposition.md\n\n\ud83d\udc49 **Next step:** `/constitution-builder --product` - Define product principles (brand voice, UX rules, accessibility)\n\nWould you like to build the product constitution now?\n```\n\n## Context\nThis is **Step 1 of 9** in the ProdKit sequential workflow.\n\nAfter constitution: `/personas` \u2192 `/jobs-to-be-done` \u2192 ... \u2192 `/success-metrics`\n",
+        "2-personas": "---\ndescription: \"Use when defining target user personas with demographics, goals, and pain points\"\n---\n\n# Personas\n\n## Agent Persona\n\n**Load:** `.claude/agents/discovery-agent.md`\n\nAdopt: Empathy-driven, asks about real behaviors, avoids stereotypes, grounds in evidence.\n\n## Purpose\nDefine target user personas with demographics, goals, pain points, and behavioral patterns.\n\n## When to Trigger\nUser says:\n- \"Who are our users?\"\n- \"Let's create personas\"\n- \"Our target customer is...\"\n- \"Define our user personas\"\n\nOr uploads:\n- User research documents\n- Survey results\n- Interview transcripts\n\n## Prerequisites\n- Strategy defined (`.prodkit/strategy/business-canvas.md` exists)\n\n## Inputs\n- Strategy (who we're building for)\n- User research (optional, from `.prodkit/inputs/personas/`)\n- Market analysis (optional)\n\n## Process\n\n### 1. Determine Number of Personas\n\nAsk: \"How many distinct user types do we have?\"\n- **Recommended**: 1-3 personas (stay focused)\n- **Too many**: Dilutes focus, hard to prioritize\n\n### 2. For Each Persona, Gather Information\n\n**Name**: Give them a memorable name\n- Example: \"Sarah the Engineering Manager\"\n\n**Demographics**:\n- Age range\n- Role/title\n- Experience level\n- Company size\n\n**Goals**: What are they trying to achieve?\n- Professional goals\n- Personal goals\n- Success metrics\n\n**Pain Points**: What frustrates them today?\n- Current problems\n- Intensity (how painful?)\n- Frequency (how often?)\n\n**Current Behavior**: How do they solve the problem now?\n- Tools they use\n- Workflows they follow\n- Workarounds they've created\n\n**Tech Savviness**: Comfort with technology\n- High/Medium/Low\n- Influences feature complexity\n\n**Decision Factors**: What influences their choices?\n- Price sensitivity\n- Brand preferences\n- Feature priorities\n\n### 3. Call Script for Each Persona\n\n```bash\n.prodkit/scripts/bash/create-persona.sh \\\n  --name \"Sarah the Engineering Manager\" \\\n  --age \"35-45\" \\\n  --role \"Engineering Manager, Series B startup\" \\\n  --goals \"Stay aligned with remote team across timezones\" \\\n  --pains \"Spends 2+ hours daily catching up on Slack, email, PRs\" \\\n  --behaviors \"Checks Slack first thing AM, scans updates, messages blockers\" \\\n  --tech-savvy \"High\" \\\n  --decision-factors \"Efficiency, reliability, team adoption\"\n```\n\nRepeat for each persona.\n\n## Outputs\n- `.prodkit/discovery/personas.md` (all personas in one file)\n\n## Constraints\n- **DO NOT** create `personas.md` manually\n- **ALWAYS** use `create-persona.sh` script\n- **MINIMUM** 1 persona, **MAXIMUM** 3 personas\n- **USE** real, relatable names for personas\n\n## Next Steps\nAfter personas defined:\n- Define jobs-to-be-done (what job does each persona hire your product to do?)\n\n## Context\nThis is **Step 2 of 9** in the ProdKit sequential workflow.\n",
+        "3-jobs-to-be-done": "---\ndescription: \"Use when analyzing how users currently solve their problems (AS-IS state)\"\n---\n\n# Jobs-to-be-Done\n\n## Agent Persona\n\n**Load:** `.claude/agents/discovery-agent.md`\n\nAdopt: Curious about workarounds, digs into frustrations, uncovers hidden needs.\n\n## Purpose\nDocument the **CURRENT STATE**: How users currently accomplish their goals, what tools they use, and why current solutions fall short.\n\n**Focus**: AS-IS analysis, not future vision.\n\n## When to Trigger\nUser says:\n- \"What job does this solve?\"\n- \"Why would they use this?\"\n- \"What are they doing today?\"\n- \"How do users currently solve this problem?\"\n\n## Prerequisites\n- Personas defined (`.prodkit/discovery/personas.md` exists)\n\n## Inputs\n- Personas (who has the job to be done)\n- User research showing current workflows\n- Optional uploads from `.prodkit/inputs/discovery/`\n\n## Process\n\n### 1. For Each Persona, Define the Job\n\n**Job Statement** (follow this format):\n```\nWhen I [situation]\nI want to [motivation]\nSo that I can [expected outcome]\n```\n\nExample: \"When managing a remote team across timezones, I want to quickly understand what happened overnight, so I can identify blockers and respond before EOD.\"\n\n### 2. Document Current Solution\n\n**Tools Used**: What do they use today?\n- List all tools/platforms\n- Note which is primary\n\n**Workflow Steps**: Walk through their process\n- Step-by-step current workflow\n- Time spent on each step\n\n**Pain Points**: What's broken/slow/frustrating?\n- Specific problems\n- Impact on productivity\n- Emotional response\n\n**Workarounds**: What hacks have they created?\n- Manual processes\n- Tools misused\n- Spreadsheet solutions\n\n### 3. Assess Context\n\n**Frequency**: How often does this job arise?\n- Daily / Weekly / Monthly\n- Influences urgency\n\n**Switching Costs**: What prevents them from changing?\n- Team habits\n- Existing integrations\n- Learning curve\n- Data migration\n\n### 4. Call Script for Each Job\n\n```bash\n.prodkit/scripts/bash/create-jtbd.sh \\\n  --persona \"Sarah the Engineering Manager\" \\\n  --job \"When managing remote team, want to catch up on progress, so team stays aligned\" \\\n  --current-solution \"Slack, email, Notion, 1-on-1 meetings\" \\\n  --steps \"1. Check Slack threads (30m), 2. Scan email (20m), 3. Review Notion (30m), 4. Message team members (40m)\" \\\n  --pains \"2 hours daily, context switching, information scattered, fear of missing critical updates\" \\\n  --workarounds \"Sets Slack reminders, uses search heavily, maintains personal tracking doc\" \\\n  --frequency \"Daily, first thing in morning (7-9 AM)\" \\\n  --switching-costs \"Team entrenched in current tools, integration complexity, trust in new approach\"\n```\n\nRepeat for each persona's primary job.\n\n## Outputs\n- `.prodkit/discovery/jobs-to-be-done-current.md`\n\n## Constraints\n- **DO NOT** create files manually\n- **ALWAYS** use `create-jtbd.sh` script\n- **FOCUS** on CURRENT state, not ideal future\n- **USE** real user quotes when available\n- **ONE** primary job per persona (can have secondary jobs)\n\n## Next Steps\nAfter JTBD defined:\n- Analyze market/competitors (what else exists to solve this job?)\n- Later: interaction-design will define FUTURE state\n\n## Context\nThis is **Step 3 of 9** in the ProdKit sequential workflow.\n",
+        "4-market-analysis": "---\ndescription: \"Use when analyzing competitive landscape and market dynamics using Porter's Five Forces\"\n---\n\n# Market Analysis\n\n## Agent Personas\n\n**Load:** `.claude/agents/discovery-agent.md` + `.claude/agents/researcher-agent.md`\n\nAdopt: Discovery for strategic framing, Researcher for competitive intel gathering and verification.\n\n## Purpose\nAnalyze market structure using Porter's Five Forces and competitive landscape. Broader than just competitors - understand the entire ecosystem.\n\n## When to Trigger\nUser says:\n- \"What's the competitive landscape?\"\n- \"Analyze the market\"\n- \"Who else is solving this?\"\n- \"How does the market work?\"\n\nOr uploads:\n- Competitive research\n- Market reports\n- Competitor screenshots\n\n## Prerequisites\n- Strategy defined (where we're playing)\n- Personas defined (who competitors target)\n- JTBD defined (what solutions exist)\n\n## Inputs\n- Strategy (`.prodkit/strategy/business-canvas.md`)\n- Personas (`.prodkit/discovery/personas.md`)\n- JTBD (`.prodkit/discovery/jobs-to-be-done-current.md`)\n- User-provided research (from `.prodkit/inputs/market/`)\n\n## Process\n\n### 1. Research Using Web Search\n\n**IMPORTANT**: Use the `WebSearch` tool to gather information.\n\nSearch for:\n- **Direct competitors**: Companies solving the same JTBD\n- **Indirect competitors**: Alternative solutions to the same problem\n- **Adjacent products**: Could expand into this space\n\nFor each competitor, document:\n- Name and website URL\n- Positioning statement\n- Target users\n- Key features\n- Pricing model\n- Strengths\n- Weaknesses\n- Market share (if publicly available)\n\n### 2. Porter's Five Forces Analysis\n\nAnalyze each force:\n\n**Competitive Rivalry**: How intense is competition?\n- Number of competitors\n- Market maturity\n- Product differentiation\n- High/Medium/Low intensity\n\n**Threat of New Entrants**: Barriers to entry?\n- Capital requirements\n- Technology barriers\n- Network effects\n- Regulatory hurdles\n- High/Medium/Low threat\n\n**Bargaining Power of Buyers**: Can customers negotiate?\n- Switching costs\n- Price sensitivity\n- Availability of alternatives\n- High/Medium/Low power\n\n**Bargaining Power of Suppliers**: Platform dependencies?\n- Dependence on APIs (Slack, Google, etc.)\n- Alternative data sources\n- Supplier concentration\n- High/Medium/Low power\n\n**Threat of Substitutes**: What alternatives exist?\n- Different approaches to same problem\n- \"Do nothing\" option viability\n- High/Medium/Low threat\n\n### 3. Market Sizing (if possible)\n\n- **TAM** (Total Addressable Market)\n- **SAM** (Serviceable Addressable Market)\n- **SOM** (Serviceable Obtainable Market)\n\n### 4. Call Script\n\n```bash\n.prodkit/scripts/bash/analyze-market.sh \\\n  --rivalry \"High - 10+ tools in async collaboration space (Slack, Loom, Notion)\" \\\n  --new-entrants \"Low barriers - many AI tools launching monthly\" \\\n  --buyer-power \"High - easy to switch, low lock-in, free alternatives available\" \\\n  --supplier-power \"Medium - dependent on Slack/email APIs, but alternatives exist\" \\\n  --substitutes \"High - can use existing tools + discipline, meetings, manual summaries\" \\\n  --competitors \"Notion,Asana,Slack,Loom,Linear,Twist\" \\\n  --market-size \"12B TAM in team productivity software (Gartner 2024)\"\n```\n\n## Outputs\n- `.prodkit/discovery/market-analysis.md`\n\n## Constraints\n- **DO NOT** create files manually\n- **ALWAYS** use `analyze-market.sh` script\n- **MUST** use WebSearch tool for competitive research\n- **INCLUDE** URLs to competitor websites\n- **CITE** sources for market size data\n\n## Next Steps\nAfter market analyzed:\n- Define brand guidelines (how to differentiate visually/tonally)\n\n## Context\nThis is **Step 4 of 9** in the ProdKit sequential workflow.\n",
+        "5-brand-guidelines": "---\ndescription: \"Use when defining brand personality, visual direction, and interaction patterns\"\n---\n\n# Brand Guidelines\n\n## Agent Persona\n\n**Load:** `.claude/agents/discovery-agent.md`\n\nAdopt: Brand-aware, connects personality to user needs, consistent voice.\n\n## Purpose\nDefine brand personality, visual direction, and interaction patterns. 80/20 focus: Capture enough to guide development, not a full brand book.\n\n## When to Trigger\nUser says:\n- \"How should this look?\"\n- \"What's our visual style?\"\n- \"Define our brand\"\n- \"What's the personality of this product?\"\n\n## Prerequisites\n- Personas defined (who are we speaking to?)\n- Market analysis complete (how to differentiate)\n- Strategy defined (brand aligns with positioning)\n\n## Inputs\n- Personas (`.prodkit/discovery/personas.md`)\n- Market analysis (`.prodkit/discovery/market-analysis.md`)\n- Strategy (`.prodkit/strategy/business-canvas.md`)\n\n## Process\n\n### 1. Define Brand Personality\n\nIf the brand were a person, how would you describe them?\n\n**Adjectives** (choose 3-5):\n- Examples: professional, approachable, efficient, playful, serious, trustworthy, innovative\n\n**Tone of Voice**:\n- Formal vs Casual\n- Serious vs Playful\n- Expert vs Friendly\n- Concise vs Descriptive\n\n**Brand Voice**:\n- How you communicate with users\n- Example: \"We're direct but empathetic. We respect your time.\"\n\n### 2. Visual Direction\n\n**Color Palette** (3-5 colors with rationale):\n- Primary color + why\n- Secondary colors + why\n- Accent colors\n- Example: \"Calming blues (#2563EB) for stressed managers, neutral grays for readability\"\n\n**Typography Direction** (not specific fonts):\n- Sans-serif vs Serif\n- Modern vs Classic\n- Geometric vs Humanist\n- Readability priorities\n- Example: \"Clean sans-serif, high readability for scanning dense information\"\n\n**Visual Style**:\n- Modern / Classic / Retro\n- Minimal / Detailed\n- Flat / Dimensional\n- Playful / Serious\n\n**Imagery Style**:\n- Photography / Illustration / Abstract / Icons\n- Realistic / Stylized\n- Color treatment\n\n### 3. Interaction Patterns\n\n**Animation Speed**:\n- Fast / Medium / Slow\n- Energetic / Calm\n- Respect user's time vs Delightful\n\n**Feedback Style**:\n- Subtle / Obvious\n- Toasts / Inline / Modals\n- Sound effects or silent\n\n**Error Handling**:\n- Apologetic / Matter-of-fact\n- Helpful / Technical\n- Example: \"Friendly but not overly apologetic\"\n\n### 4. Competitive Differentiation\n\nHow does this FEEL different from competitors?\n- Reference specific competitors from market analysis\n- What feeling do you want users to have?\n\n### 5. Reference Examples\n\n**2-3 products** with similar visual feel:\n- Product name + URL\n- Specific elements to emulate (not copy)\n- What you like about their approach\n\n### 6. Call Script\n\n```bash\n.prodkit/scripts/bash/create-brand.sh \\\n  --personality \"Professional, efficient, trustworthy, respectful of time\" \\\n  --colors \"Blue (#2563EB) calm/trust, Gray (#64748B) neutral/professional, Green (#10B981) success/positive\" \\\n  --typography \"Clean sans-serif, high readability, modern minimal\" \\\n  --visual-style \"Modern minimal, data-driven, spacious layout\" \\\n  --animation \"Quick and subtle - respect user's time, no gratuitous motion\" \\\n  --error-handling \"Matter-of-fact but helpful - show path forward\" \\\n  --differentiation \"Notion=infinite canvas (overwhelming), Asana=project board (task-focused), Slack=stream (chaotic). Us=morning digest dashboard (calm + focused)\" \\\n  --references \"Linear (speed + polish), Superhuman (efficiency + keyboard-first), Stripe Docs (clarity)\"\n```\n\n## Outputs\n- `.prodkit/brand/personality.md`\n- `.prodkit/brand/visual-direction.md`\n- `.prodkit/brand/reference-examples.md`\n\n## Constraints\n- **DO NOT** create files manually\n- **ALWAYS** use `create-brand.sh` script\n- **EVERY** decision must tie back to personas\n- **INCLUDE** the WHY for each choice\n- **REFERENCE** competitors for differentiation\n\n## Next Steps\nAfter brand defined:\n- Design interaction flows (future state journeys)\n\n## Context\nThis is **Step 5 of 9** in the ProdKit sequential workflow.\n",
+        "6-interaction-design": "---\ndescription: \"Use when designing future-state user journeys and interaction patterns (TO-BE vision)\"\n---\n\n# Interaction Design\n\n## Agent Persona\n\n**Load:** `.claude/agents/discovery-agent.md`\n\nAdopt: User-journey focused, thinks in flows, anticipates friction points.\n\n## Purpose\nDefine **FUTURE STATE**: Ideal user journeys and interaction patterns for how users will accomplish their goals with our product.\n\n**Focus**: TO-BE vision, not current state.\n\n## When to Trigger\nUser says:\n- \"How do users accomplish [X]?\"\n- \"What's the user flow?\"\n- \"Design the interaction\"\n- \"Map the user journey\"\n\n## Prerequisites\n- Personas defined (who is using this)\n- JTBD current state (what needs to improve)\n- Value proposition (what outcome we deliver)\n- Brand guidelines (how it should feel)\n\n## Inputs\n- Personas (`.prodkit/discovery/personas.md`)\n- JTBD (`.prodkit/discovery/jobs-to-be-done-current.md`)\n- Value proposition (`.prodkit/strategy/value-proposition.md`)\n- Brand guidelines (`.prodkit/brand/`)\n\n## Process\n\n### 1. For Each Key Job-to-Be-Done, Design the Ideal Journey\n\n**Entry Point**: How does the user start?\n- What triggers the journey?\n- Where do they enter the product?\n- First screen they see\n\n**Critical Moments**: Where must we deliver value?\n- Key decision points\n- Moments of insight\n- \"Aha!\" moments\n- High-value interactions\n\n**Decision Points**: Where does user choose a path?\n- Branching logic\n- Filters/options\n- Personalization\n\n**Success State**: What does completion look like?\n- End goal achieved\n- Next action suggested\n- Satisfaction indicators\n\n**Error States**: What can go wrong?\n- Common errors\n- Recovery paths\n- Prevention strategies\n\n### 2. Define Interaction Patterns\n\n**Navigation Paradigm**:\n- Sidebar / Top nav / Command palette\n- Breadcrumbs / Back button\n- Search prominence\n\n**Primary Actions**:\n- Buttons / Shortcuts / Gestures\n- Keyboard-first vs Mouse-first\n- Quick actions\n\n**Feedback Mechanisms**:\n- Success: Toasts / Inline / Modals\n- Progress: Loading states / Skeletons\n- Errors: Inline / Banner / Modal\n\n**Loading States**:\n- Skeleton screens\n- Progress indicators\n- Optimistic updates\n\n**Empty States**:\n- First-time user\n- No results\n- Onboarding cues\n\n**Error Recovery**:\n- Undo/redo\n- Retry logic\n- Clear next steps\n\n### 3. Map to Brand Personality\n\nEnsure patterns align with brand guidelines:\n- Speed vs Delight\n- Minimal vs Helpful\n- Professional vs Playful\n\n### 4. Call Script for Each Journey\n\n```bash\n.prodkit/scripts/bash/create-journey.sh \\\n  --persona \"Sarah the Engineering Manager\" \\\n  --journey \"Morning team catchup\" \\\n  --entry \"Opens app first thing in morning (7 AM)\" \\\n  --moments \"1. See overnight digest (30s), 2. Identify blockers (20s), 3. Respond to urgent items (10s)\" \\\n  --decisions \"Expand for details vs Mark as read vs Share with team\" \\\n  --success \"Fully caught up in under 60 seconds, confident nothing critical was missed\" \\\n  --errors \"No updates (empty state), API failures (retry), Misclassified urgency (feedback loop)\" \\\n  --patterns \"Feed-based navigation, one-click expand, quick action buttons, keyboard shortcuts (j/k to navigate)\"\n```\n\nRepeat for each critical journey.\n\n## Outputs\n- `.prodkit/design/future-state-journeys.md`\n- `.prodkit/design/interaction-patterns.md`\n\n## Constraints\n- **DO NOT** create files manually\n- **ALWAYS** use `create-journey.sh` script\n- **FOCUS** on IDEAL experience, not technical constraints\n- **REFERENCE** brand personality in interaction choices\n- **MAP** to current-state JTBD (show improvement)\n\n## Next Steps\nAfter journeys designed:\n- Write user stories (translate journeys into requirements)\n\n## Context\nThis is **Step 6 of 9** in the ProdKit sequential workflow.\n",
+        "7-user-stories": "---\ndescription: \"Use when translating future-state journeys into actionable product requirements\"\n---\n\n# User Stories\n\n## Agent Persona\n\n**Load:** `.claude/agents/discovery-agent.md`\n\nAdopt: User-value focused, testable outcomes, prioritization mindset.\n\n## Purpose\nTranslate future-state journeys into actionable product requirements using standard user story format with MoSCoW prioritization.\n\n## When to Trigger\nUser says:\n- \"What features do we need?\"\n- \"Write user stories\"\n- \"Turn these into requirements\"\n- \"What should we build first?\"\n\n## Prerequisites\n- Personas defined\n- Future-state journeys designed\n- Interaction patterns defined\n- Value proposition clear\n\n## Inputs\n- Personas (`.prodkit/discovery/personas.md`)\n- Future-state journeys (`.prodkit/design/future-state-journeys.md`)\n- Interaction patterns (`.prodkit/design/interaction-patterns.md`)\n- Value proposition (`.prodkit/strategy/value-proposition.md`)\n\n## Process\n\n### 1. Extract Stories from Journeys\n\nFor each **critical moment** in user journeys, create stories.\n\n**User Story Format**:\n```\nAs [persona]\nI want [capability/interaction pattern]\nSo that [value proposition outcome]\n```\n\n**Acceptance Criteria** (use Given-When-Then):\n```\nGiven [context/precondition]\nWhen [action/trigger]\nThen [expected result]\n```\n\n**Example**:\n```\nAs Sarah the Engineering Manager\nI want to see a digest of overnight updates from my team\nSo that I can catch up in under 60 seconds\n\nAcceptance criteria:\n- Given I open the app in the morning\n  When the digest loads\n  Then I see all Slack messages, PRs, and emails from the last 8-12 hours\n\n- Given I'm viewing the digest\n  When I click on an item\n  Then it expands to show full context without leaving the page\n\n- Given I've reviewed an item\n  When I click \"Mark as read\"\n  Then it's removed from my digest and won't appear again\n```\n\n### 2. Apply MoSCoW Prioritization\n\nFor each story, assign priority:\n\n**Must Have**: MVP is broken without this\n- Core value proposition\n- Basic usability\n- Critical user journey steps\n\n**Should Have**: Important but can launch without\n- Quality of life improvements\n- Secondary features\n- Nice polish\n\n**Could Have**: Nice to have if time permits\n- Delight features\n- Edge cases\n- Advanced functionality\n\n**Won't Have**: Explicitly out of scope for now\n- Future versions\n- Low-value requests\n- Complexity traps\n\n### 3. Validate Against Personas\n\nEvery story must:\n- Map to a specific persona\n- Solve a documented pain point\n- Deliver the value proposition\n\n### 4. Call Script for Each Story\n\n```bash\n.prodkit/scripts/bash/create-stories.sh \\\n  --persona \"Sarah the Engineering Manager\" \\\n  --story \"As Sarah, I want to see a digest of overnight updates, so I can catch up in under 60 seconds\" \\\n  --acceptance \"Given I open app in morning | When digest loads | Then I see all updates from last 8-12 hours\" \\\n  --priority \"Must have\"\n```\n\nRepeat for each story. The script appends to the same file.\n\n## Outputs\n- `.prodkit/requirements/user-stories.md`\n\n## Constraints\n- **DO NOT** create files manually\n- **ALWAYS** use `create-stories.sh` script\n- **EVERY** story must map to a persona\n- **EVERY** story must have acceptance criteria\n- **MUST** prioritize with MoSCoW\n- **NO** technical implementation details (focus on user value)\n\n## Best Practices\n\n**Good Stories**:\n- User-focused (As [persona]...)\n- Testable (clear acceptance criteria)\n- Independent (can be built separately)\n- Negotiable (details can be discussed)\n- Valuable (delivers user outcome)\n- Estimable (team can size it)\n- Small (can be completed in one iteration)\n\n**Bad Stories**:\n- \"As a developer, I want to use React...\"\n- \"Implement database schema for users\"\n- \"Build API endpoint for /users\"\n\n## Next Steps\nAfter stories written:\n- Identify assumptions and risks\n- Define success metrics\n- Optional: Run trade-off analysis to validate scope\n\n## Context\nThis is **Step 7 of 9** in the ProdKit sequential workflow.\n",
+        "8-assumptions-and-risks": "---\ndescription: \"Use when extracting assumptions and identifying strategic risks (runs after all other discovery)\"\n---\n\n# Assumptions and Risks\n\n## Agent Persona\n\n**Load:** `.claude/agents/discovery-agent.md`\n\nAdopt: Skeptical, surfaces hidden assumptions, thinks about failure modes.\n\n## Purpose\nExtract and analyze assumptions from all prior artifacts. Identify strategic risks that could invalidate the product direction.\n\n**RUNS LAST** - after all other discovery work (skills 1-7).\n\n**Focus**: Strategic risks, not operational/technical risks.\n\n## When to Trigger\nUser says:\n- \"What could go wrong?\"\n- \"What are we assuming?\"\n- \"Identify risks\"\n- \"What needs to be true for this to work?\"\n\nOr automatically:\n- When user completes user stories\n- When ready to move to Spec Kit\n\n## Prerequisites\n**ALL** previous artifacts must exist:\n- Strategy\n- Personas\n- JTBD\n- Market analysis\n- Brand guidelines\n- Journeys\n- User stories\n\n## Inputs\n- **ALL** `.prodkit/` artifacts from skills 1-7\n\n## Process\n\n### 1. Read ALL Artifacts\n\n**IMPORTANT**: You MUST read every prior artifact:\n```\n.prodkit/strategy/business-canvas.md\n.prodkit/discovery/personas.md\n.prodkit/discovery/jobs-to-be-done-current.md\n.prodkit/discovery/market-analysis.md\n.prodkit/brand/personality.md\n.prodkit/design/future-state-journeys.md\n.prodkit/requirements/user-stories.md\n```\n\n### 2. Extract Assumptions from Each Artifact\n\n**From Strategy**:\n- Market size assumptions\n- Competitive positioning assumptions\n- Business model viability\n- Revenue model assumptions\n\n**From Personas**:\n- User behavior assumptions\n- Pain point intensity assumptions\n- Decision-making assumptions\n\n**From JTBD**:\n- Willingness to switch assumptions\n- Current solution inadequacy\n- Frequency assumptions\n\n**From Market Analysis**:\n- Market timing assumptions\n- Competitive response assumptions\n- Barrier to entry assumptions\n\n**From Journeys**:\n- User capability assumptions (technical skill)\n- Workflow integration assumptions\n- Adoption assumptions\n\n**From User Stories**:\n- Technical feasibility assumptions\n- Build time assumptions\n- Complexity assumptions\n\n### 3. Assess Each Assumption\n\nFor each assumption:\n\n**Impact if Wrong**: High / Medium / Low\n- What happens if this assumption is false?\n\n**Confidence Level**: High / Medium / Low\n- How certain are we this is true?\n\n**How to Test**: What would validate or invalidate?\n- Specific experiments\n- Metrics to track\n- User research methods\n\n**Risk Level**: Calculate from impact \u00d7 (1 - confidence)\n- High impact + Low confidence = HIGH RISK\n- Low impact + High confidence = LOW RISK\n\n### 4. Identify Strategic Risks\n\n**Market Risks**:\n- Market too small\n- Wrong timing (too early/late)\n- Market moving away from solution\n\n**User Risks**:\n- Won't adopt\n- Won't pay\n- Won't switch from existing solution\n- Won't achieve promised value\n\n**Competitive Risks**:\n- Incumbents respond aggressively\n- New entrants with better solution\n- Commoditization\n\n**Execution Risks**:\n- Can't deliver promised experience\n- Too complex to build\n- Can't acquire users cost-effectively\n\n**Business Model Risks**:\n- CAC too high\n- LTV too low\n- Churn too high\n- Unit economics don't work\n\n### 5. For Each Risk, Define Mitigation\n\n- What can we do to reduce likelihood?\n- What can we do to reduce impact?\n- Early warning indicators?\n\n### 6. Call Script\n\n```bash\n.prodkit/scripts/bash/identify-risks.sh \\\n  --assumption \"Users will trust AI-generated summaries without verification\" \\\n  --impact \"High\" \\\n  --confidence \"Medium\" \\\n  --test \"Show 10 beta users AI summaries vs manual summaries, measure trust and verification behavior\" \\\n  --risk \"Users won't switch from existing tools (Slack, email)\" \\\n  --likelihood \"Medium\" \\\n  --risk-impact \"High\" \\\n  --mitigation \"Free trial, easy import, Slack integration, no commitment required, quick wins in first session\"\n```\n\nRepeat for each assumption and risk.\n\n## Outputs\n- `.prodkit/discovery/assumptions-and-risks.md`\n\n## Constraints\n- **DO NOT** create files manually\n- **ALWAYS** use `identify-risks.sh` script\n- **MUST** read ALL previous artifacts before starting\n- **FOCUS** on strategic risks, not bugs/edge cases/technical risks\n- **EVERY** assumption needs a \"how to test\"\n- **EVERY** risk needs mitigation strategy\n\n## Next Steps\nAfter risks identified:\n- Define success metrics (final step)\n\n## Context\nThis is **Step 8 of 9** in the ProdKit sequential workflow.\n",
+        "9-success-metrics": "---\ndescription: \"Use when defining how to measure product success with KPIs and instrumentation (final sequential step)\"\n---\n\n# Success Metrics\n\n## Agent Persona\n\n**Load:** `.claude/agents/discovery-agent.md`\n\nAdopt: Outcome-focused, measurable definitions, connects metrics to user value.\n\n## Purpose\nDefine how we'll measure product success: KPIs, leading indicators, business goals, and instrumentation requirements.\n\n**RUNS LAST** - This is the final step in the sequential ProdKit workflow.\n\n## When to Trigger\nUser says:\n- \"How do we measure success?\"\n- \"What KPIs matter?\"\n- \"Define our metrics\"\n- \"How will we know this is working?\"\n\n## Prerequisites\n- Strategy defined (business goals)\n- Assumptions/risks identified (what to monitor)\n- User stories written (what to instrument)\n\n## Inputs\n- Strategy (`.prodkit/strategy/business-canvas.md`)\n- Assumptions/risks (`.prodkit/discovery/assumptions-and-risks.md`)\n- User stories (`.prodkit/requirements/user-stories.md`)\n\n## Process\n\n### 1. Define Business Goals (from Strategy)\n\n**Revenue Targets**:\n- MRR/ARR goals\n- Timeline to profitability\n- Pricing model validation\n\n**User Growth Targets**:\n- Total users\n- Active users\n- User segments\n\n**Market Share Targets**:\n- Position in category\n- Brand recognition\n\n### 2. Define Product KPIs (AARRR Framework)\n\n**Acquisition**: How do users discover and sign up?\n- Traffic sources\n- Conversion rate (visitor \u2192 signup)\n- Cost per acquisition (CAC)\n- Signup rate\n\n**Activation**: What's the \"aha moment\"?\n- Time to first value\n- % of users who reach activation milestone\n- Setup completion rate\n- Onboarding drop-off points\n\n**Engagement**: How often do they use it?\n- Daily/Weekly/Monthly active users (DAU/WAU/MAU)\n- Session frequency\n- Session duration\n- Feature adoption rate\n- Power user threshold\n\n**Retention**: Do they come back?\n- Day 1, Day 7, Day 30 retention\n- Cohort analysis\n- Churn rate\n- Reasons for churn\n\n**Revenue**: Do they pay? How much?\n- Free \u2192 Paid conversion rate\n- Average revenue per user (ARPU)\n- Lifetime value (LTV)\n- LTV:CAC ratio\n- Expansion revenue\n\n**Referral**: Do they tell others?\n- Net Promoter Score (NPS)\n- Viral coefficient (K-factor)\n- Referral rate\n- Word-of-mouth tracking\n\n### 3. For Each KPI, Define\n\n**Metric Name**: Clear, unambiguous name\n\n**Current Baseline**: If product exists\n- Current value\n- Historical trend\n\n**Target Value**: What success looks like\n- Specific number\n- Rationale (why this target?)\n\n**Timeline**: When to hit target\n- Milestone dates\n- Checkpoint metrics\n\n**How to Measure**: Instrumentation requirements\n- Events to track\n- Data to capture\n- Analytics tools needed\n- Dashboards required\n\n### 4. Map Metrics to Assumptions/Risks\n\nFor high-risk assumptions, define:\n- **Leading indicators**: Early signals\n- **Lagging indicators**: Final validation\n- **Thresholds**: When to pivot vs persevere\n\nExample:\n- Risk: \"Users won't trust AI summaries\"\n- Leading indicator: Verification rate (% who click through to original)\n- Lagging indicator: Retention after 7 days\n- Threshold: If >50% verify everything, trust is broken\n\n### 5. Instrumentation Plan\n\n**Critical Events to Track**:\n- User signups\n- First value delivered\n- Key feature usage\n- Drop-off points\n- Error states\n- User feedback\n\n**User Properties to Capture**:\n- User role (from personas)\n- Team size\n- Industry\n- Usage patterns\n\n**Integration Requirements**:\n- Analytics platform (Mixpanel, Amplitude, etc.)\n- Session replay (FullStory, LogRocket)\n- Error tracking (Sentry)\n- User feedback (surveys, NPS)\n\n### 6. Call Script\n\n```bash\n.prodkit/scripts/bash/define-metrics.sh \\\n  --goal \"10k MRR in 6 months from launch\" \\\n  --kpi \"Daily Active Users (DAU)\" \\\n  --current \"0 (pre-launch)\" \\\n  --target \"1000 DAU\" \\\n  --timeline \"3 months post-launch\" \\\n  --instrument \"Track: app_opened, digest_viewed, item_expanded, item_marked_read. Segment by user role and team size. Dashboard: Daily active users trend with cohort breakdown.\"\n```\n\nRepeat for each KPI (aim for 5-8 core metrics, not 50).\n\n## Outputs\n- `.prodkit/metrics/success-definition.md`\n\n## Constraints\n- **DO NOT** create files manually\n- **ALWAYS** use `define-metrics.sh` script\n- **KPIs must be measurable** (avoid vanity metrics)\n- **INCLUDE** instrumentation requirements\n- **TIE** metrics back to assumptions/risks\n- **FOCUS** on 5-8 core metrics (not everything)\n- **DEFINE** thresholds for pivot decisions\n\n## North Star Metric\n\nIdentify **one** North Star Metric that represents core value:\n- Example: \"Hours saved per user per week\"\n- Must align with value proposition\n- Must be measurable\n- Must be actionable\n\n## Next Steps\n\nAfter metrics defined:\n\n**\ud83c\udf89 ProdKit Sequential Workflow Complete!**\n\nYou now have:\n1. \u2705 Strategy\n2. \u2705 Personas\n3. \u2705 Jobs-to-be-done\n4. \u2705 Market analysis\n5. \u2705 Brand guidelines\n6. \u2705 Interaction design\n7. \u2705 User stories\n8. \u2705 Assumptions and risks\n9. \u2705 Success metrics\n\n**After completing this skill, suggest:**\n\n```\n\u2705 Success metrics complete.\n\n\ud83d\udcc1 Created: .prodkit/metrics/success-definition.md\n\n\ud83c\udf89 **ProdKit discovery complete!**\n\n\ud83d\udc49 **Next step:** `/constitution-builder --technical` - Define technical standards (stack, architecture, code rules)\n\nThis will complete your constitution before starting Spec Kit.\n\nWould you like to build the technical constitution now?\n```\n\n**After constitution, the Spec Kit workflow begins:**\n- `/specify` \u2192 `/plan` \u2192 `/tasks` \u2192 `/implement`\n\n## Context\nThis is **Step 9 of 9** (FINAL) in the ProdKit sequential workflow.\n",
+        "communicator": "---\ndescription: \"Use anytime to transform ProdKit working docs into polished HTML stakeholder communications\"\n---\n\n# Communicator\n\n## Agent Persona\n\n**Load:** `.claude/agents/discovery-agent.md`\n\nAdopt: Audience-aware, storytelling focus, distills complexity into clarity.\n\n## Purpose\nTransform ProdKit working docs (markdown) into polished, visually rich HTML stakeholder communications.\n\n**Can run ANYTIME** after artifacts exist.\n\n## When to Trigger\nUser says:\n- \"Create an investor deck\"\n- \"Make a one-pager for executives\"\n- \"I need to present this to the team\"\n- \"Turn this into a customer brief\"\n- \"Generate a product summary\"\n- \"Create stakeholder documentation\"\n\n## Inputs\n- One or more ProdKit artifacts from `.prodkit/`\n- Target audience\n- Optional: Format preference\n\n## Audiences\n\n**investors**: Pitch deck style\n- Focus: Opportunity, traction, ask\n- Tone: Confident, data-driven\n- Includes: Market size, competitive advantage, business model\n\n**team**: Internal alignment\n- Focus: Context for developers, design rationale\n- Tone: Collaborative, detailed\n- Includes: Technical constraints, user needs, success metrics\n\n**execs**: Executive summary\n- Focus: Recommendation with risks, ROI\n- Tone: Strategic, concise\n- Includes: Business case, risks, next steps\n\n**customers**: Product brief\n- Focus: Value proposition, benefits\n- Tone: User-focused, compelling\n- Includes: Problems solved, how it works, pricing\n\n**developers**: Technical context\n- Focus: Product requirements, design constraints\n- Tone: Specific, actionable\n- Includes: User stories, journeys, brand guidelines\n\n## Formats (all HTML)\n\n**onepager**: Single-page document\n- Print-ready\n- Self-contained\n- Visual hierarchy\n- Perfect for handouts\n\n**memo**: Multi-section narrative\n- Detailed exploration\n- Sections with deep-dive\n- Good for async reading\n\n**summary**: Executive summary format\n- TL;DR at top\n- Key points highlighted\n- Supporting details below\n\n## Process\n\n### 1. Identify Artifacts to Include\n\nAsk user or infer from request:\n\nCommon combinations:\n- **Investor pitch**: strategy, market, personas, metrics\n- **Team onboarding**: all artifacts\n- **Customer brief**: personas, JTBD, value prop, journeys\n- **Executive summary**: strategy, risks, metrics, trade-offs\n\n### 2. Select Appropriate Template\n\nMatch audience + format:\n- `investors-onepager.template.html`\n- `team-memo.template.html`\n- `execs-summary.template.html`\n- `customers-brief.template.html`\n- `developers-context.template.html`\n\n### 3. Read Source Artifacts\n\nRead the specified `.prodkit/` files to extract content.\n\n**IMPORTANT**: Actually read the files, don't make up content.\n\n### 4. Transform Content for Audience\n\n**For investors**:\n- Emphasize market opportunity\n- Highlight traction metrics\n- Show competitive advantage\n- Include the ask\n\n**For team**:\n- Full product context\n- Design rationale\n- Technical considerations\n- Success metrics\n\n**For execs**:\n- Business case\n- Risk assessment\n- Recommendation\n- Resource requirements\n\n**For customers**:\n- Problem they relate to\n- How product solves it\n- Value delivered\n- Social proof (if available)\n\n**For developers**:\n- User needs driving features\n- Interaction patterns\n- Brand constraints\n- Acceptance criteria\n\n### 5. Call Script\n\n```bash\n.prodkit/scripts/bash/generate-communication.sh \\\n  --artifacts \"strategy,personas,market,metrics\" \\\n  --audience \"investors\" \\\n  --format \"onepager\"\n```\n\nOr for team memo:\n\n```bash\n.prodkit/scripts/bash/generate-communication.sh \\\n  --artifacts \"all\" \\\n  --audience \"team\" \\\n  --format \"memo\"\n```\n\n## Outputs\n\nHTML file in `.prodkit/comms/`:\n- Filename pattern: `[date]-[audience]-[format].html`\n- Example: `2024-12-20-investors-onepager.html`\n\n## Constraints\n- **DO NOT** create HTML manually\n- **ALWAYS** use `generate-communication.sh` script\n- **HTML must be self-contained** (inline CSS, no external resources)\n- **MUST be print-ready** (PDF via browser print)\n- **ACTUALLY READ** source artifacts (don't invent data)\n\n## HTML Requirements\n\nGenerated HTML must:\n- Include all CSS inline (no external stylesheets)\n- Be responsive (looks good on screen and print)\n- Have print-specific styles (@media print)\n- Use professional typography and spacing\n- Include visual hierarchy (headings, sections, callouts)\n- Have proper metadata (title, description)\n\n## Use Cases\n\n**Fundraising**:\n- Investor onepager\n- Pitch deck supplement\n- Business plan summary\n\n**Team Alignment**:\n- Product kickoff memo\n- Developer context doc\n- Design handoff\n\n**Stakeholder Updates**:\n- Executive summary\n- Board deck content\n- Strategic review\n\n**Customer Communication**:\n- Product launch announcement\n- Feature explainer\n- Value proposition page\n\n**Sales Enablement**:\n- One-pager for sales team\n- Customer pitch deck\n- Demo script\n\n## Tips for Effective Communications\n\n**Know Your Audience**:\n- Investors care about ROI\n- Team needs context\n- Execs want recommendations\n- Customers want value\n\n**Be Visual**:\n- Use color to highlight\n- Break up text with sections\n- Include metrics in callout boxes\n- Use whitespace generously\n\n**Be Concise**:\n- Lead with key insight\n- Support with details\n- Cut fluff ruthlessly\n\n**Be Specific**:\n- Use real numbers\n- Name actual competitors\n- Quote real users (if available)\n\n## Context\nThis is an **ASYNC** skill - can be called anytime, not part of sequential workflow.\n",
+        "trade-off-analysis": "---\ndescription: \"Use anytime to evaluate features against constraints and recommend what to build, defer, or cut\"\n---\n\n# Trade-Off Analysis\n\n## Agent Persona\n\n**Load:** `.claude/agents/discovery-agent.md`\n\nAdopt: Pragmatic, ROI-focused, balances user value vs effort, decisive recommendations.\n\n## Purpose\nEvaluate features against Time/Quality/Scope constraints and opportunity cost. Recommend what to build, defer, or cut.\n\n**Can run ANYTIME**:\n- Before Spec Kit (rough estimates)\n- After Spec Kit (with real effort data from `tasks.md`)\n- During development (scope adjustments)\n\n## When to Trigger\nUser says:\n- \"Should we build [feature]?\"\n- \"Is this worth it?\"\n- \"Prioritize features\"\n- \"What should we cut?\"\n- \"We're running out of time, what can we defer?\"\n\n## Inputs\n- User stories (`.prodkit/requirements/user-stories.md`)\n- Strategy (`.prodkit/strategy/business-canvas.md`)\n- Personas (`.prodkit/discovery/personas.md`)\n- **Optional**: Spec Kit tasks.md (effort estimates, if available from `.devkit/specs/*/tasks.md`)\n\n## Process\n\n### 1. List Features to Evaluate\n\nFrom user stories or from user's specific request.\n\nFor each feature/story:\n- Feature name\n- Brief description\n- Current priority (Must/Should/Could/Won't)\n\n### 2. Assess Value (0-10 scale)\n\n**Strategic Alignment** (0-10):\n- Does this serve our winning aspiration?\n- Does it reinforce how we win?\n- Does it support our positioning?\n\n**User Impact** (0-10):\n- How many personas benefit?\n- How much does it improve their lives?\n- Is it a must-have or nice-to-have?\n- Does it solve a high-pain problem?\n\n**Competitive Necessity** (0-10):\n- Do competitors have this?\n- Is it table stakes?\n- Or is it differentiating?\n- Can we launch without it?\n\n**Calculate Value Score**:\n```\nValue Score = (Strategic Alignment + User Impact + Competitive Necessity) / 3\n```\n\n### 3. Assess Cost\n\n**Implementation Effort** (estimate % of total project time):\n- If Spec Kit tasks.md exists, use those estimates\n- Otherwise, rough estimate:\n  - Small: 5-10%\n  - Medium: 10-25%\n  - Large: 25-50%\n  - Huge: 50%+\n\n**Opportunity Cost**:\n- What else could we build with this time?\n- How many other features could this fund?\n\n**Maintenance Burden**:\n- Ongoing costs\n- Technical complexity\n- Support burden\n\n**Calculate Cost Score**:\n```\nCost Score = Implementation Effort (as decimal)\n```\n\n### 4. Calculate ROI\n\n```\nROI = Value Score / Cost Score\n```\n\nHigher ROI = better investment.\n\n### 5. Categorize\n\nBased on ROI:\n\n**BUILD** (ROI > 2.0):\n- High value, reasonable cost\n- Clear winners\n- Prioritize these\n\n**DEFER to V2** (ROI 1.0-2.0):\n- Good value but expensive\n- Or moderate value, moderate cost\n- Save for later\n\n**CUT** (ROI < 1.0):\n- Low value relative to cost\n- Not worth the effort\n- Remove from scope\n\n### 6. Special Considerations\n\n**Dependencies**:\n- Some features enable others\n- Infrastructure features may have low direct ROI but high enabling value\n\n**Risk Mitigation**:\n- Features that de-risk assumptions\n- Learning features\n- May justify lower ROI\n\n**MVP Philosophy**:\n- What's the minimum to deliver core value?\n- Can we ship without this?\n\n### 7. Call Script for Each Feature\n\n```bash\n.prodkit/scripts/bash/calculate-tradeoffs.sh \\\n  --feature \"Real-time collaboration\" \\\n  --strategic-value \"3\" \\\n  --user-impact \"6\" \\\n  --competitive \"7\" \\\n  --effort \"65\" \\\n  --opportunity-cost \"Could build: digest view, keyboard shortcuts, AND mobile app\" \\\n  --maintenance \"High - WebSocket infrastructure, scaling complexity\"\n```\n\nRepeat for each feature being evaluated.\n\n## Outputs\n- `.prodkit/analysis/feature-tradeoffs.md`\n- `.prodkit/analysis/recommended-scope.md`\n\n## Constraints\n- **DO NOT** create files manually\n- **ALWAYS** use `calculate-tradeoffs.sh` script\n- **BREAK DOWN** to feature-level (not epic-level)\n- **JUSTIFY** every BUILD decision\n- **BE HONEST** about opportunity costs\n- **USE** Spec Kit data when available\n\n## Recommended Scope Output\n\nThe script generates a recommended scope document:\n\n**BUILD NOW** (MVP):\n- List of high-ROI features\n- Total effort estimate\n- Justification\n\n**DEFER TO V2**:\n- Good ideas, wrong time\n- Revisit after launch\n\n**CUT**:\n- Not worth it\n- Explicitly out of scope\n\n## When to Run\n\n**Before Spec Kit**:\n- Validate user stories scope\n- Rough estimates only\n- Strategic prioritization\n\n**After Spec Kit**:\n- Use real effort estimates from tasks.md\n- More accurate ROI calculations\n- Final scope decisions\n\n**During Development**:\n- Scope adjustments\n- Time running out\n- What to cut?\n\n## Integration with Spec Kit\n\nIf Spec Kit `tasks.md` exists for a feature:\n1. Read `.devkit/specs/[feature]/tasks.md`\n2. Sum effort estimates\n3. Use as Cost Score input\n4. More accurate trade-off analysis\n\n## Context\nThis is an **ASYNC** skill - can be called anytime, not part of sequential workflow.\n"
+};
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        let currentSkillId = '';
+
+        function showPrompt(skillId) {
+            const modal = document.getElementById('promptModal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('promptContent');
+
+            currentSkillId = skillId;
+            title.textContent = skillId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            content.textContent = PROMPTS[skillId] || 'Prompt not found';
+
+            modal.classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.classList.contains('modal') || event.target.classList.contains('modal-close')) {
+                document.getElementById('promptModal').classList.remove('active');
+            }
+        }
+
+        function copyPrompt() {
+            const content = document.getElementById('promptContent').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = event.target;
+                btn.textContent = 'Copied!';
+                btn.style.background = '#10b981';
+                setTimeout(() => {
+                    btn.textContent = 'Copy Prompt';
+                    btn.style.background = '#2563eb';
+                }, 2000);
+            });
+        }
+
+        function copyFilePath() {
+            let path = '';
+            if (currentSkillId && currentSkillId.includes('-')) {
+                const num = currentSkillId.split('-')[0];
+                path = !isNaN(num) ?
+                    `skills/prodkit/sequential/${{currentSkillId}}.md` :
+                    `skills/prodkit/async/${{currentSkillId}}.md`;
+            }
+
+            navigator.clipboard.writeText(path).then(() => {
+                const btn = event.target;
+                btn.textContent = 'Copied Path!';
+                btn.style.background = '#10b981';
+                setTimeout(() => {
+                    btn.textContent = 'Copy File Path';
+                    btn.style.background = '#f1f5f9';
+                }, 2000);
+            });
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>

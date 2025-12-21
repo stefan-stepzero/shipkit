@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShipKit Skills Summary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin-bottom: 15px;
+        }
+
+        header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        header .stats {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        header .stat {
+            text-align: center;
+        }
+
+        header .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        header .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .section h3 {
+            color: #764ba2;
+            font-size: 1.4em;
+            margin: 25px 0 15px;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .skill-card {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .skill-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .skill-card.prodkit {
+            border-left-color: #10b981;
+        }
+
+        .skill-card.devkit {
+            border-left-color: #667eea;
+        }
+
+        .skill-card.agent {
+            border-left-color: #f59e0b;
+        }
+
+        .skill-name {
+            font-weight: bold;
+            color: #1e293b;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .skill-desc {
+            color: #64748b;
+            font-size: 0.95em;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+
+        .badge-prodkit {
+            background: #d1fae5;
+            color: #047857;
+        }
+
+        .badge-devkit {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        .badge-agent {
+            background: #fef3c7;
+            color: #b45309;
+        }
+
+        .workflow-diagram {
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+
+        .flow-step {
+            display: inline-block;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .flow-arrow {
+            color: #667eea;
+            font-size: 1.5em;
+            margin: 0 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        footer {
+            background: #1e293b;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ShipKit Skills Summary</h1>
+            <p class="subtitle">Complete Product Development Framework</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">11</div>
+                    <div class="stat-label">ProdKit Skills</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">23</div>
+                    <div class="stat-label">DevKit Skills</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Agent Personas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">34</div>
+                    <div class="stat-label">Total Skills</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- Overview -->
+            <div class="section">
+                <h2>Framework Overview</h2>
+                <p style="font-size: 1.1em; margin-bottom: 20px;">
+                    <strong>ShipKit</strong> combines ProdKit (product discovery) and DevKit (technical development)
+                    into a complete workflow from initial idea to shipped code.
+                </p>
+
+                <div class="workflow-diagram">
+                    <p style="margin-bottom: 15px;"><strong>Complete Workflow:</strong></p>
+                    <span class="flow-step">ProdKit Discovery</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">/constitution-builder</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">DevKit Specs</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">/implement</span>
+                    <span class="flow-arrow">→</span>
+                    <span class="flow-step">Shipped Code</span>
+                </div>
+            </div>
+
+            <!-- ProdKit Skills -->
+            <div class="section">
+                <h2>ProdKit (11 skills)</h2>
+                <p>Product discovery and strategy skills. Define <strong>what</strong> to build and <strong>why</strong>.</p>
+
+                <h3>Sequential Skills (9)</h3>
+                <p>Run in order from strategy to success metrics:</p>
+                <div class="skills-grid">
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/strategic-thinking<span class="badge badge-prodkit">Step 1</span></div>
+                        <div class="skill-desc">Define business strategy, value proposition, and market positioning</div>
+                    </div>
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/personas<span class="badge badge-prodkit">Step 2</span></div>
+                        <div class="skill-desc">Identify and characterize target users with demographics and goals</div>
+                    </div>
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/jobs-to-be-done<span class="badge badge-prodkit">Step 3</span></div>
+                        <div class="skill-desc">Map current state workflows and user pain points</div>
+                    </div>
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/market-analysis<span class="badge badge-prodkit">Step 4</span></div>
+                        <div class="skill-desc">Analyze competition using Porter's Five Forces</div>
+                    </div>
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/brand-guidelines<span class="badge badge-prodkit">Step 5</span></div>
+                        <div class="skill-desc">Define visual direction, colors, typography, and brand voice</div>
+                    </div>
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/interaction-design<span class="badge badge-prodkit">Step 6</span></div>
+                        <div class="skill-desc">Design future state user journeys and interactions</div>
+                    </div>
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/user-stories<span class="badge badge-prodkit">Step 7</span></div>
+                        <div class="skill-desc">Write requirements with MoSCoW prioritization</div>
+                    </div>
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/assumptions-and-risks<span class="badge badge-prodkit">Step 8</span></div>
+                        <div class="skill-desc">Identify strategic risks and assumptions to validate</div>
+                    </div>
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/success-metrics<span class="badge badge-prodkit">Step 9</span></div>
+                        <div class="skill-desc">Define KPIs, instrumentation, and measurement strategy</div>
+                    </div>
+                </div>
+
+                <h3>Async Skills (2)</h3>
+                <p>Can interrupt any skill when needed:</p>
+                <div class="skills-grid">
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/trade-off-analysis<span class="badge badge-prodkit">Async</span></div>
+                        <div class="skill-desc">Structured decision-making framework for complex trade-offs</div>
+                    </div>
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/communicator<span class="badge badge-prodkit">Async</span></div>
+                        <div class="skill-desc">Stakeholder communication and presentation preparation</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DevKit Skills -->
+            <div class="section">
+                <h2>DevKit (23 skills)</h2>
+                <p>Technical specification and development skills. Define <strong>how</strong> to build it.</p>
+
+                <h3>Core Specification Pipeline (6)</h3>
+                <div class="skills-grid">
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/constitution-builder<span class="badge badge-devkit">Core</span></div>
+                        <div class="skill-desc">Two-phase: product principles (after strategy) + technical standards (before specs)</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/constitution<span class="badge badge-devkit">Core</span></div>
+                        <div class="skill-desc">Reference existing project constitution and rules</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/specify<span class="badge badge-devkit">Core</span></div>
+                        <div class="skill-desc">Write detailed technical specification with contracts</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/plan<span class="badge badge-devkit">Core</span></div>
+                        <div class="skill-desc">Create implementation plan with phases and milestones</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/tasks<span class="badge badge-devkit">Core</span></div>
+                        <div class="skill-desc">Break down plan into actionable, testable tasks</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/implement<span class="badge badge-devkit">Core</span></div>
+                        <div class="skill-desc">Execute tasks with integrated TDD, two-stage review, and verification</div>
+                    </div>
+                </div>
+
+                <h3>Quality & Testing (4)</h3>
+                <div class="skills-grid">
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/test-driven-development<span class="badge badge-devkit">Quality</span></div>
+                        <div class="skill-desc">RED → GREEN → REFACTOR cycle with iron laws</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/verification-before-completion<span class="badge badge-devkit">Quality</span></div>
+                        <div class="skill-desc">Evidence-based verification before claiming done</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/systematic-debugging<span class="badge badge-devkit">Quality</span></div>
+                        <div class="skill-desc">4-phase root cause investigation methodology</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/checklist<span class="badge badge-devkit">Quality</span></div>
+                        <div class="skill-desc">Specification quality validation checklists</div>
+                    </div>
+                </div>
+
+                <h3>Collaboration & Review (5)</h3>
+                <div class="skills-grid">
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/brainstorming<span class="badge badge-devkit">Collab</span></div>
+                        <div class="skill-desc">Exploratory design dialogue, can interrupt any skill</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/requesting-code-review<span class="badge badge-devkit">Collab</span></div>
+                        <div class="skill-desc">Prepare code for review with context</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/receiving-code-review<span class="badge badge-devkit">Collab</span></div>
+                        <div class="skill-desc">Handle review feedback with technical verification</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/subagent-driven-development<span class="badge badge-devkit">Collab</span></div>
+                        <div class="skill-desc">Per-task subagents with two-stage review</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/dispatching-parallel-agents<span class="badge badge-devkit">Collab</span></div>
+                        <div class="skill-desc">Investigate multiple problems simultaneously</div>
+                    </div>
+                </div>
+
+                <h3>Workflow & Git (4)</h3>
+                <div class="skills-grid">
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/using-git-worktrees<span class="badge badge-devkit">Workflow</span></div>
+                        <div class="skill-desc">Parallel feature development without branch switching</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/finishing-a-development-branch<span class="badge badge-devkit">Workflow</span></div>
+                        <div class="skill-desc">Structured completion: merge, PR, keep, or discard</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/writing-plans<span class="badge badge-devkit">Workflow</span></div>
+                        <div class="skill-desc">Flexible, zero-context plans for team handoff</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/taskstoissues<span class="badge badge-devkit">Workflow</span></div>
+                        <div class="skill-desc">Create GitHub issues from tasks.md</div>
+                    </div>
+                </div>
+
+                <h3>Analysis & Meta (4)</h3>
+                <div class="skills-grid">
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/analyze<span class="badge badge-devkit">Analysis</span></div>
+                        <div class="skill-desc">Analyze code or specifications for issues</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/clarify<span class="badge badge-devkit">Analysis</span></div>
+                        <div class="skill-desc">Clarify ambiguous requirements or specs</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/writing-skills<span class="badge badge-devkit">Meta</span></div>
+                        <div class="skill-desc">Create custom Claude Code skills</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/using-devkit<span class="badge badge-devkit">Meta</span></div>
+                        <div class="skill-desc">DevKit usage guide and best practices</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Personas -->
+            <div class="section">
+                <h2>Agent Personas (5)</h2>
+                <p>Specialized behaviors loaded by skills. Each skill specifies which agent persona to adopt.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Agent</th>
+                            <th>Role</th>
+                            <th>Used By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Discovery Agent</strong></td>
+                            <td>Product discovery, user research, strategic thinking</td>
+                            <td>All ProdKit skills, /brainstorming</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Architect Agent</strong></td>
+                            <td>Technical planning, specifications, architecture</td>
+                            <td>/constitution-builder, /specify, /plan, /tasks</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Implementer Agent</strong></td>
+                            <td>TDD-focused coding, minimal implementation</td>
+                            <td>/implement, development tasks</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Reviewer Agent</strong></td>
+                            <td>Two-stage review: spec compliance + code quality</td>
+                            <td>/implement review stages, code reviews</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Researcher Agent</strong></td>
+                            <td>Deep research, exploration, cross-referencing</td>
+                            <td>Research phases, /brainstorming deep dives</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Quick Reference -->
+            <div class="section">
+                <h2>Quick Reference: Common Workflows</h2>
+
+                <h3>Full Product Development</h3>
+                <div class="workflow-diagram">
+                    <code>/strategic-thinking</code> →
+                    <code>/personas</code> →
+                    <code>/jobs-to-be-done</code> →
+                    <code>/market-analysis</code> →
+                    <code>/user-stories</code> →
+                    <code>/constitution-builder --product</code> →
+                    <code>/specify</code> →
+                    <code>/plan</code> →
+                    <code>/tasks</code> →
+                    <code>/implement</code>
+                </div>
+
+                <h3>Technical Feature (Existing Product Context)</h3>
+                <div class="workflow-diagram">
+                    <code>/constitution-builder --technical</code> →
+                    <code>/specify</code> →
+                    <code>/plan</code> →
+                    <code>/tasks</code> →
+                    <code>/implement</code>
+                </div>
+
+                <h3>Quick Implementation</h3>
+                <div class="workflow-diagram">
+                    <code>/brainstorming</code> →
+                    <code>/using-git-worktrees</code> →
+                    <code>/implement</code> →
+                    <code>/finishing-a-development-branch</code>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p style="margin-bottom: 10px;"><strong>ShipKit - Complete Product Development Framework</strong></p>
+            <p style="margin-bottom: 20px;">From strategy to shipped code, all guided by AI.</p>
+            <p style="opacity: 0.7; font-size: 0.9em;">
+                Inspired by: <a href="https://github.com/github/spec-kit">Spec-Kit</a> by GitHub |
+                <a href="https://github.com/anthropics/claude-code-superpowers">Superpowers</a> by obra |
+                ProdKit (new for ShipKit!)
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

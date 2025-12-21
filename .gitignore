@@ -1,0 +1,34 @@
+# Temp files
+temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Local Claude Code session files
+.claude/
+
+# Node (if you add any tooling)
+node_modules/
+package-lock.json
+
+# Python (if you add any tooling)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+*.egg-info/
+
+# Logs
+*.log
