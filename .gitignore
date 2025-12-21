@@ -32,3 +32,6 @@ venv/
 
 # Logs
 *.log
+
+# Project instructions (generated per developer/project)
+CLAUDE.md

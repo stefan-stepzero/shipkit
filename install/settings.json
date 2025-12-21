@@ -1,0 +1,156 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write(src/**)",
+      "Write(app/**)",
+      "Write(components/**)",
+      "Write(lib/**)",
+      "Write(utils/**)",
+      "Write(tests/**)",
+      "Write(__tests__/**)",
+      "Write(*.ts)",
+      "Write(*.tsx)",
+      "Write(*.py)",
+      "Write(*.json)",
+      "Write(*.md)",
+      "Write(*.yaml)",
+      "Write(*.yml)",
+      "Write(*.toml)",
+      "Write(*.html)",
+      "Write(package.json)",
+      "Write(pyproject.toml)",
+      "Write(requirements.txt)",
+
+      "Bash(git:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(poetry:*)",
+      "Bash(pytest:*)",
+      "Bash(black:*)",
+      "Bash(ruff:*)",
+      "Bash(mypy:*)",
+      "Bash(uvicorn:*)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(pnpm:*)",
+      "Bash(yarn:*)",
+      "Bash(tsc:*)",
+      "Bash(eslint:*)",
+      "Bash(prettier:*)",
+      "Bash(vercel:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(chmod:*)",
+      "Bash(pwd:*)",
+      "Bash(cd:*)",
+      "Bash(echo:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:nextjs.org)",
+      "WebFetch(domain:python.org)",
+      "WebFetch(domain:fastapi.tiangolo.com)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:npmjs.com)",
+      "WebFetch(domain:stackoverflow.com)",
+      "WebFetch(domain:developer.mozilla.org)"
+    ],
+
+    "deny": [
+      "Read(.env*)",
+      "Read(**/.env*)",
+      "Read(secrets/**)",
+      "Read(*.pem)",
+      "Read(*.key)",
+      "Read(**/credentials/**)",
+      "Write(.env*)",
+      "Write(**/.env*)",
+      "Write(production.config.*)",
+      "Write(*.pem)",
+      "Write(*.key)",
+      "Write(.shipkit/skills/*/outputs/**)",
+      "Write(.shipkit/skills/*/templates/**)",
+      "Write(.shipkit/skills/*/scripts/**)",
+      "Write(.shipkit/scripts/bash/common.sh)",
+      "Bash(rm:*)",
+      "Bash(sudo:*)",
+      "Bash(su:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(ssh:*)"
+    ]
+  },
+
+  "defaultMode": "acceptEdits",
+
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" session-start.sh"
+          }
+        ]
+      }
+    ],
+    "skillComplete": {
+      "prod-communicator-prompt": {
+        "description": "Prompt user to create stakeholder communication after completing prod skills",
+        "trigger": [
+          "prod-strategic-thinking",
+          "prod-personas",
+          "prod-jobs-to-be-done",
+          "prod-market-analysis",
+          "prod-brand-guidelines",
+          "prod-interaction-design",
+          "prod-user-stories",
+          "prod-assumptions-and-risks",
+          "prod-success-metrics"
+        ],
+        "prompt": "Would you like to create a stakeholder communication from these outputs? Run /prod-communicator to generate investor updates, exec summaries, team docs, or customer announcements."
+      },
+      "constitution-reminder": {
+        "description": "Remind to build constitution after strategic thinking",
+        "trigger": ["prod-strategic-thinking"],
+        "prompt": "💡 Next: Define your product principles with /prod-constitution-builder"
+      }
+    }
+  },
+
+  "skills": {
+    "description": "Skill configuration and defaults",
+    "autoLoadConstitutions": true,
+    "constitutionPaths": [
+      ".shipkit/skills/prod-constitution-builder/outputs/product-constitution.md",
+      ".shipkit/skills/dev-constitution-builder/outputs/technical-constitution.md"
+    ]
+  },
+
+  "workspace": {
+    "description": "Workspace paths and conventions",
+    "skillsPath": ".shipkit/skills",
+    "scriptsPath": ".shipkit/scripts",
+    "customScriptsPath": ".shipkit/scripts/custom"
+  },
+
+  "_notes": {
+    "filePermissions": "Skill outputs/templates/scripts are protected in 'deny' list. Users run skills to update outputs.",
+    "sessionHooks": "SessionStart hook enforces skill usage. SkillComplete hooks prompt for next steps.",
+    "constitutions": "Auto-loaded into prod-* and dev-* skills for consistency.",
+    "customization": "Users can override by editing this file or creating .shipkit/settings.local.json"
+  }
+}

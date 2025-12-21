@@ -270,20 +270,16 @@
                 </p>
                 <div class="benefits">
                     <div class="benefit">
-                        <h4>🏭 Product Skills (11 prod-*)</h4>
-                        <p>Product discovery and strategy. From business strategy to success metrics, with async skills.</p>
+                        <h4>🏭 ProdKit (11 skills)</h4>
+                        <p>Product discovery and strategy. From business strategy to success metrics, with async brainstorming.</p>
                     </div>
                     <div class="benefit">
-                        <h4>🎯 Development Skills (21 dev-*)</h4>
-                        <p>Technical specs and development. <strong>/dev-implement</strong> integrates TDD, two-stage reviews, and verification.</p>
+                        <h4>🎯 DevKit (23 skills)</h4>
+                        <p>Technical specs and development. <strong>/implement</strong> integrates TDD, two-stage reviews, and verification.</p>
                     </div>
                     <div class="benefit">
-                        <h4>🌐 Cross-Context (1 any-* + 1 master)</h4>
-                        <p><strong>/any-brainstorming</strong> + <strong>/shipkit-master</strong> (session-injected enforcement).</p>
-                    </div>
-                    <div class="benefit">
-                        <h4>🤖 Agent Personas (6 agents)</h4>
-                        <p>Specialized behaviors: prod-product-manager, prod-product-designer, dev-architect, dev-implementer, dev-reviewer, any-researcher.</p>
+                        <h4>🤖 Agent Personas (5 agents)</h4>
+                        <p>Specialized behaviors: Discovery, Architect, Implementer, Reviewer, Researcher.</p>
                     </div>
                 </div>
             </div>
@@ -295,57 +291,57 @@
                 <div class="workflow">
                     <!-- Phase 1: Product Discovery -->
                     <div class="phase" data-number="1">
-                        <h3>Product Discovery (prod-* skills)</h3>
+                        <h3>Product Discovery (ProdKit)</h3>
                         <p class="phase-description">
                             Define <strong>what to build</strong> and <strong>why</strong>. Sequential skills from business strategy to success metrics.
-                            <strong>/any-brainstorming</strong> can interrupt any skill when ambiguity detected.
+                            <strong>/brainstorming</strong> can interrupt any skill when ambiguity detected.
                         </p>
 
                         <div class="skills-grid">
                             <div class="skill-card">
-                                <strong>/prod-strategic-thinking</strong>
+                                <strong>/strategic-thinking</strong>
                                 <small>Define business strategy & value proposition</small>
                             </div>
                             <div class="skill-card" style="border-color: #667eea; background: #f8f7ff;">
-                                <strong>/dev-constitution-builder --product</strong>
+                                <strong>/constitution-builder --product</strong>
                                 <small>Define product principles (after strategy)</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/prod-personas</strong>
+                                <strong>/personas</strong>
                                 <small>Identify target users</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/prod-jobs-to-be-done</strong>
+                                <strong>/jobs-to-be-done</strong>
                                 <small>Map current state workflows</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/prod-market-analysis</strong>
+                                <strong>/market-analysis</strong>
                                 <small>Analyze competition (Porter's Five Forces)</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/prod-brand-guidelines</strong>
+                                <strong>/brand-guidelines</strong>
                                 <small>Define visual direction</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/prod-interaction-design</strong>
+                                <strong>/interaction-design</strong>
                                 <small>Design future state journeys</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/prod-user-stories</strong>
+                                <strong>/user-stories</strong>
                                 <small>Write requirements (MoSCoW)</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/prod-assumptions-and-risks</strong>
+                                <strong>/assumptions-and-risks</strong>
                                 <small>Identify strategic risks</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/prod-success-metrics</strong>
+                                <strong>/success-metrics</strong>
                                 <small>Define KPIs & instrumentation</small>
                             </div>
                         </div>
 
                         <p style="margin-top: 20px; font-weight: bold; color: #764ba2;">
-                            📁 Output: Complete product context in workspace + product constitution
+                            📁 Output: Complete product context in .prodkit/ + product constitution
                         </p>
                     </div>
 
@@ -353,32 +349,32 @@
 
                     <!-- Phase 2: Technical Specification -->
                     <div class="phase" data-number="2">
-                        <h3>Technical Specification (dev-* skills)</h3>
+                        <h3>Technical Specification (DevKit)</h3>
                         <p class="phase-description">
                             Transform product requirements into detailed technical specs and implementation plans.
                         </p>
 
                         <div class="skills-grid">
                             <div class="skill-card" style="border-color: #667eea; background: #f8f7ff;">
-                                <strong>/dev-constitution-builder --technical</strong>
+                                <strong>/constitution-builder --technical</strong>
                                 <small>Define technical standards (before specs)</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/dev-specify</strong>
+                                <strong>/specify</strong>
                                 <small>Write technical specification</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/dev-plan</strong>
+                                <strong>/plan</strong>
                                 <small>Create implementation plan</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/dev-tasks</strong>
+                                <strong>/tasks</strong>
                                 <small>Break down into actionable tasks</small>
                             </div>
                         </div>
 
                         <p style="margin-top: 20px; font-weight: bold; color: #764ba2;">
-                            📁 Output: Technical specs in workspace/specs/001-feature-name/ + technical constitution
+                            📁 Output: Technical specs in .devkit/specs/001-feature-name/ + technical constitution
                         </p>
                     </div>
 
@@ -388,27 +384,27 @@
                     <div class="phase" data-number="3">
                         <h3>Development</h3>
                         <p class="phase-description">
-                            Execute the plan. <strong>/dev-implement</strong> automatically integrates TDD, two-stage review, and verification.
+                            Execute the plan. <strong>/implement</strong> automatically integrates TDD, two-stage review, and verification.
                             For 6+ tasks, use subagent execution mode.
                         </p>
 
                         <div class="skills-grid">
                             <div class="skill-card">
-                                <strong>/dev-using-git-worktrees</strong>
+                                <strong>/using-git-worktrees</strong>
                                 <small>Create isolated branch</small>
                             </div>
                             <div class="skill-card" style="border-color: #10b981; background: #f0fdf4;">
-                                <strong>/dev-implement</strong>
+                                <strong>/implement</strong>
                                 <small>Execute tasks with integrated TDD + reviews</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/dev-finishing-a-development-branch</strong>
+                                <strong>/finishing-a-development-branch</strong>
                                 <small>Merge, PR, complete</small>
                             </div>
                         </div>
 
                         <p style="margin-top: 15px; font-size: 0.95em; color: #555;">
-                            <strong>/dev-implement</strong> includes: TDD (RED→GREEN→REFACTOR), Spec Compliance Review, Code Quality Review, Verification
+                            <strong>/implement</strong> includes: TDD (RED→GREEN→REFACTOR), Spec Compliance Review, Code Quality Review, Verification
                         </p>
 
                         <p style="margin-top: 20px; font-weight: bold; color: #764ba2;">
@@ -428,10 +424,9 @@
                         <h3>Solo (Recommended)</h3>
                         <div class="count">34 skills</div>
                         <ul>
-                            <li>11 prod-* (product) skills</li>
-                            <li>21 dev-* (development) skills</li>
-                            <li>1 any-* + 1 master skill</li>
-                            <li>6 Agent Personas</li>
+                            <li>All 11 ProdKit skills</li>
+                            <li>All 23 DevKit skills</li>
+                            <li>5 Agent Personas</li>
                             <li>Perfect for solo developers</li>
                         </ul>
                     </div>
@@ -448,13 +443,12 @@
                     </div>
 
                     <div class="preset-card">
-                        <h3>Dev Only</h3>
+                        <h3>DevKit Only</h3>
                         <div class="count">23 skills</div>
                         <ul>
-                            <li>21 dev-* skills</li>
-                            <li>1 any-* + 1 master skill</li>
-                            <li>6 Agent Personas</li>
-                            <li>No prod-* skills</li>
+                            <li>All 23 DevKit skills</li>
+                            <li>5 Agent Personas</li>
+                            <li>No ProdKit</li>
                             <li>For existing product specs</li>
                         </ul>
                     </div>
@@ -520,29 +514,30 @@ Projects/<br>
 <span style="color: #68d391;">your-project/</span><br>
 │<br>
 ├── <span style="color: #68d391;">.claude/</span><br>
-│   ├── constitution.md             <span style="color: #9ca3af;"># Project rules (created by /dev-constitution-builder)</span><br>
-│   ├── agents/                     <span style="color: #9ca3af;"># 6 agent personas (prod-*, dev-*, any-* prefixed)</span><br>
-│   │   ├── prod-product-manager-agent.md<br>
-│   │   ├── prod-product-designer-agent.md<br>
-│   │   ├── dev-architect-agent.md<br>
-│   │   ├── dev-implementer-agent.md<br>
-│   │   ├── dev-reviewer-agent.md<br>
-│   │   └── any-researcher-agent.md<br>
-│   ├── hooks/                      <span style="color: #9ca3af;"># Session start hooks (inject shipkit-master)</span><br>
-│   └── skills/                     <span style="color: #9ca3af;"># Skill definitions (flat structure)</span><br>
-│       ├── prod-*                  <span style="color: #9ca3af;"># 11 product skills</span><br>
-│       ├── dev-*                   <span style="color: #9ca3af;"># 21 development skills</span><br>
-│       ├── any-brainstorming       <span style="color: #9ca3af;"># Cross-context skill</span><br>
-│       └── shipkit-master          <span style="color: #9ca3af;"># Master skill (injected at session start)</span><br>
+│   ├── constitution.md             <span style="color: #9ca3af;"># Project rules (created by /constitution-builder)</span><br>
+│   ├── agents/                     <span style="color: #9ca3af;"># 5 agent personas</span><br>
+│   │   ├── discovery-agent.md<br>
+│   │   ├── architect-agent.md<br>
+│   │   ├── implementer-agent.md<br>
+│   │   ├── reviewer-agent.md<br>
+│   │   └── researcher-agent.md<br>
+│   ├── hooks/                      <span style="color: #9ca3af;"># Session start hooks</span><br>
+│   └── skills/                     <span style="color: #9ca3af;"># Skill definitions</span><br>
+│       ├── devkit/                 <span style="color: #9ca3af;"># 23 DevKit skills</span><br>
+│       ├── prodkit/                <span style="color: #9ca3af;"># 11 ProdKit skills</span><br>
+│       └── meta/                   <span style="color: #9ca3af;"># Meta skill (usage guide)</span><br>
 │<br>
-└── <span style="color: #68d391;">workspace/</span>                      <span style="color: #9ca3af;"># Unified workspace</span><br>
+├── <span style="color: #68d391;">.devkit/</span>                        <span style="color: #9ca3af;"># DevKit workspace</span><br>
+│   ├── scripts/                    <span style="color: #9ca3af;"># Automation scripts</span><br>
+│   ├── templates/                  <span style="color: #9ca3af;"># Document templates</span><br>
+│   └── specs/001-feature-name/     <span style="color: #9ca3af;"># Feature specs</span><br>
+│<br>
+└── <span style="color: #68d391;">.prodkit/</span>                       <span style="color: #9ca3af;"># ProdKit workspace</span><br>
     ├── scripts/                    <span style="color: #9ca3af;"># Automation scripts</span><br>
-    ├── templates/                  <span style="color: #9ca3af;"># Document templates</span><br>
-    ├── specs/001-feature-name/     <span style="color: #9ca3af;"># Technical specs</span><br>
-    ├── strategy/                   <span style="color: #9ca3af;"># Business canvas, value prop</span><br>
-    ├── discovery/                  <span style="color: #9ca3af;"># Personas, JTBD, market analysis</span><br>
-    ├── requirements/               <span style="color: #9ca3af;"># User stories, metrics</span><br>
-    └── brand/                      <span style="color: #9ca3af;"># Brand guidelines, visual direction</span>
+    ├── templates/                  <span style="color: #9ca3af;"># Markdown + HTML templates</span><br>
+    ├── strategy/                   <span style="color: #9ca3af;"># Generated artifacts</span><br>
+    ├── discovery/                  <span style="color: #9ca3af;"># Personas, JTBD, etc.</span><br>
+    └── requirements/               <span style="color: #9ca3af;"># User stories, metrics</span>
                 </div>
             </div>
         </div>

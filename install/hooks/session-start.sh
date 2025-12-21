@@ -5,8 +5,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(dirname "$SCRIPT_DIR")"
 
-# Path to the meta-skill that gets injected
-META_SKILL="$PLUGIN_ROOT/skills/meta/using-shipkit.md"
+# Path to the Shipkit Master Skill that gets injected at session start
+META_SKILL="$PLUGIN_ROOT/skills/shipkit-master/skill.md"
 
 # JSON-safe string escaping
 json_escape() {
@@ -19,11 +19,11 @@ json_escape() {
     printf '%s' "$str"
 }
 
-# Read the meta-skill content
+# Read the Shipkit Master Skill content
 if [[ -f "$META_SKILL" ]]; then
     SKILL_CONTENT=$(cat "$META_SKILL")
 else
-    SKILL_CONTENT="Error: Meta-skill not found at $META_SKILL"
+    SKILL_CONTENT="Error: Shipkit Master Skill not found at $META_SKILL"
 fi
 
 # Escape for JSON

@@ -1,312 +1,570 @@
-# Project Instructions for Claude
+# Shipkit Development Instructions
 
-This project uses the **shipkit** framework for structured product development and specification-driven implementation.
+**You are developing the shipkit framework - an architectural layer on top of Claude Code.**
 
-## Before Starting Any Significant Work
+This repo contains shipkit: a complete product development framework delivered as Claude Code skills, agents, and constitutions.
 
-**Always read the project constitution first:**
-- Location: `.claude/constitution.md`
-- Contains: Project principles, tech stack, coding standards, and non-negotiable rules
-- Purpose: Ensures consistency across all development work
-
-**Load the appropriate agent persona:**
-- Location: `.claude/agents/`
-- Skills automatically specify which agent to load
-- Adopt the persona's personality, approach, and constraints
+**Core Principle:** Shipkit extends Claude Code with structured workflows. All development must align with official Claude Code documentation and patterns.
 
 ---
 
-## External Tools & MCPs
+## What is Shipkit?
 
-**Use external tools proactively during skills when they add value:**
+**Shipkit = Claude Code + Structured Product Workflow**
 
-| Skill | External Tool | Use For |
-|-------|---------------|---------|
-| `/market-analysis` | Web Search | Competitor info, pricing, features, reviews |
-| `/strategic-thinking` | Web Search | Market trends, benchmarks, comparable companies |
-| `/brainstorming` | Web Search | Existing solutions, prior art, inspiration |
-| `/plan` | Web Search | Library docs, best practices |
-| `/implement` | Web Search | API docs, error solutions |
-| `/systematic-debugging` | Web Search | Error messages, Stack Overflow |
+Claude Code provides:
+- Skills system (slash commands)
+- Agent personas (subagent contexts)
+- MCP servers
+- Hooks
+- Settings & permissions
 
-**Other MCPs:** GitHub (issues, PRs), Browser (visual inspection), Database (data queries)
+Shipkit adds:
+- 37 pre-built skills (product discovery → implementation)
+- 5 specialized agent personas
+- Constitution templates (project rules)
+- Unified workspace structure (`.shipkit/`)
+- Specification-driven development workflow
 
-**Rule:** Don't guess when you can search. Pause skill → research → resume with real data.
-
----
-
-## Skill Routing - Match User Intent to Skills
-
-When the user asks something, match their intent to the appropriate skill:
-
-### Product Discovery Triggers
-
-| User Says | Skill | Prerequisites |
-|-----------|-------|---------------|
-| "What should we build?", "Define our strategy", "Business model", "Value proposition" | `/strategic-thinking` | None (start here) |
-| "Who are our users?", "Target customer", "Create personas" | `/personas` | Strategy exists (`.prodkit/strategy/business-canvas.md`) |
-| "What problem do we solve?", "User workflows", "Current state" | `/jobs-to-be-done` | Personas exist (`.prodkit/discovery/personas.md`) |
-| "Competition", "Market analysis", "Competitors" | `/market-analysis` | JTBD exists (`.prodkit/discovery/jobs-to-be-done.md`) |
-| "Brand", "Visual direction", "Personality", "Tone" | `/brand-guidelines` | Market analysis exists |
-| "User journey", "Future state", "Interaction design" | `/interaction-design` | Brand exists (`.prodkit/brand/`) |
-| "User stories", "Requirements", "Features list" | `/user-stories` | Interaction design exists |
-| "Risks", "Assumptions", "What could go wrong" | `/assumptions-and-risks` | User stories exist |
-| "KPIs", "Success metrics", "How do we measure" | `/success-metrics` | Assumptions exist |
-| "Should we build X?", "Prioritize features", "ROI", "Trade-offs" | `/trade-off-analysis` | Any time (async) |
-| "Stakeholder update", "Investor deck", "Team summary" | `/communicator` | Any time (async) |
-
-### Technical Specification Triggers
-
-| User Says | Skill | Prerequisites |
-|-----------|-------|---------------|
-| "Project rules", "Update constitution", "What are our standards" | `/constitution` | None |
-| "Build feature X", "I want to add...", "Create a spec for..." | `/specify` | Constitution customized recommended |
-| "How should we implement?", "Technical plan", "Architecture" | `/plan` | Spec exists for feature |
-| "Break this into tasks", "What are the steps?" | `/tasks` | Plan exists for feature |
-| "Start implementing", "Execute the plan", "Build it" | `/implement` | Tasks exist for feature |
-| "Clarify requirements", "I don't understand the spec" | `/clarify` | Spec exists |
-| "Analyze this code", "Review this spec", "What does this do" | `/analyze` | Code or spec exists |
-| "Create a checklist", "Validation checklist", "QA checklist" | `/checklist` | Spec or plan exists |
-| "Create GitHub issues", "Push tasks to GitHub" | `/taskstoissues` | Tasks exist + GitHub configured |
-
-### Development Workflow Triggers
-
-| User Says | Skill | Prerequisites |
-|-----------|-------|---------------|
-| "Create a branch", "Isolated development" | `/using-git-worktrees` | Git repo |
-| "Start implementing", "Build it" | `/implement` | Tasks exist (integrates TDD, reviews, verification) |
-| "Brainstorm", "Ideas for...", "What are options?" | `/brainstorming` | Any time (async - can interrupt any skill) |
-| "Finish this branch", "Ready to merge", "Complete PR" | `/finishing-a-development-branch` | Work complete on branch |
-| "Request review", "PR ready", "Need feedback on code" | `/requesting-code-review` | Code ready for review |
-| "Got review feedback", "Address review comments" | `/receiving-code-review` | Review received |
-| "Run agents in parallel", "Concurrent work" | `/dispatching-parallel-agents` | Multiple independent tasks |
-| "Create a new skill", "Write a skill" | `/writing-skills` | Any time |
-
-**Note:** `/implement` automatically uses TDD, verification, and systematic-debugging. You don't need to invoke these separately.
+**We build ON TOP of Claude Code, not alongside it.**
 
 ---
 
-## Prerequisite Enforcement
+## Development Principles
 
-**Before invoking a skill, check if prerequisites exist:**
+### 1. Always Align with Claude Code Documentation
 
-1. If prerequisite file/folder is missing → Tell user and suggest the prerequisite skill first
-2. If user insists on skipping → Warn about gaps but proceed
+**Before implementing ANY feature:**
+- Check official Claude Code docs: `https://docs.anthropic.com/claude/docs/claude-code`
+- Verify skills syntax matches current spec
+- Ensure agent persona format is correct
+- Validate hook patterns are supported
+- Confirm settings.json schema is current
 
-Example:
-- User: "Who are our target users?"
-- Check: Does `.prodkit/strategy/business-canvas.md` exist?
-- If NO → "Before defining personas, we should define your product strategy. Would you like to run `/strategic-thinking` first?"
-- If YES → Proceed with `/personas`
+**When uncertain about Claude Code features:**
+- Don't guess or assume
+- Check the official documentation first
+- Test in a real Claude Code environment
+- Ask the user if documentation is unclear
+
+### 2. Shipkit is a Layer, Not a Fork
+
+**What this means:**
+- ✅ We create skills that work with Claude Code
+- ✅ We provide agent personas Claude Code loads
+- ✅ We supply constitutions Claude Code reads
+- ✅ We organize workflows using Claude Code primitives
+- ❌ We don't modify Claude Code itself
+- ❌ We don't bypass Claude Code features
+- ❌ We don't create parallel systems
+
+**Example:**
+- **Right:** Create a `/specify` skill that uses Claude Code's skill system
+- **Wrong:** Build a custom command parser outside Claude Code
+
+### 3. Test in Real Claude Code Environment
+
+**Every change must be validated:**
+1. Install shipkit in a test project using `install.sh`
+2. Start Claude Code in that project
+3. Run the modified skill/feature
+4. Verify it works as expected
+5. Check that constitutions load correctly
+6. Ensure agents activate properly
+
+**Don't develop in a vacuum.** Shipkit only matters if it works in Claude Code.
 
 ---
 
-## ProdKit Sequential Workflow
-
-These must be done in order for a complete product discovery:
+## Repository Structure
 
 ```
-1. /strategic-thinking           →  Creates: .prodkit/strategy/
-         ↓
-   /constitution-builder --product  →  Creates: .claude/constitution.md (product section)
-         ↓
-2. /personas                     →  Creates: .prodkit/discovery/personas.md
-         ↓
-3. /jobs-to-be-done              →  Creates: .prodkit/discovery/jobs-to-be-done.md
-         ↓
-4. /market-analysis              →  Creates: .prodkit/discovery/market-analysis.md
-         ↓
-5. /brand-guidelines             →  Creates: .prodkit/brand/
-         ↓
-6. /interaction-design           →  Creates: .prodkit/design/
-         ↓
-7. /user-stories                 →  Creates: .prodkit/requirements/
-         ↓
-8. /assumptions-risks            →  Creates: .prodkit/discovery/assumptions-risks.md
-         ↓
-9. /success-metrics              →  Creates: .prodkit/metrics/
+shipkit/
+  install/                    # Everything users install
+    skills/                   # 37 skills (directory/skill.md format)
+    agents/                   # 5 agent personas
+    constitutions/            # 4 constitution templates
+    workspace/                # Scripts and templates for .shipkit/
+    hooks/                    # Session start hooks
+    CLAUDE.md                 # Usage instructions (for user projects)
+
+  install.sh                  # Installer (copies install/ → target project)
+  CLAUDE.md                   # THIS FILE - Development instructions
+  README.md                   # User-facing documentation
+  help/                       # Reference documentation
 ```
 
-**Async skill:** `/brainstorming` can interrupt ANY skill when ambiguity is detected.
+**Clean separation:**
+- `install/` = what users get
+- Everything else = framework development
 
 ---
 
-## devkit Sequential Workflow
+## Key Development Tasks
 
-For implementing features:
+### Adding a New Skill
 
-```
-/constitution-builder --technical  →  Adds technical section to .claude/constitution.md
-    ↓
-/specify  →  Creates: .devkit/specs/NNN-feature/spec.md
-    ↓
-/plan     →  Creates: .devkit/specs/NNN-feature/plan.md (reads constitution!)
-    ↓
-/tasks    →  Creates: .devkit/specs/NNN-feature/tasks.md
-    ↓
-/implement →  Executes tasks with TDD + two-stage review
-```
+1. **Check Claude Code skill format:**
+   ```bash
+   # Read official docs first!
+   # Ensure you understand current skill.md schema
+   ```
 
-**/implement** automatically integrates:
-- TDD (RED → GREEN → REFACTOR for each task)
-- Spec Compliance Review (matches requirements?)
-- Code Quality Review (clean code?)
-- Verification before marking complete
+2. **Create skill directory:**
+   ```bash
+   mkdir install/skills/my-new-skill
+   ```
+
+3. **Write skill.md following Claude Code spec:**
+   ```markdown
+   ---
+   description: Brief description
+   handoffs:
+     - label: Next Step
+       agent: agent-name
+       prompt: What to do next
+   scripts:
+     sh: path/to/script.sh
+   ---
+
+   ## Agent Persona
+   Load: .claude/agents/agent-name.md
+
+   ## Steps
+   [Your skill implementation]
+   ```
+
+4. **Test in Claude Code:**
+   ```bash
+   cd ~/test-project
+   bash ~/shipkit/install.sh
+   # Start Claude Code
+   # Run: /my-new-skill
+   ```
+
+5. **Verify agent loads correctly**
+6. **Ensure handoffs work**
+7. **Update `install/CLAUDE.md` routing tables**
+
+### Modifying an Agent Persona
+
+1. **Check Claude Code agent format:**
+   - Agents are just markdown files
+   - Claude Code loads them into context
+   - They define personality, constraints, approach
+
+2. **Edit agent file:**
+   ```bash
+   vim install/agents/my-agent.md
+   ```
+
+3. **Test by running skill that loads this agent**
+
+4. **Verify persona behavior matches intent**
+
+### Updating Constitution Templates
+
+1. **Understand constitution layering:**
+   ```
+   .claude/constitutions/
+     core.md              # Always loaded
+     product/             # Loaded by product skills
+       strategy.md
+       audience.md
+       ...
+     technical/           # Loaded by technical skills
+       tech-stack.md
+       architecture.md
+       ...
+   ```
+
+2. **Edit template:**
+   ```bash
+   vim install/constitutions/b2c-saas/core.md
+   ```
+
+3. **Test that skills load correct sections**
+
+4. **Verify token efficiency** (skills shouldn't load everything)
+
+### Modifying the Installer
+
+1. **Keep it radically simple:**
+   - One command install
+   - Copy `install/` → target project
+   - Create `.shipkit/` workspace
+   - Install selected constitution template
+
+2. **Test installation:**
+   ```bash
+   cd ~/test-project
+   bash ~/shipkit/install.sh --constitution b2c-saas
+   ```
+
+3. **Verify all files copied correctly**
+
+4. **Check that Claude Code recognizes skills**
 
 ---
 
-## ProdKit → devkit Integration
+## Aligning with Claude Code
 
-**When running devkit skills, reference ProdKit outputs as context:**
+### Official Documentation
 
-| devkit Skill | Read These ProdKit Artifacts |
-|----------------|------------------------------|
-| `/specify` | `requirements/user-stories.md`, `brand/personality.md`, `brand/visual-direction.md`, `design/future-state-journeys.md`, `design/interaction-patterns.md` |
-| `/plan` | `design/interaction-patterns.md` (navigation, feedback patterns) |
-| `/tasks` | `requirements/user-stories.md` (acceptance criteria) |
-| `/implement` | `metrics/success-definition.md` (what to instrument) |
+**Primary source of truth:**
+- Claude Code features: `https://docs.anthropic.com/claude/docs/claude-code`
+- Skill system documentation
+- Agent/subagent patterns
+- Hook system
+- Settings & permissions
 
-**Before writing a spec:**
-1. Check if `.prodkit/` has relevant artifacts
-2. If YES → Read them and reference in the spec
-3. If NO → Ask user if they want to run product discovery first, or proceed without
+**When documentation conflicts with your assumptions:**
+- Documentation wins
+- Update shipkit to match
+- Don't try to work around it
 
-**Example spec introduction referencing ProdKit:**
+### Claude Code Primitives
+
+**Skills:**
+- Must be in `.claude/skills/[skill-name]/skill.md` format
+- Follow frontmatter schema exactly
+- Handoffs use agent references
+- Scripts are optional but useful
+
+**Agents:**
+- Live in `.claude/agents/[name].md`
+- Just markdown files with personality/constraints
+- Loaded when skill specifies them
+- No special format beyond markdown
+
+**Constitutions:**
+- Live in `.claude/constitutions/`
+- Skills specify which sections to load
+- Layered (core + product + technical)
+- Token-efficient selective loading
+
+**Hooks:**
+- Defined in `.claude/settings.json`
+- Trigger on events (SessionStart, etc.)
+- Run shell commands
+- Can pass context to skills
+
+**Workspace:**
+- `.shipkit/` is our convention
+- Not a Claude Code primitive
+- Just organized file storage
+- Skills read/write here
+
+### What Claude Code Doesn't Provide
+
+**Things shipkit adds:**
+- Specific skill implementations (37 skills)
+- Opinionated workflow (discovery → spec → code)
+- Constitution templates (b2c-saas, etc.)
+- Unified workspace structure
+- Product discovery skills
+- Specification-driven development
+
+**These are all built USING Claude Code primitives, not replacing them.**
+
+---
+
+## Common Development Patterns
+
+### When Adding Features
+
+**Always ask:**
+1. Does Claude Code already support this?
+2. Are we using Claude Code correctly?
+3. Is there official documentation?
+4. Have we tested in real Claude Code environment?
+5. Does this add value or just complexity?
+
+### When Debugging
+
+**Check:**
+1. Is skill.md format correct?
+2. Does agent file exist at specified path?
+3. Is constitution section loading?
+4. Are hooks triggering correctly?
+5. Is settings.json valid JSON?
+
+### When Users Report Issues
+
+**Diagnose:**
+1. Is this a shipkit bug or Claude Code behavior?
+2. Does it work with fresh install?
+3. Is their settings.json corrupted?
+4. Are file paths correct?
+5. Is Claude Code version compatible?
+
+---
+
+## Testing Strategy
+
+### Local Testing
+
+1. **Create test project:**
+   ```bash
+   mkdir ~/shipkit-test
+   cd ~/shipkit-test
+   git init
+   ```
+
+2. **Install shipkit:**
+   ```bash
+   bash ~/shipkit/install.sh --constitution b2c-saas
+   ```
+
+3. **Start Claude Code:**
+   ```bash
+   # In Claude Code CLI or IDE
+   ```
+
+4. **Test workflows:**
+   ```bash
+   /strategic-thinking
+   /personas
+   /specify
+   /implement
+   ```
+
+5. **Verify:**
+   - Skills execute
+   - Agents load
+   - Constitutions apply
+   - Files created in `.shipkit/`
+
+### Integration Testing
+
+**Test complete workflows:**
+- Full product discovery (9 sequential skills)
+- Spec → Plan → Tasks → Implement
+- Git workflows (worktrees, branching, PRs)
+- TDD integration
+- Code review flow
+
+### Regression Testing
+
+**After any change:**
+- Re-install in test project
+- Run key skills
+- Check nothing broke
+- Verify new feature works
+
+---
+
+## Avoiding Common Mistakes
+
+### ❌ Don't Assume Claude Code Features
+
+**Bad:**
 ```markdown
-## Overview
-This feature implements [User Story US-003] from `.prodkit/requirements/user-stories.md`.
+# Assuming Claude Code supports XYZ
+Let's use this cool feature I imagined...
+```
 
-Brand voice follows `.prodkit/brand/personality.md` (professional, efficient).
+**Good:**
+```markdown
+# Check docs first
+Looking at Claude Code documentation...
+This feature is supported, here's how...
+```
+
+### ❌ Don't Build Parallel Systems
+
+**Bad:**
+```bash
+# Creating custom skill parser
+./shipkit-runner my-command
+```
+
+**Good:**
+```bash
+# Using Claude Code's skill system
+/my-skill
+```
+
+### ❌ Don't Bypass Claude Code
+
+**Bad:**
+```markdown
+# Implementing custom agent loading
+Load my agent from custom location...
+```
+
+**Good:**
+```markdown
+# Using Claude Code's agent system
+Load: .claude/agents/my-agent.md
+```
+
+### ❌ Don't Ignore Documentation
+
+**Bad:**
+```markdown
+# Making up skill format
+My custom frontmatter fields...
+```
+
+**Good:**
+```markdown
+# Following Claude Code skill spec
+---
+description: ...
+handoffs: ...
+scripts: ...
+---
 ```
 
 ---
 
-## Available Skills
+## Architecture Philosophy
 
-### Product Discovery (ProdKit)
-Sequential workflow - complete in order for new products/features:
-1. `/strategic-thinking` - Define business strategy and value proposition
-2. `/constitution-builder --product` - Define product principles (after strategy)
-3. `/personas` - Identify and document target users
-4. `/jobs-to-be-done` - Map current state workflows
-5. `/market-analysis` - Analyze competitive landscape
-6. `/brand-guidelines` - Define visual direction and personality
-7. `/interaction-design` - Design future state user journeys
-8. `/user-stories` - Write actionable requirements
-9. `/assumptions-and-risks` - Identify strategic risks
-10. `/success-metrics` - Define KPIs and success criteria
+### Radically Simple
 
-Async skills (use anytime):
-- `/brainstorming` - Can interrupt ANY skill when ambiguity detected
-- `/trade-off-analysis` - Prioritize features by ROI
-- `/communicator` - Generate stakeholder communications
+**Every feature must earn its place:**
+- Does it simplify the user's workflow?
+- Can it be simpler?
+- Does it align with Claude Code patterns?
+- Is it tested in real environment?
 
-### Technical Specification (devkit)
-- `/constitution-builder --technical` - Define technical standards (before specs)
-- `/specify` - Create feature specifications from descriptions
-- `/plan` - Generate implementation plans (reads constitution)
-- `/tasks` - Break plans into executable tasks
-- `/implement` - Execute tasks with integrated TDD + reviews
-- `/clarify` - Clarify specification requirements
-- `/analyze` - Analyze existing code or specs
-- `/checklist` - Create validation checklists
-- `/taskstoissues` - Push tasks to GitHub issues
+### Opinionated but Flexible
 
-### Development Workflow (devkit)
-**Integrated into /implement:**
-- TDD, verification, systematic-debugging (automatic)
+**Strong defaults:**
+- Constitution templates (b2c-saas, b2b-saas, etc.)
+- Sequential workflows (discovery → spec → code)
+- Unified workspace (`.shipkit/`)
 
-**Standalone skills:**
-- `/using-git-worktrees` - Isolated branch development
-- `/finishing-a-development-branch` - Complete and merge branches
-- `/requesting-code-review` - Prepare for code review
-- `/receiving-code-review` - Process review feedback
-- `/dispatching-parallel-agents` - Run agents concurrently
-- `/writing-skills` - Create new skills
+**Escape hatches:**
+- Users can modify constitutions
+- Skills are just markdown (readable, editable)
+- Scripts are bash/PowerShell (transparent)
 
-## Recommended Workflow
+### Built on Claude Code
 
-### For New Features
-1. Read `.devkit/memory/constitution.md`
-2. Use `/specify` to create the spec
-3. Use `/plan` to create implementation plan
-4. Use `/tasks` to break into tasks
-5. Use `/implement` to execute
+**We don't replace, we extend:**
+- Skills use Claude Code's system
+- Agents use Claude Code's loading
+- Constitutions use Claude Code's reading
+- Hooks use Claude Code's triggering
 
-### For Product Discovery
-1. Read `.devkit/memory/constitution.md`
-2. Follow ProdKit skills 1-9 in sequence
-3. Use `/specify` to translate discoveries into specs
-
-## Project Structure
-
-```
-.claude/
-  constitution.md   # Project rules (created by /constitution-builder)
-  agents/           # Agent persona definitions
-  skills/           # Skill definitions (auto-discovered)
-  hooks/            # Session start hooks
-.devkit/
-  specs/            # Feature specifications
-  scripts/          # Automation scripts
-  templates/        # Document templates
-.prodkit/
-  inputs/           # Research files and user data
-  strategy/         # Business strategy artifacts
-  discovery/        # Personas, JTBD, market analysis
-  requirements/     # User stories
-  comms/            # Generated communications
-```
-
-## Key Behaviors
-
-1. **Match intent to skills** - When user asks something, check the routing tables above
-2. **Load agent personas** - Each skill specifies which agent persona to adopt
-3. **Check prerequisites** - Before invoking a skill, verify required artifacts exist
-4. **Suggest prerequisites** - If missing, offer to run the prerequisite skill first
-5. **Read constitution** - Before any significant implementation work (`.claude/constitution.md`)
-6. **Reference ProdKit in devkit** - When writing specs/plans, read and cite relevant `.prodkit/` artifacts
-7. **Use scripts** - Skills call scripts; never create files manually outside the workflow
-8. **Follow the chain** - ProdKit 1→9, then devkit specify→plan→tasks→implement
-9. **Watch for ambiguity** - `/brainstorming` can interrupt any skill when uncertainty detected
-10. **Always suggest next skill** - After completing any skill, tell user what comes next
-
-**Don't freestyle.** The skills ensure consistency, use templates, and respect the constitution.
+**If Claude Code adds a feature:**
+- We adopt it
+- We don't compete with it
+- We build on top of it
 
 ---
 
-## Always Suggest Next Skill
+## Resources
 
-**After completing ANY skill, suggest the next logical skill.**
+### Official Documentation
+- **Claude Code:** `https://docs.anthropic.com/claude/docs/claude-code`
+- **Skills:** Check latest skill.md schema
+- **Agents:** Subagent documentation
+- **MCP:** Model Context Protocol
+- **API:** Anthropic API docs
 
-### ProdKit Chain:
-```
-/strategic-thinking         → Next: /constitution-builder --product
-/constitution-builder --product → Next: /personas
-/personas                   → Next: /jobs-to-be-done
-/jobs-to-be-done            → Next: /market-analysis
-/market-analysis            → Next: /brand-guidelines
-/brand-guidelines           → Next: /interaction-design
-/interaction-design         → Next: /user-stories
-/user-stories               → Next: /assumptions-and-risks
-/assumptions-and-risks      → Next: /success-metrics
-/success-metrics            → Next: /constitution-builder --technical
-```
+### Shipkit-Specific
+- **Skill Examples:** `install/skills/`
+- **Agent Examples:** `install/agents/`
+- **Constitution Examples:** `install/constitutions/`
+- **Installer:** `install.sh`
+- **User Docs:** `README.md`
 
-### devkit Chain:
-```
-/constitution-builder --technical → Next: /specify
-/specify                    → Next: /plan
-/plan                       → Next: /tasks
-/tasks                      → Next: /implement
-/implement                  → Next: /finishing-a-development-branch
-```
+### Key Schemas
 
-### Output Format:
-```
-✅ [Skill] complete.
-📁 Created: [files]
-👉 Next: /[next-skill] - [description]
+**Agent schema:**
+---
+name: your-sub-agent-name
+description: Description of when this subagent should be invoked
+tools: tool1, tool2, tool3  # Optional - inherits all tools if omitted
+model: sonnet  # Optional - specify model alias or 'inherit'
+permissionMode: default  # Optional - permission mode for the subagent
+skills: skill1, skill2  # Optional - skills to auto-load
+---
 
-Proceed with /[next-skill]?
+Your subagent's system prompt goes here. This can be multiple paragraphs
+and should clearly define the subagent's role, capabilities, and approach
+to solving problems.
+
+Include specific instructions, best practices, and any constraints
+the subagent should follow.
+
+-----------------
+
+**Skill Schema**
+---
+name: your-skill-name
+description: Brief description of what this Skill does and when to use it
+---
+
+# Your Skill Name
+
+## Instructions
+Provide clear, step-by-step guidance for Claude.
+
+## Examples
+Show concrete examples of using this Skill.
+
+For advanced usage, see [reference.md](reference.md).
+
+Run the helper script:
+```bash
+python scripts/helper.py input.txt
 ```
+---
+
+**Skill File Structure**
+my-skill/
+├── SKILL.md (required)
+├── reference.md (optional documentation)
+├── examples.md (optional examples)
+├── scripts/
+│   └── helper.py (optional utility)
+└── templates/
+    └── template.txt (optional template)
+
+
+
+### Questions to Ask Yourself
+
+**Before implementing:**
+- Have I checked Claude Code documentation?
+- Am I using Claude Code primitives correctly?
+- Does this align with official patterns?
+- Can I test this in real Claude Code?
+
+**After implementing:**
+- Did I test in Claude Code environment?
+- Does it work as expected?
+- Is it simpler than before?
+- Did I update documentation?
+
+**When stuck:**
+- What does Claude Code documentation say?
+- How do official Claude Code examples work?
+- Am I overcomplicating this?
+- Should I ask the user?
+
+---
+
+## Remember
+
+**Shipkit is successful when:**
+1. It makes product development faster
+2. It works seamlessly in Claude Code
+3. It stays aligned with Claude Code evolution
+4. Users understand and adopt it
+5. It remains radically simple
+
+**Shipkit fails when:**
+1. It breaks in Claude Code
+2. It conflicts with Claude Code patterns
+3. It becomes complex and hard to maintain
+4. It tries to replace Claude Code features
+5. Development happens without testing
+
+---
+
+**Build with Claude Code, not against it. Test everything. Keep it simple.**
