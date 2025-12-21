@@ -1,319 +1,365 @@
 ---
 name: dev-specify
-description: Create or update the feature specification from a natural language feature description.
-handoffs:
-  - label: Build Technical Plan
-    agent: devkit.plan
-    prompt: Create a plan for the spec. I am building with...
-  - label: Clarify Spec Requirements
-    agent: devkit.clarify
-    prompt: Clarify specification requirements
-    send: true
-scripts:
-  sh: scripts/bash/create-new-feature.sh --json "{ARGS}"
-  ps: scripts/powershell/create-new-feature.ps1 -Json "{ARGS}"
+description: "Create feature specification from natural language description (extracts from user stories, interaction design, brand guidelines)"
 ---
+
+# Feature Specification
 
 ## Agent Persona
 
-**Load:** `.claude/agents/architect-agent.md`
+**Load:** `.claude/agents/dev-architect-agent.md`
 
-Adopt: Systematic thinking, spec completeness focus, documents trade-offs, favors simplicity.
+Adopt: Systematic, documents trade-offs, favors simplicity, tests assumptions.
 
-## User Input
+## Purpose
 
-```text
-$ARGUMENTS
+Create a comprehensive feature specification from a natural language feature description, grounded in product artifacts (user stories, interaction design, brand guidelines) and technical constitution.
+
+**Key principle:** Extract from product artifacts, don't invent requirements.
+
+## When to Trigger
+
+User says:
+- "Create a spec for [feature]"
+- "Specify [feature]"
+- "/dev-specify [feature description]"
+
+Or provides natural language feature description after product discovery.
+
+## Prerequisites
+
+**Required:**
+- Technical constitution (`.shipkit/skills/dev-constitution/outputs/constitution.md`)
+
+**Recommended:**
+- User stories (`.shipkit/skills/prod-user-stories/outputs/user-stories.md`)
+- Interaction design (`.shipkit/skills/prod-interaction-design/outputs/interaction-design.md`)
+- Brand guidelines (`.shipkit/skills/prod-brand-guidelines/outputs/brand-guidelines.md`)
+
+If product artifacts missing, spec will be less grounded (but still possible).
+
+## Inputs
+
+**From user:**
+- Natural language feature description (e.g., "Add user authentication", "Real-time notifications")
+
+**From product artifacts:**
+- User stories → Primary story this implements, acceptance criteria, user value
+- Interaction design → User journeys, UI patterns, screen flows
+- Brand guidelines → Visual style, component usage, tone of voice, accessibility
+- Jobs-to-be-done → Core job, forces, anxieties
+- Success metrics → Performance targets, reliability requirements
+- Technical constitution → Tech stack, quality standards, constraints
+
+## Process
+
+### 1. Run Script
+
+```bash
+.shipkit/skills/dev-specify/scripts/create-spec.sh "Add user authentication"
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+Script will:
+- Generate numbered spec directory (e.g., `specs/1-user-authentication/`)
+- Copy template to `specs/1-user-authentication/spec.md`
+- List available product artifacts
+- Indicate ready for Claude
 
-## Outline
+**For updates/clarifications:**
+```bash
+# Update existing spec (archives old version)
+.shipkit/skills/dev-specify/scripts/create-spec.sh --update --spec 1-user-authentication
 
-The text the user typed after `/devkit.specify` in the triggering message **is** the feature description. Assume you always have it available in this conversation even if `{ARGS}` appears literally below. Do not ask the user to repeat it unless they provided an empty command.
+# Resolve [NEEDS_CLARIFICATION] markers
+.shipkit/skills/dev-specify/scripts/create-spec.sh --clarify --spec 1-user-authentication
+```
 
-Given that feature description, do this:
+### 2. Read Context
 
-0. **Search for ProdKit artifacts** (product discovery context):
+**Claude:** Read these files to ground the spec:
 
-   Before writing the spec, check if product discovery has been done by searching for these files:
+```bash
+# Product artifacts (extract requirements)
+.shipkit/skills/prod-user-stories/outputs/user-stories.md
+.shipkit/skills/prod-interaction-design/outputs/interaction-design.md
+.shipkit/skills/prod-brand-guidelines/outputs/brand-guidelines.md
+.shipkit/skills/prod-jobs-to-be-done/outputs/jobs-to-be-done.md
+.shipkit/skills/prod-success-metrics/outputs/success-metrics.md
 
-   ```
-   .prodkit/requirements/user-stories.md        → Specific user stories to implement
-   .prodkit/brand/personality.md                → Brand voice, tone, personality traits
-   .prodkit/brand/visual-direction.md           → Colors, typography, visual style
-   .prodkit/design/future-state-journeys.md     → User journeys and flows
-   .prodkit/design/interaction-patterns.md      → Navigation, feedback, error handling patterns
-   ```
+# Technical constraints
+.shipkit/skills/dev-constitution/outputs/constitution.md
 
-   **If ProdKit artifacts exist:**
-   - Read each file that exists
-   - Extract relevant context for this feature:
-     - Which user story/stories does this implement?
-     - What brand voice/tone applies to UI copy?
-     - What visual style requirements exist?
-     - What interaction patterns are defined?
-   - Reference these in the spec (e.g., "This implements User Story US-003")
-   - Use brand guidelines for any user-facing text requirements
+# Template and guidance
+.shipkit/skills/dev-specify/templates/spec-template.md
+.shipkit/skills/dev-specify/references/reference.md
+.shipkit/skills/dev-specify/references/examples.md
+```
 
-   **If NO ProdKit artifacts exist:**
-   - Note this in your response: "No product discovery artifacts found in `.prodkit/`. Consider running ProdKit skills first for richer context."
-   - Proceed with the user's feature description alone
-   - Make reasonable assumptions (document in Assumptions section)
+### 3. Extract from Product Artifacts
 
-   **Mapping ProdKit → Spec sections:**
-   | ProdKit Artifact | Informs Spec Section |
-   |------------------|---------------------|
-   | user-stories.md | Functional Requirements, Acceptance Criteria |
-   | brand/personality.md | UI copy tone, error messages, user-facing text |
-   | brand/visual-direction.md | UI requirements (if feature has UI) |
-   | design/future-state-journeys.md | User Scenarios, User Flows |
-   | design/interaction-patterns.md | Functional Requirements (navigation, feedback, errors) |
+**From user stories:**
+- Find primary story this feature implements
+- Extract acceptance criteria → Functional requirements
+- Extract user personas → UX considerations
+- Extract priority (MoSCoW) → Scope decisions
 
-1. **Generate a concise short name** (2-4 words) for the branch:
-   - Analyze the feature description and extract the most meaningful keywords
-   - Create a 2-4 word short name that captures the essence of the feature
-   - Use action-noun format when possible (e.g., "add-user-auth", "fix-payment-bug")
-   - Preserve technical terms and acronyms (OAuth2, API, JWT, etc.)
-   - Keep it concise but descriptive enough to understand the feature at a glance
-   - Examples:
-     - "I want to add user authentication" → "user-auth"
-     - "Implement OAuth2 integration for the API" → "oauth2-api-integration"
-     - "Create a dashboard for analytics" → "analytics-dashboard"
-     - "Fix payment processing timeout bug" → "fix-payment-timeout"
+**From interaction design:**
+- Extract relevant user journey steps
+- Extract screen flows and UI patterns
+- Extract interaction details (taps, swipes, feedback)
 
-2. **Check for existing branches before creating new one**:
+**From brand guidelines:**
+- Extract visual style requirements (colors, typography)
+- Extract component usage (which design system components)
+- Extract tone of voice for error messages/labels
+- Extract accessibility standards (WCAG level)
 
-   a. First, fetch all remote branches to ensure we have the latest information:
+**From jobs-to-be-done:**
+- Extract core job this feature helps complete
+- Extract forces (pushes/pulls, anxieties/habits)
 
-      ```bash
-      git fetch --all --prune
-      ```
+**From success metrics:**
+- Extract performance targets (latency, uptime)
+- Extract metrics to track for this feature
+- Extract success thresholds
 
-   b. Find the highest feature number across all sources for the short-name:
-      - Remote branches: `git ls-remote --heads origin | grep -E 'refs/heads/[0-9]+-<short-name>$'`
-      - Local branches: `git branch | grep -E '^[* ]*[0-9]+-<short-name>$'`
-      - Specs directories: Check for directories matching `specs/[0-9]+-<short-name>`
+**From technical constitution:**
+- Extract tech stack to use
+- Extract architecture patterns to follow
+- Extract quality standards (testing, coverage)
+- Extract performance/security requirements
 
-   c. Determine the next available number:
-      - Extract all numbers from all three sources
-      - Find the highest number N
-      - Use N+1 for the new branch number
+### 4. Fill Template Conversationally
 
-   d. Run the script `{SCRIPT}` with the calculated number and short-name:
-      - Pass `--number N+1` and `--short-name "your-short-name"` along with the feature description
-      - Bash example: `{SCRIPT} --json --number 5 --short-name "user-auth" "Add user authentication"`
-      - PowerShell example: `{SCRIPT} -Json -Number 5 -ShortName "user-auth" "Add user authentication"`
+Use template structure, fill each section by asking user questions:
 
-   **IMPORTANT**:
-   - Check all three sources (remote branches, local branches, specs directories) to find the highest number
-   - Only match branches/directories with the exact short-name pattern
-   - If no existing branches/directories found with this short-name, start with number 1
-   - You must only ever run this script once per feature
-   - The JSON is provided in the terminal as output - always refer to it to get the actual content you're looking for
-   - The JSON output will contain BRANCH_NAME and SPEC_FILE paths
-   - For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot")
+#### Overview
+- **Problem:** What user/business problem exists? (from user stories + user input)
+- **Solution:** What are we building? (high-level, from feature description)
+- **Value:** Why build this? (user value + business value from stories/metrics)
 
-3. Load `templates/spec-template.md` to understand required sections.
+#### User Stories
+- **Primary Story:** Which user story from prod-user-stories does this implement?
+- **Related Stories:** Any supporting stories?
 
-4. Follow this execution flow:
+#### Scope
+- **In Scope:** What's included? (from user story acceptance criteria)
+- **Out of Scope:** What's explicitly NOT included? (prevent scope creep)
 
-    1. Parse user description from Input
-       If empty: ERROR "No feature description provided"
-    2. Extract key concepts from description
-       Identify: actors, actions, data, constraints
-    3. For unclear aspects:
-       - Make informed guesses based on context and industry standards
-       - Only mark with [NEEDS CLARIFICATION: specific question] if:
-         - The choice significantly impacts feature scope or user experience
-         - Multiple reasonable interpretations exist with different implications
-         - No reasonable default exists
-       - **LIMIT: Maximum 3 [NEEDS CLARIFICATION] markers total**
-       - Prioritize clarifications by impact: scope > security/privacy > user experience > technical details
-    4. Fill User Scenarios & Testing section
-       If no clear user flow: ERROR "Cannot determine user scenarios"
-    5. Generate Functional Requirements
-       Each requirement must be testable
-       Use reasonable defaults for unspecified details (document assumptions in Assumptions section)
-    6. Define Success Criteria
-       Create measurable, technology-agnostic outcomes
-       Include both quantitative metrics (time, performance, volume) and qualitative measures (user satisfaction, task completion)
-       Each criterion must be verifiable without implementation details
-    7. Identify Key Entities (if data involved)
-    8. Return: SUCCESS (spec ready for planning)
+#### User Experience
+- **User Journey:** Extract from interaction-design
+- **Key Interactions:** User actions → System responses
+- **UI Requirements:** Extract from brand-guidelines
 
-5. Write the specification to SPEC_FILE using the template structure:
-   - Replace placeholders with concrete details from the feature description
-   - **If ProdKit artifacts were found in step 0:**
-     - Link to user story IDs if implementing from `user-stories.md`
-     - Reference brand voice/tone for any user-facing text
-     - Include visual style requirements if feature has UI
-     - Reference interaction patterns from `design/`
-   - Preserve section order and headings from the template
+#### Functional Requirements
+- Each requirement = one testable behavior
+- Format: **[Name]**
+  - Description: What it does
+  - Acceptance: Given-When-Then (from user story)
 
-6. **Specification Quality Validation**: After writing the initial spec, validate it against quality criteria:
+#### Non-Functional Requirements
+- **Performance:** Targets from success metrics/constitution
+- **Security:** Auth/data protection from constitution
+- **Reliability:** Uptime targets from success metrics
+- **Accessibility:** WCAG level from brand guidelines
 
-   a. **Create Spec Quality Checklist**: Generate a checklist file at `FEATURE_DIR/checklists/requirements.md` using the checklist template structure with these validation items:
+#### Technical Constraints
+- Extract from dev-constitution (tech stack, patterns, quality standards)
 
-      ```markdown
-      # Specification Quality Checklist: [FEATURE NAME]
-      
-      **Purpose**: Validate specification completeness and quality before proceeding to planning
-      **Created**: [DATE]
-      **Feature**: [Link to spec.md]
-      
-      ## Content Quality
-      
-      - [ ] No implementation details (languages, frameworks, APIs)
-      - [ ] Focused on user value and business needs
-      - [ ] Written for non-technical stakeholders
-      - [ ] All mandatory sections completed
-      
-      ## Requirement Completeness
-      
-      - [ ] No [NEEDS CLARIFICATION] markers remain
-      - [ ] Requirements are testable and unambiguous
-      - [ ] Success criteria are measurable
-      - [ ] Success criteria are technology-agnostic (no implementation details)
-      - [ ] All acceptance scenarios are defined
-      - [ ] Edge cases are identified
-      - [ ] Scope is clearly bounded
-      - [ ] Dependencies and assumptions identified
-      
-      ## Feature Readiness
+#### Dependencies
+- **External:** Third-party services, APIs, libraries
+- **Internal:** Features that must exist first, shared components
 
-      - [ ] All functional requirements have clear acceptance criteria
-      - [ ] User scenarios cover primary flows
-      - [ ] Feature meets measurable outcomes defined in Success Criteria
-      - [ ] No implementation details leak into specification
+#### Data Requirements
+- **Data Models:** Key entities (defer schema to dev-plan)
+- **Data Flow:** Where data comes from → how it's processed → where it goes
 
-      ## ProdKit Integration (if artifacts exist)
+#### Edge Cases & Error Handling
+- **Edge Cases:** Unusual but valid scenarios
+- **Error States:** What can go wrong, user messages, recovery
 
-      - [ ] User story ID(s) linked if implementing from `user-stories.md`
-      - [ ] Brand voice/tone referenced for UI copy (if feature has UI)
-      - [ ] Visual style requirements from `visual-direction.md` included
-      - [ ] User journeys from `future-state-journeys.md` referenced
-      - [ ] Interaction patterns from `interaction-patterns.md` referenced
+#### Success Criteria
+- **Done When:** Checklist of completion criteria
+- **Metrics:** What to measure (from success metrics)
 
-      ## Notes
-      
-      - Items marked incomplete require spec updates before `/devkit.clarify` or `/devkit.plan`
-      ```
+#### Open Questions
+- Use `[NEEDS_CLARIFICATION: question]` for ambiguities
+- Questions for product team
+- Technical unknowns (okay - dev-plan will address)
 
-   b. **Run Validation Check**: Review the spec against each checklist item:
-      - For each item, determine if it passes or fails
-      - Document specific issues found (quote relevant spec sections)
+### 5. Handle Ambiguities
 
-   c. **Handle Validation Results**:
+**When requirements are unclear:**
+- Add `[NEEDS_CLARIFICATION: specific question]` markers
+- Don't invent answers - mark for clarification
+- User can run `--clarify` later to resolve
 
-      - **If all items pass**: Mark checklist complete and proceed to step 6
+**Example:**
+```markdown
+### Authentication
+Users can log in with email/password or OAuth.
 
-      - **If items fail (excluding [NEEDS CLARIFICATION])**:
-        1. List the failing items and specific issues
-        2. Update the spec to address each issue
-        3. Re-run validation until all items pass (max 3 iterations)
-        4. If still failing after 3 iterations, document remaining issues in checklist notes and warn user
+[NEEDS_CLARIFICATION: Which OAuth providers? Google? GitHub? Facebook?]
+[NEEDS_CLARIFICATION: Password requirements? Use constitution defaults or custom?]
+```
 
-      - **If [NEEDS CLARIFICATION] markers remain**:
-        1. Extract all [NEEDS CLARIFICATION: ...] markers from the spec
-        2. **LIMIT CHECK**: If more than 3 markers exist, keep only the 3 most critical (by scope/security/UX impact) and make informed guesses for the rest
-        3. For each clarification needed (max 3), present options to user in this format:
+### 6. Write to Output File
 
-           ```markdown
-           ## Question [N]: [Topic]
-           
-           **Context**: [Quote relevant spec section]
-           
-           **What we need to know**: [Specific question from NEEDS CLARIFICATION marker]
-           
-           **Suggested Answers**:
-           
-           | Option | Answer | Implications |
-           |--------|--------|--------------|
-           | A      | [First suggested answer] | [What this means for the feature] |
-           | B      | [Second suggested answer] | [What this means for the feature] |
-           | C      | [Third suggested answer] | [What this means for the feature] |
-           | Custom | Provide your own answer | [Explain how to provide custom input] |
-           
-           **Your choice**: _[Wait for user response]_
-           ```
+**DO NOT** write manually to protected outputs.
 
-        4. **CRITICAL - Table Formatting**: Ensure markdown tables are properly formatted:
-           - Use consistent spacing with pipes aligned
-           - Each cell should have spaces around content: `| Content |` not `|Content|`
-           - Header separator must have at least 3 dashes: `|--------|`
-           - Test that the table renders correctly in markdown preview
-        5. Number questions sequentially (Q1, Q2, Q3 - max 3 total)
-        6. Present all questions together before waiting for responses
-        7. Wait for user to respond with their choices for all questions (e.g., "Q1: A, Q2: Custom - [details], Q3: B")
-        8. Update the spec by replacing each [NEEDS CLARIFICATION] marker with the user's selected or provided answer
-        9. Re-run validation after all clarifications are resolved
+Fill the spec content and Claude will write it to:
+`.shipkit/skills/dev-specify/outputs/specs/N-feature-name/spec.md`
 
-   d. **Update Checklist**: After each validation iteration, update the checklist file with current pass/fail status
+### 7. Verify Quality
 
-7. Report completion with branch name, spec file path, checklist results, and readiness for the next phase (`/devkit.clarify` or `/devkit.plan`).
+Before finalizing, check:
+- [ ] Grounded in product artifacts (not invented)
+- [ ] References specific user stories
+- [ ] Requirements are testable (Given-When-Then)
+- [ ] Scope is explicit (in/out)
+- [ ] Edge cases considered
+- [ ] Error handling specified
+- [ ] Success criteria measurable
+- [ ] Technical constraints from constitution
 
-**NOTE:** The script creates and checks out the new branch and initializes the spec file before writing.
+## Outputs
 
-## General Guidelines
+- `.shipkit/skills/dev-specify/outputs/specs/N-feature-name/spec.md` (PROTECTED)
 
-## Quick Guidelines
+## Constraints
 
-- Focus on **WHAT** users need and **WHY**.
-- Avoid HOW to implement (no tech stack, APIs, code structure).
-- Written for business stakeholders, not developers.
-- DO NOT create any checklists that are embedded in the spec. That will be a separate command.
+- **DO NOT** create spec files manually (they're protected)
+- **ALWAYS** run the script first
+- **MUST** ground in product artifacts (extract, don't invent)
+- **MUST** include testable acceptance criteria (Given-When-Then)
+- **HIGH-LEVEL** - Defer technical decisions to dev-plan
+- **USE MARKERS** - [NEEDS_CLARIFICATION] for ambiguities
 
-### Section Requirements
+## Extraction Examples
 
-- **Mandatory sections**: Must be completed for every feature
-- **Optional sections**: Include only when relevant to the feature
-- When a section doesn't apply, remove it entirely (don't leave as "N/A")
+### From User Story to Spec
 
-### For AI Generation
+**User Story:**
+```
+As a mobile user
+I want to save articles offline
+So I can read during my commute
 
-When creating this spec from a user prompt:
+Acceptance:
+- Save button available on articles
+- Articles accessible without network
+- Saved articles sync when online
+```
 
-1. **Make informed guesses**: Use context, industry standards, and common patterns to fill gaps
-2. **Document assumptions**: Record reasonable defaults in the Assumptions section
-3. **Limit clarifications**: Maximum 3 [NEEDS CLARIFICATION] markers - use only for critical decisions that:
-   - Significantly impact feature scope or user experience
-   - Have multiple reasonable interpretations with different implications
-   - Lack any reasonable default
-4. **Prioritize clarifications**: scope > security/privacy > user experience > technical details
-5. **Think like a tester**: Every vague requirement should fail the "testable and unambiguous" checklist item
-6. **Common areas needing clarification** (only if no reasonable default exists):
-   - Feature scope and boundaries (include/exclude specific use cases)
-   - User types and permissions (if multiple conflicting interpretations possible)
-   - Security/compliance requirements (when legally/financially significant)
+**Extract to Spec:**
+```markdown
+## Problem
+Mobile users (60% of traffic) lose access when offline, can't read saved content.
 
-**Examples of reasonable defaults** (don't ask about these):
+## Functional Requirements
 
-- Data retention: Industry-standard practices for the domain
-- Performance targets: Standard web/mobile app expectations unless specified
-- Error handling: User-friendly messages with appropriate fallbacks
-- Authentication method: Standard session-based or OAuth2 for web apps
-- Integration patterns: RESTful APIs unless specified otherwise
+1. **Offline Save**
+   - Description: Save article for offline reading
+   - Acceptance:
+     - Given: User is viewing article
+     - When: User taps save button
+     - Then: Article is saved locally, accessible without network
 
-### Success Criteria Guidelines
+2. **Auto-Sync**
+   - Description: Sync saved articles when connection restores
+   - Acceptance:
+     - Given: User has offline saves and comes online
+     - When: Connection detected
+     - Then: Articles sync to server within 5s
+```
 
-Success criteria must be:
+### From Interaction Design to UX
 
-1. **Measurable**: Include specific metrics (time, percentage, count, rate)
-2. **Technology-agnostic**: No mention of frameworks, languages, databases, or tools
-3. **User-focused**: Describe outcomes from user/business perspective, not system internals
-4. **Verifiable**: Can be tested/validated without knowing implementation details
+**Interaction Design:**
+```
+Article Reading Journey - Step 5:
+User sees bookmark icon (heart), taps to save, sees brief animation + "Saved!"
+```
 
-**Good examples**:
+**Extract to Spec:**
+```markdown
+## User Experience
 
-- "Users can complete checkout in under 3 minutes"
-- "System supports 10,000 concurrent users"
-- "95% of searches return results in under 1 second"
-- "Task completion rate improves by 40%"
+### Key Interactions
+1. User taps heart icon → Brief scale animation → Toast "Saved!" → Icon fills
 
-**Bad examples** (implementation-focused):
+### UI Requirements
+- Icon: Heart (Feather icon set, per brand)
+- Animation: Scale 1.0 → 1.2 → 1.0 (200ms)
+- Toast: "Saved!" (brand green, 2s duration)
+```
 
-- "API response time is under 200ms" (too technical, use "Users see results instantly")
-- "Database can handle 1000 TPS" (implementation detail, use user-facing metric)
-- "React components render efficiently" (framework-specific)
-- "Redis cache hit rate above 80%" (technology-specific)
+### From Brand Guidelines to UI
+
+**Brand Guidelines:**
+```
+Primary: Blue #4A90E2
+Tone: Friendly, conversational
+Accessibility: WCAG AA minimum
+```
+
+**Extract to Spec:**
+```markdown
+## UI Requirements
+- Primary action buttons: Blue #4A90E2 (per brand)
+- Error messages: Friendly tone ("Oops! Couldn't save. Try again?")
+- Accessibility: WCAG AA, keyboard navigation, screen reader labels
+```
+
+## Next Steps
+
+After spec created:
+- Review with stakeholders
+- Resolve any [NEEDS_CLARIFICATION] markers: `/dev-specify --clarify --spec N-name`
+- When approved, create technical plan: `/dev-plan`
+
+## Context
+
+This is the **second dev skill** in the development pipeline.
+
+**Workflow:**
+```
+dev-constitution (done)
+         ↓
+dev-specify "feature description" ← YOU ARE HERE
+         ↓
+dev-plan (next)
+         ↓
+dev-tasks
+         ↓
+dev-implement
+```
+
+## Common Mistakes to Avoid
+
+1. **Inventing requirements** - Not grounded in user stories → Extract from product artifacts
+2. **Over-specifying technical details** - "Use PostgreSQL JSONB with GIN index" → Defer to dev-plan
+3. **Under-specifying user behavior** - "User can search" → "User enters term → sees results <2s, ranked by relevance"
+4. **Ignoring product artifacts** - Making up UI without checking brand guidelines → Extract from brand-guidelines
+5. **Vague success criteria** - "Works well" → "95% save success rate, <200ms p95 latency"
+
+## Clarification Workflow
+
+**Create spec:**
+```bash
+/dev-specify "Add OAuth login"
+# Creates specs/3-oauth-login/spec.md
+# May include [NEEDS_CLARIFICATION] markers
+```
+
+**Resolve ambiguities:**
+```bash
+/dev-specify --clarify --spec 3-oauth-login
+# Claude finds markers, asks questions, updates spec
+```
+
+**Update spec later:**
+```bash
+/dev-specify --update --spec 3-oauth-login
+# Archives old version, updates with new info
+```
