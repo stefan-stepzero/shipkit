@@ -378,23 +378,24 @@ These are prompts, not forced - user can decline.
 
 ## Current Status
 
-**Completed: 7/30 skills (23%)**
+**Completed: 9/29 skills (31%)**
 
-**Product Skills:** 6/12 complete (50%)
+**Product Skills:** 8/12 complete (67%)
 - ✅ prod-strategic-thinking
 - ✅ prod-constitution-builder
 - ✅ prod-personas
 - ✅ prod-jobs-to-be-done
-- ✅ prod-communicator
 - ✅ prod-market-analysis
-- 🔜 brand-guidelines, interaction-design, user-stories, assumptions-and-risks, success-metrics, trade-off-analysis
+- ✅ prod-brand-guidelines
+- ✅ prod-interaction-design
+- ✅ prod-communicator
+- 🔜 user-stories, assumptions-and-risks, success-metrics, trade-off-analysis
 
 **Development Skills:** 0/16 complete (0%)
 - 🔜 All 16 skills need restructuring to match new architecture
 
-**Meta Skills:** 1/2 complete (50%)
+**Meta Skills:** 1/1 complete (100%)
 - ✅ shipkit-master (enforcement)
-- 🔜 any-brainstorming
 
 See [RESTRUCTURING-PLAN.md](RESTRUCTURING-PLAN.md) for detailed progress.
 
