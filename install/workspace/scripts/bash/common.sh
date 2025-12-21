@@ -23,8 +23,9 @@ declare -A SKILL_PREREQUISITES=(
   ["prod-communicator"]=""                                    # Checks for any available artifacts
   ["prod-discussion"]=""                                      # Conversational trade-off facilitation
 
-  # Dev Skills (to be added later)
-  # ["dev-specify"]="dev-constitution-builder"
+  # Dev Skills
+  ["dev-constitution"]="prod-user-stories"                    # Needs product context (recommended)
+  ["dev-specify"]="dev-constitution"                          # Needs technical standards
   # ["dev-plan"]="dev-specify"
   # ["dev-tasks"]="dev-plan"
   # ["dev-implement"]="dev-tasks"
@@ -44,6 +45,12 @@ declare -A SKILL_OUTPUT_FILES=(
   ["prod-success-metrics"]="prod-success-metrics/outputs/success-metrics.md"
   ["prod-communicator"]="prod-communicator/outputs/"  # Multiple timestamped files
   # prod-discussion has no output files (conversational only)
+
+  # Dev Skills
+  ["dev-constitution"]="dev-constitution/outputs/constitution.md"
+  ["dev-specify"]="dev-specify/outputs/specs/"                  # Multiple spec dirs
+  # ["dev-plan"]="dev-plan/outputs/specs/"  # Multiple plan dirs
+  # ["dev-tasks"]="dev-tasks/outputs/specs/"  # Multiple task dirs
 )
 
 # =============================================================================

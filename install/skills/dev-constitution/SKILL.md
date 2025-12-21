@@ -1,83 +1,227 @@
 ---
 name: dev-constitution
-description: Create or update the project constitution from interactive or provided principle inputs, ensuring all dependent templates stay in sync.
-handoffs: 
-  - label: Build Specification
-    agent: devkit.specify
-    prompt: Implement the feature specification based on the updated constitution. I want to build...
+description: "Create technical development standards from product strategy (run once before dev pipeline)"
 ---
 
-## User Input
+# Technical Constitution
 
-```text
-$ARGUMENTS
+## Agent Persona
+
+**Load:** `.claude/agents/dev-architect-agent.md`
+
+Adopt: Systematic, thinks in constraints and trade-offs, prefers simplicity, questions complexity.
+
+## Purpose
+
+Create a **lean, high-level** technical constitution defining architecture, design, and coding principles for your product.
+
+**Critical:** Keep <500 words. This constitution is read by ALL dev skills (specify, plan, tasks, implement), so token efficiency matters.
+
+## When to Trigger
+
+User says:
+- "Create technical standards"
+- "Define our development principles"
+- "Set up technical constitution"
+- "What are our coding standards?"
+- After completing product discovery (prod-* skills)
+
+Or explicitly:
+- `/dev-constitution`
+- `/dev-constitution --create`
+
+## Prerequisites
+
+**Recommended (not required):**
+- Product user stories (`.shipkit/skills/prod-user-stories/outputs/user-stories.md`)
+- Business strategy (`.shipkit/skills/prod-strategic-thinking/outputs/business-canvas.md`)
+- Success metrics (`.shipkit/skills/prod-success-metrics/outputs/success-metrics.md`)
+
+If product artifacts missing, constitution will be minimal but still useful.
+
+## Inputs
+
+**From product artifacts (if available):**
+- User stories → Tech stack hints, performance needs, security requirements
+- Strategy → Product stage (POC/MVP/Established), scale expectations, constraints
+- Success metrics → Performance targets, reliability requirements
+- Assumptions & risks → Technical risks to mitigate
+
+**From user conversation:**
+- Team expertise (what tech does team know?)
+- Existing codebase (greenfield or brownfield?)
+- Compliance needs (GDPR, SOC2, etc.)
+- Organizational constraints (cloud provider, approved languages, etc.)
+
+## Process
+
+### 1. Run Script
+
+```bash
+.shipkit/skills/dev-constitution/scripts/create-constitution.sh --create
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+Script will:
+- Check for existing constitution (if exists, ask to --update or --archive)
+- List available product artifacts
+- Point to template and references
+- Indicate it's ready for Claude
 
-## Outline
+### 2. Read Context
 
-You are updating the project constitution at `/.devkit/memory/constitution.md`. This file is a TEMPLATE containing placeholder tokens in square brackets (e.g. `[PROJECT_NAME]`, `[PRINCIPLE_1_NAME]`). Your job is to (a) collect/derive concrete values, (b) fill the template precisely, and (c) propagate any amendments across dependent artifacts.
+**Claude:** Read these files to understand the product:
 
-Follow this execution flow:
+```bash
+# Product artifacts (extract technical implications)
+.shipkit/skills/prod-user-stories/outputs/user-stories.md
+.shipkit/skills/prod-strategic-thinking/outputs/business-canvas.md
+.shipkit/skills/prod-success-metrics/outputs/success-metrics.md
+.shipkit/skills/prod-assumptions-and-risks/outputs/assumptions-and-risks.md
+.shipkit/skills/prod-constitution-builder/outputs/product-constitution.md
 
-1. Load the existing constitution template at `/.devkit/memory/constitution.md`.
-   - Identify every placeholder token of the form `[ALL_CAPS_IDENTIFIER]`.
-   **IMPORTANT**: The user might require less or more principles than the ones used in the template. If a number is specified, respect that - follow the general template. You will update the doc accordingly.
+# Template and guidance
+.shipkit/skills/dev-constitution/templates/constitution-template.md
+.shipkit/skills/dev-constitution/references/reference.md
+.shipkit/skills/dev-constitution/references/examples.md
+```
 
-2. Collect/derive values for placeholders:
-   - If user input (conversation) supplies a value, use it.
-   - Otherwise infer from existing repo context (README, docs, prior constitution versions if embedded).
-   - For governance dates: `RATIFICATION_DATE` is the original adoption date (if unknown ask or mark TODO), `LAST_AMENDED_DATE` is today if changes are made, otherwise keep previous.
-   - `CONSTITUTION_VERSION` must increment according to semantic versioning rules:
-     - MAJOR: Backward incompatible governance/principle removals or redefinitions.
-     - MINOR: New principle/section added or materially expanded guidance.
-     - PATCH: Clarifications, wording, typo fixes, non-semantic refinements.
-   - If version bump type ambiguous, propose reasoning before finalizing.
+### 3. Ask Clarifying Questions
 
-3. Draft the updated constitution content:
-   - Replace every placeholder with concrete text (no bracketed tokens left except intentionally retained template slots that the project has chosen not to define yet—explicitly justify any left).
-   - Preserve heading hierarchy and comments can be removed once replaced unless they still add clarifying guidance.
-   - Ensure each Principle section: succinct name line, paragraph (or bullet list) capturing non‑negotiable rules, explicit rationale if not obvious.
-   - Ensure Governance section lists amendment procedure, versioning policy, and compliance review expectations.
+**Determine product stage first (critical for appropriateness):**
+- POC: Speed > everything. Minimal quality gates.
+- MVP: Balance pragmatism with quality. Some technical debt OK.
+- Established: Optimize for reliability and maintainability.
 
-4. Consistency propagation checklist (convert prior checklist into active validations):
-   - Read `/.devkit/templates/plan-template.md` and ensure any "Constitution Check" or rules align with updated principles.
-   - Read `/.devkit/templates/spec-template.md` for scope/requirements alignment—update if constitution adds/removes mandatory sections or constraints.
-   - Read `/.devkit/templates/tasks-template.md` and ensure task categorization reflects new or removed principle-driven task types (e.g., observability, versioning, testing discipline).
-   - Read each command file in `/.devkit/templates/commands/*.md` (including this one) to verify no outdated references (agent-specific names like CLAUDE only) remain when generic guidance is required.
-   - Read any runtime guidance docs (e.g., `README.md`, `docs/quickstart.md`, or agent-specific guidance files if present). Update references to principles changed.
+**Then ask:**
+- Team's tech expertise? (Python/JavaScript/Go/etc.)
+- Existing codebase or greenfield?
+- Compliance requirements? (GDPR, SOC2, PCI, HIPAA?)
+- Cloud provider? (AWS/GCP/Azure/self-hosted?)
+- Team size and growth plans?
+- Known constraints? (approved tech list, legacy integrations?)
 
-5. Produce a Sync Impact Report (prepend as an HTML comment at top of the constitution file after update):
-   - Version change: old → new
-   - List of modified principles (old title → new title if renamed)
-   - Added sections
-   - Removed sections
-   - Templates requiring updates (✅ updated / ⚠ pending) with file paths
-   - Follow-up TODOs if any placeholders intentionally deferred.
+### 4. Extract from Product Artifacts
 
-6. Validation before final output:
-   - No remaining unexplained bracket tokens.
-   - Version line matches report.
-   - Dates ISO format YYYY-MM-DD.
-   - Principles are declarative, testable, and free of vague language ("should" → replace with MUST/SHOULD rationale where appropriate).
+**From user stories:**
+- Mobile app mentioned? → Consider React Native, Flutter
+- Real-time collaboration? → WebSockets, event-driven architecture
+- Works offline? → Offline-first principles
+- Payment processing? → PCI compliance, secure APIs
 
-7. Write the completed constitution back to `/.devkit/memory/constitution.md` (overwrite).
+**From strategy:**
+- "Launch in 6 weeks" → Speed-focused POC approach
+- "Series B funding" → MVP quality, plan for scale
+- "10,000 daily users" → Performance and reliability standards
 
-8. Output a final summary to the user with:
-   - New version and bump rationale.
-   - Any files flagged for manual follow-up.
-   - Suggested commit message (e.g., `docs: amend constitution to vX.Y.Z (principle additions + governance update)`).
+**From success metrics:**
+- "99.9% uptime" → Fault tolerance, monitoring, redundancy
+- "Sub-200ms latency" → Performance budgets, caching strategies
+- "80% mobile users" → Mobile-first design
 
-Formatting & Style Requirements:
+### 5. Fill Template (Conversationally)
 
-- Use Markdown headings exactly as in the template (do not demote/promote levels).
-- Wrap long rationale lines to keep readability (<100 chars ideally) but do not hard enforce with awkward breaks.
-- Keep a single blank line between sections.
-- Avoid trailing whitespace.
+Use template structure, fill each section:
 
-If the user supplies partial updates (e.g., only one principle revision), still perform validation and version decision steps.
+#### 1. Technical Principles
+- **Architecture:** How systems are organized (monolith/microservices/layered)
+- **Design:** How code is structured (SOLID, composition patterns)
+- **Code Quality:** What good code looks like (readability, DRY/KISS/YAGNI balance)
 
-If critical info missing (e.g., ratification date truly unknown), insert `TODO(<FIELD_NAME>): explanation` and include in the Sync Impact Report under deferred items.
+#### 2. Constraints & Non-Negotiables
+- **Must Have:** Security, compliance, performance targets
+- **Must Avoid:** Known anti-patterns, over-engineering traps
 
-Do not create a new template; always operate on the existing `/.devkit/memory/constitution.md` file.
+#### 3. Tech Stack
+- List core technologies with **brief** rationale (why this choice?)
+- Match product stage (POC = speed, MVP = balance, Established = optimize)
+
+#### 4. Quality Standards
+- **Testing:** Coverage targets, TDD policy, required test types
+- **Performance:** Key metrics with acceptable ranges
+- **Security:** Authentication approach, vulnerability scanning
+
+#### 5. Development Workflow
+- **Branching:** Strategy (feature branches? trunk-based?)
+- **Reviews:** Requirements (who reviews? what must pass?)
+- **CI/CD:** What checks must pass before deploy?
+- **Documentation:** What must be documented?
+
+### 6. Write to Output File
+
+**DO NOT** write manually to `.shipkit/skills/dev-constitution/outputs/constitution.md`.
+
+The file is PROTECTED. Instead, provide the filled constitution content and Claude will write it (settings.json allows skill execution context to write).
+
+### 7. Verify Token Efficiency
+
+**Target: <500 words total**
+
+If constitution is >500 words:
+- Remove prose, use bullet points
+- Defer details to dev workflow ("API contracts defined in dev-plan")
+- Link to external docs instead of explaining
+- Remove redundant explanations
+
+**Good rule:** If something can be specified later (dev-plan, dev-tasks), don't put it in constitution.
+
+## Outputs
+
+- `.shipkit/skills/dev-constitution/outputs/constitution.md` (PROTECTED)
+
+## Constraints
+
+- **DO NOT** create `constitution.md` manually (it's protected)
+- **ALWAYS** run the script first
+- **MUST** keep <500 words (token efficiency)
+- **HIGH-LEVEL only** - no implementation details
+- **PRODUCT-AWARE** - ground in product artifacts, not generic advice
+- **STAGE-APPROPRIATE** - POC/MVP/Established have different needs
+
+## Token Efficiency Examples
+
+❌ **Verbose (100 words):**
+> "We believe that code readability is of paramount importance and should be the primary consideration when writing code. Developers should prioritize clear, self-documenting code that can be easily understood by other team members. This includes using descriptive variable names, writing functions that do one thing well, and avoiding overly complex nested logic that is difficult to follow."
+
+✅ **Concise (12 words):**
+> "Readability first. Self-documenting code, single-purpose functions, avoid deep nesting."
+
+**Saved:** 88 words × average 1.3 tokens/word = ~114 tokens!
+
+## Next Steps
+
+After constitution created:
+- Constitution is now consumed by all dev skills
+- Ready to create feature specs: `/dev-specify "feature description"`
+- Update constitution when product stage changes: `/dev-constitution --update`
+
+## Context
+
+This is the **first dev skill** in the development pipeline. Run it ONCE after product discovery, before creating any specs.
+
+**Workflow:**
+```
+Product Discovery (prod-* skills)
+         ↓
+dev-constitution --create (ONCE, sets standards) ← YOU ARE HERE
+         ↓
+Per-feature pipeline:
+  dev-specify → dev-plan → dev-tasks → dev-implement → dev-finish
+```
+
+## Common Mistakes to Avoid
+
+1. **Too detailed** - "All API endpoints return JSON with { status, data, message }" → This goes in API specs, not constitution
+2. **Too generic** - "Write clean code, follow best practices" → Useless platitudes
+3. **Too long** - >1000 words → Will waste tokens in every dev skill
+4. **Not product-aware** - Copying a template without considering user stories, strategy, stage
+5. **Wrong abstraction level** - Specifying file structures, function signatures → These emerge in dev-plan/implement
+
+## When to Update Constitution
+
+Re-run `/dev-constitution --update` when:
+- Product stage changes (POC → MVP → Established)
+- Major technical decision (switching frameworks, adding microservices)
+- New constraints (compliance requirements, performance SLAs)
+- Team learns a hard lesson (add anti-pattern to "Must Avoid")
+
+Script will auto-archive old version before updating.
