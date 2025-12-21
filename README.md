@@ -29,7 +29,7 @@ Plus **6 agent personas** that specialize behaviors for different workflow stage
 10. prod-success-metrics - KPIs and instrumentation
 
 **Async Skills (2):**
-- prod-trade-off-analysis - Feature prioritization and ROI
+- prod-discussion - Conversational trade-off analysis and decision facilitation
 - prod-communicator - Stakeholder communications (5 templates)
 
 ### Development Skills (16 skills)
@@ -292,7 +292,7 @@ These are prompts, not forced - user can decline.
 
 **Async skills** (call anytime):
 - /any-brainstorming - Can interrupt ANY skill when ambiguity detected
-- /prod-trade-off-analysis - Prioritize features by ROI
+- /prod-discussion - Facilitate product decisions through trade-off analysis
 - /prod-communicator - Generate stakeholder communications
 
 **Output:** Complete product context in .shipkit/skills/prod-*/outputs/
@@ -378,9 +378,9 @@ These are prompts, not forced - user can decline.
 
 ## Current Status
 
-**Completed: 10/29 skills (34%)**
+**Completed: 13/29 skills (45%)**
 
-**Product Skills:** 9/12 complete (75%)
+**Product Skills:** 12/12 complete (100%) 🎉
 - ✅ prod-strategic-thinking
 - ✅ prod-constitution-builder
 - ✅ prod-personas
@@ -389,8 +389,10 @@ These are prompts, not forced - user can decline.
 - ✅ prod-brand-guidelines
 - ✅ prod-interaction-design
 - ✅ prod-user-stories
+- ✅ prod-assumptions-and-risks
+- ✅ prod-success-metrics
+- ✅ prod-discussion (conversational trade-off analysis)
 - ✅ prod-communicator
-- 🔜 assumptions-and-risks, success-metrics, trade-off-analysis
 
 **Development Skills:** 0/16 complete (0%)
 - 🔜 All 16 skills need restructuring to match new architecture
