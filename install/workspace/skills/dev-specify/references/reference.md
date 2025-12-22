@@ -1,5 +1,21 @@
 # Feature Specification Reference
 
+## Table of Contents
+
+1. [Purpose](#purpose)
+2. [What Makes a Good Spec](#what-makes-a-good-spec)
+3. [Extracting from Product Artifacts](#extracting-from-product-artifacts)
+4. [Spec Template Sections Explained](#spec-template-sections-explained)
+5. [Spec Quality Checklist](#spec-quality-checklist)
+6. [Common Mistakes](#common-mistakes)
+7. [[NEEDS_CLARIFICATION] Markers](#needs_clarification-markers)
+8. [Working with --clarify](#working-with---clarify)
+9. [Working with --update](#working-with---update)
+10. [Examples](#examples)
+11. [Quick Reference](#quick-reference)
+
+---
+
 ## Purpose
 
 Feature specifications translate natural language feature descriptions into structured technical requirements, grounded in product artifacts and technical constraints.

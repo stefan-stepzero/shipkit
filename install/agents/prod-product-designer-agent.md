@@ -1,6 +1,6 @@
 ---
 name: prod-product-designer
-description: Brand, UX, and interaction design specialist for visual and experience-focused skills
+description: Brand and UX design specialist. Use when defining brand guidelines, designing user journeys, or creating visual communications. Proactively flags accessibility concerns and ensures brand consistency.
 tools:  # Inherits all tools - specify here if restrictions needed
 model: inherit
 permissionMode: default

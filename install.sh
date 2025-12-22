@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# install.sh - Shipkit Installer (Radically Simple Edition)
+# install.sh - Shipkit Installer
 set -e
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -29,7 +29,6 @@ BRIGHT_WHITE='\033[1;37m'
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 TARGET_DIR=""
-CONSTITUTION_TEMPLATE=""
 INTERACTIVE=true
 GITHUB_URL=""
 GITHUB_BRANCH="main"
@@ -88,90 +87,16 @@ show_logo() {
 EOF
     echo -e "${NC}"
     echo -e "${DIM}         Complete Product Development Framework${NC}"
-    echo -e "${DIM}              Discovery → Specification → Code${NC}"
+    echo -e "${DIM}              24 Skills • 6 Agents • Constitution-Driven${NC}"
     echo ""
 }
 
 show_mini_logo() {
     echo ""
     echo -e "${BRIGHT_MAGENTA}  ╭──────────────────────────────────────╮${NC}"
-    echo -e "${BRIGHT_MAGENTA}  │${NC}  ${BOLD}ShipKit${NC} ${DIM}• Radically Simple${NC}         ${BRIGHT_MAGENTA}│${NC}"
+    echo -e "${BRIGHT_MAGENTA}  │${NC}  ${BOLD}ShipKit${NC} ${DIM}• 24 Skills${NC}                ${BRIGHT_MAGENTA}│${NC}"
     echo -e "${BRIGHT_MAGENTA}  ╰──────────────────────────────────────╯${NC}"
     echo ""
-}
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# INTERACTIVE MENU FUNCTIONS
-# ═══════════════════════════════════════════════════════════════════════════════
-
-select_option() {
-    local prompt="$1"
-    shift
-    local options=("$@")
-    local selected=0
-    local key=""
-
-    tput civis 2>/dev/null || true
-
-    while true; do
-        echo -e "\n  ${BOLD}${prompt}${NC}\n"
-
-        for i in "${!options[@]}"; do
-            if [ $i -eq $selected ]; then
-                echo -e "  ${BRIGHT_CYAN}❯${NC} ${BRIGHT_WHITE}${options[$i]}${NC}"
-            else
-                echo -e "    ${DIM}${options[$i]}${NC}"
-            fi
-        done
-
-        echo -e "\n  ${DIM}↑/↓ to move, Enter to select${NC}"
-
-        read -rsn1 key
-
-        if [[ $key == $'\x1b' ]]; then
-            read -rsn2 key
-            case $key in
-                '[A')
-                    ((selected--))
-                    [ $selected -lt 0 ] && selected=$((${#options[@]} - 1))
-                    ;;
-                '[B')
-                    ((selected++))
-                    [ $selected -ge ${#options[@]} ] && selected=0
-                    ;;
-            esac
-        elif [[ $key == "" ]]; then
-            break
-        fi
-
-        local lines=$((${#options[@]} + 4))
-        tput cuu $lines 2>/dev/null || printf "\033[${lines}A"
-        tput el 2>/dev/null || true
-    done
-
-    tput cnorm 2>/dev/null || true
-
-    SELECTED_INDEX=$selected
-}
-
-confirm() {
-    local prompt="$1"
-    local default="${2:-y}"
-
-    if [ "$default" = "y" ]; then
-        local hint="Y/n"
-    else
-        local hint="y/N"
-    fi
-
-    echo -ne "  ${BOLD}${prompt}${NC} ${DIM}[${hint}]${NC} "
-    read -r response
-
-    if [ -z "$response" ]; then
-        response="$default"
-    fi
-
-    [[ "$response" =~ ^[Yy] ]]
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -193,13 +118,22 @@ verify_source_files() {
     echo -e "  ${BOLD}Verifying source files...${NC}"
     echo ""
 
-    local dirs=("install/skills" "install/agents" "install/constitutions" "install/workspace" "install/hooks")
+    local required_paths=(
+        "install/skills"
+        "install/agents"
+        "install/workspace/skills"
+        "install/workspace/scripts"
+        "install/hooks"
+        "install/settings.json"
+        "install/CLAUDE.md"
+        "help"
+    )
 
-    for dir in "${dirs[@]}"; do
-        if [ -d "$SCRIPT_DIR/$dir" ]; then
-            print_success "$dir/"
+    for path in "${required_paths[@]}"; do
+        if [ -e "$SCRIPT_DIR/$path" ]; then
+            print_success "$path"
         else
-            print_error "$dir/ ${DIM}(missing)${NC}"
+            print_error "$path ${DIM}(missing)${NC}"
             ((missing++))
         fi
     done
@@ -225,30 +159,94 @@ check_project_root() {
     fi
 }
 
-# ═══════════════════════════════════════════════════════════════════════════════
-# CONSTITUTION TEMPLATE SELECTION
-# ═══════════════════════════════════════════════════════════════════════════════
+confirm() {
+    local prompt="$1"
+    local default="${2:-y}"
 
-select_constitution_template() {
-    echo -e "\n  ${BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "  ${BOLD}Choose your constitution template${NC}"
-    echo -e "  ${BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    if [ "$default" = "y" ]; then
+        local hint="Y/n"
+    else
+        local hint="y/N"
+    fi
 
-    select_option "What type of project is this?" \
-        "🏢 B2C SaaS - Fundable consumer product (Recommended)" \
-        "🏛️  B2B SaaS - Enterprise-ready, compliant" \
-        "⚡ Side Project - Ship in 1 week, minimal rules" \
-        "🔬 Experimental - Learn and break things"
+    echo -ne "  ${BOLD}${prompt}${NC} ${DIM}[${hint}]${NC} "
+    read -r response
 
-    case $SELECTED_INDEX in
-        0) CONSTITUTION_TEMPLATE="b2c-saas" ;;
-        1) CONSTITUTION_TEMPLATE="b2b-saas" ;;
-        2) CONSTITUTION_TEMPLATE="side-project" ;;
-        3) CONSTITUTION_TEMPLATE="experimental" ;;
-    esac
+    if [ -z "$response" ]; then
+        response="$default"
+    fi
+
+    [[ "$response" =~ ^[Yy] ]]
+}
+
+prompt_for_directory() {
+    echo ""
+    echo -e "  ${BOLD}Where would you like to install Shipkit?${NC}"
+    echo -e "  ${DIM}(Press Enter for current directory: $PWD)${NC}"
+    echo ""
+    echo -ne "  ${CYAN}Install path:${NC} "
+    read -r user_input
+
+    if [ -z "$user_input" ]; then
+        TARGET_DIR="$PWD"
+    else
+        TARGET_DIR="$user_input"
+    fi
+
+    # Convert to absolute path
+    if [[ "$TARGET_DIR" != /* ]]; then
+        TARGET_DIR="$PWD/$TARGET_DIR"
+    fi
+}
+
+open_html_docs() {
+    local html_dir="$SCRIPT_DIR/help"
 
     echo ""
-    print_success "Selected: ${BOLD}$CONSTITUTION_TEMPLATE${NC}"
+    echo -e "  ${BRIGHT_CYAN}📖 Opening documentation...${NC}"
+    echo ""
+
+    if [ ! -d "$html_dir" ]; then
+        print_warning "Documentation files not found in $html_dir"
+        return 1
+    fi
+
+    local skills_summary="$html_dir/skills-summary.html"
+    local system_overview="$html_dir/system-overview.html"
+
+    # Detect OS and open files
+    case "$(uname -s)" in
+        Darwin*)
+            # macOS
+            if [ -f "$system_overview" ]; then
+                open "$system_overview" 2>/dev/null && print_success "Opened system-overview.html" || print_warning "Could not open system-overview.html"
+            fi
+            if [ -f "$skills_summary" ]; then
+                open "$skills_summary" 2>/dev/null && print_success "Opened skills-summary.html" || print_warning "Could not open skills-summary.html"
+            fi
+            ;;
+        Linux*)
+            # Linux
+            if command -v xdg-open &> /dev/null; then
+                [ -f "$system_overview" ] && xdg-open "$system_overview" 2>/dev/null && print_success "Opened system-overview.html"
+                [ -f "$skills_summary" ] && xdg-open "$skills_summary" 2>/dev/null && print_success "Opened skills-summary.html"
+            else
+                print_warning "xdg-open not found. View docs at: $html_dir"
+            fi
+            ;;
+        MINGW*|MSYS*|CYGWIN*)
+            # Windows (Git Bash, MSYS2, Cygwin)
+            if [ -f "$system_overview" ]; then
+                start "$system_overview" 2>/dev/null && print_success "Opened system-overview.html" || print_warning "Could not open system-overview.html"
+            fi
+            if [ -f "$skills_summary" ]; then
+                start "$skills_summary" 2>/dev/null && print_success "Opened skills-summary.html" || print_warning "Could not open skills-summary.html"
+            fi
+            ;;
+        *)
+            print_warning "Unknown OS. View docs at: $html_dir"
+            ;;
+    esac
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -264,12 +262,14 @@ install_skills() {
 
     mkdir -p .claude/skills
 
-    print_loading "Installing all skills"
+    print_loading "Installing skill definitions"
     cp -r "$SCRIPT_DIR/install/skills/"* .claude/skills/
 
-    local skill_count=$(ls -1d .claude/skills/*/ 2>/dev/null | wc -l | tr -d ' ')
-    print_success "Installed $skill_count skills"
-    print_bullet "Product discovery, technical specs, development workflow"
+    local skill_count=$(find .claude/skills -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
+    print_success "Installed $skill_count skill definitions"
+    print_bullet "12 product skills (prod-*)"
+    print_bullet "9 development skills (dev-*)"
+    print_bullet "3 meta skills (shipkit-master, dev-discussion, dev-writing-skills)"
 }
 
 install_agents() {
@@ -291,41 +291,9 @@ install_agents() {
     done
 
     print_success "Installed $count agent personas"
-    print_bullet "Discovery, Architect, Implementer, Reviewer, Researcher"
-}
-
-install_constitution() {
-    echo ""
-    echo -e "  ${BOLD}Installing constitution template${NC}"
-    echo ""
-
-    mkdir -p .claude/constitutions
-
-    # Copy core.md
-    if [ -f "$SCRIPT_DIR/install/constitutions/$CONSTITUTION_TEMPLATE/core.md" ]; then
-        cp "$SCRIPT_DIR/install/constitutions/$CONSTITUTION_TEMPLATE/core.md" .claude/constitutions/core.md
-        print_success "Installed core constitution"
-    fi
-
-    # Copy product/ directory if exists
-    if [ -d "$SCRIPT_DIR/install/constitutions/$CONSTITUTION_TEMPLATE/product" ]; then
-        cp -r "$SCRIPT_DIR/install/constitutions/$CONSTITUTION_TEMPLATE/product" .claude/constitutions/
-        local product_count=$(find .claude/constitutions/product -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-        if [ "$product_count" -gt 0 ]; then
-            print_success "Installed $product_count product constitutions"
-        fi
-    fi
-
-    # Copy technical/ directory if exists
-    if [ -d "$SCRIPT_DIR/install/constitutions/$CONSTITUTION_TEMPLATE/technical" ]; then
-        cp -r "$SCRIPT_DIR/install/constitutions/$CONSTITUTION_TEMPLATE/technical" .claude/constitutions/
-        local technical_count=$(find .claude/constitutions/technical -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
-        if [ "$technical_count" -gt 0 ]; then
-            print_success "Installed $technical_count technical constitutions"
-        fi
-    fi
-
-    print_bullet "Template: ${CYAN}$CONSTITUTION_TEMPLATE${NC}"
+    print_bullet "prod-product-manager, prod-product-designer"
+    print_bullet "dev-architect, dev-implementer, dev-reviewer"
+    print_bullet "any-researcher"
 }
 
 install_hooks() {
@@ -335,38 +303,39 @@ install_hooks() {
 
     mkdir -p .claude/hooks
 
-    # Copy hook scripts (excluding settings.json)
+    # Copy all hook files
     for file in "$SCRIPT_DIR/install/hooks/"*; do
-        filename=$(basename "$file")
-        if [ "$filename" != "settings.json" ]; then
+        if [ -f "$file" ]; then
             cp "$file" .claude/hooks/
         fi
     done
     chmod +x .claude/hooks/*.sh 2>/dev/null || true
 
-    # Configure settings.json
-    SETTINGS_FILE=".claude/settings.json"
-    if [ ! -f "$SETTINGS_FILE" ]; then
-        if [ -f "$SCRIPT_DIR/install/hooks/settings.json" ]; then
-            cp "$SCRIPT_DIR/install/hooks/settings.json" "$SETTINGS_FILE"
-            print_success "Installed settings.json with permissions & hooks"
-        else
-            cat > "$SETTINGS_FILE" << 'SETTINGS_EOF'
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup|resume|clear|compact",
-        "command": ".claude/hooks/run-hook.cmd session-start.sh"
-      }
-    ]
-  }
+    print_success "Installed session hooks"
+    print_bullet "SessionStart hook loads shipkit-master"
 }
-SETTINGS_EOF
-            print_success "Created basic settings.json with hooks"
+
+install_settings() {
+    echo ""
+    echo -e "  ${BOLD}Installing settings.json${NC}"
+    echo ""
+
+    SETTINGS_FILE=".claude/settings.json"
+
+    if [ ! -f "$SETTINGS_FILE" ]; then
+        if [ -f "$SCRIPT_DIR/install/settings.json" ]; then
+            cp "$SCRIPT_DIR/install/settings.json" "$SETTINGS_FILE"
+            print_success "Installed settings.json"
+            print_bullet "File protections: .claude/* and .shipkit/skills/*/outputs|templates|scripts"
+            print_bullet "SessionStart hook configured"
+            print_bullet "SkillComplete prompts enabled"
+        else
+            print_error "Source settings.json not found!"
+            return 1
         fi
     else
         print_warning "settings.json exists, preserving your custom config"
+        print_info "Backup your settings before re-installing if needed"
     fi
 }
 
@@ -377,62 +346,54 @@ install_workspace() {
     echo -e "  ${BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
 
-    print_loading "Creating .shipkit/ workspace"
+    print_loading "Creating .shipkit/ workspace structure"
 
-    # Create unified workspace structure
-    mkdir -p .shipkit/{specs,discovery,strategy,requirements,brand,design,metrics,scripts,templates}
+    # Create base directories
+    mkdir -p .shipkit/scripts
+    mkdir -p .shipkit/skills
 
-    # Copy scripts
-    cp -r "$SCRIPT_DIR/install/workspace/scripts/bash" .shipkit/scripts/
-    cp -r "$SCRIPT_DIR/install/workspace/scripts/powershell" .shipkit/scripts/ 2>/dev/null || true
-    chmod +x .shipkit/scripts/bash/*.sh 2>/dev/null || true
+    # Copy shared scripts
+    if [ -d "$SCRIPT_DIR/install/workspace/scripts/bash" ]; then
+        cp -r "$SCRIPT_DIR/install/workspace/scripts/bash" .shipkit/scripts/
+        chmod +x .shipkit/scripts/bash/*.sh 2>/dev/null || true
+        print_success "Installed shared scripts (common.sh)"
+    fi
 
-    # Copy templates
-    cp -r "$SCRIPT_DIR/install/workspace/templates/"* .shipkit/templates/ 2>/dev/null || true
+    # Copy all skill implementations
+    print_loading "Installing skill implementations (scripts, templates, references)"
 
-    # Create README
-    cat > .shipkit/README.md <<EOF
-# Shipkit Workspace
+    local skill_impl_count=0
+    if [ -d "$SCRIPT_DIR/install/workspace/skills" ]; then
+        for skill_dir in "$SCRIPT_DIR/install/workspace/skills/"*/; do
+            if [ -d "$skill_dir" ]; then
+                skill_name=$(basename "$skill_dir")
+                mkdir -p ".shipkit/skills/$skill_name"
 
-Generated: $(date +"%Y-%m-%d")
-Constitution: $CONSTITUTION_TEMPLATE
+                # Copy scripts, templates, references
+                [ -d "$skill_dir/scripts" ] && cp -r "$skill_dir/scripts" ".shipkit/skills/$skill_name/"
+                [ -d "$skill_dir/templates" ] && cp -r "$skill_dir/templates" ".shipkit/skills/$skill_name/"
+                [ -d "$skill_dir/references" ] && cp -r "$skill_dir/references" ".shipkit/skills/$skill_name/"
 
-## Unified Workspace Structure
+                # Create empty outputs folder (will be populated by skills)
+                mkdir -p ".shipkit/skills/$skill_name/outputs"
 
-This workspace contains all your product and development artifacts:
+                ((skill_impl_count++))
+            fi
+        done
+    fi
 
-### Product Discovery
-- \`strategy/\` - Business strategy, value propositions
-- \`discovery/\` - Personas, JTBD, market analysis
-- \`brand/\` - Brand guidelines, visual direction
-- \`design/\` - Interaction design, user journeys
-- \`requirements/\` - User stories, acceptance criteria
-- \`metrics/\` - Success metrics, KPIs
+    print_success "Installed $skill_impl_count skill implementations"
+    print_bullet "Scripts: Automation for each skill"
+    print_bullet "Templates: Single adaptive template per skill"
+    print_bullet "References: Extended docs, examples, patterns"
+    print_bullet "Outputs: Empty (populated when skills run)"
 
-### Technical Development
-- \`specs/\` - Feature specifications
-- \`scripts/\` - Automation scripts
-- \`templates/\` - Document templates
+    # Make skill scripts executable
+    find .shipkit/skills -name "*.sh" -type f -exec chmod +x {} \; 2>/dev/null || true
 
-## Recommended Workflow
-
-### Full Product Development
-1. \`/strategic-thinking\` - Define your strategy
-2. \`/personas\` → \`/jobs-to-be-done\` → \`/market-analysis\`
-3. \`/brand-guidelines\` → \`/interaction-design\`
-4. \`/user-stories\` → \`/assumptions-and-risks\` → \`/success-metrics\`
-5. \`/specify\` → \`/plan\` → \`/tasks\` → \`/implement\`
-
-### Quick Implementation
-1. \`/brainstorming\` - Generate ideas
-2. \`/specify\` - Write specification
-3. \`/plan\` → \`/tasks\` → \`/implement\`
-
-Type \`/help\` to see all available skills.
-EOF
-
+    echo ""
     print_success "Shipkit workspace ready"
-    print_bullet "Unified structure for product & development"
+    print_bullet "Unified .shipkit/ structure for all skills"
 }
 
 install_claude_md() {
@@ -441,10 +402,19 @@ install_claude_md() {
     echo ""
 
     if [ ! -f "CLAUDE.md" ]; then
-        cp "$SCRIPT_DIR/install/CLAUDE.md" ./CLAUDE.md
-        print_success "Created CLAUDE.md (Claude reads this at session start)"
+        if [ -f "$SCRIPT_DIR/install/CLAUDE.md" ]; then
+            cp "$SCRIPT_DIR/install/CLAUDE.md" ./CLAUDE.md
+            print_success "Installed CLAUDE.md (project instructions)"
+            print_bullet "24 skill routing guide"
+            print_bullet "Constitution-driven workflows"
+            print_bullet "Product → Development integration"
+        else
+            print_error "Source CLAUDE.md not found!"
+            return 1
+        fi
     else
         print_warning "CLAUDE.md exists, skipping"
+        print_info "Delete existing CLAUDE.md if you want to reinstall"
     fi
 }
 
@@ -453,8 +423,9 @@ install_claude_md() {
 # ═══════════════════════════════════════════════════════════════════════════════
 
 show_completion() {
-    local skill_count=$(ls -1d .claude/skills/*/ 2>/dev/null | wc -l | tr -d ' ')
+    local skill_count=$(find .claude/skills -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
     local agent_count=$(ls -1 .claude/agents/*.md 2>/dev/null | wc -l | tr -d ' ')
+    local skill_impl_count=$(find .shipkit/skills -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
 
     echo ""
     echo ""
@@ -470,12 +441,13 @@ EOF
 
     echo -e "  ${BOLD}What was installed:${NC}"
     echo ""
-    print_success "${skill_count} skills in .claude/skills/"
-    print_success "${agent_count} agent personas in .claude/agents/"
-    print_success "Unified workspace in .shipkit/"
-    print_success "Session hooks in .claude/hooks/"
-    print_success "Constitution template: ${CONSTITUTION_TEMPLATE}"
-    print_success "CLAUDE.md (project instructions)"
+    print_success "${skill_count} skill definitions (.claude/skills/)"
+    print_success "${skill_impl_count} skill implementations (.shipkit/skills/)"
+    print_success "${agent_count} agent personas (.claude/agents/)"
+    print_success "Shared scripts (.shipkit/scripts/bash/common.sh)"
+    print_success "Session hooks (.claude/hooks/)"
+    print_success "Settings with file protections (.claude/settings.json)"
+    print_success "Project instructions (CLAUDE.md)"
 
     echo ""
     echo -e "  ${BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -485,19 +457,32 @@ EOF
 
     echo -e "  ${CYAN}1.${NC} Start Claude Code in ${CYAN}$TARGET_DIR${NC}"
     echo ""
-    echo -e "  ${CYAN}2.${NC} Begin your workflow:"
+    echo -e "  ${CYAN}2.${NC} Choose your workflow:"
     echo ""
-    echo -e "     ${DIM}Full product development:${NC}"
-    echo -e "     ${GREEN}/strategic-thinking${NC} → ${GREEN}/personas${NC} → ${GREEN}/specify${NC} → ${GREEN}/implement${NC}"
+    echo -e "     ${DIM}Full product development (Greenfield):${NC}"
+    echo -e "     ${GREEN}/prod-strategic-thinking${NC} → ${GREEN}/prod-constitution-builder${NC}"
+    echo -e "     → ${GREEN}/prod-personas${NC} → ${GREEN}/prod-user-stories${NC} → ${GREEN}/dev-specify${NC}"
     echo ""
-    echo -e "     ${DIM}Quick implementation:${NC}"
-    echo -e "     ${GREEN}/brainstorming${NC} → ${GREEN}/specify${NC} → ${GREEN}/implement${NC}"
+    echo -e "     ${DIM}Quick POC (Fast validation):${NC}"
+    echo -e "     ${GREEN}/prod-constitution-builder${NC} ${DIM}(choose POC)${NC} → ${GREEN}/dev-specify${NC} → ${GREEN}/dev-implement${NC}"
     echo ""
-    echo -e "  ${CYAN}3.${NC} Type ${GREEN}/help${NC} to see all available skills"
+    echo -e "     ${DIM}Existing codebase (Add feature):${NC}"
+    echo -e "     ${GREEN}/dev-constitution${NC} → ${GREEN}/dev-specify${NC} → ${GREEN}/dev-implement${NC}"
     echo ""
+    echo -e "  ${CYAN}3.${NC} Type ${GREEN}/help${NC} to see all 24 skills"
+    echo ""
+    echo -e "  ${BRIGHT_CYAN}💡 Constitution-Driven Development:${NC}"
+    echo -e "     Run ${GREEN}/prod-constitution-builder${NC} to choose project type:"
+    echo -e "     ${DIM}• B2B/B2C Greenfield (comprehensive)${NC}"
+    echo -e "     ${DIM}• Side Project MVP/POC (minimal)${NC}"
+    echo -e "     ${DIM}• Experimental (learning-focused)${NC}"
+    echo -e "     ${DIM}• Existing Project (document current state)${NC}"
     echo ""
     echo -e "  ${DIM}Happy shipping! 🚀${NC}"
     echo ""
+
+    # Open documentation in browser
+    open_html_docs
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -508,14 +493,13 @@ show_usage() {
     cat << EOF
 Usage: $0 [TARGET_DIR] [OPTIONS]
 
-Radically simple installer for Shipkit. Run without arguments for guided setup in current directory.
+Install Shipkit framework into a target directory.
 
 ARGUMENTS:
-    TARGET_DIR                 Target directory to install shipkit (optional, defaults to current directory)
+    TARGET_DIR                 Target directory (optional, defaults to current directory)
 
 OPTIONS:
     --target <path>            Target directory (alternative to positional argument)
-    --constitution <template>  Choose constitution template (b2c-saas|b2b-saas|side-project|experimental)
     --github <URL>             Clone from GitHub instead of local
     --branch <name>            GitHub branch (default: main)
     --yes, -y                  Skip confirmations
@@ -531,11 +515,39 @@ EXAMPLES:
     # Install to specific directory (flag)
     bash install.sh --target /path/to/project
 
-    # Non-interactive with B2B SaaS constitution
-    bash install.sh /path/to/project --constitution b2b-saas -y
+    # Non-interactive installation
+    bash install.sh /path/to/project -y
 
     # From GitHub to specific directory
-    bash install.sh --target ~/my-project --github https://github.com/user/shipkit.git --constitution side-project
+    bash install.sh --target ~/my-project --github https://github.com/user/shipkit.git
+
+WHAT GETS INSTALLED:
+    .claude/
+      skills/           24 skill definitions (SKILL.md files)
+      agents/           6 agent personas
+      hooks/            Session start hooks
+      settings.json     Permissions and file protections
+
+    .shipkit/
+      skills/           24 skill implementations
+        */scripts/      Automation for each skill
+        */templates/    Templates (including 6 constitution templates)
+        */references/   Extended docs and examples
+        */outputs/      Empty (populated when skills run)
+      scripts/
+        bash/common.sh  Shared utilities
+
+    CLAUDE.md           Project instructions for Claude
+
+CONSTITUTION SELECTION:
+    Constitution templates are NOT selected during install.
+    Run /prod-constitution-builder to choose from 6 project types:
+      • B2B SaaS Greenfield
+      • B2C SaaS Greenfield
+      • Experimental
+      • Side Project MVP
+      • Side Project POC
+      • Existing Project
 
 EOF
 }
@@ -551,7 +563,6 @@ main() {
             --target) TARGET_DIR="$2"; shift 2;;
             --github) GITHUB_URL="$2"; shift 2;;
             --branch) GITHUB_BRANCH="$2"; shift 2;;
-            --constitution) CONSTITUTION_TEMPLATE="$2"; shift 2;;
             --yes|-y) INTERACTIVE=false; shift;;
             --help) show_usage; exit 0;;
             --*) echo "Unknown option: $1"; show_usage; exit 1;;
@@ -569,9 +580,13 @@ main() {
         esac
     done
 
-    # Default to current directory if no target specified
+    # Prompt for directory in interactive mode if not specified
     if [ -z "$TARGET_DIR" ]; then
-        TARGET_DIR="$PWD"
+        if [ "$INTERACTIVE" = true ] && [ -z "$GITHUB_URL" ]; then
+            prompt_for_directory
+        else
+            TARGET_DIR="$PWD"
+        fi
     fi
 
     # Convert to absolute path
@@ -616,11 +631,22 @@ main() {
         TEMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'shipkit')
         CLEANUP_TEMP=true
 
-        if git clone --depth 1 --branch "$GITHUB_BRANCH" "$GITHUB_URL" "$TEMP_DIR" 2>/dev/null; then
+        if git clone --depth 1 --branch "$GITHUB_BRANCH" "$GITHUB_URL" "$TEMP_DIR" 2>&1; then
             print_success "Repository cloned"
             SCRIPT_DIR="$TEMP_DIR"
         else
             print_error "Failed to clone repository"
+            echo ""
+            print_warning "Common causes:"
+            print_bullet "Repository is private (requires authentication)"
+            print_bullet "Invalid URL or branch name"
+            print_bullet "Network connectivity issues"
+            echo ""
+            print_info "For private repos, clone manually first:"
+            echo -e "  ${DIM}git clone $GITHUB_URL /your/path${NC}"
+            echo -e "  ${DIM}cd /your/path${NC}"
+            echo -e "  ${DIM}bash install.sh${NC}"
+            echo ""
             exit 1
         fi
         echo ""
@@ -654,26 +680,20 @@ main() {
     # Confirm installation location
     if [ "$INTERACTIVE" = true ]; then
         echo ""
-        if ! confirm "Install ShipKit to ${CYAN}$TARGET_DIR${NC}?"; then
+        if ! confirm "Install Shipkit to ${CYAN}$TARGET_DIR${NC}?"; then
             print_info "Installation cancelled."
             exit 0
         fi
-
-        # Select constitution template
-        select_constitution_template
-    else
-        # Non-interactive: default constitution template
-        [ -z "$CONSTITUTION_TEMPLATE" ] && CONSTITUTION_TEMPLATE="b2c-saas"
-        echo ""
-        print_info "Using constitution template: ${BOLD}$CONSTITUTION_TEMPLATE${NC}"
     fi
 
     # Perform installation
-    print_info "Installing shipkit (all skills + unified workspace)..."
+    echo ""
+    print_info "Installing Shipkit framework..."
+
     install_skills
     install_agents
-    install_constitution
     install_hooks
+    install_settings
     install_workspace
     install_claude_md
 

@@ -1,6 +1,6 @@
 ---
 name: any-researcher
-description: Deep research and exploration specialist for cross-referencing and investigation
+description: Deep research specialist. Use when investigating markets, exploring solutions, or gathering context. Proactively uses web search, cross-references multiple sources, and cites all findings.
 tools:  # Inherits all tools - specify here if restrictions needed
 model: inherit
 permissionMode: default

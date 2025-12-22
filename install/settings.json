@@ -11,6 +11,8 @@
       "Write(__tests__/**)",
       "Write(*.ts)",
       "Write(*.tsx)",
+      "Write(*.js)",
+      "Write(*.jsx)",
       "Write(*.py)",
       "Write(*.json)",
       "Write(*.md)",
@@ -18,6 +20,13 @@
       "Write(*.yml)",
       "Write(*.toml)",
       "Write(*.html)",
+      "Write(*.css)",
+      "Write(*.scss)",
+      "Write(*.sass)",
+      "Write(*.sh)",
+      "Write(*.sql)",
+      "Write(*.xml)",
+      "Write(*.txt)",
       "Write(package.json)",
       "Write(pyproject.toml)",
       "Write(requirements.txt)",
@@ -55,6 +64,15 @@
       "Bash(touch:*)",
       "Bash(mv:*)",
       "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(diff:*)",
+      "Bash(tree:*)",
 
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
@@ -80,15 +98,19 @@
       "Write(production.config.*)",
       "Write(*.pem)",
       "Write(*.key)",
+
+      "Write(.claude/skills/**)",
+      "Write(.claude/agents/**)",
+      "Write(.claude/hooks/**)",
+      "Write(.claude/settings.json)",
+
       "Write(.shipkit/skills/*/outputs/**)",
       "Write(.shipkit/skills/*/templates/**)",
       "Write(.shipkit/skills/*/scripts/**)",
       "Write(.shipkit/scripts/bash/common.sh)",
-      "Bash(rm:*)",
+
       "Bash(sudo:*)",
       "Bash(su:*)",
-      "Bash(curl:*)",
-      "Bash(wget:*)",
       "Bash(ssh:*)"
     ]
   },
@@ -148,9 +170,10 @@
   },
 
   "_notes": {
-    "filePermissions": "Skill outputs/templates/scripts are protected in 'deny' list. Users run skills to update outputs.",
-    "sessionHooks": "SessionStart hook enforces skill usage. SkillComplete hooks prompt for next steps.",
+    "filePermissions": "Framework files protected: .claude/* (installed definitions) and .shipkit/skills/*/outputs|templates|scripts (workflow artifacts). Users have full freedom elsewhere.",
+    "sessionHooks": "SessionStart hook loads shipkit-master for enforcement. SkillComplete hooks prompt for next steps.",
     "constitutions": "Auto-loaded into prod-* and dev-* skills for consistency.",
-    "customization": "Users can override by editing this file or creating .shipkit/settings.local.json"
+    "customization": "Users can override by editing this file or creating .shipkit/settings.local.json",
+    "permissiveApproach": "Only framework-critical files are protected. Users can rm, curl, wget, and write all common file types."
   }
 }

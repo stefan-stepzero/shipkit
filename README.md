@@ -2,10 +2,10 @@
 
 A curated collection of **Claude Code skills** for end-to-end product development, from strategy to shipped code.
 
-**30 skills** organized in three categories:
+**24 core skills** organized in three categories:
 - **Prod Skills** (12) - Product discovery & strategy
-- **Dev Skills** (16) - Technical specs & development workflow
-- **Meta Skills** (2) - Enforcement & cross-cutting concerns
+- **Dev Skills** (9) - Technical specs, orchestration & development workflow
+- **Meta Skills** (3) - Enforcement, discussion & skill authoring
 
 Plus **6 agent personas** that specialize behaviors for different workflow stages.
 
@@ -32,29 +32,32 @@ Plus **6 agent personas** that specialize behaviors for different workflow stage
 - prod-discussion - Conversational trade-off analysis and decision facilitation
 - prod-communicator - Stakeholder communications (5 templates)
 
-### Development Skills (16 skills)
-**Specification-driven development pipeline + quality workflow**
+### Development Skills (9 skills)
+**Specification-driven development pipeline + multi-feature orchestration**
 
-**Core Pipeline:**
-- dev-constitution, dev-constitution-builder, dev-specify, dev-plan, dev-tasks, dev-implement
-- dev-analyze, dev-clarify, dev-checklist, dev-taskstoissues
+**Orchestration (2 skills):**
+- dev-roadmap - Sequence specs from user stories (foundation first, optimal execution order)
+- dev-progress - Track completion through roadmap (auto-updated after each merge)
 
-**Quality & Testing:**
-- dev-test-driven-development, dev-verification-before-completion, dev-systematic-debugging
+**Core Pipeline (6 skills):**
+- dev-constitution - Project standards and technical rules
+- dev-specify - Feature specifications from descriptions
+- dev-plan - Implementation plans with architecture decisions
+- dev-tasks - Executable task breakdown with dependencies
+- dev-implement - TDD execution with integrated verification
+- dev-finish - Merge workflow with test validation + progress tracking
 
-**Workflow & Collaboration:**
-- dev-using-git-worktrees, dev-finishing-a-development-branch
-- dev-requesting-code-review, dev-receiving-code-review
-- dev-dispatching-parallel-agents, dev-subagent-driven-development
-- dev-writing-plans, dev-writing-skills
+**Debugging (1 skill):**
+- dev-systematic-debugging - Root cause investigation (invoked when bugs found)
 
-**Key feature:** /dev-implement integrates TDD, verification, debugging, and two-stage code review automatically.
+**Key feature:** /dev-implement integrates TDD, verification, and debugging methodology through reference files (not separate skills). /dev-finish auto-calls /dev-progress after merge.
 
-### Meta Skills (2)
-**Enforcement and cross-cutting concerns**
+### Meta Skills (3)
+**Enforcement, discussion, and extensibility**
 
 - shipkit-master - Skill enforcement (auto-loaded at session start)
-- any-brainstorming - Can interrupt ANY workflow when ambiguity detected
+- dev-discussion - Technical clarification when ambiguity detected (can interrupt any dev workflow)
+- dev-writing-skills - Skill authoring guide (TDD approach to creating custom skills)
 
 ### Agent Personas (6)
 **Specialized behaviors for different workflow stages**
@@ -378,29 +381,29 @@ These are prompts, not forced - user can decline.
 
 ## Current Status
 
-**Completed: 13/29 skills (45%)**
+**✅ COMPLETE - Production Ready!**
 
-**Product Skills:** 12/12 complete (100%) 🎉
-- ✅ prod-strategic-thinking
-- ✅ prod-constitution-builder
-- ✅ prod-personas
-- ✅ prod-jobs-to-be-done
-- ✅ prod-market-analysis
-- ✅ prod-brand-guidelines
-- ✅ prod-interaction-design
-- ✅ prod-user-stories
-- ✅ prod-assumptions-and-risks
-- ✅ prod-success-metrics
-- ✅ prod-discussion (conversational trade-off analysis)
-- ✅ prod-communicator
+**Core Skills: 24/24 (100%)** 🎉
 
-**Development Skills:** 0/16 complete (0%)
-- 🔜 All 16 skills need restructuring to match new architecture
+**Product Skills:** 12/12 ✅
+- Complete product discovery pipeline from strategy through metrics
 
-**Meta Skills:** 1/1 complete (100%)
-- ✅ shipkit-master (enforcement)
+**Development Skills:** 9/9 ✅
+- Orchestration (2/2): roadmap, progress
+- Core Pipeline (6/6): constitution, specify, plan, tasks, implement, finish
+- Debugging (1/1): systematic-debugging
 
-See [RESTRUCTURING-PLAN.md](RESTRUCTURING-PLAN.md) for detailed progress.
+**Meta Skills:** 3/3 ✅
+- shipkit-master (enforcement)
+- dev-discussion (technical clarification)
+- dev-writing-skills (custom skill authoring)
+
+**Reference Files:** 3/3 ✅
+- TDD, verification, and debugging methodologies
+
+**The framework is production-ready with complete multi-feature project orchestration!**
+
+See [Claude Working Documents/REMAINING-WORK.md](Claude Working Documents/REMAINING-WORK.md) for complete details.
 
 ---
 
@@ -574,6 +577,25 @@ bash ../shipkit/install.sh
 - Templates (.shipkit/skills/*/templates/)
 - Scripts (.shipkit/skills/*/scripts/)
 - References (.shipkit/skills/*/references/)
+
+---
+
+## Future Development
+
+The following 8 optional workflow tools have been identified for potential future development. **They are NOT required** - the core framework is complete without them:
+
+### Potential Workflow Enhancements
+
+1. **dev-clarify** - Resolve [NEEDS_CLARIFICATION] markers in specifications
+2. **dev-analyze** - Cross-artifact consistency checking (spec/plan/tasks alignment)
+3. **dev-using-git-worktrees** - Git worktree isolation for parallel feature development
+4. **dev-dispatching-parallel-agents** - Parallel agent dispatch for concurrent task execution
+5. **dev-requesting-code-review** - Best practices for PR preparation
+6. **dev-receiving-code-review** - Workflow for processing review feedback
+7. **dev-checklist** - Validation checklists for specs, plans, and implementations
+8. **dev-taskstoissues** - GitHub issues integration for task tracking
+
+These can be added as needed based on team requirements and usage patterns.
 
 ---
 

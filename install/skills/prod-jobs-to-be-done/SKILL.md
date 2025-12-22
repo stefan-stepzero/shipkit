@@ -33,6 +33,21 @@ User says:
 
 ## Process
 
+### Step 0: Check Product Constitution (Recommended)
+
+**If product constitution exists:**
+- Read `.shipkit/skills/prod-constitution-builder/outputs/product-constitution.md`
+- Project type determines JTBD analysis depth:
+  - **POC:** ONE job only (the core validation hypothesis), shallow analysis
+  - **Side Project MVP:** 1-2 jobs (primary + maybe secondary), medium analysis
+  - **B2C/B2B Greenfield:** 2-4 jobs per persona, deep analysis with full forces diagram
+  - **Experimental:** Focus on job related to experiment hypothesis
+  - **Existing Project:** Document jobs current product already serves
+
+**If constitution doesn't exist:** Default to medium depth (2-3 jobs per persona)
+
+---
+
 ### 1. For Each Persona, Define the Job
 
 **Job Statement** (follow this format):

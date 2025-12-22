@@ -1,3 +1,8 @@
+---
+name: prod-discussion
+description: "Use when facing product decisions, trade-offs, or 'should we' questions. Facilitates structured decision-making through option exploration and trade-off analysis. Conversational skill that creates no artifacts - purely guidance-focused."
+---
+
 # Product Discussion
 
 **Facilitates product decisions through trade-off analysis and structured option exploration.**

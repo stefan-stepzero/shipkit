@@ -36,6 +36,22 @@ Or uploads:
 
 ## Process
 
+### Step 0: Check Product Constitution (Recommended)
+
+**If product constitution exists:**
+- Read `.shipkit/skills/prod-constitution-builder/outputs/product-constitution.md`
+- Project type guides persona depth:
+  - **POC:** 1 persona (primary user only - validate with minimal scope)
+  - **Side Project MVP:** 1-2 personas (keep minimal)
+  - **Experimental:** 1 persona (who will test the experiment hypothesis)
+  - **B2C Greenfield:** 2-3 personas (primary + secondary user types)
+  - **B2B Greenfield:** 3-5 personas (decision maker, end user, admin, influencer)
+  - **Existing Project:** Document existing user types already served
+
+**If constitution doesn't exist:** Default to 2-3 personas (medium depth)
+
+---
+
 ### 1. Determine Number of Personas
 
 Ask: "How many distinct user types do we have?"

@@ -1,6 +1,6 @@
 ---
 name: prod-product-manager
-description: Product strategy, user research, and metrics specialist for product discovery skills
+description: Product strategy and user research specialist. Use when defining business strategy, creating personas, analyzing markets, or writing user stories. Proactively suggests next discovery steps and challenges assumptions.
 tools:  # Inherits all tools - specify here if restrictions needed
 model: inherit
 permissionMode: default

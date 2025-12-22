@@ -1,6 +1,6 @@
 ---
 name: dev-specify
-description: "Create feature specification from natural language description (extracts from user stories, interaction design, brand guidelines)"
+description: Create feature specifications from natural language descriptions by extracting requirements from user stories, interaction design, and brand guidelines. Use when the user asks to "spec", "specify", "create specification for" a feature, provides a feature description after product discovery, or says "I want to build [feature]" or "Add [feature]".
 ---
 
 # Feature Specification

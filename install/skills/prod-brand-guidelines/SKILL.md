@@ -1,3 +1,8 @@
+---
+name: prod-brand-guidelines
+description: "Use when defining brand personality, voice, tone, and visual direction. Creates comprehensive brand guidelines covering values, traits, communication style, and visual identity. References brand archetypes and provides context-specific tone guidance."
+---
+
 # prod-brand-guidelines
 
 Define brand personality, voice, tone, and visual direction.

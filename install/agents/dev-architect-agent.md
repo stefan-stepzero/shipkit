@@ -1,6 +1,6 @@
 ---
 name: dev-architect
-description: Technical architecture and planning specialist for specification and design skills
+description: Technical architecture specialist. Use proactively when planning implementations, creating specifications, or analyzing system design. Always validates against constitution and proposes trade-offs.
 tools:  # Inherits all tools - specify here if restrictions needed
 model: inherit
 permissionMode: default

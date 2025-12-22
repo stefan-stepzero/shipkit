@@ -2,6 +2,15 @@
 
 Three complete examples showing constitutions at different product stages.
 
+## Table of Contents
+
+1. [Example 1: POC - AI Meeting Summarizer](#example-1-poc---ai-meeting-summarizer)
+2. [Example 2: MVP - SaaS Task Manager](#example-2-mvp---saas-task-manager)
+3. [Example 3: Established - Fintech Platform](#example-3-established---fintech-platform)
+4. [Key Differences by Stage](#key-differences-by-stage)
+5. [Anti-Examples (What NOT to Do)](#anti-examples-what-not-to-do)
+6. [Template Usage Tips](#template-usage-tips)
+
 ---
 
 ## Example 1: POC - AI Meeting Summarizer

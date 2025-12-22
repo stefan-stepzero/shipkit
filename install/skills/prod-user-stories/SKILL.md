@@ -51,6 +51,21 @@ Or when:
 
 ## Process
 
+### Step 0: Check Product Constitution (Recommended)
+
+**If product constitution exists:**
+- Read `.shipkit/skills/prod-constitution-builder/outputs/product-constitution.md`
+- Project type determines acceptance criteria rigor:
+  - **POC:** Minimal ACs (happy path only, skip edge cases/errors)
+  - **Side Project MVP:** Basic ACs (happy path + obvious errors only)
+  - **B2C/B2B Greenfield:** Comprehensive ACs (all scenarios, full edge case coverage)
+  - **Experimental:** ACs focused on experiment validation metrics
+  - **Existing Project:** Match existing story format and AC standards
+
+**If constitution doesn't exist:** Default to medium rigor (happy path + key errors)
+
+---
+
 ### 1. Run the Script
 
 ```bash

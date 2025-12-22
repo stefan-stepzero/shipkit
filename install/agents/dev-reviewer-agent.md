@@ -1,6 +1,6 @@
 ---
 name: dev-reviewer
-description: Two-stage code review specialist for spec compliance and code quality
+description: Two-stage code review specialist. Use immediately after code implementation or when preparing for code review. Enforces spec compliance (blocking) before code quality (suggestions).
 tools:  # Inherits all tools - specify here if restrictions needed
 model: inherit
 permissionMode: default

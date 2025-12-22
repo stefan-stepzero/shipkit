@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>shipkit System Overview</title>
+    <title>SHIPKIT - Ship Products Faster with AI-Guided Workflows</title>
     <style>
         * {
             margin: 0;
@@ -11,38 +11,125 @@
             box-sizing: border-box;
         }
 
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(102, 126, 234, 0.8); }
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #1a202c;
+            background: linear-gradient(-45deg, #667eea, #764ba2, #f093fb, #4facfe);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: 24px;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.4);
             overflow: hidden;
+            animation: fadeInUp 0.8s ease;
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 50%, #667eea 100%);
             color: white;
-            padding: 40px;
+            padding: 60px 40px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102,126,234,0.2) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .ascii-logo {
+            font-family: 'Courier New', monospace;
+            font-size: 0.5em;
+            line-height: 1.1;
+            color: #68d391;
+            text-shadow: 0 0 10px rgba(104, 211, 145, 0.5);
+            margin-bottom: 20px;
+            white-space: pre;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
         }
 
         header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #fff, #68d391);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 900;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 1s ease;
         }
 
         header p {
-            font-size: 1.2em;
-            opacity: 0.9;
+            font-size: 1.4em;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tagline {
+            font-size: 1.8em !important;
+            font-weight: 700;
+            margin-top: 15px;
+            background: linear-gradient(135deg, #f093fb, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .content {
@@ -50,15 +137,141 @@
         }
 
         .section {
-            margin-bottom: 50px;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease;
         }
 
         .section h2 {
             color: #667eea;
-            font-size: 2em;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            border-bottom: 4px solid transparent;
+            border-image: linear-gradient(90deg, #667eea, #764ba2, transparent);
+            border-image-slice: 1;
+            padding-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+            text-align: center;
+        }
+
+        .stat {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            border-radius: 16px;
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat:hover::before {
+            opacity: 1;
+        }
+
+        .stat:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .stat-number {
+            font-size: 4em;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+
+        .value-prop {
+            background: linear-gradient(135deg, #f093fb 0%, #4facfe 100%);
+            padding: 60px 40px;
+            margin: 60px -40px;
+            color: white;
+            text-align: center;
+        }
+
+        .value-prop h2 {
+            color: white;
+            border: none;
+            font-size: 3em;
+            margin-bottom: 40px;
+        }
+
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .value-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 16px;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .value-card:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .value-card h3 {
+            font-size: 1.8em;
             margin-bottom: 20px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .value-card p {
+            font-size: 1.2em;
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+        .value-card ul {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .value-card li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 1.1em;
+        }
+
+        .value-card li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            font-size: 1.3em;
         }
 
         .workflow {
@@ -69,28 +282,36 @@
         }
 
         .phase {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 12px;
-            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e0e7ff 100%);
+            border-radius: 16px;
+            padding: 40px;
             position: relative;
+            border: 2px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .phase:hover {
+            transform: translateX(10px);
+            box-shadow: -10px 10px 30px rgba(102, 126, 234, 0.3);
         }
 
         .phase::before {
             content: attr(data-number);
             position: absolute;
-            top: -15px;
-            left: 30px;
-            background: #667eea;
+            top: -20px;
+            left: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 1.2em;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-weight: 900;
+            font-size: 1.8em;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite;
         }
 
         .phase h3 {
@@ -115,15 +336,17 @@
 
         .skill-card {
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
         }
 
         .skill-card:hover {
-            transform: translateX(5px);
+            transform: translateX(10px) scale(1.02);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            border-left-width: 8px;
         }
 
         .skill-card strong {
@@ -154,9 +377,33 @@
         .preset-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preset-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .preset-card:hover::before {
+            opacity: 1;
+        }
+
+        .preset-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.5);
         }
 
         .preset-card h3 {
@@ -256,206 +503,359 @@
 <body>
     <div class="container">
         <header>
-            <h1>ShipKit</h1>
-            <p>Complete Product Development Framework</p>
-            <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.8;">ProdKit + DevKit + Agent Personas | From Strategy to Shipped Code</p>
+            <div class="ascii-logo">
+███████╗██╗  ██╗██╗██████╗ ██╗  ██╗██╗████████╗
+██╔════╝██║  ██║██║██╔══██╗██║ ██╔╝██║╚══██╔══╝
+███████╗███████║██║██████╔╝█████╔╝ ██║   ██║
+╚════██║██╔══██║██║██╔═══╝ ██╔═██╗ ██║   ██║
+███████║██║  ██║██║██║     ██║  ██╗██║   ██║
+╚══════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝  ╚═╝╚═╝   ╚═╝
+            </div>
+            <h1>Stop Guessing. Start Shipping.</h1>
+            <p>AI-Guided Product Development from Strategy to Production</p>
+            <p class="tagline">From Idea to Deployed Code in Hours, Not Weeks</p>
         </header>
 
         <div class="content">
+            <!-- Hero Stats -->
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">Core Skills</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">AI Agent Personas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Local - No APIs</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">1</div>
+                    <div class="stat-label">Command Install</div>
+                </div>
+            </div>
+
+            <!-- Value Proposition -->
+            <div class="value-prop">
+                <h2>Why Shipkit?</h2>
+                <div class="value-grid">
+                    <div class="value-card">
+                        <h3>Constitution-Driven Development</h3>
+                        <p>Start every project with the right governance model:</p>
+                        <ul>
+                            <li>B2B Greenfield - Full discovery</li>
+                            <li>B2C Greenfield - User-focused</li>
+                            <li>Experimental POC - Fast iteration</li>
+                            <li>Side Project MVP - Balanced approach</li>
+                            <li>Side Project POC - Quick validation</li>
+                            <li>Existing Project - Structured evolution</li>
+                        </ul>
+                    </div>
+                    <div class="value-card">
+                        <h3>Right-Sized Discovery</h3>
+                        <p>Never waste time on unnecessary work:</p>
+                        <ul>
+                            <li>POC: 1 persona, core features only</li>
+                            <li>MVP: 2-3 personas, validated assumptions</li>
+                            <li>Greenfield: 3-5 personas, full market analysis</li>
+                            <li>Adaptive templates adjust to your needs</li>
+                            <li>Skip what you don't need</li>
+                        </ul>
+                    </div>
+                    <div class="value-card">
+                        <h3>Enforced Workflow Discipline</h3>
+                        <p>SessionStart hook ensures you never skip steps:</p>
+                        <ul>
+                            <li>Skills are mandatory when applicable</li>
+                            <li>File protections prevent shortcuts</li>
+                            <li>Outputs are read-only (re-run to update)</li>
+                            <li>Prerequisites checked automatically</li>
+                            <li>No more "I'll document it later"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             <!-- What Is This -->
             <div class="section">
-                <h2>What Is This?</h2>
-                <p style="font-size: 1.1em; line-height: 1.8;">
-                    <strong>ShipKit</strong> is a curated collection of Claude Code skills and agent personas that guide you from initial product idea to shipped code.
+                <h2>The Complete Workflow</h2>
+                <p style="font-size: 1.3em; line-height: 1.8; margin-bottom: 30px;">
+                    <strong>Shipkit</strong> is Claude Code + structured product development.
+                    <span style="color: #667eea; font-weight: 700;">24 battle-tested skills</span> guide you from business strategy to deployed code,
+                    with <span style="color: #764ba2; font-weight: 700;">enforced best practices</span> and
+                    <span style="color: #f093fb; font-weight: 700;">zero external dependencies</span>.
                 </p>
                 <div class="benefits">
                     <div class="benefit">
-                        <h4>🏭 Product Skills (11 prod-*)</h4>
-                        <p>Product discovery and strategy. From business strategy to success metrics, with async skills.</p>
+                        <h4>12 Product Skills</h4>
+                        <p>Research-driven discovery from strategy through success metrics. Adaptive templates for POC/MVP/Greenfield.</p>
                     </div>
                     <div class="benefit">
-                        <h4>🎯 Development Skills (21 dev-*)</h4>
-                        <p>Technical specs and development. <strong>/dev-implement</strong> integrates TDD, two-stage reviews, and verification.</p>
+                        <h4>9 Development Skills</h4>
+                        <p>Orchestration (roadmap, progress) + Core Pipeline (specs → implementation) + Debugging methodology.</p>
                     </div>
                     <div class="benefit">
-                        <h4>🌐 Cross-Context (1 any-* + 1 master)</h4>
-                        <p><strong>/any-brainstorming</strong> + <strong>/shipkit-master</strong> (session-injected enforcement).</p>
+                        <h4>3 Meta Skills</h4>
+                        <p>Enforcement (shipkit-master), technical discussion, and skill authoring guide.</p>
                     </div>
                     <div class="benefit">
-                        <h4>🤖 Agent Personas (6 agents)</h4>
-                        <p>Specialized behaviors: prod-product-manager, prod-product-designer, dev-architect, dev-implementer, dev-reviewer, any-researcher.</p>
+                        <h4>6 Agent Personas</h4>
+                        <p>Specialized AI behaviors: PM, Designer, Architect, Implementer, Reviewer, Researcher.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Complete Workflow -->
             <div class="section">
-                <h2>Complete Workflow: Idea to Shipped Code</h2>
+                <h2>From Idea to Production - The Shipkit Way</h2>
 
                 <div class="workflow">
                     <!-- Phase 1: Product Discovery -->
                     <div class="phase" data-number="1">
-                        <h3>Product Discovery (prod-* skills)</h3>
+                        <h3>Product Discovery (12 prod-* skills)</h3>
                         <p class="phase-description">
-                            Define <strong>what to build</strong> and <strong>why</strong>. Sequential skills from business strategy to success metrics.
-                            <strong>/any-brainstorming</strong> can interrupt any skill when ambiguity detected.
+                            Define <strong>what to build</strong> and <strong>why</strong>.
+                            Research-driven discovery from strategy to success metrics.
+                            Adaptive templates adjust to POC/MVP/Greenfield scope.
                         </p>
 
                         <div class="skills-grid">
                             <div class="skill-card">
                                 <strong>/prod-strategic-thinking</strong>
-                                <small>Define business strategy & value proposition</small>
+                                <small>Business canvas & value proposition</small>
                             </div>
-                            <div class="skill-card" style="border-color: #667eea; background: #f8f7ff;">
-                                <strong>/dev-constitution-builder --product</strong>
-                                <small>Define product principles (after strategy)</small>
+                            <div class="skill-card" style="border-color: #f093fb; background: #fef5ff;">
+                                <strong>/prod-constitution-builder</strong>
+                                <small>Project governance (6 templates: POC/MVP/Greenfield × B2C/B2B)</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/prod-personas</strong>
-                                <small>Identify target users</small>
+                                <small>Target user empathy mapping</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/prod-jobs-to-be-done</strong>
-                                <small>Map current state workflows</small>
+                                <small>JTBD framework with forces</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/prod-market-analysis</strong>
-                                <small>Analyze competition (Porter's Five Forces)</small>
+                                <small>Competitive landscape (WebSearch required)</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/prod-brand-guidelines</strong>
-                                <small>Define visual direction</small>
+                                <small>Visual direction & personality</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/prod-interaction-design</strong>
-                                <small>Design future state journeys</small>
+                                <small>Future state user journeys</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/prod-user-stories</strong>
-                                <small>Write requirements (MoSCoW)</small>
+                                <small>Actionable requirements</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/prod-assumptions-and-risks</strong>
-                                <small>Identify strategic risks</small>
+                                <small>Strategic risk identification</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/prod-success-metrics</strong>
-                                <small>Define KPIs & instrumentation</small>
+                                <small>KPIs and instrumentation plan</small>
+                            </div>
+                            <div class="skill-card" style="border-color: #4facfe; background: #f0f9ff;">
+                                <strong>/prod-discussion</strong>
+                                <small>Async: Trade-off analysis & decision facilitation</small>
+                            </div>
+                            <div class="skill-card" style="border-color: #4facfe; background: #f0f9ff;">
+                                <strong>/prod-communicator</strong>
+                                <small>Async: Stakeholder communications (5 templates)</small>
                             </div>
                         </div>
 
-                        <p style="margin-top: 20px; font-weight: bold; color: #764ba2;">
-                            📁 Output: Complete product context in workspace + product constitution
+                        <p style="margin-top: 25px; font-weight: bold; color: #764ba2; font-size: 1.1em;">
+                            📁 Output: Complete product context in .shipkit/
                         </p>
                     </div>
 
                     <div class="arrow">↓</div>
 
-                    <!-- Phase 2: Technical Specification -->
+                    <!-- Phase 2: Orchestration & Specification -->
                     <div class="phase" data-number="2">
-                        <h3>Technical Specification (dev-* skills)</h3>
+                        <h3>Orchestration & Specification (9 dev-* skills)</h3>
                         <p class="phase-description">
-                            Transform product requirements into detailed technical specs and implementation plans.
+                            Multi-feature roadmap planning, spec-driven development pipeline, and systematic debugging.
+                            <strong>/dev-roadmap</strong> sequences specs, <strong>/dev-progress</strong> tracks completion.
                         </p>
 
                         <div class="skills-grid">
-                            <div class="skill-card" style="border-color: #667eea; background: #f8f7ff;">
-                                <strong>/dev-constitution-builder --technical</strong>
-                                <small>Define technical standards (before specs)</small>
+                            <div class="skill-card" style="border-color: #f093fb; background: #fef5ff;">
+                                <strong>/dev-roadmap</strong>
+                                <small>Sequence specs from user stories (foundation-first ordering)</small>
+                            </div>
+                            <div class="skill-card" style="border-color: #f093fb; background: #fef5ff;">
+                                <strong>/dev-progress</strong>
+                                <small>Track roadmap completion (auto-updated by /dev-finish)</small>
+                            </div>
+                            <div class="skill-card">
+                                <strong>/dev-constitution</strong>
+                                <small>Technical standards & project rules</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/dev-specify</strong>
-                                <small>Write technical specification</small>
+                                <small>Feature specifications from descriptions</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/dev-plan</strong>
-                                <small>Create implementation plan</small>
+                                <small>Implementation plans with architecture</small>
                             </div>
                             <div class="skill-card">
                                 <strong>/dev-tasks</strong>
-                                <small>Break down into actionable tasks</small>
+                                <small>Executable task breakdown</small>
+                            </div>
+                            <div class="skill-card" style="border-color: #10b981; background: #f0fdf4;">
+                                <strong>/dev-implement</strong>
+                                <small>TDD execution + integrated reviews + verification</small>
+                            </div>
+                            <div class="skill-card">
+                                <strong>/dev-finish</strong>
+                                <small>Merge workflow + test validation + progress update</small>
+                            </div>
+                            <div class="skill-card" style="border-color: #ef4444; background: #fef2f2;">
+                                <strong>/dev-systematic-debugging</strong>
+                                <small>Root cause investigation (invoked when bugs found)</small>
                             </div>
                         </div>
 
-                        <p style="margin-top: 20px; font-weight: bold; color: #764ba2;">
-                            📁 Output: Technical specs in workspace/specs/001-feature-name/ + technical constitution
+                        <p style="margin-top: 25px; font-weight: bold; color: #764ba2; font-size: 1.1em;">
+                            📁 Output: Roadmap + specs + shipped features
                         </p>
                     </div>
 
                     <div class="arrow">↓</div>
 
-                    <!-- Phase 3: Development -->
+                    <!-- Phase 3: Meta Skills -->
                     <div class="phase" data-number="3">
-                        <h3>Development</h3>
+                        <h3>Meta Skills (3 cross-cutting skills)</h3>
                         <p class="phase-description">
-                            Execute the plan. <strong>/dev-implement</strong> automatically integrates TDD, two-stage review, and verification.
-                            For 6+ tasks, use subagent execution mode.
+                            Enforcement, clarification, and extensibility.
+                            <strong>/shipkit-master</strong> auto-loads at session start to enforce workflow discipline.
                         </p>
 
                         <div class="skills-grid">
-                            <div class="skill-card">
-                                <strong>/dev-using-git-worktrees</strong>
-                                <small>Create isolated branch</small>
+                            <div class="skill-card" style="border-color: #fbbf24; background: #fefce8;">
+                                <strong>/shipkit-master</strong>
+                                <small>Skill enforcement (auto-loaded by SessionStart hook)</small>
                             </div>
-                            <div class="skill-card" style="border-color: #10b981; background: #f0fdf4;">
-                                <strong>/dev-implement</strong>
-                                <small>Execute tasks with integrated TDD + reviews</small>
+                            <div class="skill-card" style="border-color: #4facfe; background: #f0f9ff;">
+                                <strong>/dev-discussion</strong>
+                                <small>Technical clarification when ambiguity detected</small>
                             </div>
                             <div class="skill-card">
-                                <strong>/dev-finishing-a-development-branch</strong>
-                                <small>Merge, PR, complete</small>
+                                <strong>/dev-writing-skills</strong>
+                                <small>TDD approach to authoring custom skills</small>
                             </div>
                         </div>
 
-                        <p style="margin-top: 15px; font-size: 0.95em; color: #555;">
-                            <strong>/dev-implement</strong> includes: TDD (RED→GREEN→REFACTOR), Spec Compliance Review, Code Quality Review, Verification
-                        </p>
-
-                        <p style="margin-top: 20px; font-weight: bold; color: #764ba2;">
-                            🚀 Output: Shipped feature
+                        <p style="margin-top: 25px; font-weight: bold; color: #10b981; font-size: 1.3em;">
+                            🚀 Result: From idea to production-ready code!
                         </p>
                     </div>
                 </div>
             </div>
 
-            <!-- Installation Presets -->
+            <!-- How It Works -->
             <div class="section">
-                <h2>Installation Presets</h2>
-                <p style="margin-bottom: 20px; font-size: 1.1em;">Choose the preset that fits your workflow:</p>
+                <h2>How Does It Work?</h2>
+                <div class="benefits">
+                    <div class="benefit">
+                        <h4>Session Hook Enforcement</h4>
+                        <p>SessionStart hook auto-loads /shipkit-master meta-skill. Skills are mandatory when applicable - no more "I'll do it later".</p>
+                    </div>
+                    <div class="benefit">
+                        <h4>File Protection</h4>
+                        <p>settings.json makes outputs read-only. To update, you must re-run the skill. This prevents bypassing workflows.</p>
+                    </div>
+                    <div class="benefit">
+                        <h4>Script-Driven Consistency</h4>
+                        <p>Claude uses templates and scripts - never creates files manually. Same format every time.</p>
+                    </div>
+                    <div class="benefit">
+                        <h4>Unified Workspace</h4>
+                        <p>Everything lives in .shipkit/ - no project root pollution. Clean, organized, and version-controllable.</p>
+                    </div>
+                </div>
+            </div>
 
+            <!-- When to Use -->
+            <div class="section">
+                <h2>When to Use Shipkit?</h2>
+                <p style="font-size: 1.2em; margin-bottom: 30px;">
+                    Choose your constitution type based on project scope:
+                </p>
                 <div class="preset-grid">
                     <div class="preset-card">
-                        <h3>Solo (Recommended)</h3>
-                        <div class="count">34 skills</div>
+                        <h3>B2B Greenfield</h3>
                         <ul>
-                            <li>11 prod-* (product) skills</li>
-                            <li>21 dev-* (development) skills</li>
-                            <li>1 any-* + 1 master skill</li>
-                            <li>6 Agent Personas</li>
-                            <li>Perfect for solo developers</li>
+                            <li>Full product discovery</li>
+                            <li>3-5 user personas</li>
+                            <li>Comprehensive market analysis</li>
+                            <li>Enterprise requirements</li>
+                            <li>Formal governance</li>
                         </ul>
                     </div>
 
                     <div class="preset-card">
-                        <h3>All (Teams)</h3>
-                        <div class="count">34 skills</div>
+                        <h3>B2C Greenfield</h3>
                         <ul>
-                            <li>Everything in Solo</li>
-                            <li>Full subagent capabilities</li>
-                            <li>Advanced review workflows</li>
-                            <li>Best for teams</li>
+                            <li>User-focused discovery</li>
+                            <li>3-5 consumer personas</li>
+                            <li>Competitive positioning</li>
+                            <li>Growth metrics focus</li>
+                            <li>Iterative refinement</li>
                         </ul>
                     </div>
 
                     <div class="preset-card">
-                        <h3>Dev Only</h3>
-                        <div class="count">23 skills</div>
+                        <h3>Experimental POC</h3>
                         <ul>
-                            <li>21 dev-* skills</li>
-                            <li>1 any-* + 1 master skill</li>
-                            <li>6 Agent Personas</li>
-                            <li>No prod-* skills</li>
-                            <li>For existing product specs</li>
+                            <li>Fast iteration</li>
+                            <li>1 primary persona</li>
+                            <li>Core features only</li>
+                            <li>Lightweight validation</li>
+                            <li>Learn fast, pivot faster</li>
+                        </ul>
+                    </div>
+
+                    <div class="preset-card">
+                        <h3>Side Project MVP</h3>
+                        <ul>
+                            <li>Balanced approach</li>
+                            <li>2-3 personas</li>
+                            <li>Validated assumptions</li>
+                            <li>Market-ready quality</li>
+                            <li>Launch preparation</li>
+                        </ul>
+                    </div>
+
+                    <div class="preset-card">
+                        <h3>Side Project POC</h3>
+                        <ul>
+                            <li>Quick validation</li>
+                            <li>1 persona</li>
+                            <li>Core hypothesis testing</li>
+                            <li>Minimal viable scope</li>
+                            <li>Evenings & weekends</li>
+                        </ul>
+                    </div>
+
+                    <div class="preset-card">
+                        <h3>Existing Project</h3>
+                        <ul>
+                            <li>Structured evolution</li>
+                            <li>Retroactive discovery</li>
+                            <li>Feature roadmapping</li>
+                            <li>Technical debt planning</li>
+                            <li>Process improvement</li>
                         </ul>
                     </div>
                 </div>
@@ -464,96 +864,106 @@
             <!-- Quick Start -->
             <div class="section">
                 <div class="quick-start">
-                    <h3>Quick Start</h3>
+                    <h3>Ready to Ship Faster?</h3>
 
-                    <p style="margin-bottom: 15px;"><strong>Option 1: Local Installation</strong></p>
-                    <p>Structure your projects like this:</p>
-                    <div class="code-block">
-Projects/<br>
-├── shipkit/          <span style="color: #9ca3af;"># Clone once</span><br>
-└── your-project/          <span style="color: #9ca3af;"># Your project</span>
-                    </div>
-                    <p>Then install:</p>
+                    <p style="font-size: 1.2em; margin-bottom: 25px;">
+                        <strong>One command install.</strong> No configuration. No external APIs. Just AI-guided workflows from idea to production.
+                    </p>
+
+                    <p style="margin-bottom: 15px; font-size: 1.1em;"><strong>Clone and Install:</strong></p>
                     <div class="code-block">
 <code>cd Projects/your-project</code><br>
-<code>bash ../shipkit/install.sh --preset solo</code>
+<code>bash ../shipkit/install.sh</code>
                     </div>
 
-                    <p style="margin: 25px 0 15px;"><strong>Option 2: GitHub Installation</strong></p>
-                    <p>Install directly from GitHub (one command):</p>
-                    <div class="code-block">
-<code>cd your-project</code><br>
-<code>bash install.sh --github https://github.com/user/shipkit.git --preset solo</code>
+                    <p style="margin: 30px 0 20px; font-size: 1.1em;"><strong>What Gets Installed:</strong></p>
+                    <div class="code-block" style="background: #1a202c; font-size: 0.9em;">
+<span style="color: #68d391;">your-project/</span><br>
+├── <span style="color: #68d391;">.claude/</span>                   <span style="color: #9ca3af;"># Claude Code integration</span><br>
+│   ├── settings.json         <span style="color: #9ca3af;"># File protections + SessionStart hook</span><br>
+│   ├── skills/               <span style="color: #9ca3af;"># 24 skill definitions (SKILL.md files)</span><br>
+│   ├── agents/               <span style="color: #9ca3af;"># 6 specialized AI personas</span><br>
+│   └── hooks/                <span style="color: #9ca3af;"># session-start.sh (loads shipkit-master)</span><br>
+│<br>
+├── <span style="color: #68d391;">.shipkit/</span>                 <span style="color: #9ca3af;"># Unified workspace</span><br>
+│   ├── scripts/bash/         <span style="color: #9ca3af;"># Shared utilities (common.sh)</span><br>
+│   └── skills/               <span style="color: #9ca3af;"># Implementations</span><br>
+│       ├── [skill-name]/     <span style="color: #9ca3af;"># Per-skill folders</span><br>
+│       │   ├── scripts/      <span style="color: #9ca3af;"># Automation</span><br>
+│       │   ├── templates/    <span style="color: #9ca3af;"># Single adaptive template</span><br>
+│       │   ├── references/   <span style="color: #9ca3af;"># Extended docs + your PDFs</span><br>
+│       │   └── outputs/      <span style="color: #9ca3af;"># PROTECTED artifacts (read-only)</span><br>
+│<br>
+└── <span style="color: #68d391;">CLAUDE.md</span>                <span style="color: #9ca3af;"># Skill routing guide</span>
                     </div>
+
+                    <p style="margin-top: 30px; font-size: 1.3em; text-align: center; font-weight: 700; color: #667eea;">
+                        Everything under dot-folders. Zero project root pollution.
+                    </p>
                 </div>
             </div>
 
             <!-- Key Benefits -->
             <div class="section">
-                <h2>Key Benefits</h2>
+                <h2>What You Get</h2>
                 <div class="benefits">
                     <div class="benefit">
-                        <h4>✅ No External Dependencies</h4>
-                        <p>All 34 skills work 100% locally. No APIs required.</p>
+                        <h4>Zero External Dependencies</h4>
+                        <p>All 24 skills work 100% locally. No APIs, no config, no hassle. Optional: WebSearch for market research.</p>
                     </div>
                     <div class="benefit">
-                        <h4>✅ Script-Enforced Consistency</h4>
-                        <p>Claude uses templates and scripts, never creates files manually.</p>
+                        <h4>Constitution Templates</h4>
+                        <p>6 project types (POC/MVP/Greenfield × B2C/B2B) ensure right-sized discovery from day one.</p>
                     </div>
                     <div class="benefit">
-                        <h4>✅ Hidden by Default</h4>
-                        <p>Everything under dot-folders. No project root pollution.</p>
+                        <h4>Enforced Discipline</h4>
+                        <p>SessionStart hook + file protections = skills are mandatory. No more "I'll document it later".</p>
                     </div>
                     <div class="benefit">
-                        <h4>✅ Complete Workflow</h4>
-                        <p>From business strategy to shipped code, all in one framework.</p>
+                        <h4>Research-Driven Product</h4>
+                        <p>Templates require real data. No guessing. Competitor pricing must be specific, claims need sources.</p>
+                    </div>
+                    <div class="benefit">
+                        <h4>Multi-Feature Orchestration</h4>
+                        <p>/dev-roadmap sequences specs foundation-first. /dev-progress tracks completion across features.</p>
+                    </div>
+                    <div class="benefit">
+                        <h4>TDD + Reviews Built-In</h4>
+                        <p>/dev-implement integrates RED→GREEN→REFACTOR + spec compliance + code quality. All in one skill.</p>
+                    </div>
+                    <div class="benefit">
+                        <h4>Progressive Disclosure</h4>
+                        <p>SKILL.md files <500 lines. Extended guidance in references/. Add your own PDFs and research.</p>
+                    </div>
+                    <div class="benefit">
+                        <h4>Complete Workflow</h4>
+                        <p>Strategy → Constitution → Discovery → Specs → Roadmap → Implementation → Shipped Code.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- What Gets Installed -->
-            <div class="section">
-                <h2>What Gets Installed</h2>
-                <p style="margin-bottom: 20px;">After running <code>install.sh --preset solo</code>, your project gets:</p>
-
-                <div class="code-block" style="background: #1a202c;">
-<span style="color: #68d391;">your-project/</span><br>
-│<br>
-├── <span style="color: #68d391;">.claude/</span><br>
-│   ├── constitution.md             <span style="color: #9ca3af;"># Project rules (created by /dev-constitution-builder)</span><br>
-│   ├── agents/                     <span style="color: #9ca3af;"># 6 agent personas (prod-*, dev-*, any-* prefixed)</span><br>
-│   │   ├── prod-product-manager-agent.md<br>
-│   │   ├── prod-product-designer-agent.md<br>
-│   │   ├── dev-architect-agent.md<br>
-│   │   ├── dev-implementer-agent.md<br>
-│   │   ├── dev-reviewer-agent.md<br>
-│   │   └── any-researcher-agent.md<br>
-│   ├── hooks/                      <span style="color: #9ca3af;"># Session start hooks (inject shipkit-master)</span><br>
-│   └── skills/                     <span style="color: #9ca3af;"># Skill definitions (flat structure)</span><br>
-│       ├── prod-*                  <span style="color: #9ca3af;"># 11 product skills</span><br>
-│       ├── dev-*                   <span style="color: #9ca3af;"># 21 development skills</span><br>
-│       ├── any-brainstorming       <span style="color: #9ca3af;"># Cross-context skill</span><br>
-│       └── shipkit-master          <span style="color: #9ca3af;"># Master skill (injected at session start)</span><br>
-│<br>
-└── <span style="color: #68d391;">workspace/</span>                      <span style="color: #9ca3af;"># Unified workspace</span><br>
-    ├── scripts/                    <span style="color: #9ca3af;"># Automation scripts</span><br>
-    ├── templates/                  <span style="color: #9ca3af;"># Document templates</span><br>
-    ├── specs/001-feature-name/     <span style="color: #9ca3af;"># Technical specs</span><br>
-    ├── strategy/                   <span style="color: #9ca3af;"># Business canvas, value prop</span><br>
-    ├── discovery/                  <span style="color: #9ca3af;"># Personas, JTBD, market analysis</span><br>
-    ├── requirements/               <span style="color: #9ca3af;"># User stories, metrics</span><br>
-    └── brand/                      <span style="color: #9ca3af;"># Brand guidelines, visual direction</span>
-                </div>
-            </div>
         </div>
 
         <footer>
-            <p style="margin-bottom: 10px;"><strong>Ready to ship products faster?</strong></p>
-            <p>From strategy to shipped code, all guided by AI.</p>
-            <p style="margin-top: 20px; opacity: 0.7; font-size: 0.9em;">
-                Inspired by: <a href="https://github.com/github/spec-kit">Spec-Kit</a> by GitHub |
-                <a href="https://github.com/anthropics/claude-code-superpowers">Superpowers</a> by obra |
-                ProdKit (new for ShipKit!)
+            <p style="font-size: 2em; margin-bottom: 20px; font-weight: 700;">
+                Ready to Ship Faster?
+            </p>
+            <p style="font-size: 1.3em; margin-bottom: 30px; opacity: 0.9;">
+                Stop guessing. Start shipping. From idea to deployed code.
+            </p>
+            <div class="code-block" style="display: inline-block; margin: 20px auto;">
+<code>cd your-project && bash ../shipkit/install.sh</code>
+            </div>
+            <p style="margin-top: 40px; font-size: 1.1em;">
+                <strong>24 Core Skills</strong> • <strong>6 Agent Personas</strong> • <strong>6 Constitution Types</strong>
+            </p>
+            <p style="margin-top: 10px; opacity: 0.8;">
+                100% Local • Zero External Dependencies • One Command Install
+            </p>
+            <p style="margin-top: 40px; opacity: 0.6; font-size: 0.9em;">
+                Built on <a href="https://docs.anthropic.com/claude/docs/claude-code">Claude Code</a> •
+                Inspired by <a href="https://github.com/github/spec-kit">Spec-Kit</a> (GitHub) &
+                <a href="https://github.com/anthropics/claude-code-superpowers">Superpowers</a> (obra)
             </p>
         </footer>
     </div>

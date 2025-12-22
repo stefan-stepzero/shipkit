@@ -1,104 +1,306 @@
 ---
 name: dev-plan
-description: Execute the implementation planning workflow using the plan template to generate design artifacts.
+description: Transform feature specifications into comprehensive technical designs including data models, API contracts, and implementation strategies with constitution-driven architecture. Use when the user asks to "plan", "design architecture", "create technical design", or "how should we implement" after a spec is created.
+triggers:
+  - "Create implementation plan"
+  - "Design the architecture"
+  - "Plan how to build"
+  - "Technical design"
 handoffs:
   - label: Create Tasks
-    agent: devkit.tasks
-    prompt: Break the plan into tasks
+    skill: dev-tasks
+    prompt: Break the plan into dependency-ordered tasks
     send: true
-  - label: Create Checklist
-    agent: devkit.checklist
-    prompt: Create a checklist for the following domain...
-scripts:
-  sh: scripts/bash/setup-plan.sh --json
-  ps: scripts/powershell/setup-plan.ps1 -Json
-agent_scripts:
-  sh: scripts/bash/update-agent-context.sh __AGENT__
-  ps: scripts/powershell/update-agent-context.ps1 -AgentType __AGENT__
+  - label: Create Checklist (optional)
+    skill: dev-checklist
+    prompt: Generate acceptance test checklist
+    send: false
+---
+
+# dev-plan - Implementation Planning
+
+**Purpose**: Transform feature specifications into comprehensive technical designs that guide implementation while respecting architectural standards.
+
+---
+
+## When to Invoke
+
+**After**:
+- `/dev-specify` has created `spec.md` for the feature
+- `/dev-constitution` has established technical standards (recommended)
+
+**User triggers**:
+- "Create implementation plan for specs/1-feature-name"
+- "Plan how to build this feature"
+- "Design the technical architecture"
+- "How should we implement this?"
+
+---
+
+## Prerequisites
+
+**Required**:
+- Feature specification exists: `.shipkit/skills/dev-specify/outputs/specs/N-feature-name/spec.md`
+
+**Recommended**:
+- Technical constitution exists: `.shipkit/skills/dev-constitution/outputs/constitution.md`
+
+**Check**: Script will validate spec exists, warn if constitution missing
+
+---
+
+## What This Skill Creates
+
+**Output location**: `.shipkit/skills/dev-plan/outputs/specs/N-feature-name/`
+
+**Artifacts generated**:
+1. **plan.md** - High-level technical blueprint
+2. **research.md** - Technical research and decisions (Phase 0)
+3. **data-model.md** - Entities, relationships, indexes (Phase 1)
+4. **contracts/** - API definitions (OpenAPI/GraphQL schemas)
+5. **quickstart.md** - How to build, run, and test
+6. **checklist.md** - Acceptance criteria (optional, with `--with-checklist`)
+
 ---
 
 ## Agent Persona
 
-**Load:** `.claude/agents/architect-agent.md`
+**Primary**: Architect Agent
+- **Mindset**: Systematic, thorough, considers trade-offs
+- **Approach**: Decompose problems, explicit dependencies, proven patterns
+- **Values**: Constitution alignment, research-driven decisions
 
-Adopt: Systematic decomposition, explicit dependencies, considers edge cases, favors proven patterns.
+**For Phase 0 Research**: Also adopt Researcher Agent
+- **Mindset**: Curious, skeptical, evidence-based
+- **Approach**: Cross-reference sources, cite findings, test assumptions
+- **Values**: Don't guess, investigate thoroughly
 
-**For Phase 0 research:** Also load `.claude/agents/researcher-agent.md` - cross-reference sources, cite findings.
+---
 
-## User Input
+## How to Invoke
 
-```text
-$ARGUMENTS
+```bash
+# From repository root
+.shipkit/skills/dev-plan/scripts/create-plan.sh specs/1-user-authentication
+
+# With optional checklist
+.shipkit/skills/dev-plan/scripts/create-plan.sh specs/1-user-authentication --with-checklist
+
+# Update existing plan
+.shipkit/skills/dev-plan/scripts/create-plan.sh specs/1-user-authentication --update
+
+# Archive old plan and create new
+.shipkit/skills/dev-plan/scripts/create-plan.sh specs/1-user-authentication --archive
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+---
 
-## Outline
+## Execution Process
 
-1. **Setup**: Run `{SCRIPT}` from repo root and parse JSON for FEATURE_SPEC, IMPL_PLAN, SPECS_DIR, BRANCH. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+### Step 1: Setup & Validation
 
-2. **Load context**: Read FEATURE_SPEC and `/.devkit/memory/constitution.md`. Load IMPL_PLAN template (already copied).
+**Script runs** (`.shipkit/skills/dev-plan/scripts/create-plan.sh`):
+1. Validates spec path format: `specs/N-feature-name`
+2. Checks spec.md exists
+3. Checks constitution.md exists (warns if missing)
+4. Creates output directory structure
+5. Reports paths to Claude
 
-3. **Execute plan workflow**: Follow the structure in IMPL_PLAN template to:
-   - Fill Technical Context (mark unknowns as "NEEDS CLARIFICATION")
-   - Fill Constitution Check section from constitution
-   - Evaluate gates (ERROR if violations unjustified)
-   - Phase 0: Generate research.md (resolve all NEEDS CLARIFICATION)
-   - Phase 1: Generate data-model.md, contracts/, quickstart.md
-   - Phase 1: Update agent context by running the agent script
-   - Re-evaluate Constitution Check post-design
+**Claude receives**:
+- Spec file path
+- Constitution file path (if exists)
+- Template paths (plan, data-model, research, contract)
+- Reference paths (reference.md, examples.md)
+- Output file paths
 
-4. **Stop and report**: Command ends after Phase 2 planning. Report branch, IMPL_PLAN path, and generated artifacts.
+### Step 2: Read Context
 
-## Phases
+**Read extended documentation FIRST**:
 
-### Phase 0: Outline & Research
+1. **Extended references** (CRITICAL - read before planning):
+   - `.shipkit/skills/dev-plan/references/reference.md` - Complete planning guide
+   - `.shipkit/skills/dev-plan/references/examples.md` - Concrete examples
 
-1. **Extract unknowns from Technical Context** above:
-   - For each NEEDS CLARIFICATION → research task
-   - For each dependency → best practices task
-   - For each integration → patterns task
+2. **Templates** (structures to fill):
+   - `templates/plan-template.md`
+   - `templates/data-model-template.md`
+   - `templates/research-template.md`
+   - `templates/contract-template.yaml`
+   - `templates/checklist-template.md` (if --with-checklist)
 
-2. **Generate and dispatch research agents**:
+3. **Input artifacts**:
+   - `specs/N-feature-name/spec.md` (feature requirements)
+   - `.shipkit/skills/dev-constitution/outputs/constitution.md` (technical standards)
 
-   ```text
-   For each unknown in Technical Context:
-     Task: "Research {unknown} for {feature context}"
-   For each technology choice:
-     Task: "Find best practices for {tech} in {domain}"
+### Step 3: Constitution Check (Pre-Design)
+
+**Before any technical decisions**:
+
+1. **Read constitution thoroughly**:
+   - Approved technology stack
+   - Architectural patterns
+   - Coding standards
+   - Testing requirements
+   - Performance targets
+   - Security standards
+
+2. **Validate spec alignment**:
+   - Do requirements fit existing patterns?
+   - Are there conflicts with constitution?
+   - What constraints apply?
+
+3. **Document alignment in plan.md**:
+   ```markdown
+   ## Constitution Check
+
+   ### Alignment with Standards
+   - [x] Architectural patterns
+   - [x] Technology stack
+   - [x] Coding standards
+   - [x] Testing requirements
+   - [x] API conventions
+   - [x] Performance requirements
+   - [x] Security standards
+
+   ### Violations & Justifications
+   | Rule | Violation | Why Needed | Alternative Rejected |
+   |------|-----------|------------|---------------------|
+   | ... | ... | ... | ... |
    ```
 
-3. **Consolidate findings** in `research.md` using format:
-   - Decision: [what was chosen]
-   - Rationale: [why chosen]
-   - Alternatives considered: [what else evaluated]
+### Step 4: Phase 0 - Research & Unknowns
 
-**Output**: research.md with all NEEDS CLARIFICATION resolved
+**Goal**: Resolve all "NEEDS CLARIFICATION" before design
 
-### Phase 1: Design & Contracts
+**See** [reference.md](references/reference.md#research-phase) for complete research process
 
-**Prerequisites:** `research.md` complete
+**Process**:
+1. Scan Technical Context for unknowns
+2. Web search for documentation, best practices, benchmarks
+3. Document all decisions with rationale in research.md
+4. Update Technical Context with concrete answers
 
-1. **Extract entities from feature spec** → `data-model.md`:
-   - Entity name, fields, relationships
-   - Validation rules from requirements
-   - State transitions if applicable
+**Output**: `research.md` with all unknowns resolved
 
-2. **Generate API contracts** from functional requirements:
-   - For each user action → endpoint
-   - Use standard REST/GraphQL patterns
-   - Output OpenAPI/GraphQL schema to `/contracts/`
+### Step 5: Phase 1 - Design & Contracts
 
-3. **Agent context update**:
-   - Run `{AGENT_SCRIPT}`
-   - These scripts detect which AI agent is in use
-   - Update the appropriate agent-specific context file
-   - Add only new technology from current plan
-   - Preserve manual additions between markers
+**Prerequisites**: research.md complete (no NEEDS CLARIFICATION)
 
-**Output**: data-model.md, /contracts/*, quickstart.md, agent-specific file
+**See** [reference.md](references/reference.md#design-phase) for detailed guidance
 
-## Key rules
+**Create**:
+1. **Data Model** (`data-model.md`): Entities, fields, relationships, indexes
+2. **API Contracts** (`contracts/`): OpenAPI or GraphQL specs
+3. **Quickstart Guide** (`quickstart.md`): How to build, run, test
+4. **Plan Document** (`plan.md`): High-level technical blueprint
 
-- Use absolute paths
-- ERROR on gate failures or unresolved clarifications
+### Step 6: Constitution Check (Post-Design)
+
+**Re-validate plan against constitution**:
+1. Review all decisions for alignment
+2. Update Constitution Check section
+3. ERROR if critical violations without justification
+
+### Step 7: Report Completion
+
+**Output to user**:
+```
+✅ Implementation plan complete
+
+📁 Created artifacts:
+  • Plan: .shipkit/skills/dev-plan/outputs/specs/1-feature-name/plan.md
+  • Research: .../research.md
+  • Data Model: .../data-model.md
+  • Contracts: .../contracts/
+  • Quickstart: .../quickstart.md
+  [• Checklist: .../checklist.md] (if --with-checklist)
+
+🔍 Constitution check: PASSED
+  • All requirements aligned with technical standards
+  [• X violations documented with justification] (if violations)
+
+👉 Next step: /dev-tasks specs/1-feature-name
+   Break this plan into dependency-ordered tasks
+
+Proceed with /dev-tasks?
+```
+
+---
+
+## Key Principles
+
+**The Iron Law**:
+```
+READ CONSTITUTION BEFORE EVERY TECHNICAL DECISION
+```
+
+**Constitution-Driven Design**:
+- Technology choices must align with approved stack
+- Architectural patterns must follow established conventions
+- Security standards must meet constitution requirements
+- Testing requirements must match constitution targets
+- Violations require explicit justification
+
+**Research First**:
+- Don't guess unknowns - research them
+- Document sources and evidence
+- Compare multiple options
+- Never say "we'll figure it out later"
+
+**See** [reference.md](references/reference.md) for:
+- Detailed constitution integration patterns
+- Complete research phase workflow
+- Design phase step-by-step guidance
+- Error handling procedures
+- Common pitfalls and solutions
+
+---
+
+## Flags & Options
+
+- `--with-checklist` - Include acceptance test checklist
+- `--update` - Update existing plan (preserves with backup)
+- `--archive` - Archive current plan and start fresh
+- `--skip-prereqs` - Skip prerequisite checks (dangerous)
+
+---
+
+## Handoff to dev-tasks
+
+**After planning complete**, run:
+```bash
+/dev-tasks specs/N-feature-name
+```
+
+**dev-tasks will**:
+- Read plan.md, spec.md, constitution.md
+- Generate dependency-ordered task breakdown
+- Include TDD test tasks before implementation
+- Mark parallel vs sequential execution
+- Output: tasks.md
+
+---
+
+## Success Criteria
+
+Plan is complete when:
+- [ ] All "NEEDS CLARIFICATION" resolved
+- [ ] Constitution check passed (or violations justified)
+- [ ] Technical decisions documented with rationale
+- [ ] Data model defined (entities, relationships, indexes)
+- [ ] API contracts created (OpenAPI/GraphQL)
+- [ ] Security considerations addressed
+- [ ] Performance targets defined
+- [ ] Testing strategy planned
+- [ ] Deployment steps documented
+- [ ] Quickstart guide created
+- [ ] All artifacts reference spec and constitution
+
+---
+
+**For detailed guidance**, see:
+- [reference.md](references/reference.md) - Complete planning process
+- [examples.md](references/examples.md) - Real-world examples
+- [README.md](references/README.md) - Reference folder guide
+
+**Remember**: Time invested in thorough planning saves time during implementation. A great plan sets up great execution.

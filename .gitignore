@@ -35,3 +35,7 @@ venv/
 
 # Project instructions (generated per developer/project)
 CLAUDE.md
+
+# Development reference materials (not for distribution)
+claude-code-best-practices/
+claude-working-documents/

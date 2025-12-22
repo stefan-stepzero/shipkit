@@ -25,7 +25,9 @@ declare -A SKILL_PREREQUISITES=(
 
   # Dev Skills
   ["dev-constitution"]="prod-user-stories"                    # Needs product context (recommended)
+  ["dev-roadmap"]="prod-user-stories"                         # Needs user stories to sequence
   ["dev-specify"]="dev-constitution"                          # Needs technical standards
+  ["dev-progress"]="dev-roadmap"                              # Needs roadmap to track against
   # ["dev-plan"]="dev-specify"
   # ["dev-tasks"]="dev-plan"
   # ["dev-implement"]="dev-tasks"
@@ -48,7 +50,9 @@ declare -A SKILL_OUTPUT_FILES=(
 
   # Dev Skills
   ["dev-constitution"]="dev-constitution/outputs/constitution.md"
+  ["dev-roadmap"]="dev-roadmap/outputs/roadmap.md"
   ["dev-specify"]="dev-specify/outputs/specs/"                  # Multiple spec dirs
+  ["dev-progress"]="dev-progress/outputs/progress.md"
   # ["dev-plan"]="dev-plan/outputs/specs/"  # Multiple plan dirs
   # ["dev-tasks"]="dev-tasks/outputs/specs/"  # Multiple task dirs
 )

@@ -1,6 +1,6 @@
 ---
 name: dev-constitution
-description: "Create technical development standards from product strategy (run once before dev pipeline)"
+description: Create technical development standards from product strategy defining architecture, design, and coding principles for your product. Use when the user says "create technical standards", "define development principles", "set up technical constitution", "what are our coding standards", or after completing product discovery. Run once before the dev pipeline.
 ---
 
 # Technical Constitution
@@ -58,14 +58,40 @@ If product artifacts missing, constitution will be minimal but still useful.
 ### 1. Run Script
 
 ```bash
-.shipkit/skills/dev-constitution/scripts/create-constitution.sh --create
+.shipkit/skills/dev-constitution/scripts/create-constitution.sh
 ```
 
-Script will:
+**Available flags:**
+- `--create` - Force creation (default: auto-detects mode)
+- `--update` - Update existing constitution with versioning
+- `--archive` - Archive current version and create new
+- `--skip-prereqs` - Skip prerequisite checks
+- `--interactive` - Force interactive mode (ignore product artifacts)
+- `--cancel` - Cancel operation
+
+**Script behavior:**
+
+The script auto-detects the best mode:
+
+**Extraction Mode (if product artifacts found):**
+- Scans for 10 product artifacts (strategic-thinking, personas, user-stories, etc.)
+- Lists which artifacts were found
+- Claude will auto-extract technical constraints from them
+- User reviews and refines the draft
+
+**Interactive Mode (if no product artifacts):**
+- Claude asks clarifying questions
+- User provides technical preferences directly
+- Constitution built from conversation
+
+**Force interactive:** Use `--interactive` to ignore product artifacts and build via dialogue only.
+
+Script output:
 - Check for existing constitution (if exists, ask to --update or --archive)
-- List available product artifacts
+- Scan and list available product artifacts (10 potential sources)
 - Point to template and references
-- Indicate it's ready for Claude
+- Indicate mode (extraction or interactive)
+- Ready for Claude
 
 ### 2. Read Context
 

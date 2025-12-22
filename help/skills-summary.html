@@ -234,27 +234,23 @@
             <p class="subtitle">Complete Product Development Framework</p>
             <div class="stats">
                 <div class="stat">
-                    <div class="stat-number">11</div>
+                    <div class="stat-number">12</div>
                     <div class="stat-label">prod-* Skills</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number">21</div>
+                    <div class="stat-number">9</div>
                     <div class="stat-label">dev-* Skills</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number">1</div>
-                    <div class="stat-label">any-* Skills</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">1</div>
-                    <div class="stat-label">Master Skill</div>
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Meta Skills</div>
                 </div>
                 <div class="stat">
                     <div class="stat-number">6</div>
                     <div class="stat-label">Agent Personas</div>
                 </div>
                 <div class="stat">
-                    <div class="stat-number">34</div>
+                    <div class="stat-number">24</div>
                     <div class="stat-label">Total Skills</div>
                 </div>
             </div>
@@ -265,18 +261,18 @@
             <div class="section">
                 <h2>Framework Overview</h2>
                 <p style="font-size: 1.1em; margin-bottom: 20px;">
-                    <strong>ShipKit</strong> is a unified framework with 34 Claude Code skills organized by prefix:
-                    <strong>prod-*</strong> (product discovery), <strong>dev-*</strong> (technical development),
-                    and <strong>any-*</strong> (cross-context). All skills live in a flat <code>.claude/skills/</code> directory.
+                    <strong>ShipKit</strong> is a unified framework with 24 Claude Code skills organized in three categories:
+                    <strong>prod-*</strong> (12 skills for product discovery), <strong>dev-*</strong> (9 skills for technical development),
+                    and <strong>meta skills</strong> (3 skills for enforcement, discussion, and extensibility). All artifacts live in <code>.shipkit/</code> workspace.
                 </p>
 
                 <div class="workflow-diagram">
                     <p style="margin-bottom: 15px;"><strong>Complete Workflow:</strong></p>
                     <span class="flow-step">prod-* Discovery</span>
                     <span class="flow-arrow">→</span>
-                    <span class="flow-step">/dev-constitution-builder</span>
+                    <span class="flow-step">/prod-constitution-builder</span>
                     <span class="flow-arrow">→</span>
-                    <span class="flow-step">dev-* Specs</span>
+                    <span class="flow-step">dev-* Pipeline</span>
                     <span class="flow-arrow">→</span>
                     <span class="flow-step">/dev-implement</span>
                     <span class="flow-arrow">→</span>
@@ -286,10 +282,10 @@
 
             <!-- prod-* Skills -->
             <div class="section">
-                <h2>Product Discovery Skills (11 prod-* skills)</h2>
+                <h2>Product Discovery Skills (12 prod-* skills)</h2>
                 <p>Product discovery and strategy skills. Define <strong>what</strong> to build and <strong>why</strong>.</p>
 
-                <h3>Sequential Skills (9)</h3>
+                <h3>Sequential Skills (10)</h3>
                 <p>Run in order from strategy to success metrics:</p>
                 <div class="skills-grid">
                     <div class="skill-card prodkit">
@@ -297,35 +293,39 @@
                         <div class="skill-desc">Define business strategy, value proposition, and market positioning</div>
                     </div>
                     <div class="skill-card prodkit">
-                        <div class="skill-name">/prod-personas<span class="badge badge-prodkit">Step 2</span></div>
+                        <div class="skill-name">/prod-constitution-builder<span class="badge badge-prodkit">Step 2</span></div>
+                        <div class="skill-desc">Product principles - 6 templates (B2B/B2C × Greenfield/Experimental/Side Project/Existing)</div>
+                    </div>
+                    <div class="skill-card prodkit">
+                        <div class="skill-name">/prod-personas<span class="badge badge-prodkit">Step 3</span></div>
                         <div class="skill-desc">Identify and characterize target users with demographics and goals</div>
                     </div>
                     <div class="skill-card prodkit">
-                        <div class="skill-name">/prod-jobs-to-be-done<span class="badge badge-prodkit">Step 3</span></div>
+                        <div class="skill-name">/prod-jobs-to-be-done<span class="badge badge-prodkit">Step 4</span></div>
                         <div class="skill-desc">Map current state workflows and user pain points</div>
                     </div>
                     <div class="skill-card prodkit">
-                        <div class="skill-name">/prod-market-analysis<span class="badge badge-prodkit">Step 4</span></div>
+                        <div class="skill-name">/prod-market-analysis<span class="badge badge-prodkit">Step 5</span></div>
                         <div class="skill-desc">Analyze competition using Porter's Five Forces</div>
                     </div>
                     <div class="skill-card prodkit">
-                        <div class="skill-name">/prod-brand-guidelines<span class="badge badge-prodkit">Step 5</span></div>
+                        <div class="skill-name">/prod-brand-guidelines<span class="badge badge-prodkit">Step 6</span></div>
                         <div class="skill-desc">Define visual direction, colors, typography, and brand voice</div>
                     </div>
                     <div class="skill-card prodkit">
-                        <div class="skill-name">/prod-interaction-design<span class="badge badge-prodkit">Step 6</span></div>
+                        <div class="skill-name">/prod-interaction-design<span class="badge badge-prodkit">Step 7</span></div>
                         <div class="skill-desc">Design future state user journeys and interactions</div>
                     </div>
                     <div class="skill-card prodkit">
-                        <div class="skill-name">/prod-user-stories<span class="badge badge-prodkit">Step 7</span></div>
+                        <div class="skill-name">/prod-user-stories<span class="badge badge-prodkit">Step 8</span></div>
                         <div class="skill-desc">Write requirements with MoSCoW prioritization</div>
                     </div>
                     <div class="skill-card prodkit">
-                        <div class="skill-name">/prod-assumptions-and-risks<span class="badge badge-prodkit">Step 8</span></div>
+                        <div class="skill-name">/prod-assumptions-and-risks<span class="badge badge-prodkit">Step 9</span></div>
                         <div class="skill-desc">Identify strategic risks and assumptions to validate</div>
                     </div>
                     <div class="skill-card prodkit">
-                        <div class="skill-name">/prod-success-metrics<span class="badge badge-prodkit">Step 9</span></div>
+                        <div class="skill-name">/prod-success-metrics<span class="badge badge-prodkit">Step 10</span></div>
                         <div class="skill-desc">Define KPIs, instrumentation, and measurement strategy</div>
                     </div>
                 </div>
@@ -334,8 +334,8 @@
                 <p>Can interrupt any skill when needed:</p>
                 <div class="skills-grid">
                     <div class="skill-card prodkit">
-                        <div class="skill-name">/prod-trade-off-analysis<span class="badge badge-prodkit">Async</span></div>
-                        <div class="skill-desc">Structured decision-making framework for complex trade-offs</div>
+                        <div class="skill-name">/prod-discussion<span class="badge badge-prodkit">Async</span></div>
+                        <div class="skill-desc">Conversational trade-off analysis and decision facilitation</div>
                     </div>
                     <div class="skill-card prodkit">
                         <div class="skill-name">/prod-communicator<span class="badge badge-prodkit">Async</span></div>
@@ -346,127 +346,78 @@
 
             <!-- dev-* Skills -->
             <div class="section">
-                <h2>Development Skills (21 dev-* skills)</h2>
+                <h2>Development Skills (9 dev-* skills)</h2>
                 <p>Technical specification and development skills. Define <strong>how</strong> to build it.</p>
 
-                <h3>Core Specification Pipeline (6)</h3>
+                <h3>Orchestration (2)</h3>
+                <p>Multi-feature project management:</p>
                 <div class="skills-grid">
                     <div class="skill-card devkit">
-                        <div class="skill-name">/dev-constitution-builder<span class="badge badge-devkit">Core</span></div>
-                        <div class="skill-desc">Two-phase: product principles (after strategy) + technical standards (before specs)</div>
+                        <div class="skill-name">/dev-roadmap<span class="badge badge-devkit">Orchestration</span></div>
+                        <div class="skill-desc">Sequence specs from user stories - foundation first, optimal execution order</div>
                     </div>
                     <div class="skill-card devkit">
+                        <div class="skill-name">/dev-progress<span class="badge badge-devkit">Orchestration</span></div>
+                        <div class="skill-desc">Track completion through roadmap - auto-updated after each merge</div>
+                    </div>
+                </div>
+
+                <h3>Core Pipeline (6)</h3>
+                <p>Specification-driven development workflow:</p>
+                <div class="skills-grid">
+                    <div class="skill-card devkit">
                         <div class="skill-name">/dev-constitution<span class="badge badge-devkit">Core</span></div>
-                        <div class="skill-desc">Reference existing project constitution and rules</div>
+                        <div class="skill-desc">Project standards and technical rules</div>
                     </div>
                     <div class="skill-card devkit">
                         <div class="skill-name">/dev-specify<span class="badge badge-devkit">Core</span></div>
-                        <div class="skill-desc">Write detailed technical specification with contracts</div>
+                        <div class="skill-desc">Feature specifications from descriptions</div>
                     </div>
                     <div class="skill-card devkit">
                         <div class="skill-name">/dev-plan<span class="badge badge-devkit">Core</span></div>
-                        <div class="skill-desc">Create implementation plan with phases and milestones</div>
+                        <div class="skill-desc">Implementation plans with architecture decisions</div>
                     </div>
                     <div class="skill-card devkit">
                         <div class="skill-name">/dev-tasks<span class="badge badge-devkit">Core</span></div>
-                        <div class="skill-desc">Break down plan into actionable, testable tasks</div>
+                        <div class="skill-desc">Executable task breakdown with dependencies</div>
                     </div>
                     <div class="skill-card devkit">
                         <div class="skill-name">/dev-implement<span class="badge badge-devkit">Core</span></div>
-                        <div class="skill-desc">Execute tasks with integrated TDD, two-stage review, and verification</div>
+                        <div class="skill-desc">TDD execution with integrated verification (includes TDD, verification, debugging)</div>
+                    </div>
+                    <div class="skill-card devkit">
+                        <div class="skill-name">/dev-finish<span class="badge badge-devkit">Core</span></div>
+                        <div class="skill-desc">Merge workflow with test validation + progress tracking</div>
                     </div>
                 </div>
 
-                <h3>Quality & Testing (4)</h3>
+                <h3>Debugging (1)</h3>
+                <p>Root cause investigation:</p>
                 <div class="skills-grid">
                     <div class="skill-card devkit">
-                        <div class="skill-name">/dev-test-driven-development<span class="badge badge-devkit">Quality</span></div>
-                        <div class="skill-desc">RED → GREEN → REFACTOR cycle with iron laws</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-verification-before-completion<span class="badge badge-devkit">Quality</span></div>
-                        <div class="skill-desc">Evidence-based verification before claiming done</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-systematic-debugging<span class="badge badge-devkit">Quality</span></div>
-                        <div class="skill-desc">4-phase root cause investigation methodology</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-checklist<span class="badge badge-devkit">Quality</span></div>
-                        <div class="skill-desc">Specification quality validation checklists</div>
-                    </div>
-                </div>
-
-                <h3>Collaboration & Review (4)</h3>
-                <div class="skills-grid">
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-requesting-code-review<span class="badge badge-devkit">Collab</span></div>
-                        <div class="skill-desc">Prepare code for review with context</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-receiving-code-review<span class="badge badge-devkit">Collab</span></div>
-                        <div class="skill-desc">Handle review feedback with technical verification</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-subagent-driven-development<span class="badge badge-devkit">Collab</span></div>
-                        <div class="skill-desc">Per-task subagents with two-stage review</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-dispatching-parallel-agents<span class="badge badge-devkit">Collab</span></div>
-                        <div class="skill-desc">Investigate multiple problems simultaneously</div>
-                    </div>
-                </div>
-
-                <h3>Workflow & Git (4)</h3>
-                <div class="skills-grid">
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-using-git-worktrees<span class="badge badge-devkit">Workflow</span></div>
-                        <div class="skill-desc">Parallel feature development without branch switching</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-finishing-a-development-branch<span class="badge badge-devkit">Workflow</span></div>
-                        <div class="skill-desc">Structured completion: merge, PR, keep, or discard</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-writing-plans<span class="badge badge-devkit">Workflow</span></div>
-                        <div class="skill-desc">Flexible, zero-context plans for team handoff</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-taskstoissues<span class="badge badge-devkit">Workflow</span></div>
-                        <div class="skill-desc">Create GitHub issues from tasks.md</div>
-                    </div>
-                </div>
-
-                <h3>Analysis & Meta (3)</h3>
-                <div class="skills-grid">
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-analyze<span class="badge badge-devkit">Analysis</span></div>
-                        <div class="skill-desc">Analyze code or specifications for issues</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-clarify<span class="badge badge-devkit">Analysis</span></div>
-                        <div class="skill-desc">Clarify ambiguous requirements or specs</div>
-                    </div>
-                    <div class="skill-card devkit">
-                        <div class="skill-name">/dev-writing-skills<span class="badge badge-devkit">Meta</span></div>
-                        <div class="skill-desc">Create custom Claude Code skills</div>
+                        <div class="skill-name">/dev-systematic-debugging<span class="badge badge-devkit">Debugging</span></div>
+                        <div class="skill-desc">4-phase root cause investigation methodology (invoked when bugs found)</div>
                     </div>
                 </div>
             </div>
 
-            <!-- any-* Skills & Master Skill -->
+            <!-- Meta Skills -->
             <div class="section">
-                <h2>Cross-Context Skills</h2>
-                <p>Skills that work across any context (product or development).</p>
+                <h2>Meta Skills (3)</h2>
+                <p>Enforcement, discussion, and extensibility.</p>
 
                 <div class="skills-grid">
                     <div class="skill-card agent">
-                        <div class="skill-name">/any-brainstorming<span class="badge badge-agent">any-*</span></div>
-                        <div class="skill-desc">Exploratory design dialogue, can interrupt any skill for creative problem-solving</div>
+                        <div class="skill-name">/shipkit-master<span class="badge badge-agent">Master</span></div>
+                        <div class="skill-desc">Skill enforcement - auto-loaded at session start, prevents bypassing workflows</div>
                     </div>
                     <div class="skill-card agent">
-                        <div class="skill-name">/shipkit-master<span class="badge badge-agent">Master</span></div>
-                        <div class="skill-desc">The master skill injected at session start - enforces skill usage and workflow</div>
+                        <div class="skill-name">/dev-discussion<span class="badge badge-agent">Discussion</span></div>
+                        <div class="skill-desc">Technical clarification when ambiguity detected - can interrupt any dev workflow</div>
+                    </div>
+                    <div class="skill-card agent">
+                        <div class="skill-name">/dev-writing-skills<span class="badge badge-agent">Extensibility</span></div>
+                        <div class="skill-desc">Skill authoring guide - TDD approach to creating custom skills</div>
                     </div>
                 </div>
             </div>
@@ -488,32 +439,32 @@
                         <tr>
                             <td><strong>prod-product-manager-agent.md</strong></td>
                             <td>Product strategy, user research, metrics, prioritization</td>
-                            <td>/prod-strategic-thinking, /prod-personas, /prod-jobs-to-be-done, /prod-market-analysis, /prod-user-stories, /prod-assumptions-and-risks, /prod-success-metrics, /prod-trade-off-analysis</td>
+                            <td>/prod-strategic-thinking, /prod-personas, /prod-jobs-to-be-done, /prod-market-analysis, /prod-user-stories, /prod-assumptions-and-risks, /prod-success-metrics, /prod-discussion</td>
                         </tr>
                         <tr>
                             <td><strong>prod-product-designer-agent.md</strong></td>
                             <td>Brand, UX, interaction design, visual direction</td>
-                            <td>/prod-brand-guidelines, /prod-interaction-design, /prod-communicator</td>
+                            <td>/prod-constitution-builder, /prod-brand-guidelines, /prod-interaction-design, /prod-communicator</td>
                         </tr>
                         <tr>
                             <td><strong>dev-architect-agent.md</strong></td>
                             <td>Technical planning, specifications, architecture</td>
-                            <td>/dev-constitution-builder, /dev-specify, /dev-plan, /dev-tasks</td>
+                            <td>/dev-constitution, /dev-specify, /dev-plan, /dev-tasks, /dev-roadmap</td>
                         </tr>
                         <tr>
                             <td><strong>dev-implementer-agent.md</strong></td>
                             <td>TDD-focused coding, minimal implementation</td>
-                            <td>/dev-implement, development tasks</td>
+                            <td>/dev-implement</td>
                         </tr>
                         <tr>
                             <td><strong>dev-reviewer-agent.md</strong></td>
                             <td>Two-stage review: spec compliance + code quality</td>
-                            <td>/dev-implement review stages, code reviews</td>
+                            <td>/dev-finish (review stages within implementation)</td>
                         </tr>
                         <tr>
                             <td><strong>any-researcher-agent.md</strong></td>
                             <td>Deep research, exploration, cross-referencing</td>
-                            <td>Research phases, /any-brainstorming deep dives</td>
+                            <td>/prod-market-analysis (research-intensive phases)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -523,35 +474,45 @@
             <div class="section">
                 <h2>Quick Reference: Common Workflows</h2>
 
-                <h3>Full Product Development</h3>
+                <h3>Full Product Development (Greenfield)</h3>
                 <div class="workflow-diagram">
                     <code>/prod-strategic-thinking</code> →
+                    <code>/prod-constitution-builder</code> →
                     <code>/prod-personas</code> →
                     <code>/prod-jobs-to-be-done</code> →
                     <code>/prod-market-analysis</code> →
+                    <code>/prod-brand-guidelines</code> →
+                    <code>/prod-interaction-design</code> →
                     <code>/prod-user-stories</code> →
-                    <code>/dev-constitution-builder --product</code> →
+                    <code>/dev-roadmap</code> →
+                    <code>/dev-constitution</code> →
                     <code>/dev-specify</code> →
                     <code>/dev-plan</code> →
                     <code>/dev-tasks</code> →
-                    <code>/dev-implement</code>
-                </div>
-
-                <h3>Technical Feature (Existing Product Context)</h3>
-                <div class="workflow-diagram">
-                    <code>/dev-constitution-builder --technical</code> →
-                    <code>/dev-specify</code> →
-                    <code>/dev-plan</code> →
-                    <code>/dev-tasks</code> →
-                    <code>/dev-implement</code>
-                </div>
-
-                <h3>Quick Implementation</h3>
-                <div class="workflow-diagram">
-                    <code>/any-brainstorming</code> →
-                    <code>/dev-using-git-worktrees</code> →
                     <code>/dev-implement</code> →
-                    <code>/dev-finishing-a-development-branch</code>
+                    <code>/dev-finish</code>
+                </div>
+
+                <h3>Single Feature (Existing Codebase)</h3>
+                <div class="workflow-diagram">
+                    <code>/dev-specify</code> →
+                    <code>/dev-plan</code> →
+                    <code>/dev-tasks</code> →
+                    <code>/dev-implement</code> →
+                    <code>/dev-finish</code>
+                </div>
+
+                <h3>Multi-Feature Project</h3>
+                <div class="workflow-diagram">
+                    <code>/prod-user-stories</code> →
+                    <code>/dev-roadmap</code> →
+                    <span style="font-style: italic;">(for each feature in roadmap)</span> →
+                    <code>/dev-specify</code> →
+                    <code>/dev-plan</code> →
+                    <code>/dev-tasks</code> →
+                    <code>/dev-implement</code> →
+                    <code>/dev-finish</code> →
+                    <span style="font-style: italic;">(/dev-progress auto-updates)</span>
                 </div>
             </div>
         </div>

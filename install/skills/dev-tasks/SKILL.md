@@ -1,147 +1,376 @@
 ---
 name: dev-tasks
-description: Generate an actionable, dependency-ordered tasks.md for the feature based on available design artifacts.
-handoffs:
-  - label: Analyze For Consistency
-    agent: devkit.analyze
-    prompt: Run a project analysis for consistency
-    send: true
-  - label: Implement Project
-    agent: devkit.implement
-    prompt: Start the implementation in phases
-    send: true
+description: Generate dependency-ordered task breakdowns organized by user story with parallel execution markers and TDD integration. Use when the user asks to "break into tasks", "create tasks", "what are the steps", "task breakdown", or "implementation tasks" after planning is complete.
+version: 1.0.0
+triggers:
+  - "break this into tasks"
+  - "what are the steps"
+  - "create tasks"
+  - "task breakdown"
+  - "implementation tasks"
+agent: dev-architect
+dependencies:
+  - dev-specify
+  - dev-plan
 scripts:
-  sh: scripts/bash/check-prerequisites.sh --json
-  ps: scripts/powershell/check-prerequisites.ps1 -Json
+  bash: .shipkit/skills/dev-tasks/scripts/create-tasks.sh
+outputs:
+  - .shipkit/skills/dev-tasks/outputs/specs/*/tasks.md
 ---
 
-## Agent Persona
+# Dev-Tasks: Dependency-Ordered Task Breakdown
 
-**Load:** `.claude/agents/architect-agent.md`
+**Purpose:** Transform technical plans into executable, dependency-ordered tasks organized by user story for independent implementation and testing.
 
-Adopt: Atomic tasks, clear dependencies, testable outcomes, phase boundaries.
+**Agent Persona:** dev-architect (systems thinker, dependency analyzer, task organizer)
 
-## User Input
+---
 
-```text
-$ARGUMENTS
+## When to Invoke
+
+Run `/dev-tasks` when you have:
+- ✅ Feature spec (spec.md) from `/dev-specify`
+- ✅ Technical plan (plan.md) from `/dev-plan`
+- ✅ Optional: constitution.md from `/dev-constitution`
+
+**Timing:** After planning, before implementation
+
+**User might say:**
+- "Break this into tasks"
+- "What are the implementation steps?"
+- "Create a task list"
+- "I need a task breakdown"
+
+---
+
+## What This Skill Does
+
+### Input
+Reads from feature directory (e.g., `specs/1-user-authentication/`):
+- **spec.md** - User stories with priorities (REQUIRED)
+- **plan.md** - Technical design (REQUIRED)
+- **constitution.md** - Technical standards (RECOMMENDED)
+- **data-model.md** - Entities (OPTIONAL)
+- **contracts/** - API definitions (OPTIONAL)
+- **research.md** - Technical decisions (OPTIONAL)
+- **quickstart.md** - Test scenarios (OPTIONAL)
+
+### Output
+Generates `tasks.md` with:
+- **Dependency-ordered tasks:** Sequential execution order respecting dependencies
+- **User story organization:** One phase per story (US1, US2, US3...)
+- **Parallel markers:** [P] indicates tasks that can run simultaneously
+- **TDD integration:** Test tasks before implementation tasks (if TDD requested)
+- **Constitution compliance:** Task patterns follow established standards
+- **Clear file paths:** Every task specifies exact file location
+
+### Structure
+```
+Phase 1: Setup (Project initialization)
+Phase 2: Foundational (Blocking prerequisites - CRITICAL)
+Phase 3: User Story 1 (Priority P1) 🎯 MVP
+Phase 4: User Story 2 (Priority P2)
+Phase 5: User Story 3 (Priority P3)
+...
+Phase N: Polish & Cross-Cutting Concerns
 ```
 
-You **MUST** consider the user input before proceeding (if not empty).
+---
 
-## Outline
+## Process
 
-1. **Setup**: Run `{SCRIPT}` from repo root and parse FEATURE_DIR and AVAILABLE_DOCS list. All paths must be absolute. For single quotes in args like "I'm Groot", use escape syntax: e.g 'I'\''m Groot' (or double-quote if possible: "I'm Groot").
+### Step 1: Run Script
 
-2. **Load design documents**: Read from FEATURE_DIR:
-   - **Required**: plan.md (tech stack, libraries, structure), spec.md (user stories with priorities)
-   - **Optional**: data-model.md (entities), contracts/ (API endpoints), research.md (decisions), quickstart.md (test scenarios)
-   - Note: Not all projects have all documents. Generate tasks based on what's available.
+The script (`create-tasks.sh`) will:
+1. Validate feature directory exists
+2. Check for required files (spec.md, plan.md)
+3. Scan for optional files (data-model.md, contracts/, etc.)
+4. Determine available context
+5. Output paths to Claude
 
-3. **Execute task generation workflow**:
-   - Load plan.md and extract tech stack, libraries, project structure
-   - Load spec.md and extract user stories with their priorities (P1, P2, P3, etc.)
-   - If data-model.md exists: Extract entities and map to user stories
-   - If contracts/ exists: Map endpoints to user stories
-   - If research.md exists: Extract decisions for setup tasks
-   - Generate tasks organized by user story (see Task Generation Rules below)
-   - Generate dependency graph showing user story completion order
-   - Create parallel execution examples per user story
-   - Validate task completeness (each user story has all needed tasks, independently testable)
+**Example invocation:**
+```bash
+.shipkit/skills/dev-tasks/scripts/create-tasks.sh specs/1-user-authentication
+```
 
-4. **Generate tasks.md**: Use `templates/tasks-template.md` as structure, fill with:
-   - Correct feature name from plan.md
-   - Phase 1: Setup tasks (project initialization)
-   - Phase 2: Foundational tasks (blocking prerequisites for all user stories)
-   - Phase 3+: One phase per user story (in priority order from spec.md)
-   - Each phase includes: story goal, independent test criteria, tests (if requested), implementation tasks
-   - Final Phase: Polish & cross-cutting concerns
-   - All tasks must follow the strict checklist format (see Task Generation Rules below)
-   - Clear file paths for each task
-   - Dependencies section showing story completion order
-   - Parallel execution examples per story
-   - Implementation strategy section (MVP first, incremental delivery)
+or with flags:
 
-5. **Report**: Output path to generated tasks.md and summary:
-   - Total task count
-   - Task count per user story
-   - Parallel opportunities identified
-   - Independent test criteria for each story
-   - Suggested MVP scope (typically just User Story 1)
-   - Format validation: Confirm ALL tasks follow the checklist format (checkbox, ID, labels, file paths)
+```bash
+.shipkit/skills/dev-tasks/scripts/create-tasks.sh specs/1-user-authentication --update
+```
 
-Context for task generation: {ARGS}
+### Step 2: Read All Input Documents
 
-The tasks.md should be immediately executable - each task must be specific enough that an LLM can complete it without additional context.
+**ALWAYS read extended documentation FIRST**:
 
-## Task Generation Rules
+1. **References** (CRITICAL - read before generating tasks):
+   - `.shipkit/skills/dev-tasks/references/reference.md` - Complete task generation guide
+   - `.shipkit/skills/dev-tasks/references/examples.md` - Real-world examples
 
-**CRITICAL**: Tasks MUST be organized by user story to enable independent implementation and testing.
+2. **Template:**
+   ```
+   .shipkit/skills/dev-tasks/templates/tasks-template.md
+   ```
 
-**Tests are OPTIONAL**: Only generate test tasks if explicitly requested in the feature specification or if user requests TDD approach.
+3. **Constitution (if exists):**
+   ```
+   .shipkit/skills/dev-constitution/outputs/constitution.md
+   ```
+   Extract:
+   - Project structure (file paths)
+   - Testing requirements (TDD? Coverage?)
+   - Architectural patterns (Repository? Service layer?)
+   - Naming conventions (PascalCase? camelCase?)
 
-### Checklist Format (REQUIRED)
+4. **Feature Spec (REQUIRED):**
+   ```
+   specs/N-feature-name/spec.md
+   ```
+   Extract:
+   - User stories with priorities (P1, P2, P3...)
+   - Acceptance criteria per story
+   - TDD requirements
 
-Every task MUST strictly follow this format:
+5. **Feature Plan (REQUIRED):**
+   ```
+   specs/N-feature-name/plan.md
+   ```
+   Extract:
+   - Tech stack and libraries
+   - Project structure (paths)
+   - Architecture patterns
+   - Component breakdown
 
-```text
+6. **Optional Documents:**
+   ```
+   specs/N-feature-name/data-model.md      → Map entities to user stories
+   specs/N-feature-name/contracts/         → Map endpoints to user stories
+   specs/N-feature-name/research.md        → Extract setup decisions
+   specs/N-feature-name/quickstart.md      → Extract test scenarios
+   ```
+
+### Step 3: Analyze Dependencies
+
+**See** [reference.md](references/reference.md#dependency-analysis) for detailed guidance on:
+- Data dependencies
+- Infrastructure dependencies
+- Cross-story dependencies
+- Testing dependencies (TDD)
+
+### Step 4: Generate Task Breakdown
+
+Organize tasks following phase structure:
+
+#### Phase 1: Setup (Shared Infrastructure)
+**Purpose:** Project initialization
+**Contains:** Project structure, dependencies, build config, linting
+
+#### Phase 2: Foundational (Blocking Prerequisites)
+**Purpose:** Core infrastructure ALL stories depend on
+**⚠️ CRITICAL:** This phase BLOCKS all user story work
+**Contains:** Database, auth framework, API routing, base models, error handling, logging
+
+**Checkpoint:**
+```markdown
+**Checkpoint:** Foundation ready - user story implementation can now begin in parallel
+```
+
+#### Phase 3+: User Story Phases
+**Purpose:** Deliver vertical slices of functionality
+**One phase per user story from spec.md, ordered by priority (P1, P2, P3...)**
+
+**See** [reference.md](references/reference.md#user-story-phases) for detailed phase structure
+
+#### Final Phase: Polish & Cross-Cutting Concerns
+**Purpose:** Improvements affecting multiple stories
+**Contains:** Documentation, refactoring, performance, security, cross-cutting concerns
+
+### Step 5: Apply Task Format
+
+**EVERY task MUST follow this exact format:**
+
+```
 - [ ] [TaskID] [P?] [Story?] Description with file path
 ```
 
-**Format Components**:
+**Components:**
+1. **Checkbox:** `- [ ]` (always present)
+2. **Task ID:** T001, T002, T003... (sequential, in execution order)
+3. **[P] marker:** ONLY if task can run in parallel
+4. **[Story] label:** [US1], [US2], [US3] (REQUIRED for user story phases)
+5. **Description:** Action verb + what + exact file path
 
-1. **Checkbox**: ALWAYS start with `- [ ]` (markdown checkbox)
-2. **Task ID**: Sequential number (T001, T002, T003...) in execution order
-3. **[P] marker**: Include ONLY if task is parallelizable (different files, no dependencies on incomplete tasks)
-4. **[Story] label**: REQUIRED for user story phase tasks only
-   - Format: [US1], [US2], [US3], etc. (maps to user stories from spec.md)
-   - Setup phase: NO story label
-   - Foundational phase: NO story label  
-   - User Story phases: MUST have story label
-   - Polish phase: NO story label
-5. **Description**: Clear action with exact file path
+**Examples:**
+- ✅ `- [ ] T001 Create project structure per implementation plan`
+- ✅ `- [ ] T012 [P] [US1] Create User model in src/models/user.py`
+- ✅ `- [ ] T014 [US1] Implement UserService in src/services/user_service.py`
+- ❌ `- [ ] Create models` (missing ID, Story label, file path)
 
-**Examples**:
+**See** [reference.md](references/reference.md#task-format) for complete format rules
 
-- ✅ CORRECT: `- [ ] T001 Create project structure per implementation plan`
-- ✅ CORRECT: `- [ ] T005 [P] Implement authentication middleware in src/middleware/auth.py`
-- ✅ CORRECT: `- [ ] T012 [P] [US1] Create User model in src/models/user.py`
-- ✅ CORRECT: `- [ ] T014 [US1] Implement UserService in src/services/user_service.py`
-- ❌ WRONG: `- [ ] Create User model` (missing ID and Story label)
-- ❌ WRONG: `T001 [US1] Create model` (missing checkbox)
-- ❌ WRONG: `- [ ] [US1] Create User model` (missing Task ID)
-- ❌ WRONG: `- [ ] T001 [US1] Create model` (missing file path)
+### Step 6: Document Dependencies
 
-### Task Organization
+**See** [reference.md](references/reference.md#documenting-dependencies) for complete guidance
 
-1. **From User Stories (spec.md)** - PRIMARY ORGANIZATION:
-   - Each user story (P1, P2, P3...) gets its own phase
-   - Map all related components to their story:
-     - Models needed for that story
-     - Services needed for that story
-     - Endpoints/UI needed for that story
-     - If tests requested: Tests specific to that story
-   - Mark story dependencies (most stories should be independent)
+Create Dependencies & Execution Order section documenting:
+- Phase dependencies
+- User story dependencies
+- Parallel opportunities
 
-2. **From Contracts**:
-   - Map each contract/endpoint → to the user story it serves
-   - If tests requested: Each contract → contract test task [P] before implementation in that story's phase
+### Step 7: Include Implementation Strategy
 
-3. **From Data Model**:
-   - Map each entity to the user story(ies) that need it
-   - If entity serves multiple stories: Put in earliest story or Setup phase
-   - Relationships → service layer tasks in appropriate story phase
+**See** [reference.md](references/reference.md#implementation-strategy) for complete strategy patterns
 
-4. **From Setup/Infrastructure**:
-   - Shared infrastructure → Setup phase (Phase 1)
-   - Foundational/blocking tasks → Foundational phase (Phase 2)
-   - Story-specific setup → within that story's phase
+Add strategy section showing:
+- MVP First approach (User Story 1 only)
+- Incremental delivery
+- Parallel team strategy
 
-### Phase Structure
+### Step 8: Write Tasks File
 
-- **Phase 1**: Setup (project initialization)
-- **Phase 2**: Foundational (blocking prerequisites - MUST complete before user stories)
-- **Phase 3+**: User Stories in priority order (P1, P2, P3...)
-  - Within each story: Tests (if requested) → Models → Services → Endpoints → Integration
-  - Each phase should be a complete, independently testable increment
-- **Final Phase**: Polish & Cross-Cutting Concerns
+Write the complete tasks.md to:
+```
+.shipkit/skills/dev-tasks/outputs/specs/[feature-name]/tasks.md
+```
+
+**File is PROTECTED:** Can only be modified by re-running the skill with `--update`
+
+### Step 9: Report Summary
+
+Report to user:
+- Total task count
+- Task count per phase
+- Task count per user story
+- Parallel opportunities identified
+- MVP scope (typically User Story 1 only)
+- Output file location
+
+**Example:**
+```
+✅ Task breakdown complete!
+
+📊 Summary:
+  • Total tasks: 45
+  • Setup: 5 tasks
+  • Foundational: 8 tasks (CRITICAL PATH)
+  • User Story 1 (MVP): 12 tasks
+  • User Story 2: 10 tasks
+  • User Story 3: 7 tasks
+  • Polish: 3 tasks
+  • Parallel opportunities: 18 tasks marked [P]
+
+🎯 MVP Scope:
+  • Setup + Foundational + User Story 1 = 25 tasks
+  • Delivers core value independently
+
+📁 Generated:
+  • .shipkit/skills/dev-tasks/outputs/specs/1-user-authentication/tasks.md
+
+👉 Next: Review task breakdown, then run /dev-implement to start execution
+```
+
+---
+
+## Constitution Integration
+
+### Read Constitution FIRST
+
+Before generating any tasks, read:
+```
+.shipkit/skills/dev-constitution/outputs/constitution.md
+```
+
+### Constitution Influences Tasks
+
+**See** [reference.md](references/reference.md#constitution-integration) for detailed integration patterns
+
+Constitution defines:
+1. **File Structure** → Tasks use correct paths
+2. **Testing Requirements** → Tasks include appropriate tests
+3. **Architectural Patterns** → Tasks follow established patterns
+4. **Naming Conventions** → Descriptions use correct naming
+
+---
+
+## TDD Integration
+
+**See** [reference.md](references/reference.md#tdd-integration) for complete TDD workflow
+
+If spec.md or constitution.md require TDD, integrate RED-GREEN-REFACTOR cycle:
+
+- 🔴 **RED Phase:** Write failing tests FIRST
+- 🟢 **GREEN Phase:** Implement minimal code to pass
+- 🔵 **REFACTOR Phase:** Clean up while keeping tests passing
+
+---
+
+## Key Constraints
+
+### MUST Do
+
+- ✅ Organize tasks by user story (one phase per story)
+- ✅ Use strict task format: `- [ ] [ID] [P?] [Story?] Description with path`
+- ✅ Read constitution.md FIRST before generating tasks
+- ✅ Include [Story] labels on all user story phase tasks
+- ✅ Make each user story independently testable
+- ✅ Put only truly shared infrastructure in Foundational phase
+- ✅ Mark parallel tasks with [P]
+- ✅ Include exact file paths in every task
+- ✅ Respect dependencies (task order must be execution order)
+
+### MUST NOT Do
+
+- ❌ Organize by technical layer (all models, then all services...)
+- ❌ Create vague tasks without file paths
+- ❌ Mark tasks [P] if they have dependencies
+- ❌ Put story-specific infrastructure in Foundational phase
+- ❌ Create cross-story dependencies (minimize coupling)
+- ❌ Skip [Story] labels on user story tasks
+- ❌ Ignore constitution standards
+
+---
+
+## Flags
+
+- `--update` - Regenerate tasks if spec/plan changed (archives old version)
+- `--archive` - Archive current tasks.md and create new version
+- `--skip-prereqs` - Skip prerequisite checks
+- `--cancel` - Cancel operation
+- `--help` - Show usage information
+
+---
+
+## Handoffs
+
+### After This Skill
+
+**Next:** `/dev-analyze` (optional) or `/dev-implement`
+
+**Optional quality gate:** Run `/dev-analyze` to check consistency between spec, plan, and tasks before implementing.
+
+**Execute:** Run `/dev-implement` to start task execution with TDD, verification, and debugging integrated.
+
+---
+
+## Success Criteria
+
+A good tasks.md has:
+- ✅ Every task in correct format with ID, [P?], [Story?], path
+- ✅ User story organization (one phase per story)
+- ✅ Clear dependencies (sequential tasks in dependency order)
+- ✅ Parallel opportunities identified ([P] markers)
+- ✅ Independent test criteria per story
+- ✅ MVP path clear (Setup + Foundational + US1)
+- ✅ Constitution compliance documented
+- ✅ TDD integration (if requested)
+- ✅ Exact file paths for every task
+- ✅ Checkpoints after each story
+
+---
+
+**For detailed guidance**, see:
+- [reference.md](references/reference.md) - Complete task generation process
+- [examples.md](references/examples.md) - Real-world examples
+- [README.md](references/README.md) - Reference folder guide
+
+**Remember**: Task generation balances structure (dependencies) with flexibility (parallel execution). Each task should be completable in 1-4 hours.
