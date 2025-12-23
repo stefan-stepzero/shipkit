@@ -2,249 +2,193 @@
 # suggest-next-skill.sh - Suggest next skill after Claude stops
 #
 # This hook runs when Claude finishes responding (Stop event).
-# It analyzes the transcript to detect which skill just completed
+# It analyzes the last user/assistant exchange to detect which skill completed
 # and suggests the logical next step in the workflow.
 
 set -e
 
-# Read hook input from stdin
-INPUT=$(cat)
+# Find the last skill invocation in .claude directory
+# We'll check if any skill outputs were recently created/modified
+LAST_SKILL=""
 
-# Extract transcript path
-TRANSCRIPT_PATH=$(echo "$INPUT" | jq -r '.transcript_path')
+# Check for recently completed product skills (within last 60 seconds)
+for skill in prod-strategic-thinking prod-constitution-builder prod-personas \
+             prod-jobs-to-be-done prod-market-analysis prod-brand-guidelines \
+             prod-interaction-design prod-user-stories prod-assumptions-and-risks \
+             prod-success-metrics prod-communicator; do
+    OUTPUT_DIR=".shipkit/skills/$skill/outputs"
+    if [[ -d "$OUTPUT_DIR" ]]; then
+        # Check if any files were modified in last 60 seconds
+        if find "$OUTPUT_DIR" -type f -mmin -1 2>/dev/null | grep -q .; then
+            LAST_SKILL="$skill"
+            break
+        fi
+    fi
+done
 
-# Check if stop hook is already active (prevent infinite loops)
-STOP_HOOK_ACTIVE=$(echo "$INPUT" | jq -r '.stop_hook_active')
-if [[ "$STOP_HOOK_ACTIVE" == "true" ]]; then
-  exit 0  # Don't suggest if we're already in a stop hook loop
+# If no product skill, check dev skills
+if [[ -z "$LAST_SKILL" ]]; then
+    for skill in dev-constitution-builder dev-specify dev-plan dev-tasks \
+                 dev-implement dev-roadmap dev-finish; do
+        OUTPUT_DIR=".shipkit/skills/$skill/outputs"
+        if [[ -d "$OUTPUT_DIR" ]]; then
+            if find "$OUTPUT_DIR" -type f -mmin -1 2>/dev/null | grep -q .; then
+                LAST_SKILL="$skill"
+                break
+            fi
+        fi
+    done
 fi
 
-# Exit early if no transcript
-if [[ ! -f "$TRANSCRIPT_PATH" ]]; then
-  exit 0
-fi
-
-# Function to check if skill was recently invoked
-skill_completed() {
-  local skill_name="$1"
-  grep -q "\"tool_name\":\"Skill\"" "$TRANSCRIPT_PATH" 2>/dev/null && \
-  grep -q "\"skill\":\"$skill_name\"" "$TRANSCRIPT_PATH" 2>/dev/null
-}
-
-# Detect which skill just completed and suggest next step
-# Product Discovery Chain
-if skill_completed "prod-strategic-thinking"; then
-  cat << 'EOF'
+# Suggest next step based on completed skill
+case "$LAST_SKILL" in
+    prod-strategic-thinking)
+        cat << 'EOF'
 
 ✅ Strategic thinking complete
 
-👉 Suggested next step:
-   /prod-constitution-builder - Define your product principles and project type (POC, MVP, Greenfield, etc.)
+👉 Next: /prod-constitution-builder - Define project type and principles
 
 EOF
-  exit 0
-fi
-
-if skill_completed "prod-constitution-builder"; then
-  cat << 'EOF'
+        ;;
+    prod-constitution-builder)
+        cat << 'EOF'
 
 ✅ Product constitution created
 
-👉 Suggested next step:
-   /prod-personas - Identify and document target users
+👉 Next: /prod-personas - Identify target users
 
 EOF
-  exit 0
-fi
-
-if skill_completed "prod-personas"; then
-  cat << 'EOF'
+        ;;
+    prod-personas)
+        cat << 'EOF'
 
 ✅ Personas defined
 
-👉 Suggested next step:
-   /prod-jobs-to-be-done - Map current state workflows and pain points
+👉 Next: /prod-jobs-to-be-done - Map workflows and pain points
 
 EOF
-  exit 0
-fi
-
-if skill_completed "prod-jobs-to-be-done"; then
-  cat << 'EOF'
+        ;;
+    prod-jobs-to-be-done)
+        cat << 'EOF'
 
 ✅ Jobs to be done mapped
 
-👉 Suggested next step:
-   /prod-market-analysis - Analyze competitive landscape
+👉 Next: /prod-market-analysis - Analyze competition
 
 EOF
-  exit 0
-fi
-
-if skill_completed "prod-market-analysis"; then
-  cat << 'EOF'
+        ;;
+    prod-market-analysis)
+        cat << 'EOF'
 
 ✅ Market analysis complete
 
-👉 Suggested next step:
-   /prod-brand-guidelines - Define visual direction and personality
+👉 Next: /prod-brand-guidelines - Define brand identity
 
 EOF
-  exit 0
-fi
-
-if skill_completed "prod-brand-guidelines"; then
-  cat << 'EOF'
+        ;;
+    prod-brand-guidelines)
+        cat << 'EOF'
 
 ✅ Brand guidelines established
 
-👉 Suggested next step:
-   /prod-interaction-design - Design future state user journeys
+👉 Next: /prod-interaction-design - Design user journeys
 
 EOF
-  exit 0
-fi
-
-if skill_completed "prod-interaction-design"; then
-  cat << 'EOF'
+        ;;
+    prod-interaction-design)
+        cat << 'EOF'
 
 ✅ Interaction design complete
 
-👉 Suggested next step:
-   /prod-user-stories - Write actionable requirements with acceptance criteria
+👉 Next: /prod-user-stories - Write requirements
 
 EOF
-  exit 0
-fi
-
-if skill_completed "prod-user-stories"; then
-  cat << 'EOF'
+        ;;
+    prod-user-stories)
+        cat << 'EOF'
 
 ✅ User stories written
 
-👉 Suggested next steps:
-   /prod-assumptions-and-risks - Identify strategic risks
-   OR
-   /dev-constitution - Start technical implementation planning
+👉 Next: /prod-assumptions-and-risks OR /dev-constitution
 
 EOF
-  exit 0
-fi
-
-if skill_completed "prod-assumptions-and-risks"; then
-  cat << 'EOF'
+        ;;
+    prod-assumptions-and-risks)
+        cat << 'EOF'
 
 ✅ Assumptions and risks documented
 
-👉 Suggested next step:
-   /prod-success-metrics - Define KPIs and instrumentation
+👉 Next: /prod-success-metrics - Define KPIs
 
 EOF
-  exit 0
-fi
-
-if skill_completed "prod-success-metrics"; then
-  cat << 'EOF'
+        ;;
+    prod-success-metrics)
+        cat << 'EOF'
 
 ✅ Product discovery complete!
 
-👉 Ready to start development:
-   /dev-constitution - Reference or build technical standards
-   Then:
-   /dev-specify - Create feature specifications
+👉 Next: /dev-constitution - Start development
 
 EOF
-  exit 0
-fi
-
-# Development Chain
-if skill_completed "dev-constitution"; then
-  cat << 'EOF'
+        ;;
+    dev-constitution-builder)
+        cat << 'EOF'
 
 ✅ Technical constitution ready
 
-👉 Suggested next step:
-   /dev-specify - Create feature specification from description
+👉 Next: /dev-specify - Create feature spec
 
 EOF
-  exit 0
-fi
-
-if skill_completed "dev-specify"; then
-  cat << 'EOF'
+        ;;
+    dev-specify)
+        cat << 'EOF'
 
 ✅ Specification created
 
-👉 Suggested next steps:
-   /dev-plan - Generate implementation plan (reads constitution)
-   OR
-   /dev-clarify - Resolve any ambiguities first (if needed)
+👉 Next: /dev-plan - Generate implementation plan
 
 EOF
-  exit 0
-fi
-
-if skill_completed "dev-plan"; then
-  cat << 'EOF'
+        ;;
+    dev-plan)
+        cat << 'EOF'
 
 ✅ Implementation plan ready
 
-👉 Suggested next step:
-   /dev-tasks - Break plan into executable tasks
+👉 Next: /dev-tasks - Break into tasks
 
 EOF
-  exit 0
-fi
-
-if skill_completed "dev-tasks"; then
-  cat << 'EOF'
+        ;;
+    dev-tasks)
+        cat << 'EOF'
 
 ✅ Tasks defined
 
-👉 Suggested next step:
-   /dev-implement - Execute tasks with integrated TDD + reviews
+👉 Next: /dev-implement - Execute with TDD
 
 EOF
-  exit 0
-fi
-
-if skill_completed "dev-implement"; then
-  cat << 'EOF'
+        ;;
+    dev-implement)
+        cat << 'EOF'
 
 ✅ Implementation complete
 
-👉 Suggested next step:
-   /dev-finish - Merge workflow with test validation
+👉 Next: /dev-finish - Merge and validate
 
 EOF
-  exit 0
-fi
-
-if skill_completed "dev-roadmap"; then
-  cat << 'EOF'
+        ;;
+    dev-roadmap)
+        cat << 'EOF'
 
 ✅ Roadmap created
 
-👉 Suggested next step:
-   Start implementing features in roadmap order:
-   /dev-plan - For the first spec in the roadmap
+👉 Next: /dev-plan - Start first feature
 
 EOF
-  exit 0
-fi
+        ;;
+    *)
+        # No suggestion - normal, not every stop requires one
+        ;;
+esac
 
-# Communicator skill
-if skill_completed "prod-communicator"; then
-  cat << 'EOF'
-
-✅ Stakeholder communication generated
-
-Continue with your product discovery or development workflow.
-
-EOF
-  exit 0
-fi
-
-# Default: No specific suggestion
-# This is normal - not every stop requires a skill suggestion
 exit 0

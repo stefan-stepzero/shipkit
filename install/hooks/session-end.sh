@@ -2,23 +2,9 @@
 # session-end.sh - Document session progress on /clear
 #
 # This hook runs when a Claude Code session ends.
-# We ONLY save state when the user runs /clear (reason: "clear").
-#
-# Why? Because:
-# - Regular logout/exit → User will resume the same conversation (no state needed)
-# - /clear → User wants fresh conversation but should remember progress
+# We save minimal state to help resume context in the next session.
 
 set -e
-
-# Read hook input
-INPUT=$(cat)
-REASON=$(echo "$INPUT" | jq -r '.reason')
-TRANSCRIPT_PATH=$(echo "$INPUT" | jq -r '.transcript_path')
-
-# Only save state when user runs /clear
-if [[ "$REASON" != "clear" ]]; then
-  exit 0
-fi
 
 # Ensure progress directory exists
 mkdir -p .shipkit/progress
@@ -26,32 +12,51 @@ mkdir -p .shipkit/progress
 # Archive existing state if present
 STATE_FILE=".shipkit/progress/state.md"
 if [[ -f "$STATE_FILE" ]]; then
-  TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+  TIMESTAMP=$(date +%Y%m%d-%H%M%S 2>/dev/null || echo "backup")
   ARCHIVE_FILE=".shipkit/progress/state-$TIMESTAMP.md"
-  mv "$STATE_FILE" "$ARCHIVE_FILE"
+  mv "$STATE_FILE" "$ARCHIVE_FILE" 2>/dev/null || true
 fi
 
-# Exit early if no transcript
-if [[ ! -f "$TRANSCRIPT_PATH" ]]; then
-  exit 0
-fi
+# Find the last completed skill by checking for output files
+LAST_SKILL=""
 
-# Parse transcript for last skill used
-LAST_SKILL=$(grep -o '"tool_name":"Skill"' "$TRANSCRIPT_PATH" 2>/dev/null | tail -1)
+# Check product skills
+for skill in prod-strategic-thinking prod-constitution-builder prod-personas \
+             prod-jobs-to-be-done prod-market-analysis prod-brand-guidelines \
+             prod-interaction-design prod-user-stories prod-assumptions-and-risks \
+             prod-success-metrics; do
+    OUTPUT_DIR=".shipkit/skills/$skill/outputs"
+    if [[ -d "$OUTPUT_DIR" ]]; then
+        # Find most recently modified file (portable - no -printf)
+        LATEST_FILE=$(find "$OUTPUT_DIR" -type f -name "*.md" 2>/dev/null | head -1)
+        if [[ -n "$LATEST_FILE" ]]; then
+            LAST_SKILL="$skill"
+        fi
+    fi
+done
+
+# Check dev skills if no product skill found
 if [[ -z "$LAST_SKILL" ]]; then
-  # No skills used in this session
-  exit 0
+    for skill in dev-constitution-builder dev-specify dev-plan dev-tasks \
+                 dev-implement dev-roadmap dev-finish; do
+        OUTPUT_DIR=".shipkit/skills/$skill/outputs"
+        if [[ -d "$OUTPUT_DIR" ]]; then
+            LATEST_FILE=$(find "$OUTPUT_DIR" -type f -name "*.md" 2>/dev/null | head -1)
+            if [[ -n "$LATEST_FILE" ]]; then
+                LAST_SKILL="$skill"
+            fi
+        fi
+    done
 fi
 
-# Get the actual skill name
-LAST_SKILL_NAME=$(grep '"tool_name":"Skill"' "$TRANSCRIPT_PATH" | \
-                  grep -o '"skill":"[^"]*"' | \
-                  tail -1 | \
-                  cut -d'"' -f4)
+# If no skill outputs found, exit quietly
+if [[ -z "$LAST_SKILL" ]]; then
+    exit 0
+fi
 
 # Determine next skill suggestion based on workflow chain
 NEXT_SKILL=""
-case "$LAST_SKILL_NAME" in
+case "$LAST_SKILL" in
   prod-strategic-thinking) NEXT_SKILL="prod-constitution-builder" ;;
   prod-constitution-builder) NEXT_SKILL="prod-personas" ;;
   prod-personas) NEXT_SKILL="prod-jobs-to-be-done" ;;
@@ -62,20 +67,19 @@ case "$LAST_SKILL_NAME" in
   prod-user-stories) NEXT_SKILL="prod-assumptions-and-risks or dev-constitution" ;;
   prod-assumptions-and-risks) NEXT_SKILL="prod-success-metrics" ;;
   prod-success-metrics) NEXT_SKILL="dev-constitution" ;;
-  dev-constitution) NEXT_SKILL="dev-specify" ;;
+  dev-constitution-builder) NEXT_SKILL="dev-specify" ;;
   dev-specify) NEXT_SKILL="dev-plan" ;;
   dev-plan) NEXT_SKILL="dev-tasks" ;;
   dev-tasks) NEXT_SKILL="dev-implement" ;;
   dev-implement) NEXT_SKILL="dev-finish" ;;
   dev-roadmap) NEXT_SKILL="dev-plan (first spec)" ;;
-  *) NEXT_SKILL="Check /shipkit-master" ;;
+  *) NEXT_SKILL="See /shipkit-master" ;;
 esac
 
 # Try to detect project type from constitution
-PROJECT_INFO="Unknown"
+PROJECT_INFO="Not set"
 CONSTITUTION=".shipkit/skills/prod-constitution-builder/outputs/product-constitution.md"
 if [[ -f "$CONSTITUTION" ]]; then
-  # Try to extract project type
   PROJECT_LINE=$(grep -i "project type\|product stage" "$CONSTITUTION" 2>/dev/null | head -1 || echo "")
   if [[ -n "$PROJECT_LINE" ]]; then
     PROJECT_INFO=$(echo "$PROJECT_LINE" | sed 's/^[*#-]*//' | sed 's/^[ \t]*//' | cut -c1-50)
@@ -83,14 +87,16 @@ if [[ -f "$CONSTITUTION" ]]; then
 fi
 
 # Count output files
-OUTPUT_COUNT=$(find .shipkit/skills/*/outputs -type f -name "*.md" 2>/dev/null | wc -l)
+OUTPUT_COUNT=$(find .shipkit/skills/*/outputs -type f -name "*.md" 2>/dev/null | wc -l || echo 0)
 
 # Write concise state
 cat > "$STATE_FILE" << EOF
-Last: /$LAST_SKILL_NAME
-Next: /$NEXT_SKILL
-Project: $PROJECT_INFO
-Files: $OUTPUT_COUNT outputs
+**Previous Session Summary**
+
+Last completed: /$LAST_SKILL
+Suggested next: /$NEXT_SKILL
+Project type: $PROJECT_INFO
+Output files: $OUTPUT_COUNT
 EOF
 
 exit 0

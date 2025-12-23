@@ -1,2 +1,17 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Force Unix (LF) line endings for shell scripts
+# This prevents Git autocrlf from breaking bash scripts on Windows
+*.sh text eol=lf
+
+# Explicitly force LF for hook files (critical for bash execution)
+install/hooks/* text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
