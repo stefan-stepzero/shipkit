@@ -1,44 +1,46 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# session-start.sh - Load Shipkit Master Skill at session start
+#
+# This hook runs when Claude Code starts a new session (startup, resume, clear, compact).
+# According to official Claude Code docs, SessionStart stdout is automatically added to context.
+#
+# We output:
+# 1. The Shipkit Master Skill (skill definitions and guidance)
+# 2. Previous session state (if exists from last /clear)
+
+set -e
 
 # Find plugin root (directory containing this hooks folder)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_ROOT="$(dirname "$SCRIPT_DIR")"
 
-# Path to the Shipkit Master Skill that gets injected at session start
-META_SKILL="$PLUGIN_ROOT/skills/shipkit-master/skill.md"
+# Path to the Shipkit Master Skill
+META_SKILL="$PLUGIN_ROOT/skills/shipkit-master/SKILL.md"
 
-# JSON-safe string escaping
-json_escape() {
-    local str="$1"
-    str="${str//\\/\\\\}"      # Backslashes
-    str="${str//\"/\\\"}"      # Double quotes
-    str="${str//$'\n'/\\n}"    # Newlines
-    str="${str//$'\r'/\\r}"    # Carriage returns
-    str="${str//$'\t'/\\t}"    # Tabs
-    printf '%s' "$str"
-}
+# Check if the skill file exists
+if [[ ! -f "$META_SKILL" ]]; then
+  cat << 'EOF'
+⚠️  Shipkit Master Skill not found
 
-# Read the Shipkit Master Skill content
-if [[ -f "$META_SKILL" ]]; then
-    SKILL_CONTENT=$(cat "$META_SKILL")
-else
-    SKILL_CONTENT="Error: Shipkit Master Skill not found at $META_SKILL"
+Expected location: .claude/skills/shipkit-master/SKILL.md
+
+Shipkit may not be properly installed. Run the installer again.
+EOF
+  exit 0
 fi
 
-# Escape for JSON
-ESCAPED_CONTENT=$(json_escape "$SKILL_CONTENT")
+# Output the skill content directly to stdout
+cat "$META_SKILL"
 
-# Output JSON that Claude Code will inject into session context
-cat << EOF
-{
-  "hook": "SessionStart",
-  "context": {
-    "type": "system_instruction",
-    "priority": "high",
-    "content": "$ESCAPED_CONTENT"
-  }
-}
-EOF
+# Auto-inject previous session state if it exists
+STATE_FILE=".shipkit/progress/state.md"
+if [[ -f "$STATE_FILE" ]]; then
+  echo ""
+  echo "---"
+  echo ""
+  echo "## Previous Session State"
+  echo ""
+  cat "$STATE_FILE"
+fi
 
 exit 0

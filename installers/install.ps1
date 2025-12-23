@@ -248,6 +248,11 @@ function Install-Agents {
     $Count = 0
     $SourceAgents = Join-Path $RepoRoot "install\agents\*.md"
     Get-Item $SourceAgents -ErrorAction SilentlyContinue | ForEach-Object {
+        # Skip README.md - it's documentation, not an agent definition
+        if ($_.Name -eq "README.md") {
+            Write-Info "  Skipping README.md (documentation only)"
+            return
+        }
         $DestFile = Join-Path $AgentsDir $_.Name
         if (-not (Test-Path $DestFile)) {
             Copy-Item $_.FullName -Destination $DestFile

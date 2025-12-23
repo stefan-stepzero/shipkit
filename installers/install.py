@@ -29,19 +29,19 @@ class Colors:
     GRAY = '\033[90m'
 
 def print_success(msg):
-    print(f"  {Colors.GREEN}✓{Colors.RESET} {msg}")
+    print(f"  {Colors.GREEN}[OK]{Colors.RESET} {msg}")
 
 def print_info(msg):
-    print(f"  {Colors.CYAN}→{Colors.RESET} {msg}")
+    print(f"  {Colors.CYAN}[>]{Colors.RESET} {msg}")
 
 def print_warning(msg):
-    print(f"  {Colors.YELLOW}⚠{Colors.RESET} {msg}")
+    print(f"  {Colors.YELLOW}[!]{Colors.RESET} {msg}")
 
 def print_error(msg):
-    print(f"  {Colors.RED}✗{Colors.RESET} {msg}")
+    print(f"  {Colors.RED}[X]{Colors.RESET} {msg}")
 
 def print_bullet(msg):
-    print(f"  {Colors.DIM}•{Colors.RESET} {msg}")
+    print(f"  {Colors.DIM}*{Colors.RESET} {msg}")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # LOGO
@@ -50,16 +50,18 @@ def print_bullet(msg):
 def show_logo():
     print()
     print(f"{Colors.MAGENTA}", end='')
-    print("""    ┌──────────────────────────────────────────────────────────────────────┐
-    │                                                        /\            │
-    │   ███████╗██╗  ██╗██╗██████╗ ██╗  ██╗██╗████████╗     /  \           │
-    │   ██╔════╝██║  ██║██║██╔══██╗██║ ██╔╝██║╚══██╔══╝    / /| \          │
-    │   ███████╗███████║██║██████╔╝█████╔╝ ██║   ██║      / / |  \         │
-    │   ╚════██║██╔══██║██║██╔═══╝ ██╔═██╗ ██║   ██║     /_/__|___\        │
-    │   ███████║██║  ██║██║██║     ██║  ██╗██║   ██║     \________/        │
-    │   ╚══════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝  ╚═╝╚═╝   ╚═╝     ~~~~~~~~~~        │
-    │                                                                      │
-    └──────────────────────────────────────────────────────────────────────┘""")
+    # Using simple ASCII to avoid encoding issues on Windows
+    print("""
+    ========================================================================
+                                                        /\\
+       SHIPKIT - Product Development Framework          /  \\
+                                                       / /| \\
+       24 Skills • 6 Agents • Constitution-Driven     / / |  \\
+                                                     /_/__|___\\
+                                                     \\________/
+                                                     ~~~~~~~~~~
+    ========================================================================
+    """)
     print(f"{Colors.RESET}")
     print(f"{Colors.DIM}         Complete Product Development Framework{Colors.RESET}")
     print(f"{Colors.DIM}              24 Skills • 6 Agents • Constitution-Driven{Colors.RESET}")
@@ -82,6 +84,7 @@ def verify_source_files(repo_root):
         "install/hooks",
         "install/settings.json",
         "install/CLAUDE.md",
+        "install/.gitignore",
         "help"
     ]
 
@@ -116,9 +119,9 @@ def check_project_root(target_dir):
 def install_skills(repo_root, target_dir):
     """Install skill definitions"""
     print()
-    print(f"  {Colors.MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
     print(f"  {Colors.BOLD}Installing skills{Colors.RESET}")
-    print(f"  {Colors.MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
     print()
 
     skills_dir = target_dir / ".claude" / "skills"
@@ -153,6 +156,10 @@ def install_agents(repo_root, target_dir):
     print_info(f"Copying agent files from {source_agents}...")
 
     for agent_file in source_agents.glob("*.md"):
+        # Skip README.md - it's documentation, not an agent definition
+        if agent_file.name == "README.md":
+            print_info("  Skipping README.md (documentation only)")
+            continue
         dest_file = agents_dir / agent_file.name
         print_info(f"  Checking {agent_file.name}...")
         if not dest_file.exists():
@@ -220,9 +227,9 @@ def install_settings(repo_root, target_dir):
 def install_workspace(repo_root, target_dir):
     """Install workspace (.shipkit/)"""
     print()
-    print(f"  {Colors.MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
     print(f"  {Colors.BOLD}Setting up workspace{Colors.RESET}")
-    print(f"  {Colors.MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
     print()
 
     print_info("Creating .shipkit/ workspace structure...")
@@ -267,7 +274,7 @@ def install_workspace(repo_root, target_dir):
                 (dest_skill_dir / "outputs").mkdir(exist_ok=True)
 
                 skill_impl_count += 1
-                print_info(f"    ✓ {skill_name} complete")
+                print_info(f"    [OK] {skill_name} complete")
     else:
         print_error("Workspace skills directory not found!")
         return False
@@ -302,13 +309,42 @@ def install_claude_md(repo_root, target_dir):
             print_success("Installed CLAUDE.md (project instructions)")
             print_bullet("24 skill routing guide")
             print_bullet("Constitution-driven workflows")
-            print_bullet("Product → Development integration")
+            print_bullet("Product ->Development integration")
         else:
             print_error(f"Source CLAUDE.md not found at {source_claude_md}!")
             return False
     else:
         print_warning("CLAUDE.md exists, skipping")
         print_info("Delete existing CLAUDE.md if you want to reinstall")
+
+    return True
+
+def install_gitignore(repo_root, target_dir):
+    """Install .gitignore"""
+    print()
+    print(f"  {Colors.BOLD}Installing .gitignore{Colors.RESET}")
+    print()
+
+    gitignore = target_dir / ".gitignore"
+
+    print_info("Checking if .gitignore already exists...")
+    if not gitignore.exists():
+        print_info("No existing .gitignore found")
+        source_gitignore = repo_root / "install" / ".gitignore"
+        if source_gitignore.exists():
+            print_info(f"Copying .gitignore from {source_gitignore}...")
+            shutil.copy2(source_gitignore, gitignore)
+            print_success("Installed .gitignore")
+            print_bullet("Excludes .claude/, .shipkit/, CLAUDE.md")
+            print_bullet("Excludes env files and common IDE folders")
+        else:
+            print_warning("Source .gitignore not found, skipping")
+    else:
+        print_warning(".gitignore exists, skipping automatic install")
+        print_info("Add these entries to your .gitignore manually:")
+        print_bullet(".claude/")
+        print_bullet(".shipkit/")
+        print_bullet("CLAUDE.md")
 
     return True
 
@@ -362,11 +398,13 @@ def show_completion(target_dir):
     print()
     print()
     print(f"{Colors.GREEN}")
-    print("""    ╔═══════════════════════════════════════════════════════════╗
-    ║                                                           ║
-    ║   ✓  Installation Complete!                               ║
-    ║                                                           ║
-    ╚═══════════════════════════════════════════════════════════╝""")
+    print("""
+    ===============================================================
+
+         [OK]  Installation Complete!
+
+    ===============================================================
+    """)
     print(f"{Colors.RESET}")
 
     print(f"  {Colors.BOLD}What was installed:{Colors.RESET}")
@@ -378,11 +416,12 @@ def show_completion(target_dir):
     print_success("Session hooks (.claude/hooks/)")
     print_success("Settings with file protections (.claude/settings.json)")
     print_success("Project instructions (CLAUDE.md)")
+    print_success("Git ignore file (.gitignore)")
 
     print()
-    print(f"  {Colors.MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
     print(f"  {Colors.BOLD}Next Steps{Colors.RESET}")
-    print(f"  {Colors.MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
     print()
 
     print(f"  {Colors.CYAN}1.{Colors.RESET} Start Claude Code in {Colors.CYAN}{target_dir}{Colors.RESET}")
@@ -390,14 +429,14 @@ def show_completion(target_dir):
     print(f"  {Colors.CYAN}2.{Colors.RESET} Choose your workflow:")
     print()
     print(f"     {Colors.DIM}Full product development (Greenfield):{Colors.RESET}")
-    print(f"     {Colors.GREEN}/prod-strategic-thinking{Colors.RESET} → {Colors.GREEN}/prod-constitution-builder{Colors.RESET}")
-    print(f"     → {Colors.GREEN}/prod-personas{Colors.RESET} → {Colors.GREEN}/prod-user-stories{Colors.RESET} → {Colors.GREEN}/dev-specify{Colors.RESET}")
+    print(f"     {Colors.GREEN}/prod-strategic-thinking{Colors.RESET} ->{Colors.GREEN}/prod-constitution-builder{Colors.RESET}")
+    print(f"     ->{Colors.GREEN}/prod-personas{Colors.RESET} ->{Colors.GREEN}/prod-user-stories{Colors.RESET} ->{Colors.GREEN}/dev-specify{Colors.RESET}")
     print()
     print(f"     {Colors.DIM}Quick POC (Fast validation):{Colors.RESET}")
-    print(f"     {Colors.GREEN}/prod-constitution-builder{Colors.RESET} {Colors.DIM}(choose POC){Colors.RESET} → {Colors.GREEN}/dev-specify{Colors.RESET} → {Colors.GREEN}/dev-implement{Colors.RESET}")
+    print(f"     {Colors.GREEN}/prod-constitution-builder{Colors.RESET} {Colors.DIM}(choose POC){Colors.RESET} ->{Colors.GREEN}/dev-specify{Colors.RESET} ->{Colors.GREEN}/dev-implement{Colors.RESET}")
     print()
     print(f"     {Colors.DIM}Existing codebase (Add feature):{Colors.RESET}")
-    print(f"     {Colors.GREEN}/dev-constitution{Colors.RESET} → {Colors.GREEN}/dev-specify{Colors.RESET} → {Colors.GREEN}/dev-implement{Colors.RESET}")
+    print(f"     {Colors.GREEN}/dev-constitution{Colors.RESET} ->{Colors.GREEN}/dev-specify{Colors.RESET} ->{Colors.GREEN}/dev-implement{Colors.RESET}")
     print()
     print(f"  {Colors.CYAN}3.{Colors.RESET} Type {Colors.GREEN}/help{Colors.RESET} to see all 24 skills")
     print()
@@ -506,6 +545,8 @@ Examples:
     if not install_workspace(repo_root, target_dir):
         sys.exit(1)
     if not install_claude_md(repo_root, target_dir):
+        sys.exit(1)
+    if not install_gitignore(repo_root, target_dir):
         sys.exit(1)
 
     # Show completion

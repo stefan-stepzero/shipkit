@@ -127,6 +127,7 @@ verify_source_files() {
         "install/hooks"
         "install/settings.json"
         "install/CLAUDE.md"
+        "install/.gitignore"
         "help"
     )
 
@@ -287,6 +288,11 @@ install_agents() {
     for agent in "$REPO_ROOT/install/agents"/*.md; do
         if [ -f "$agent" ]; then
             filename=$(basename "$agent")
+            # Skip README.md - it's documentation, not an agent definition
+            if [ "$filename" = "README.md" ]; then
+                print_info "  Skipping README.md (documentation only)"
+                continue
+            fi
             print_info "  Checking $filename..."
             if [ ! -f ".claude/agents/$filename" ]; then
                 print_info "    Copying $filename..."
@@ -456,6 +462,32 @@ install_claude_md() {
     fi
 }
 
+install_gitignore() {
+    echo ""
+    echo -e "  ${BOLD}Installing .gitignore${NC}"
+    echo ""
+
+    print_info "Checking if .gitignore already exists..."
+    if [ ! -f ".gitignore" ]; then
+        print_info "No existing .gitignore found"
+        if [ -f "$REPO_ROOT/install/.gitignore" ]; then
+            print_info "Copying .gitignore from $REPO_ROOT/install/.gitignore..."
+            cp "$REPO_ROOT/install/.gitignore" ./.gitignore
+            print_success "Installed .gitignore"
+            print_bullet "Excludes .claude/, .shipkit/, CLAUDE.md"
+            print_bullet "Excludes env files and common IDE folders"
+        else
+            print_warning "Source .gitignore not found, skipping"
+        fi
+    else
+        print_warning ".gitignore exists, skipping automatic install"
+        print_info "Add these entries to your .gitignore manually:"
+        print_bullet ".claude/"
+        print_bullet ".shipkit/"
+        print_bullet "CLAUDE.md"
+    fi
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # COMPLETION SCREEN
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -486,6 +518,7 @@ EOF
     print_success "Session hooks (.claude/hooks/)"
     print_success "Settings with file protections (.claude/settings.json)"
     print_success "Project instructions (CLAUDE.md)"
+    print_success "Git ignore file (.gitignore)"
 
     echo ""
     echo -e "  ${BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -735,6 +768,7 @@ main() {
     install_settings
     install_workspace
     install_claude_md
+    install_gitignore
 
     # Show completion
     show_completion
