@@ -117,9 +117,21 @@ settings.json enforces read-only access to:
 
 Clone this repo next to your projects, then install:
 
+**Windows (Easiest - Double-Click):**
+1. Navigate to `shipkit/installers/` folder
+2. Double-click **`Install-Python.bat`** (recommended) or `Install-PowerShell.bat`
+3. Follow the interactive prompts
+
+**Python (All Platforms):**
 ```bash
 cd your-project
-bash ../shipkit/install.sh
+python ../shipkit/installers/install.py
+```
+
+**Bash (macOS/Linux/Git Bash):**
+```bash
+cd your-project
+bash ../shipkit/installers/install.sh
 ```
 
 This creates:
@@ -137,7 +149,13 @@ This creates:
 
 ```
 shipkit/
-├── install.sh                          # One-command installer
+├── installers/
+│   ├── Install-Python.bat              # 🖱️ Double-click Python installer (Windows)
+│   ├── Install-PowerShell.bat          # 🖱️ Double-click PowerShell installer (Windows)
+│   ├── install.py                      # Python installer (cross-platform)
+│   ├── install.ps1                     # PowerShell installer (Windows)
+│   ├── install.sh                      # Bash installer (macOS/Linux/Git Bash)
+│   └── README.md                       # Installer documentation
 ├── install/                            # Everything that gets installed
 │   ├── CLAUDE.md                       # Skill routing template
 │   ├── settings.json                   # Protections + SessionStart hook
@@ -176,7 +194,7 @@ shipkit/
 
 ## What Gets Installed
 
-After install.sh, your project structure:
+After running the installer, your project structure:
 
 ```
 your-project/
@@ -562,9 +580,16 @@ When you improve a skill:
 
 Re-run installer to get latest skills:
 
+**Python:**
 ```bash
 cd your-project
-bash ../shipkit/install.sh
+python ../shipkit/installers/install.py
+```
+
+**Bash:**
+```bash
+cd your-project
+bash ../shipkit/installers/install.sh
 ```
 
 **Preserves:**
@@ -633,8 +658,13 @@ MIT License
 **Ready to ship products faster?**
 
 ```bash
+# All platforms (Python)
 cd your-next-project
-bash ../shipkit/install.sh
+python ../shipkit/installers/install.py
+
+# Bash (macOS/Linux/Git Bash)
+cd your-next-project
+bash ../shipkit/installers/install.sh
 ```
 
 **From strategy to shipped code, all guided by AI.**

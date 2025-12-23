@@ -73,8 +73,15 @@ You can customize agents in your project by:
 ## Installation
 
 Agents are installed automatically when you run:
+
+**PowerShell (Windows):**
+```powershell
+installers\install.ps1
+```
+
+**Bash (macOS/Linux):**
 ```bash
-bash install.sh --preset solo
+bash installers/install.sh
 ```
 
 They're copied to `.claude/agents/` in your project.

@@ -28,6 +28,7 @@ BRIGHT_WHITE='\033[1;37m'
 # ═══════════════════════════════════════════════════════════════════════════════
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+REPO_ROOT="$( cd "$SCRIPT_DIR/.." && pwd )"
 TARGET_DIR=""
 INTERACTIVE=true
 GITHUB_URL=""
@@ -76,12 +77,12 @@ show_logo() {
     cat << 'EOF'
     ┌──────────────────────────────────────────────────────────────────────┐
     │                                                        /\            │
-    │   ███████╗██╗  ██╗██╗██████╗ ██╗  ██╗██╗████████╗      /  \           │
-    │   ██╔════╝██║  ██║██║██╔══██╗██║ ██╔╝██║╚══██╔══╝     / /| \          │
-    │   ███████╗███████║██║██████╔╝█████╔╝ ██║   ██║       / / |  \         │
-    │   ╚════██║██╔══██║██║██╔═══╝ ██╔═██╗ ██║   ██║      /_/__|___\        │
-    │   ███████║██║  ██║██║██║     ██║  ██╗██║   ██║      \________/        │
-    │   ╚══════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝  ╚═╝╚═╝   ╚═╝      ~~~~~~~~~~        │
+    │   ███████╗██╗  ██╗██╗██████╗ ██╗  ██╗██╗████████╗     /  \           │
+    │   ██╔════╝██║  ██║██║██╔══██╗██║ ██╔╝██║╚══██╔══╝    / /| \          │
+    │   ███████╗███████║██║██████╔╝█████╔╝ ██║   ██║      / / |  \         │
+    │   ╚════██║██╔══██║██║██╔═══╝ ██╔═██╗ ██║   ██║     /_/__|___\        │
+    │   ███████║██║  ██║██║██║     ██║  ██╗██║   ██║     \________/        │
+    │   ╚══════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝  ╚═╝╚═╝   ╚═╝     ~~~~~~~~~~        │
     │                                                                      │
     └──────────────────────────────────────────────────────────────────────┘
 EOF
@@ -130,11 +131,11 @@ verify_source_files() {
     )
 
     for path in "${required_paths[@]}"; do
-        if [ -e "$SCRIPT_DIR/$path" ]; then
+        if [ -e "$REPO_ROOT/$path" ]; then
             print_success "$path"
         else
             print_error "$path ${DIM}(missing)${NC}"
-            ((missing++))
+            missing=$((missing + 1))
         fi
     done
 
@@ -143,7 +144,7 @@ verify_source_files() {
     if [ $missing -gt 0 ]; then
         print_error "Source directory is incomplete!"
         echo ""
-        echo -e "  ${DIM}Expected shipkit structure at: $SCRIPT_DIR${NC}"
+        echo -e "  ${DIM}Expected shipkit structure at: $REPO_ROOT${NC}"
         echo ""
         return 1
     fi
@@ -194,13 +195,14 @@ prompt_for_directory() {
     fi
 
     # Convert to absolute path
-    if [[ "$TARGET_DIR" != /* ]]; then
+    # Check for Unix absolute path (starts with /) OR Windows absolute path (e.g., C:\, P:\, /c/, /p/)
+    if [[ "$TARGET_DIR" != /* ]] && [[ ! "$TARGET_DIR" =~ ^[A-Za-z]:[/\\] ]]; then
         TARGET_DIR="$PWD/$TARGET_DIR"
     fi
 }
 
 open_html_docs() {
-    local html_dir="$SCRIPT_DIR/help"
+    local html_dir="$REPO_ROOT/help"
 
     echo ""
     echo -e "  ${BRIGHT_CYAN}📖 Opening documentation...${NC}"
@@ -263,7 +265,7 @@ install_skills() {
     mkdir -p .claude/skills
 
     print_loading "Installing skill definitions"
-    cp -r "$SCRIPT_DIR/install/skills/"* .claude/skills/
+    cp -r "$REPO_ROOT/install/skills/"* .claude/skills/
 
     local skill_count=$(find .claude/skills -mindepth 1 -maxdepth 1 -type d 2>/dev/null | wc -l | tr -d ' ')
     print_success "Installed $skill_count skill definitions"
@@ -277,15 +279,21 @@ install_agents() {
     echo -e "  ${BOLD}Installing agent personas${NC}"
     echo ""
 
+    print_info "Creating .claude/agents directory..."
     mkdir -p .claude/agents
 
     local count=0
-    for agent in "$SCRIPT_DIR/install/agents"/*.md; do
+    print_info "Copying agent files from $REPO_ROOT/install/agents..."
+    for agent in "$REPO_ROOT/install/agents"/*.md; do
         if [ -f "$agent" ]; then
             filename=$(basename "$agent")
+            print_info "  Checking $filename..."
             if [ ! -f ".claude/agents/$filename" ]; then
+                print_info "    Copying $filename..."
                 cp "$agent" .claude/agents/
-                ((count++))
+                count=$((count + 1))
+            else
+                print_info "    Skipping $filename (already exists)"
             fi
         fi
     done
@@ -301,14 +309,20 @@ install_hooks() {
     echo -e "  ${BOLD}Installing session hooks${NC}"
     echo ""
 
+    print_info "Creating .claude/hooks directory..."
     mkdir -p .claude/hooks
 
+    print_info "Copying hook files from $REPO_ROOT/install/hooks..."
     # Copy all hook files
-    for file in "$SCRIPT_DIR/install/hooks/"*; do
+    for file in "$REPO_ROOT/install/hooks/"*; do
         if [ -f "$file" ]; then
+            filename=$(basename "$file")
+            print_info "  Copying $filename..."
             cp "$file" .claude/hooks/
         fi
     done
+
+    print_info "Making hook scripts executable..."
     chmod +x .claude/hooks/*.sh 2>/dev/null || true
 
     print_success "Installed session hooks"
@@ -322,9 +336,12 @@ install_settings() {
 
     SETTINGS_FILE=".claude/settings.json"
 
+    print_info "Checking if settings.json already exists..."
     if [ ! -f "$SETTINGS_FILE" ]; then
-        if [ -f "$SCRIPT_DIR/install/settings.json" ]; then
-            cp "$SCRIPT_DIR/install/settings.json" "$SETTINGS_FILE"
+        print_info "No existing settings.json found"
+        if [ -f "$REPO_ROOT/install/settings.json" ]; then
+            print_info "Copying settings.json from $REPO_ROOT/install/settings.json..."
+            cp "$REPO_ROOT/install/settings.json" "$SETTINGS_FILE"
             print_success "Installed settings.json"
             print_bullet "File protections: .claude/* and .shipkit/skills/*/outputs|templates|scripts"
             print_bullet "SessionStart hook configured"
@@ -346,40 +363,58 @@ install_workspace() {
     echo -e "  ${BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
     echo ""
 
-    print_loading "Creating .shipkit/ workspace structure"
-
+    print_info "Creating .shipkit/ workspace structure..."
     # Create base directories
     mkdir -p .shipkit/scripts
     mkdir -p .shipkit/skills
+    print_success "Created .shipkit base directories"
 
     # Copy shared scripts
-    if [ -d "$SCRIPT_DIR/install/workspace/scripts/bash" ]; then
-        cp -r "$SCRIPT_DIR/install/workspace/scripts/bash" .shipkit/scripts/
+    print_info "Copying shared scripts from $REPO_ROOT/install/workspace/scripts/bash..."
+    if [ -d "$REPO_ROOT/install/workspace/scripts/bash" ]; then
+        cp -r "$REPO_ROOT/install/workspace/scripts/bash" .shipkit/scripts/
         chmod +x .shipkit/scripts/bash/*.sh 2>/dev/null || true
         print_success "Installed shared scripts (common.sh)"
+    else
+        print_warning "Shared scripts directory not found, skipping"
     fi
 
     # Copy all skill implementations
-    print_loading "Installing skill implementations (scripts, templates, references)"
+    print_info "Installing skill implementations (scripts, templates, references)..."
 
     local skill_impl_count=0
-    if [ -d "$SCRIPT_DIR/install/workspace/skills" ]; then
-        for skill_dir in "$SCRIPT_DIR/install/workspace/skills/"*/; do
+    if [ -d "$REPO_ROOT/install/workspace/skills" ]; then
+        for skill_dir in "$REPO_ROOT/install/workspace/skills/"*/; do
             if [ -d "$skill_dir" ]; then
                 skill_name=$(basename "$skill_dir")
+                print_info "  Processing skill: $skill_name..."
                 mkdir -p ".shipkit/skills/$skill_name"
 
                 # Copy scripts, templates, references
-                [ -d "$skill_dir/scripts" ] && cp -r "$skill_dir/scripts" ".shipkit/skills/$skill_name/"
-                [ -d "$skill_dir/templates" ] && cp -r "$skill_dir/templates" ".shipkit/skills/$skill_name/"
-                [ -d "$skill_dir/references" ] && cp -r "$skill_dir/references" ".shipkit/skills/$skill_name/"
+                if [ -d "$skill_dir/scripts" ]; then
+                    print_info "    Copying scripts..."
+                    cp -r "$skill_dir/scripts" ".shipkit/skills/$skill_name/"
+                fi
+                if [ -d "$skill_dir/templates" ]; then
+                    print_info "    Copying templates..."
+                    cp -r "$skill_dir/templates" ".shipkit/skills/$skill_name/"
+                fi
+                if [ -d "$skill_dir/references" ]; then
+                    print_info "    Copying references..."
+                    cp -r "$skill_dir/references" ".shipkit/skills/$skill_name/"
+                fi
 
                 # Create empty outputs folder (will be populated by skills)
+                print_info "    Creating outputs directory..."
                 mkdir -p ".shipkit/skills/$skill_name/outputs"
 
-                ((skill_impl_count++))
+                skill_impl_count=$((skill_impl_count + 1))
+                print_info "    ✓ $skill_name complete"
             fi
         done
+    else
+        print_error "Workspace skills directory not found!"
+        return 1
     fi
 
     print_success "Installed $skill_impl_count skill implementations"
@@ -401,15 +436,18 @@ install_claude_md() {
     echo -e "  ${BOLD}Installing CLAUDE.md${NC}"
     echo ""
 
+    print_info "Checking if CLAUDE.md already exists..."
     if [ ! -f "CLAUDE.md" ]; then
-        if [ -f "$SCRIPT_DIR/install/CLAUDE.md" ]; then
-            cp "$SCRIPT_DIR/install/CLAUDE.md" ./CLAUDE.md
+        print_info "No existing CLAUDE.md found"
+        if [ -f "$REPO_ROOT/install/CLAUDE.md" ]; then
+            print_info "Copying CLAUDE.md from $REPO_ROOT/install/CLAUDE.md..."
+            cp "$REPO_ROOT/install/CLAUDE.md" ./CLAUDE.md
             print_success "Installed CLAUDE.md (project instructions)"
             print_bullet "24 skill routing guide"
             print_bullet "Constitution-driven workflows"
             print_bullet "Product → Development integration"
         else
-            print_error "Source CLAUDE.md not found!"
+            print_error "Source CLAUDE.md not found at $REPO_ROOT/install/CLAUDE.md!"
             return 1
         fi
     else
@@ -590,7 +628,8 @@ main() {
     fi
 
     # Convert to absolute path
-    if [[ "$TARGET_DIR" != /* ]]; then
+    # Check for Unix absolute path (starts with /) OR Windows absolute path (e.g., C:\, P:\, /c/, /p/)
+    if [[ "$TARGET_DIR" != /* ]] && [[ ! "$TARGET_DIR" =~ ^[A-Za-z]:[/\\] ]]; then
         TARGET_DIR="$PWD/$TARGET_DIR"
     fi
 
