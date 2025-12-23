@@ -185,25 +185,18 @@ function Open-HtmlDocs {
         return
     }
 
-    $SkillsSummary = Join-Path $HtmlDir "skills-summary.html"
     $SystemOverview = Join-Path $HtmlDir "system-overview.html"
 
-    if (Test-Path $SystemOverview) {
-        try {
-            Start-Process $SystemOverview
-            Write-Success "Opened system-overview.html"
-        } catch {
-            Write-Warning "Could not open system-overview.html"
-        }
+    if (-not (Test-Path $SystemOverview)) {
+        Write-Warning "System overview not found: $SystemOverview"
+        return
     }
 
-    if (Test-Path $SkillsSummary) {
-        try {
-            Start-Process $SkillsSummary
-            Write-Success "Opened skills-summary.html"
-        } catch {
-            Write-Warning "Could not open skills-summary.html"
-        }
+    try {
+        Start-Process $SystemOverview
+        Write-Success "Opened system-overview.html"
+    } catch {
+        Write-Warning "Could not open system-overview.html"
     }
 }
 

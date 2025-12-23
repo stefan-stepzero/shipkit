@@ -432,31 +432,22 @@ def open_html_docs(repo_root):
         return
 
     system_overview = html_dir / "system-overview.html"
-    skills_summary = html_dir / "skills-summary.html"
 
-    # Open files based on platform
+    if not system_overview.exists():
+        print_warning(f"System overview not found: {system_overview}")
+        return
+
+    # Open system overview based on platform
     if platform.system() == "Darwin":  # macOS
-        if system_overview.exists():
-            subprocess.run(["open", str(system_overview)], check=False)
-            print_success("Opened system-overview.html")
-        if skills_summary.exists():
-            subprocess.run(["open", str(skills_summary)], check=False)
-            print_success("Opened skills-summary.html")
+        subprocess.run(["open", str(system_overview)], check=False)
+        print_success("Opened system-overview.html")
     elif platform.system() == "Windows":
-        if system_overview.exists():
-            os.startfile(str(system_overview))
-            print_success("Opened system-overview.html")
-        if skills_summary.exists():
-            os.startfile(str(skills_summary))
-            print_success("Opened skills-summary.html")
+        os.startfile(str(system_overview))
+        print_success("Opened system-overview.html")
     else:  # Linux
         try:
-            if system_overview.exists():
-                subprocess.run(["xdg-open", str(system_overview)], check=False)
-                print_success("Opened system-overview.html")
-            if skills_summary.exists():
-                subprocess.run(["xdg-open", str(skills_summary)], check=False)
-                print_success("Opened skills-summary.html")
+            subprocess.run(["xdg-open", str(system_overview)], check=False)
+            print_success("Opened system-overview.html")
         except FileNotFoundError:
             print_warning(f"xdg-open not found. View docs at: {html_dir}")
 

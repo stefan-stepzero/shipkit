@@ -32,15 +32,13 @@ fi
 # Output the skill content directly to stdout
 cat "$META_SKILL"
 
-# Auto-inject previous session state if it exists
-STATE_FILE=".shipkit/progress/state.md"
-if [[ -f "$STATE_FILE" ]]; then
-  echo ""
-  echo "---"
-  echo ""
-  echo "## Previous Session State"
-  echo ""
-  cat "$STATE_FILE"
-fi
+# Suggest status check for session resume
+echo ""
+echo "---"
+echo ""
+echo "## Session Start"
+echo ""
+echo "📍 **Need to orient?** Run \`/shipkit-status\` to see where you are and what's next."
+echo ""
 
 exit 0

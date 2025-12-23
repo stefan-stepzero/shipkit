@@ -214,37 +214,30 @@ open_html_docs() {
         return 1
     fi
 
-    local skills_summary="$html_dir/skills-summary.html"
     local system_overview="$html_dir/system-overview.html"
 
-    # Detect OS and open files
+    if [ ! -f "$system_overview" ]; then
+        print_warning "System overview not found: $system_overview"
+        return 1
+    fi
+
+    # Detect OS and open system overview
     case "$(uname -s)" in
         Darwin*)
             # macOS
-            if [ -f "$system_overview" ]; then
-                open "$system_overview" 2>/dev/null && print_success "Opened system-overview.html" || print_warning "Could not open system-overview.html"
-            fi
-            if [ -f "$skills_summary" ]; then
-                open "$skills_summary" 2>/dev/null && print_success "Opened skills-summary.html" || print_warning "Could not open skills-summary.html"
-            fi
+            open "$system_overview" 2>/dev/null && print_success "Opened system-overview.html" || print_warning "Could not open system-overview.html"
             ;;
         Linux*)
             # Linux
             if command -v xdg-open &> /dev/null; then
-                [ -f "$system_overview" ] && xdg-open "$system_overview" 2>/dev/null && print_success "Opened system-overview.html"
-                [ -f "$skills_summary" ] && xdg-open "$skills_summary" 2>/dev/null && print_success "Opened skills-summary.html"
+                xdg-open "$system_overview" 2>/dev/null && print_success "Opened system-overview.html"
             else
                 print_warning "xdg-open not found. View docs at: $html_dir"
             fi
             ;;
         MINGW*|MSYS*|CYGWIN*)
             # Windows (Git Bash, MSYS2, Cygwin)
-            if [ -f "$system_overview" ]; then
-                start "$system_overview" 2>/dev/null && print_success "Opened system-overview.html" || print_warning "Could not open system-overview.html"
-            fi
-            if [ -f "$skills_summary" ]; then
-                start "$skills_summary" 2>/dev/null && print_success "Opened skills-summary.html" || print_warning "Could not open skills-summary.html"
-            fi
+            start "$system_overview" 2>/dev/null && print_success "Opened system-overview.html" || print_warning "Could not open system-overview.html"
             ;;
         *)
             print_warning "Unknown OS. View docs at: $html_dir"

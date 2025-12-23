@@ -127,7 +127,7 @@ for skill in "${!PRODUCT_ARTIFACTS[@]}"; do
   if [[ -f "$full_path" ]]; then
     echo -e "  ${GREEN}✓${NC} Found: $artifact_path"
     FOUND_ARTIFACTS+=("$full_path")
-    ((ARTIFACTS_FOUND++))
+    ARTIFACTS_FOUND=$((ARTIFACTS_FOUND + 1))
   fi
 done
 
