@@ -39,6 +39,8 @@ Or explicitly:
 
 ## Process
 
+**Important:** Use your natural language understanding and judgment to determine the right maturity and business model flags. The script requires explicit flags - you decide them based on conversation, not keyword matching.
+
 ### Step 1: Choose Project Type
 
 Present the user with **6 project type options:**
@@ -77,20 +79,61 @@ Present the user with **6 project type options:**
 
 ---
 
-### Step 2: Run Initialization Script
+### Step 2: Determine Maturity and Business Model
 
-```bash
-.shipkit/skills/prod-constitution-builder/scripts/build-constitution.sh --type=[TYPE]
-```
+Based on the user's project type choice, determine **two dimensions**:
 
-**Script will:**
-1. Load appropriate template based on type
-2. Create `.shipkit/skills/prod-constitution-builder/outputs/product-constitution.md`
-3. Report paths to Claude
+**Maturity:** (timeline and quality expectations)
+- `poc` - Days to 1 week, throwaway validation code
+- `mvp` - 1-4 weeks, basic but real product
+- `v1` - Months, professional quality product
+- `established` - Existing mature codebase
+
+**Business Model:** (target audience)
+- `side-project` - Personal/hobby project
+- `b2c` - Consumer product
+- `b2b` - Enterprise product
+- `marketplace` - Two-sided market
+
+**Mapping from project types:**
+- B2B SaaS Greenfield → `--maturity v1 --business-model b2b`
+- B2C SaaS Greenfield → `--maturity v1 --business-model b2c`
+- Experimental → `--maturity poc --business-model side-project`
+- Side Project MVP → `--maturity mvp --business-model side-project`
+- Side Project POC → `--maturity poc --business-model side-project`
+- Existing Project → `--maturity established --business-model [b2c|b2b|side-project]`
 
 ---
 
-### Step 3: Customize Constitution
+### Step 3: Run Initialization Script
+
+**CRITICAL:** Use your judgment to determine the correct flags based on the conversation with the user. The script requires explicit flags.
+
+```bash
+.shipkit/skills/prod-constitution-builder/scripts/build-constitution.sh \
+  --maturity [poc|mvp|v1|established] \
+  --business-model [side-project|b2c|b2b|marketplace]
+```
+
+**Example:**
+```bash
+# User building a weekend project to validate idea
+.shipkit/skills/prod-constitution-builder/scripts/build-constitution.sh \
+  --maturity poc --business-model side-project
+
+# User building enterprise SaaS from scratch
+.shipkit/skills/prod-constitution-builder/scripts/build-constitution.sh \
+  --maturity v1 --business-model b2b
+```
+
+**Script will:**
+1. Select appropriate template based on maturity + business model
+2. Create `.shipkit/skills/prod-constitution-builder/outputs/product-constitution.md`
+3. Report which template was used
+
+---
+
+### Step 4: Customize Constitution
 
 Read the template loaded by the script, then customize it through conversation with the user:
 
@@ -149,7 +192,7 @@ Read the template loaded by the script, then customize it through conversation w
 
 ---
 
-### Step 4: Fill Template Placeholders
+### Step 5: Fill Template Placeholders
 
 Replace these placeholders in the constitution:
 
@@ -165,7 +208,7 @@ Replace these placeholders in the constitution:
 
 ---
 
-### Step 5: Validate with User
+### Step 6: Validate with User
 
 Read back the key sections:
 - Prime Directive
@@ -239,7 +282,11 @@ If YES → Constitution complete!
 
 **How to update:**
 ```bash
-.shipkit/skills/prod-constitution-builder/scripts/build-constitution.sh --update
+# Must still provide maturity and business-model flags
+.shipkit/skills/prod-constitution-builder/scripts/build-constitution.sh \
+  --maturity [current-or-new-value] \
+  --business-model [current-or-new-value] \
+  --update
 ```
 
 **Note:** Changing constitution mid-project should be intentional and communicated to team.

@@ -48,14 +48,16 @@ while [[ $# -gt 0 ]]; do
       exit 0
       ;;
     --help|-h)
-      echo "Usage: $0 [options]"
+      echo "Usage: $0 --maturity <value> --business-model <value> [options]"
       echo ""
-      echo "Flags:"
+      echo "Required flags:"
+      echo "  --maturity <value>    Set maturity: poc|mvp|v1|established"
+      echo "  --business-model <v>  Set model: b2c|b2b|marketplace|side-project"
+      echo ""
+      echo "Optional flags:"
       echo "  --update              Update existing constitution"
       echo "  --archive             Archive current and create new version"
       echo "  --skip-prereqs        Skip prerequisite checks"
-      echo "  --maturity <value>    Set maturity: poc|mvp|v1|established"
-      echo "  --business-model <v>  Set model: b2c|b2b|marketplace|side-project"
       echo "  --cancel              Cancel operation"
       exit 0
       ;;
@@ -69,38 +71,19 @@ done
 # Check prerequisites
 check_skill_prerequisites "prod-constitution-builder" "$SKIP_PREREQS"
 
-# Try to detect from strategic-thinking output if not provided
-STRATEGY_FILE="$REPO_ROOT/.shipkit/skills/prod-strategic-thinking/outputs/business-canvas.md"
+# Validate required flags
+if [[ -z "$MATURITY" ]]; then
+  echo -e "${RED}✗${NC} Error: --maturity flag is required" >&2
+  echo "  Valid values: poc|mvp|v1|established" >&2
+  echo "  Run with --help for usage information" >&2
+  exit 1
+fi
 
-if [[ -z "$MATURITY" || -z "$BUSINESS_MODEL" ]] && [[ -f "$STRATEGY_FILE" ]]; then
-  echo -e "${CYAN}Reading context from strategic thinking...${NC}"
-
-  # Extract context from strategy (simple grep for now)
-  if [[ -z "$MATURITY" ]]; then
-    if grep -q "POC\|Proof of Concept" "$STRATEGY_FILE"; then
-      MATURITY="poc"
-    elif grep -q "MVP" "$STRATEGY_FILE"; then
-      MATURITY="mvp"
-    elif grep -q "Established" "$STRATEGY_FILE"; then
-      MATURITY="established"
-    else
-      MATURITY="mvp"  # Default
-    fi
-  fi
-
-  if [[ -z "$BUSINESS_MODEL" ]]; then
-    if grep -q "B2C" "$STRATEGY_FILE"; then
-      BUSINESS_MODEL="b2c"
-    elif grep -q "B2B" "$STRATEGY_FILE"; then
-      BUSINESS_MODEL="b2b"
-    elif grep -q "Marketplace" "$STRATEGY_FILE"; then
-      BUSINESS_MODEL="marketplace"
-    elif grep -q "Side project" "$STRATEGY_FILE"; then
-      BUSINESS_MODEL="side-project"
-    else
-      BUSINESS_MODEL="b2c"  # Default
-    fi
-  fi
+if [[ -z "$BUSINESS_MODEL" ]]; then
+  echo -e "${RED}✗${NC} Error: --business-model flag is required" >&2
+  echo "  Valid values: b2c|b2b|marketplace|side-project" >&2
+  echo "  Run with --help for usage information" >&2
+  exit 1
 fi
 
 # Create output directory
