@@ -510,8 +510,18 @@ install_gitattributes() {
         if grep -q "\.sh.*eol=lf" .gitattributes 2>/dev/null; then
             print_success ".gitattributes exists with shell script protection"
         else
-            print_warning ".gitattributes exists but missing shell script rules"
-            print_info "Consider adding to your .gitattributes:"
+            print_info ".gitattributes exists but missing shell script rules"
+            print_info "Appending shell script protection..."
+            cat >> .gitattributes << 'EOF'
+
+# Force Unix (LF) line endings for shell scripts (added by Shipkit installer)
+# This prevents Git autocrlf from breaking bash scripts on Windows
+*.sh text eol=lf
+
+# Protect installed Shipkit hook scripts
+.claude/hooks/* text eol=lf
+EOF
+            print_success "Added shell script protection to .gitattributes"
             print_bullet "*.sh text eol=lf"
             print_bullet ".claude/hooks/* text eol=lf"
         fi

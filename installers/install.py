@@ -374,8 +374,17 @@ def install_gitattributes(repo_root, target_dir):
         if ".sh" in content and "eol=lf" in content:
             print_success(".gitattributes exists with shell script protection")
         else:
-            print_warning(".gitattributes exists but missing shell script rules")
-            print_info("Consider adding to your .gitattributes:")
+            print_info(".gitattributes exists but missing shell script rules")
+            print_info("Appending shell script protection...")
+            with gitattributes.open('a') as f:
+                f.write('\n')
+                f.write('# Force Unix (LF) line endings for shell scripts (added by Shipkit installer)\n')
+                f.write('# This prevents Git autocrlf from breaking bash scripts on Windows\n')
+                f.write('*.sh text eol=lf\n')
+                f.write('\n')
+                f.write('# Protect installed Shipkit hook scripts\n')
+                f.write('.claude/hooks/* text eol=lf\n')
+            print_success("Added shell script protection to .gitattributes")
             print_bullet("*.sh text eol=lf")
             print_bullet(".claude/hooks/* text eol=lf")
 
