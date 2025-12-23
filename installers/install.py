@@ -348,6 +348,30 @@ def install_gitignore(repo_root, target_dir):
 
     return True
 
+def normalize_line_endings(target_dir):
+    """Remove CRLF line endings from hook scripts"""
+    print()
+    print(f"  {Colors.BOLD}Normalizing line endings{Colors.RESET}")
+    print()
+
+    print_info("Converting hook scripts to Unix (LF) line endings...")
+
+    hooks_dir = target_dir / ".claude" / "hooks"
+    count = 0
+
+    for script in hooks_dir.glob("*.sh"):
+        # Read file and remove \r characters
+        content = script.read_bytes()
+        normalized = content.replace(b'\r\n', b'\n').replace(b'\r', b'\n')
+        script.write_bytes(normalized)
+
+        # Make executable (Unix)
+        script.chmod(script.stat().st_mode | 0o111)
+        count += 1
+
+    print_success(f"Normalized {count} hook scripts")
+    print_bullet("All hooks now have Unix (LF) line endings")
+
 def open_html_docs(repo_root):
     """Open documentation in browser"""
     html_dir = repo_root / "help"
@@ -548,6 +572,7 @@ Examples:
         sys.exit(1)
     if not install_gitignore(repo_root, target_dir):
         sys.exit(1)
+    normalize_line_endings(target_dir)
 
     # Show completion
     show_completion(target_dir)

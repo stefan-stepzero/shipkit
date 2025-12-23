@@ -488,6 +488,28 @@ install_gitignore() {
     fi
 }
 
+normalize_line_endings() {
+    echo ""
+    echo -e "  ${BOLD}Normalizing line endings${NC}"
+    echo ""
+
+    print_info "Converting hook scripts to Unix (LF) line endings..."
+
+    local count=0
+    for script in .claude/hooks/*.sh; do
+        if [ -f "$script" ]; then
+            # Remove carriage returns (CRLF → LF)
+            tr -d '\r' < "$script" > "$script.tmp"
+            mv "$script.tmp" "$script"
+            chmod +x "$script"
+            count=$((count + 1))
+        fi
+    done
+
+    print_success "Normalized $count hook scripts"
+    print_bullet "All hooks now have Unix (LF) line endings"
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # COMPLETION SCREEN
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -769,6 +791,7 @@ main() {
     install_workspace
     install_claude_md
     install_gitignore
+    normalize_line_endings
 
     # Show completion
     show_completion

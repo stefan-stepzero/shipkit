@@ -402,6 +402,27 @@ function Install-ClaudeMd {
     return $true
 }
 
+function Normalize-LineEndings {
+    Write-Host ""
+    Write-Host "  Normalizing line endings" -ForegroundColor White
+    Write-Host ""
+
+    Write-Info "Converting hook scripts to Unix (LF) line endings..."
+
+    $HooksDir = ".claude\hooks"
+    $Count = 0
+
+    Get-ChildItem "$HooksDir\*.sh" -ErrorAction SilentlyContinue | ForEach-Object {
+        $content = [System.IO.File]::ReadAllText($_.FullName)
+        $normalized = $content -replace "`r`n", "`n" -replace "`r", "`n"
+        [System.IO.File]::WriteAllText($_.FullName, $normalized)
+        $Count++
+    }
+
+    Write-Success "Normalized $Count hook scripts"
+    Write-Bullet "All hooks now have Unix (LF) line endings"
+}
+
 # ═══════════════════════════════════════════════════════════════════════════════
 # COMPLETION SCREEN
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -686,6 +707,7 @@ function Main {
         Install-Settings
         Install-Workspace
         Install-ClaudeMd
+        Normalize-LineEndings
 
         # Show completion
         Show-Completion -TargetPath $TargetDir
