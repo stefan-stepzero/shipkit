@@ -348,6 +348,39 @@ def install_gitignore(repo_root, target_dir):
 
     return True
 
+def install_gitattributes(repo_root, target_dir):
+    """Install .gitattributes"""
+    print()
+    print(f"  {Colors.BOLD}Installing .gitattributes{Colors.RESET}")
+    print()
+
+    gitattributes = target_dir / ".gitattributes"
+
+    print_info("Checking if .gitattributes already exists...")
+    if not gitattributes.exists():
+        print_info("No existing .gitattributes found")
+        source_gitattributes = repo_root / "install" / ".gitattributes"
+        if source_gitattributes.exists():
+            print_info(f"Copying .gitattributes from {source_gitattributes}...")
+            shutil.copy2(source_gitattributes, gitattributes)
+            print_success("Installed .gitattributes")
+            print_bullet("Forces LF line endings for shell scripts")
+            print_bullet("Protects .claude/hooks from Git autocrlf")
+        else:
+            print_warning("Source .gitattributes not found, skipping")
+    else:
+        # Check if existing .gitattributes has shell script rules
+        content = gitattributes.read_text()
+        if ".sh" in content and "eol=lf" in content:
+            print_success(".gitattributes exists with shell script protection")
+        else:
+            print_warning(".gitattributes exists but missing shell script rules")
+            print_info("Consider adding to your .gitattributes:")
+            print_bullet("*.sh text eol=lf")
+            print_bullet(".claude/hooks/* text eol=lf")
+
+    return True
+
 def normalize_line_endings(target_dir):
     """Remove CRLF line endings from hook scripts"""
     print()
@@ -571,6 +604,8 @@ Examples:
     if not install_claude_md(repo_root, target_dir):
         sys.exit(1)
     if not install_gitignore(repo_root, target_dir):
+        sys.exit(1)
+    if not install_gitattributes(repo_root, target_dir):
         sys.exit(1)
     normalize_line_endings(target_dir)
 

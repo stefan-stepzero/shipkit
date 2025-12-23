@@ -402,6 +402,39 @@ function Install-ClaudeMd {
     return $true
 }
 
+function Install-GitAttributes {
+    Write-Host ""
+    Write-Host "  Installing .gitattributes" -ForegroundColor White
+    Write-Host ""
+
+    if (-not (Test-Path ".gitattributes")) {
+        Write-Info "No existing .gitattributes found"
+        $SourceGitAttributes = Join-Path $RepoRoot "install\.gitattributes"
+        if (Test-Path $SourceGitAttributes) {
+            Write-Info "Copying .gitattributes from $SourceGitAttributes..."
+            Copy-Item $SourceGitAttributes -Destination ".\.gitattributes"
+            Write-Success "Installed .gitattributes"
+            Write-Bullet "Forces LF line endings for shell scripts"
+            Write-Bullet "Protects .claude/hooks from Git autocrlf"
+        } else {
+            Write-Warning "Source .gitattributes not found, skipping"
+        }
+    } else {
+        # Check if existing .gitattributes has shell script rules
+        $content = Get-Content ".gitattributes" -Raw
+        if ($content -match "\.sh.*eol=lf") {
+            Write-Success ".gitattributes exists with shell script protection"
+        } else {
+            Write-Warning ".gitattributes exists but missing shell script rules"
+            Write-Info "Consider adding to your .gitattributes:"
+            Write-Bullet "*.sh text eol=lf"
+            Write-Bullet ".claude/hooks/* text eol=lf"
+        }
+    }
+
+    return $true
+}
+
 function Normalize-LineEndings {
     Write-Host ""
     Write-Host "  Normalizing line endings" -ForegroundColor White
@@ -707,6 +740,7 @@ function Main {
         Install-Settings
         Install-Workspace
         Install-ClaudeMd
+        Install-GitAttributes
         Normalize-LineEndings
 
         # Show completion

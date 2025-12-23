@@ -488,6 +488,36 @@ install_gitignore() {
     fi
 }
 
+install_gitattributes() {
+    echo ""
+    echo -e "  ${BOLD}Installing .gitattributes${NC}"
+    echo ""
+
+    print_info "Checking if .gitattributes already exists..."
+    if [ ! -f ".gitattributes" ]; then
+        print_info "No existing .gitattributes found"
+        if [ -f "$REPO_ROOT/install/.gitattributes" ]; then
+            print_info "Copying .gitattributes from $REPO_ROOT/install/.gitattributes..."
+            cp "$REPO_ROOT/install/.gitattributes" ./.gitattributes
+            print_success "Installed .gitattributes"
+            print_bullet "Forces LF line endings for shell scripts"
+            print_bullet "Protects .claude/hooks from Git autocrlf"
+        else
+            print_warning "Source .gitattributes not found, skipping"
+        fi
+    else
+        # Check if existing .gitattributes has shell script rules
+        if grep -q "\.sh.*eol=lf" .gitattributes 2>/dev/null; then
+            print_success ".gitattributes exists with shell script protection"
+        else
+            print_warning ".gitattributes exists but missing shell script rules"
+            print_info "Consider adding to your .gitattributes:"
+            print_bullet "*.sh text eol=lf"
+            print_bullet ".claude/hooks/* text eol=lf"
+        fi
+    fi
+}
+
 normalize_line_endings() {
     echo ""
     echo -e "  ${BOLD}Normalizing line endings${NC}"
@@ -791,6 +821,7 @@ main() {
     install_workspace
     install_claude_md
     install_gitignore
+    install_gitattributes
     normalize_line_endings
 
     # Show completion
