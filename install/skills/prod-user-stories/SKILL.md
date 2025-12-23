@@ -51,7 +51,20 @@ Or when:
 
 ## Process
 
-### Step 0: Check Product Constitution (Recommended)
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-user-stories/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Check Product Constitution (Recommended)
 
 **If product constitution exists:**
 - Read `.shipkit/skills/prod-constitution-builder/outputs/product-constitution.md`
@@ -66,7 +79,7 @@ Or when:
 
 ---
 
-### 1. Run the Script
+### Step 3: Run the Script
 
 ```bash
 .shipkit/skills/prod-user-stories/scripts/create-user-stories.sh
@@ -74,7 +87,7 @@ Or when:
 
 This initializes the user stories document from template.
 
-### 2. Organize Into Epics
+### Step 4: Organize Into Epics
 
 Group related stories into epics (large features):
 
@@ -90,7 +103,7 @@ Group related stories into epics (large features):
 - Success metric: How do we measure success?
 - User journey stage: Which stage from interaction-design.md?
 
-### 3. Write Stories Using Standard Format
+### Step 5: Write Stories Using Standard Format
 
 **Template:**
 ```
@@ -114,7 +127,7 @@ Estimated Effort: S / M / L / XL
 - **Small:** Completable in one iteration
 - **Testable:** Has clear pass/fail criteria
 
-### 4. Convert Journeys to Stories
+### Step 6: Convert Journeys to Stories
 
 **From Interaction Design → User Stories:**
 
@@ -139,7 +152,7 @@ Story 2: 3-step onboarding wizard
 Story 3: First value screen (user achieves something)
 ```
 
-### 5. Write Acceptance Criteria
+### Step 7: Write Acceptance Criteria
 
 **Use Given-When-Then Format:**
 ```
@@ -177,7 +190,7 @@ Acceptance Criteria:
 - [ ] Results load in <500ms for 95% of queries
 ```
 
-### 6. Prioritize Stories
+### Step 8: Prioritize Stories
 
 **Use MoSCoW Method:**
 
@@ -209,7 +222,7 @@ Low Value, Low Effort → Do Later (Fill Gaps)
 Low Value, High Effort → Don't Do (Money Pit)
 ```
 
-### 7. Size Stories
+### Step 9: Size Stories
 
 **Estimate effort:**
 
@@ -225,7 +238,7 @@ Low Value, High Effort → Don't Do (Money Pit)
 **XL (Extra Large):** 5-10 days
 - **Action:** Break into smaller stories
 
-### 8. Identify Dependencies
+### Step 10: Identify Dependencies
 
 **Note which stories depend on others:**
 - "Story 2.3 depends on Story 2.1 (authentication)"
@@ -236,7 +249,7 @@ Low Value, High Effort → Don't Do (Money Pit)
 - Data: B needs data created by A
 - Technical: B needs infrastructure from A
 
-### 9. Adapt to Product Stage
+### Step 11: Adapt to Product Stage
 
 **For POC:**
 - Must-have only (prove core hypothesis)
@@ -351,11 +364,3 @@ This is **Step 8 of 12** in the Product Discovery sequential workflow.
 ❌ **Missing the "So That"**
 - "I want to export data" (why?)
 - Fix: Add benefit ("so I can analyze in Excel")
-
-## Read References
-
-The skill includes extended references:
-- `references/reference.md` - INVEST principles, prioritization methods, splitting techniques
-- `references/examples.md` - Complete story examples for B2B SaaS, B2C mobile, e-commerce, dev tools
-
-Review these for detailed guidance and patterns.

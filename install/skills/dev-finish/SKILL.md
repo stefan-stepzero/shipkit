@@ -46,7 +46,20 @@ Load the **dev-lead** agent persona:
 
 ## The Process
 
-### Step 1: Run Verification Script
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-finish/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Run Verification Script
 
 ```bash
 .shipkit/skills/dev-finish/scripts/check-readiness.sh
@@ -68,7 +81,7 @@ Load the **dev-lead** agent persona:
 - Script presents 3 options
 - Continue to Step 2
 
-### Step 2: Ask User to Choose Option
+### Step 3: Ask User to Choose Option
 
 After script completes, ask user:
 
@@ -80,7 +93,7 @@ Enter 1, 2, or 3:
 
 **Do not add explanation** - the script already showed the options.
 
-### Step 3: Execute Chosen Option
+### Step 4: Execute Chosen Option
 
 Run the merge script with chosen option:
 
@@ -95,7 +108,7 @@ Run the merge script with chosen option:
 .shipkit/skills/dev-finish/scripts/merge-branch.sh --option=3
 ```
 
-### Step 4: Report Final Status
+### Step 5: Report Final Status
 
 After script completes, report what happened:
 
@@ -111,7 +124,7 @@ You're now on the main branch with the integrated code.
 
 ---
 
-### Step 5: Update Progress (if roadmap exists)
+### Step 6: Update Progress (if roadmap exists)
 
 **After successful merge (Option 1 only):**
 

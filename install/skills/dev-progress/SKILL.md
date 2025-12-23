@@ -47,7 +47,20 @@ Maintains a living progress document that tracks which specs are complete, which
 
 ## Process
 
-### Step 1: Run Update Script
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-progress/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Run Update Script
 
 ```bash
 .shipkit/skills/dev-progress/scripts/update-progress.sh
@@ -62,7 +75,7 @@ Maintains a living progress document that tracks which specs are complete, which
 
 ---
 
-### Step 2: Scan Current State
+### Step 3: Scan Current State
 
 **Claude analyzes:**
 
@@ -79,7 +92,7 @@ Maintains a living progress document that tracks which specs are complete, which
 
 ---
 
-### Step 3: Update Progress Document
+### Step 4: Update Progress Document
 
 **Write to:**
 ```
@@ -163,7 +176,7 @@ Maintains a living progress document that tracks which specs are complete, which
 
 ---
 
-### Step 4: Report to User
+### Step 5: Report to User
 
 **After update, show:**
 1. Progress summary (X/Y complete)

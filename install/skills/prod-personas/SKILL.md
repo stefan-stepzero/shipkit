@@ -36,7 +36,20 @@ Or uploads:
 
 ## Process
 
-### Step 0: Check Product Constitution (Recommended)
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-personas/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Check Product Constitution (Recommended)
 
 **If product constitution exists:**
 - Read `.shipkit/skills/prod-constitution-builder/outputs/product-constitution.md`
@@ -52,13 +65,13 @@ Or uploads:
 
 ---
 
-### 1. Determine Number of Personas
+### Step 3: Determine Number of Personas
 
 Ask: "How many distinct user types do we have?"
 - **Recommended**: 1-3 personas (stay focused)
 - **Too many**: Dilutes focus, hard to prioritize
 
-### 2. For Each Persona, Gather Information
+### Step 4: For Each Persona, Gather Information
 
 **Name**: Give them a memorable name
 - Example: "Sarah the Engineering Manager"
@@ -93,7 +106,7 @@ Ask: "How many distinct user types do we have?"
 - Brand preferences
 - Feature priorities
 
-### 3. Call Script for Each Persona
+### Step 5: Call Script for Each Persona
 
 ```bash
 .prodkit/scripts/bash/create-persona.sh \

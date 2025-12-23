@@ -33,7 +33,20 @@ This skill helps you:
 
 ## How to Use This Skill
 
-### Step 1: Initialize
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-success-metrics/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Initialize
 
 ```bash
 /prod-success-metrics
@@ -44,7 +57,7 @@ This skill helps you:
 - Checks prerequisite (user-stories.md must exist)
 - Opens document for editing
 
-### Step 2: Define North Star Metric
+### Step 3: Define North Star Metric
 
 **The ONE metric that best captures core value delivered.**
 
@@ -60,7 +73,7 @@ This skill helps you:
 - Spotify: Time spent listening
 - Dropbox: Files stored
 
-### Step 3: Choose Stage-Appropriate Metrics
+### Step 4: Choose Stage-Appropriate Metrics
 
 **POC Stage** - Focus on validation:
 - Problem confirmation rate
@@ -81,7 +94,7 @@ This skill helps you:
 - Market share
 - Net dollar retention
 
-### Step 4: Set Targets
+### Step 5: Set Targets
 
 **For each metric, define:**
 - **Current baseline** (if product exists)
@@ -101,7 +114,7 @@ This skill helps you:
 - Target: "A lot more"
 - Timeframe: "Soon"
 
-### Step 5: Plan Instrumentation
+### Step 6: Plan Instrumentation
 
 **What to track:**
 - User signups (source, timestamp)
@@ -123,7 +136,7 @@ This skill helps you:
 - User feedback: Intercom, Zendesk
 - A/B testing: Optimizely, LaunchDarkly
 
-### Step 6: Create OKRs (Optional but Recommended)
+### Step 7: Create OKRs (Optional but Recommended)
 
 **Structure:**
 - **Objective**: Aspirational, qualitative goal

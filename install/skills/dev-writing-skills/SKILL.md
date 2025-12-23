@@ -19,6 +19,19 @@ You write test cases (pressure scenarios with subagents), watch them fail (basel
 
 **Official guidance:** For Anthropic's official skill authoring best practices, see anthropic-best-practices.md. This document provides additional patterns and guidelines that complement the TDD-focused approach in this skill.
 
+## Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-writing-skills/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
 ## What is a Skill?
 
 A **skill** is a reference guide for proven techniques, patterns, or tools. Skills help future Claude instances find and apply effective approaches.

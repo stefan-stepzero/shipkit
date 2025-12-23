@@ -95,7 +95,20 @@ Script output:
 - Point to references for TDD, verification, debugging
 - Ready for Claude
 
-### 2. Read Constitution FIRST
+### 2. Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-implement/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### 3. Read Constitution FIRST
 
 **MANDATORY - Read constitution before EVERY code write:**
 
@@ -115,7 +128,7 @@ Script output:
 - Writing code without consulting constitution = violation
 - "I'll check constitution later" = STOP, read it NOW
 
-### 3. Read Task Context
+### 4. Read Task Context
 
 **Read all available context:**
 
@@ -137,7 +150,7 @@ Script output:
 .shipkit/skills/dev-implement/references/debugging-reference.md
 ```
 
-### 4. Execute Tasks with TDD Cycle
+### 5. Execute Tasks with TDD Cycle
 
 **For EACH task, follow RED-GREEN-REFACTOR:**
 
@@ -181,7 +194,7 @@ Write code before the test? Delete it. Start over.
 
 **When tests fail:** Use systematic debugging (see references/debugging-reference.md)
 
-### 5. Two-Stage Code Review
+### 6. Two-Stage Code Review
 
 **After TDD cycle completes, run BOTH reviews:**
 
@@ -212,7 +225,7 @@ Write code before the test? Delete it. Start over.
 → Re-run code quality review
 → Repeat until approved
 
-### 6. Verification Before Completion
+### 7. Verification Before Completion
 
 **MANDATORY - Evidence before claims:**
 
@@ -240,7 +253,7 @@ npm test  # or pytest, go test, cargo test, etc.
 
 **See:** `references/verification-reference.md` for details
 
-### 7. Mode Selection
+### 8. Mode Selection
 
 **Direct Mode (1-5 tasks):**
 - Execute all tasks in single context

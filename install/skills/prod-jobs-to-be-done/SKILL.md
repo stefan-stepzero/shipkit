@@ -33,7 +33,20 @@ User says:
 
 ## Process
 
-### Step 0: Check Product Constitution (Recommended)
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-jobs-to-be-done/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Check Product Constitution (Recommended)
 
 **If product constitution exists:**
 - Read `.shipkit/skills/prod-constitution-builder/outputs/product-constitution.md`
@@ -48,7 +61,7 @@ User says:
 
 ---
 
-### 1. For Each Persona, Define the Job
+### Step 3: For Each Persona, Define the Job
 
 **Job Statement** (follow this format):
 ```
@@ -59,7 +72,7 @@ So that I can [expected outcome]
 
 Example: "When managing a remote team across timezones, I want to quickly understand what happened overnight, so I can identify blockers and respond before EOD."
 
-### 2. Document Current Solution
+### Step 4: Document Current Solution
 
 **Tools Used**: What do they use today?
 - List all tools/platforms
@@ -79,7 +92,7 @@ Example: "When managing a remote team across timezones, I want to quickly unders
 - Tools misused
 - Spreadsheet solutions
 
-### 3. Assess Context
+### Step 5: Assess Context
 
 **Frequency**: How often does this job arise?
 - Daily / Weekly / Monthly
@@ -91,7 +104,7 @@ Example: "When managing a remote team across timezones, I want to quickly unders
 - Learning curve
 - Data migration
 
-### 4. Call Script for Each Job
+### Step 6: Call Script for Each Job
 
 ```bash
 .prodkit/scripts/bash/create-jtbd.sh \

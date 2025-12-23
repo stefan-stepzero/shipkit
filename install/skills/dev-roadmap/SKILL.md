@@ -49,7 +49,20 @@ Converts product user stories into a sequenced development plan, identifying fou
 
 ## Process
 
-### Step 1: Run Initialization Script
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-roadmap/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Run Initialization Script
 
 ```bash
 .shipkit/skills/dev-roadmap/scripts/create-roadmap.sh
@@ -62,7 +75,7 @@ Converts product user stories into a sequenced development plan, identifying fou
 
 ---
 
-### Step 2: Read Context
+### Step 3: Read Context
 
 **Read these to understand the product:**
 
@@ -78,7 +91,7 @@ Converts product user stories into a sequenced development plan, identifying fou
 
 ---
 
-### Step 3: Analyze Like an Engineering Manager
+### Step 4: Analyze Like an Engineering Manager
 
 **Think through technical execution logic:**
 
@@ -196,7 +209,7 @@ Spec 6: Admin Panel (US-015, US-016) (uses patterns from Spec 3)
 
 ---
 
-### Step 4: Write the Roadmap
+### Step 5: Write the Roadmap
 
 **Output to:**
 ```
@@ -298,7 +311,7 @@ Progress tracking: Use /dev-progress after each spec completes
 
 ---
 
-### Step 5: Review with User
+### Step 6: Review with User
 
 **Present the roadmap and ask:**
 - "Does this sequence make engineering sense?"

@@ -29,7 +29,18 @@ User says:
 
 ## Process
 
-### 1. Ask Playing to Win Questions
+### 1. Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-strategic-thinking/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+### 2. Ask Playing to Win Questions
 
 Ask the user about:
 
@@ -48,7 +59,7 @@ Ask the user about:
 **Management Systems**: How will you measure/reinforce this?
 - Example: "Weekly user interviews, NPS tracking, time-saved metrics"
 
-### 2. Gather Lean Canvas Elements
+### 3. Gather Lean Canvas Elements
 
 Ask about:
 
@@ -79,7 +90,7 @@ Ask about:
 **Unfair Advantage**:
 - What can't be easily copied?
 
-### 3. Call Script
+### 4. Call Script
 
 Once you have all information, call the script:
 

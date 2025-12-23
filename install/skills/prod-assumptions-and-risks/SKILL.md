@@ -33,7 +33,20 @@ This skill helps you:
 
 ## How to Use This Skill
 
-### Step 1: Initialize
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-assumptions-and-risks/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Initialize
 
 ```bash
 /prod-assumptions-and-risks
@@ -44,7 +57,7 @@ This skill helps you:
 - Checks prerequisite (user-stories.md must exist)
 - Opens document for editing
 
-### Step 2: Identify Critical Assumptions
+### Step 3: Identify Critical Assumptions
 
 **Work through these categories:**
 
@@ -77,7 +90,7 @@ This skill helps you:
 - How you'll validate it (test)
 - What you'll do if it's wrong (pivot plan)
 
-### Step 3: Assess Risks
+### Step 4: Assess Risks
 
 **Use Likelihood × Impact scoring (1-9 scale):**
 
@@ -96,7 +109,7 @@ This skill helps you:
 - 3-4 = Medium priority (monitor and plan)
 - 1-2 = Low priority (accept)
 
-### Step 4: Plan Mitigations
+### Step 5: Plan Mitigations
 
 **For each high-priority risk (6-9), choose a mitigation strategy:**
 
@@ -112,7 +125,7 @@ This skill helps you:
 4. **Accept**: Acknowledge risk, plan contingency
    - Example: Low-cost risks you can recover from
 
-### Step 5: Run Pre-Mortem (Optional but Powerful)
+### Step 6: Run Pre-Mortem (Optional but Powerful)
 
 **Exercise:** "It's 6 months from now. We failed. Why?"
 

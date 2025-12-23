@@ -43,6 +43,19 @@ Use for ANY technical issue:
 - You're in a hurry (rushing guarantees rework)
 - Manager wants it fixed NOW (systematic is faster than thrashing)
 
+## Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-systematic-debugging/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
 ## The Four Phases
 
 You MUST complete each phase before proceeding to the next.

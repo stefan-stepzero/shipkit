@@ -63,14 +63,14 @@ Before defining brand, read:
 
 ### 3. Read References
 
-Read ALL files in:
-- `.shipkit/skills/prod-brand-guidelines/references/`
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-brand-guidelines/references/
+```
 
-This includes:
-- `reference.md` - Brand frameworks, best practices
-- `examples.md` - Real-world brand examples
-- `README.md` - How to use references
-- Any user-added files (PDFs, inspiration, etc.)
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
 
 ### 4. Guide Brand Definition
 

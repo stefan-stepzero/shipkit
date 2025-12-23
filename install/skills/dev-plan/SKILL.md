@@ -113,26 +113,35 @@ handoffs:
 - Reference paths (reference.md, examples.md)
 - Output file paths
 
-### Step 2: Read Context
+### Step 2: Read References
 
-**Read extended documentation FIRST**:
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-plan/references/
+```
 
-1. **Extended references** (CRITICAL - read before planning):
-   - `.shipkit/skills/dev-plan/references/reference.md` - Complete planning guide
-   - `.shipkit/skills/dev-plan/references/examples.md` - Concrete examples
+**If >2 files exist:** Ask the user which files are most relevant for this task.
 
-2. **Templates** (structures to fill):
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 3: Read Context
+
+**Read these files to understand requirements and constraints**:
+
+1. **Templates** (structures to fill):
    - `templates/plan-template.md`
    - `templates/data-model-template.md`
    - `templates/research-template.md`
    - `templates/contract-template.yaml`
    - `templates/checklist-template.md` (if --with-checklist)
 
-3. **Input artifacts**:
+2. **Input artifacts**:
    - `specs/N-feature-name/spec.md` (feature requirements)
    - `.shipkit/skills/dev-constitution/outputs/constitution.md` (technical standards)
 
-### Step 3: Constitution Check (Pre-Design)
+### Step 4: Constitution Check (Pre-Design)
 
 **Before any technical decisions**:
 

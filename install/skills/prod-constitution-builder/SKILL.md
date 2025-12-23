@@ -41,7 +41,20 @@ Or explicitly:
 
 **Important:** Use your natural language understanding and judgment to determine the right maturity and business model flags. The script requires explicit flags - you decide them based on conversation, not keyword matching.
 
-### Step 1: Choose Project Type
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-constitution-builder/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Choose Project Type
 
 Present the user with **6 project type options:**
 
@@ -79,7 +92,7 @@ Present the user with **6 project type options:**
 
 ---
 
-### Step 2: Determine Maturity and Business Model
+### Step 3: Determine Maturity and Business Model
 
 Based on the user's project type choice, determine **two dimensions**:
 
@@ -107,7 +120,7 @@ Based on the user's project type choice, determine **two dimensions**:
 
 ---
 
-### Step 3: Run Initialization Script
+### Step 4: Run Initialization Script
 
 **CRITICAL:** Use your judgment to determine the correct flags based on the conversation with the user. The script requires explicit flags.
 
@@ -135,7 +148,7 @@ Based on the user's project type choice, determine **two dimensions**:
 
 ---
 
-### Step 4: Customize Constitution
+### Step 5: Customize Constitution
 
 Read the template loaded by the script, then customize it through conversation with the user:
 
@@ -194,7 +207,7 @@ Read the template loaded by the script, then customize it through conversation w
 
 ---
 
-### Step 5: Fill Template Placeholders
+### Step 6: Fill Template Placeholders
 
 Replace these placeholders in the constitution:
 
@@ -210,7 +223,7 @@ Replace these placeholders in the constitution:
 
 ---
 
-### Step 6: Validate with User
+### Step 7: Validate with User
 
 Read back the key sections:
 - Prime Directive

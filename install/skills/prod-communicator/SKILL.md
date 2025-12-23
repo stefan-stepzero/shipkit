@@ -77,7 +77,20 @@ User says:
 
 ## Process
 
-### 1. Identify Artifacts to Include
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-communicator/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Identify Artifacts to Include
 
 Ask user or infer from request:
 
@@ -87,7 +100,7 @@ Common combinations:
 - **Customer brief**: personas, JTBD, value prop, journeys
 - **Executive summary**: strategy, risks, metrics, trade-offs
 
-### 2. Select Appropriate Template
+### Step 3: Select Appropriate Template
 
 Match audience + format:
 - `investors-onepager.template.html`
@@ -96,13 +109,13 @@ Match audience + format:
 - `customers-brief.template.html`
 - `developers-context.template.html`
 
-### 3. Read Source Artifacts
+### Step 4: Read Source Artifacts
 
 Read the specified `.prodkit/` files to extract content.
 
 **IMPORTANT**: Actually read the files, don't make up content.
 
-### 4. Transform Content for Audience
+### Step 5: Transform Content for Audience
 
 **For investors**:
 - Emphasize market opportunity
@@ -134,7 +147,7 @@ Read the specified `.prodkit/` files to extract content.
 - Brand constraints
 - Acceptance criteria
 
-### 5. Call Script
+### Step 6: Call Script
 
 ```bash
 .prodkit/scripts/bash/generate-communication.sh \

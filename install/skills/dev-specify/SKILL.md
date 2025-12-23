@@ -74,7 +74,20 @@ Script will:
 .shipkit/skills/dev-specify/scripts/create-spec.sh --clarify --spec 1-user-authentication
 ```
 
-### 2. Read Context
+### 2. Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-specify/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### 3. Read Context
 
 **Claude:** Read these files to ground the spec:
 
@@ -95,7 +108,7 @@ Script will:
 .shipkit/skills/dev-specify/references/examples.md
 ```
 
-### 3. Extract from Product Artifacts
+### 4. Extract from Product Artifacts
 
 **From user stories:**
 - Find primary story this feature implements
@@ -129,7 +142,7 @@ Script will:
 - Extract quality standards (testing, coverage)
 - Extract performance/security requirements
 
-### 4. Fill Template Conversationally
+### 5. Fill Template Conversationally
 
 Use template structure, fill each section by asking user questions:
 

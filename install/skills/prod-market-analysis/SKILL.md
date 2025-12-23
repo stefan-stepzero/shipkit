@@ -39,7 +39,20 @@ Or uploads:
 
 ## Process
 
-### 1. Research Using Web Search
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-market-analysis/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Research Using Web Search
 
 **IMPORTANT**: Use the `WebSearch` tool to gather information.
 
@@ -58,7 +71,7 @@ For each competitor, document:
 - Weaknesses
 - Market share (if publicly available)
 
-### 2. Porter's Five Forces Analysis
+### Step 3: Porter's Five Forces Analysis
 
 Analyze each force:
 
@@ -92,13 +105,13 @@ Analyze each force:
 - "Do nothing" option viability
 - High/Medium/Low threat
 
-### 3. Market Sizing (if possible)
+### Step 4: Market Sizing (if possible)
 
 - **TAM** (Total Addressable Market)
 - **SAM** (Serviceable Addressable Market)
 - **SOM** (Serviceable Obtainable Market)
 
-### 4. Call Script
+### Step 5: Call Script
 
 ```bash
 .prodkit/scripts/bash/analyze-market.sh \

@@ -93,7 +93,20 @@ Script output:
 - Indicate mode (extraction or interactive)
 - Ready for Claude
 
-### 2. Read Context
+### 2. Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-constitution/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### 3. Read Context
 
 **Claude:** Read these files to understand the product:
 
@@ -111,7 +124,7 @@ Script output:
 .shipkit/skills/dev-constitution/references/examples.md
 ```
 
-### 3. Ask Clarifying Questions
+### 4. Ask Clarifying Questions
 
 **Determine product stage first (critical for appropriateness):**
 - POC: Speed > everything. Minimal quality gates.
@@ -126,7 +139,7 @@ Script output:
 - Team size and growth plans?
 - Known constraints? (approved tech list, legacy integrations?)
 
-### 4. Extract from Product Artifacts
+### 5. Extract from Product Artifacts
 
 **From user stories:**
 - Mobile app mentioned? → Consider React Native, Flutter
@@ -144,7 +157,7 @@ Script output:
 - "Sub-200ms latency" → Performance budgets, caching strategies
 - "80% mobile users" → Mobile-first design
 
-### 5. Fill Template (Conversationally)
+### 6. Fill Template (Conversationally)
 
 Use template structure, fill each section:
 

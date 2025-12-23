@@ -82,6 +82,19 @@ Skills document proven techniques that save time and prevent mistakes.
 
 ---
 
+## Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/shipkit-master/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
 ## How to Find and Use Skills
 
 ### 1. Identify Task Type

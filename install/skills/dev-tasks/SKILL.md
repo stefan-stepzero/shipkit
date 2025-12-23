@@ -99,20 +99,29 @@ or with flags:
 .shipkit/skills/dev-tasks/scripts/create-tasks.sh specs/1-user-authentication --update
 ```
 
-### Step 2: Read All Input Documents
+### Step 2: Read References
 
-**ALWAYS read extended documentation FIRST**:
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-tasks/references/
+```
 
-1. **References** (CRITICAL - read before generating tasks):
-   - `.shipkit/skills/dev-tasks/references/reference.md` - Complete task generation guide
-   - `.shipkit/skills/dev-tasks/references/examples.md` - Real-world examples
+**If >2 files exist:** Ask the user which files are most relevant for this task.
 
-2. **Template:**
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 3: Read All Input Documents
+
+**Read these files to understand the feature**:
+
+1. **Template:**
    ```
    .shipkit/skills/dev-tasks/templates/tasks-template.md
    ```
 
-3. **Constitution (if exists):**
+2. **Constitution (if exists):**
    ```
    .shipkit/skills/dev-constitution/outputs/constitution.md
    ```
@@ -122,7 +131,7 @@ or with flags:
    - Architectural patterns (Repository? Service layer?)
    - Naming conventions (PascalCase? camelCase?)
 
-4. **Feature Spec (REQUIRED):**
+3. **Feature Spec (REQUIRED):**
    ```
    specs/N-feature-name/spec.md
    ```
@@ -131,7 +140,7 @@ or with flags:
    - Acceptance criteria per story
    - TDD requirements
 
-5. **Feature Plan (REQUIRED):**
+4. **Feature Plan (REQUIRED):**
    ```
    specs/N-feature-name/plan.md
    ```
@@ -141,7 +150,7 @@ or with flags:
    - Architecture patterns
    - Component breakdown
 
-6. **Optional Documents:**
+5. **Optional Documents:**
    ```
    specs/N-feature-name/data-model.md      → Map entities to user stories
    specs/N-feature-name/contracts/         → Map endpoints to user stories
@@ -149,7 +158,7 @@ or with flags:
    specs/N-feature-name/quickstart.md      → Extract test scenarios
    ```
 
-### Step 3: Analyze Dependencies
+### Step 4: Analyze Dependencies
 
 **See** [reference.md](references/reference.md#dependency-analysis) for detailed guidance on:
 - Data dependencies
@@ -157,7 +166,7 @@ or with flags:
 - Cross-story dependencies
 - Testing dependencies (TDD)
 
-### Step 4: Generate Task Breakdown
+### Step 5: Generate Task Breakdown
 
 Organize tasks following phase structure:
 
@@ -185,7 +194,7 @@ Organize tasks following phase structure:
 **Purpose:** Improvements affecting multiple stories
 **Contains:** Documentation, refactoring, performance, security, cross-cutting concerns
 
-### Step 5: Apply Task Format
+### Step 6: Apply Task Format
 
 **EVERY task MUST follow this exact format:**
 
@@ -208,7 +217,7 @@ Organize tasks following phase structure:
 
 **See** [reference.md](references/reference.md#task-format) for complete format rules
 
-### Step 6: Document Dependencies
+### Step 7: Document Dependencies
 
 **See** [reference.md](references/reference.md#documenting-dependencies) for complete guidance
 
@@ -217,7 +226,7 @@ Create Dependencies & Execution Order section documenting:
 - User story dependencies
 - Parallel opportunities
 
-### Step 7: Include Implementation Strategy
+### Step 8: Include Implementation Strategy
 
 **See** [reference.md](references/reference.md#implementation-strategy) for complete strategy patterns
 
@@ -226,7 +235,7 @@ Add strategy section showing:
 - Incremental delivery
 - Parallel team strategy
 
-### Step 8: Write Tasks File
+### Step 9: Write Tasks File
 
 Write the complete tasks.md to:
 ```
@@ -235,7 +244,7 @@ Write the complete tasks.md to:
 
 **File is PROTECTED:** Can only be modified by re-running the skill with `--update`
 
-### Step 9: Report Summary
+### Step 10: Report Summary
 
 Report to user:
 - Total task count

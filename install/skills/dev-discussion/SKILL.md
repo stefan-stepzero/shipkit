@@ -67,6 +67,19 @@ Let me discuss this with you before continuing.
 - [Approach chosen]
 ```
 
+## Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/dev-discussion/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
 ## The Process
 
 ### 1. State the Ambiguity

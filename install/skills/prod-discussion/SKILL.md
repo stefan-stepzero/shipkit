@@ -60,7 +60,20 @@ This is a **conversational skill** that Claude invokes when you:
 
 ## How to Use This Skill
 
-### Step 1: Clarify the Real Question
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-discussion/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Clarify the Real Question
 
 **Don't take surface questions at face value.** Dig deeper.
 
@@ -78,7 +91,7 @@ This is a **conversational skill** that Claude invokes when you:
 3. **What are we optimizing for?** (Users, revenue, speed, quality)
 4. **What's the constraint?** (Time, money, engineering capacity)
 
-### Step 2: Reframe as Trade-Off
+### Step 3: Reframe as Trade-Off
 
 **Every decision involves trade-offs.** Make them explicit.
 
@@ -95,7 +108,7 @@ This is a **conversational skill** that Claude invokes when you:
 - **Alternative:** [Other ways to achieve similar outcome]
 ```
 
-### Step 3: Present Options with Pros/Cons
+### Step 4: Present Options with Pros/Cons
 
 **Always present 2-4 options, not just one.**
 
@@ -125,7 +138,7 @@ This is a **conversational skill** that Claude invokes when you:
 - Note common patterns
 - Warn about anti-patterns
 
-### Step 4: Provide Context-Specific Recommendation
+### Step 5: Provide Context-Specific Recommendation
 
 **Base recommendation on:**
 1. **Stage:** POC focuses on learning, MVP on PMF, Established on growth

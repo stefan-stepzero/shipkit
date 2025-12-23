@@ -30,7 +30,20 @@ Or explicitly:
 
 ## Process
 
-### Step 1: Scan for Product Discovery Artifacts
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/shipkit-status/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Scan for Product Discovery Artifacts
 
 Use Glob to check which product skills have outputs:
 
@@ -56,7 +69,7 @@ This shows which product skills have been completed without reading content yet.
 
 ---
 
-### Step 2: Scan for Development Artifacts
+### Step 3: Scan for Development Artifacts
 
 Use Glob to check dev artifacts:
 
@@ -76,7 +89,7 @@ This shows:
 
 ---
 
-### Step 3: Check Git Status
+### Step 4: Check Git Status
 
 Use Bash to get git context:
 
@@ -93,7 +106,7 @@ This gives you:
 
 ---
 
-### Step 4: Selective Deep Reading
+### Step 5: Selective Deep Reading
 
 Based on what exists, read **only** what's necessary:
 
@@ -123,7 +136,7 @@ Based on what exists, read **only** what's necessary:
 
 ---
 
-### Step 5: Synthesize Status
+### Step 6: Synthesize Status
 
 Create a clear status snapshot covering:
 
@@ -147,7 +160,7 @@ Create a clear status snapshot covering:
 
 ---
 
-### Step 6: Suggest Next Steps
+### Step 7: Suggest Next Steps
 
 Based on what exists and what's missing, suggest **2-3 logical next actions**:
 
@@ -190,7 +203,7 @@ If actively implementing (progress.md shows in-progress feature):
 
 ---
 
-### Step 7: Write Status Snapshot
+### Step 8: Write Status Snapshot
 
 Write concise status summary to:
 

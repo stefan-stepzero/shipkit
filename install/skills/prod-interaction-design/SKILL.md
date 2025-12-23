@@ -52,7 +52,20 @@ Or when:
 
 ## Process
 
-### 1. Run the Script
+### Step 1: Read References
+
+Read all files in the skill's references directory:
+```bash
+.shipkit/skills/prod-interaction-design/references/
+```
+
+**If >2 files exist:** Ask the user which files are most relevant for this task.
+
+This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+
+---
+
+### Step 2: Run the Script
 
 ```bash
 .shipkit/skills/prod-interaction-design/scripts/create-journey.sh
@@ -60,7 +73,7 @@ Or when:
 
 This initializes the interaction design document from template.
 
-### 2. Define Design Philosophy
+### Step 3: Define Design Philosophy
 
 **Ask the user:**
 - "What are the core principles that should guide all interactions?"
@@ -74,7 +87,7 @@ This initializes the interaction design document from template.
 - Reduce cognitive load
 - Build trust through consistency
 
-### 3. Map User Journeys (One per Persona)
+### Step 4: Map User Journeys (One per Persona)
 
 For each persona from `personas.md`, map their complete journey:
 
@@ -118,7 +131,7 @@ For each persona from `personas.md`, map their complete journey:
 - How do we make sharing easy?
 - What would they say to recommend it?
 
-### 4. Define Interaction Patterns
+### Step 5: Define Interaction Patterns
 
 Document reusable patterns that create consistency:
 
@@ -143,7 +156,7 @@ Document reusable patterns that create consistency:
 - Progressive disclosure (expand/collapse)
 - Contextual actions (hover, swipe, right-click)
 
-### 5. Map Critical Screen Flows
+### Step 6: Map Critical Screen Flows
 
 For 3-5 most important flows, document screen-by-screen:
 
@@ -170,7 +183,7 @@ For each screen, specify:
 - Estimated time
 - Drop-off risks
 
-### 6. Consider Context
+### Step 7: Consider Context
 
 **For POC Stage:**
 - Focus on core value (< 5 minutes to "aha!")
@@ -195,7 +208,7 @@ For each screen, specify:
 - **Desktop:** Keyboard shortcuts, hover states, multi-tasking
 - **Web:** Browser compatibility, responsive breakpoints
 
-### 7. Accessibility & Usability
+### Step 8: Accessibility & Usability
 
 **Accessibility Checklist:**
 - [ ] Color contrast meets WCAG AA (4.5:1)
@@ -211,7 +224,7 @@ For each screen, specify:
 - Maintain consistency (visual, behavioral, terminology)
 - Prioritize ruthlessly (one primary action per screen)
 
-### 8. Define Validation Plan
+### Step 9: Define Validation Plan
 
 **What to test:**
 - Critical flows (sign up → first value, core use case)
@@ -322,11 +335,3 @@ This is **Step 7 of 12** in the Product Discovery sequential workflow.
 ❌ **Starting with solutions**
 - "We'll add a wizard!" before understanding the problem
 - First map the struggle, then design the solution
-
-## Read References
-
-The skill includes extended references:
-- `references/reference.md` - Journey mapping fundamentals, UX principles, testing methods
-- `references/examples.md` - Complete journey examples for B2B SaaS, B2C mobile, e-commerce, dev tools
-
-Review these for detailed guidance and patterns.
