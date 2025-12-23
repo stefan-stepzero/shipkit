@@ -98,10 +98,12 @@ Based on the user's project type choice, determine **two dimensions**:
 **Mapping from project types:**
 - B2B SaaS Greenfield → `--maturity v1 --business-model b2b`
 - B2C SaaS Greenfield → `--maturity v1 --business-model b2c`
-- Experimental → `--maturity poc --business-model side-project`
+- Experimental → `--maturity poc --business-model b2c` (or b2b/marketplace - uses experimental.md)
 - Side Project MVP → `--maturity mvp --business-model side-project`
 - Side Project POC → `--maturity poc --business-model side-project`
 - Existing Project → `--maturity established --business-model [b2c|b2b|side-project]`
+
+**Note:** Experimental projects use `poc` maturity with a non-side-project business model to distinguish them from side project POCs.
 
 ---
 

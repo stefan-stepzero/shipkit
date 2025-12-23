@@ -335,7 +335,8 @@ def install_gitignore(repo_root, target_dir):
             print_info(f"Copying .gitignore from {source_gitignore}...")
             shutil.copy2(source_gitignore, gitignore)
             print_success("Installed .gitignore")
-            print_bullet("Excludes .claude/, .shipkit/, CLAUDE.md")
+            print_bullet("Excludes .claude/ and Shipkit infrastructure")
+            print_bullet("KEEPS .shipkit/skills/*/outputs/ (your work product!)")
             print_bullet("Excludes env files and common IDE folders")
         else:
             print_warning("Source .gitignore not found, skipping")
@@ -343,8 +344,12 @@ def install_gitignore(repo_root, target_dir):
         print_warning(".gitignore exists, skipping automatic install")
         print_info("Add these entries to your .gitignore manually:")
         print_bullet(".claude/")
-        print_bullet(".shipkit/")
+        print_bullet(".shipkit/scripts/")
+        print_bullet(".shipkit/skills/*/scripts/")
+        print_bullet(".shipkit/skills/*/templates/")
+        print_bullet(".shipkit/skills/*/references/")
         print_bullet("CLAUDE.md")
+        print_info("NOTE: .shipkit/skills/*/outputs/ should NOT be ignored (your work!)")
 
     return True
 

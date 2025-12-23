@@ -1,7 +1,10 @@
 # Shipkit Framework Files
-# These are project-specific and shouldn't be committed
+# Ignore infrastructure but KEEP outputs (they're your work product!)
 .claude/
-.shipkit/
+.shipkit/scripts/
+.shipkit/skills/*/scripts/
+.shipkit/skills/*/templates/
+.shipkit/skills/*/references/
 CLAUDE.md
 
 # Environment Variables

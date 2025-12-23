@@ -89,20 +89,46 @@ fi
 # Create output directory
 mkdir -p "$OUTPUT_DIR"
 
-# Select template based on maturity + business model
-TEMPLATE_FILE="${MATURITY}-${BUSINESS_MODEL}-constitution.md"
+# Map flags to actual template filenames
+case "${MATURITY}-${BUSINESS_MODEL}" in
+  mvp-side-project)
+    TEMPLATE_FILE="side-project-mvp.md"
+    ;;
+  poc-side-project)
+    TEMPLATE_FILE="side-project-poc.md"
+    ;;
+  v1-b2b)
+    TEMPLATE_FILE="b2b-saas-greenfield.md"
+    ;;
+  v1-b2c)
+    TEMPLATE_FILE="b2c-saas-greenfield.md"
+    ;;
+  established-*)
+    # Existing project works for any business model
+    TEMPLATE_FILE="existing-project.md"
+    ;;
+  poc-*)
+    # For experimental projects (poc + any other business model)
+    TEMPLATE_FILE="experimental.md"
+    ;;
+  *)
+    echo -e "${RED}✗${NC} Error: No template available for maturity=$MATURITY, business-model=$BUSINESS_MODEL" >&2
+    echo "  Available combinations:" >&2
+    echo "    mvp + side-project" >&2
+    echo "    poc + side-project" >&2
+    echo "    v1 + b2b" >&2
+    echo "    v1 + b2c" >&2
+    echo "    established + [any]" >&2
+    exit 1
+    ;;
+esac
+
 TEMPLATE_PATH="$TEMPLATE_DIR/$TEMPLATE_FILE"
 
-# Fallback to maturity-only template if specific combo doesn't exist
+# Verify template exists
 if [[ ! -f "$TEMPLATE_PATH" ]]; then
-  TEMPLATE_FILE="${MATURITY}-constitution.md"
-  TEMPLATE_PATH="$TEMPLATE_DIR/$TEMPLATE_FILE"
-fi
-
-# Final fallback to generic template
-if [[ ! -f "$TEMPLATE_PATH" ]]; then
-  TEMPLATE_FILE="mvp-constitution.md"
-  TEMPLATE_PATH="$TEMPLATE_DIR/$TEMPLATE_FILE"
+  echo -e "${RED}✗${NC} Template file not found: $TEMPLATE_PATH" >&2
+  exit 1
 fi
 
 # Output file
