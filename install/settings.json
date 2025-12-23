@@ -129,16 +129,6 @@
         ]
       }
     ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/session-end.sh"
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "hooks": [
@@ -169,7 +159,7 @@
 
   "_notes": {
     "filePermissions": "Framework files protected: .claude/* (installed definitions) and .shipkit/skills/*/outputs|templates|scripts (workflow artifacts). Users have full freedom elsewhere.",
-    "sessionHooks": "SessionStart loads shipkit-master and auto-injects previous session state. SessionEnd saves state on /clear only. Stop hook suggests next skills.",
+    "sessionHooks": "SessionStart loads shipkit-master and auto-injects previous session state. Stop hook suggests next skills.",
     "constitutions": "Auto-loaded into prod-* and dev-* skills for consistency.",
     "customization": "Users can override by editing this file or creating .shipkit/settings.local.json",
     "permissiveApproach": "Only framework-critical files are protected. Users can rm, curl, wget, and write all common file types."

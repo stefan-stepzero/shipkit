@@ -520,7 +520,7 @@
             <!-- Hero Stats -->
             <div class="hero-stats">
                 <div class="stat">
-                    <div class="stat-number">24</div>
+                    <div class="stat-number">25</div>
                     <div class="stat-label">Core Skills</div>
                 </div>
                 <div class="stat">
@@ -583,7 +583,7 @@
                 <h2>The Complete Workflow</h2>
                 <p style="font-size: 1.3em; line-height: 1.8; margin-bottom: 30px;">
                     <strong>Shipkit</strong> is Claude Code + structured product development.
-                    <span style="color: #667eea; font-weight: 700;">24 battle-tested skills</span> guide you from business strategy to deployed code,
+                    <span style="color: #667eea; font-weight: 700;">25 battle-tested skills</span> guide you from business strategy to deployed code,
                     with <span style="color: #764ba2; font-weight: 700;">enforced best practices</span> and
                     <span style="color: #f093fb; font-weight: 700;">zero external dependencies</span>.
                 </p>
@@ -597,8 +597,8 @@
                         <p>Orchestration (roadmap, progress) + Core Pipeline (specs → implementation) + Debugging methodology.</p>
                     </div>
                     <div class="benefit">
-                        <h4>3 Meta Skills</h4>
-                        <p>Enforcement (shipkit-master), technical discussion, and skill authoring guide.</p>
+                        <h4>4 Meta Skills</h4>
+                        <p>Status (shipkit-status), enforcement (shipkit-master), technical discussion, and skill authoring guide.</p>
                     </div>
                     <div class="benefit">
                         <h4>6 Agent Personas</h4>
@@ -735,13 +735,17 @@
 
                     <!-- Phase 3: Meta Skills -->
                     <div class="phase" data-number="3">
-                        <h3>Meta Skills (3 cross-cutting skills)</h3>
+                        <h3>Meta Skills (4 cross-cutting skills)</h3>
                         <p class="phase-description">
-                            Enforcement, clarification, and extensibility.
+                            Status, enforcement, clarification, and extensibility.
                             <strong>/shipkit-master</strong> auto-loads at session start to enforce workflow discipline.
                         </p>
 
                         <div class="skills-grid">
+                            <div class="skill-card" style="border-color: #fbbf24; background: #fefce8;">
+                                <strong>/shipkit-status</strong>
+                                <small>Project status with token-efficient context gathering</small>
+                            </div>
                             <div class="skill-card" style="border-color: #fbbf24; background: #fefce8;">
                                 <strong>/shipkit-master</strong>
                                 <small>Skill enforcement (auto-loaded by SessionStart hook)</small>
@@ -881,7 +885,7 @@
 <span style="color: #68d391;">your-project/</span><br>
 ├── <span style="color: #68d391;">.claude/</span>                   <span style="color: #9ca3af;"># Claude Code integration</span><br>
 │   ├── settings.json         <span style="color: #9ca3af;"># File protections + SessionStart hook</span><br>
-│   ├── skills/               <span style="color: #9ca3af;"># 24 skill definitions (SKILL.md files)</span><br>
+│   ├── skills/               <span style="color: #9ca3af;"># 25 skill definitions (SKILL.md files)</span><br>
 │   ├── agents/               <span style="color: #9ca3af;"># 6 specialized AI personas</span><br>
 │   └── hooks/                <span style="color: #9ca3af;"># session-start.sh (loads shipkit-master)</span><br>
 │<br>
@@ -909,7 +913,7 @@
                 <div class="benefits">
                     <div class="benefit">
                         <h4>Zero External Dependencies</h4>
-                        <p>All 24 skills work 100% locally. No APIs, no config, no hassle. Optional: WebSearch for market research.</p>
+                        <p>All 25 skills work 100% locally. No APIs, no config, no hassle. Optional: WebSearch for market research.</p>
                     </div>
                     <div class="benefit">
                         <h4>Constitution Templates</h4>
@@ -955,7 +959,7 @@
 <code>cd your-project && bash ../shipkit/install.sh</code>
             </div>
             <p style="margin-top: 40px; font-size: 1.1em;">
-                <strong>24 Core Skills</strong> • <strong>6 Agent Personas</strong> • <strong>6 Constitution Types</strong>
+                <strong>25 Core Skills</strong> • <strong>6 Agent Personas</strong> • <strong>6 Constitution Types</strong>
             </p>
             <p style="margin-top: 10px; opacity: 0.8;">
                 100% Local • Zero External Dependencies • One Command Install

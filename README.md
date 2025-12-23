@@ -2,10 +2,10 @@
 
 A curated collection of **Claude Code skills** for end-to-end product development, from strategy to shipped code.
 
-**24 core skills** organized in three categories:
+**25 core skills** organized in three categories:
 - **Prod Skills** (12) - Product discovery & strategy
 - **Dev Skills** (9) - Technical specs, orchestration & development workflow
-- **Meta Skills** (3) - Enforcement, discussion & skill authoring
+- **Meta Skills** (4) - Status, enforcement, discussion & skill authoring
 
 Plus **6 agent personas** that specialize behaviors for different workflow stages.
 
@@ -52,9 +52,10 @@ Plus **6 agent personas** that specialize behaviors for different workflow stage
 
 **Key feature:** /dev-implement integrates TDD, verification, and debugging methodology through reference files (not separate skills). /dev-finish auto-calls /dev-progress after merge.
 
-### Meta Skills (3)
-**Enforcement, discussion, and extensibility**
+### Meta Skills (4)
+**Status, enforcement, discussion, and extensibility**
 
+- shipkit-status - Project status across all phases with token-efficient context gathering
 - shipkit-master - Skill enforcement (auto-loaded at session start)
 - dev-discussion - Technical clarification when ambiguity detected (can interrupt any dev workflow)
 - dev-writing-skills - Skill authoring guide (TDD approach to creating custom skills)
@@ -401,7 +402,7 @@ These are prompts, not forced - user can decline.
 
 **✅ COMPLETE - Production Ready!**
 
-**Core Skills: 24/24 (100%)** 🎉
+**Core Skills: 25/25 (100%)** 🎉
 
 **Product Skills:** 12/12 ✅
 - Complete product discovery pipeline from strategy through metrics
@@ -411,7 +412,8 @@ These are prompts, not forced - user can decline.
 - Core Pipeline (6/6): constitution, specify, plan, tasks, implement, finish
 - Debugging (1/1): systematic-debugging
 
-**Meta Skills:** 3/3 ✅
+**Meta Skills:** 4/4 ✅
+- shipkit-status (project status)
 - shipkit-master (enforcement)
 - dev-discussion (technical clarification)
 - dev-writing-skills (custom skill authoring)
