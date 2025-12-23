@@ -54,11 +54,11 @@ def show_logo():
     print("""
     ========================================================================
                                                         /\\
-       SHIPKIT - Product Development Framework          /  \\
-                                                       / /| \\
-       24 Skills • 6 Agents • Constitution-Driven     / / |  \\
-                                                     /_/__|___\\
-                                                     \\________/
+       SHIPKIT - Product Development Framework         /  \\
+                                                      / /| \\
+       24 Skills • 6 Agents • Constitution-Driven    / / |  \\
+                                                    /_/__|___\\
+                                                    \\________/
                                                      ~~~~~~~~~~
     ========================================================================
     """)
