@@ -175,32 +175,69 @@ if [[ ! -f "$TEMPLATE_FILE" ]]; then
   exit 1
 fi
 
-# Generate output filename with timestamp
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-OUTPUT_FILE="$OUTPUT_DIR/${COMM_TYPE}-${TIMESTAMP}.md"
+# Generate output filenames with timestamp
+DATE_STAMP=$(date +%Y-%m-%d)
+TIME_STAMP=$(date +%Y-%m-%dT%H:%M:%SZ)
+HTML_FILE="$OUTPUT_DIR/update-${DATE_STAMP}.html"
+HTML_TEMPLATE="$TEMPLATE_DIR/update-template.html"
 
 echo ""
 echo -e "${CYAN}Creating $COMM_NAME...${NC}"
 echo -e "${CYAN}Source artifacts: ${AVAILABLE_SOURCES[*]}${NC}"
 echo ""
 
-# Create output file header
-cat > "$OUTPUT_FILE" << EOF
-# $COMM_NAME
+# Archive old HTML update files
+if ls "$OUTPUT_DIR"/update-*.html 1> /dev/null 2>&1; then
+  echo -e "${YELLOW}Archiving previous updates...${NC}"
+  for old_file in "$OUTPUT_DIR"/update-*.html; do
+    if [[ -f "$old_file" ]]; then
+      OLD_DATE=$(basename "$old_file" | sed 's/update-\(.*\)\.html/\1/')
+      ARCHIVE_NAME="$OUTPUT_DIR/archive-${OLD_DATE}.html"
+      mv "$old_file" "$ARCHIVE_NAME"
+      echo -e "${GREEN}✓${NC} Archived: $(basename "$old_file") → $(basename "$ARCHIVE_NAME")"
+    fi
+  done
+  echo ""
+fi
 
-**Generated:** $(date +%Y-%m-%d)
-**Source Artifacts:** ${AVAILABLE_SOURCES[*]}
+# Check if HTML template exists
+if [[ ! -f "$HTML_TEMPLATE" ]]; then
+  echo -e "${RED}✗${NC} HTML template not found: $HTML_TEMPLATE"
+  exit 1
+fi
 
----
+# Create HTML file from template
+cp "$HTML_TEMPLATE" "$HTML_FILE"
 
-EOF
+# Replace placeholders in HTML
+sed -i "s|{{DATE}}|$DATE_STAMP|g" "$HTML_FILE" 2>/dev/null || \
+  sed -i '' "s|{{DATE}}|$DATE_STAMP|g" "$HTML_FILE"
+sed -i "s|{{TIMESTAMP}}|$TIME_STAMP|g" "$HTML_FILE" 2>/dev/null || \
+  sed -i '' "s|{{TIMESTAMP}}|$TIME_STAMP|g" "$HTML_FILE"
+sed -i "s|{{TITLE}}|$COMM_NAME|g" "$HTML_FILE" 2>/dev/null || \
+  sed -i '' "s|{{TITLE}}|$COMM_NAME|g" "$HTML_FILE"
+sed -i "s|{{SOURCES}}|${AVAILABLE_SOURCES[*]}|g" "$HTML_FILE" 2>/dev/null || \
+  sed -i '' "s|{{SOURCES}}|${AVAILABLE_SOURCES[*]}|g" "$HTML_FILE"
 
-echo -e "${GREEN}✓${NC} Created: $OUTPUT_FILE"
+echo -e "${GREEN}✓${NC} Created: $HTML_FILE"
 echo ""
-echo -e "${CYAN}Template available at:${NC} $TEMPLATE_FILE"
-echo -e "${CYAN}References available in:${NC} $SKILL_DIR/references/"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${YELLOW}Ready for Claude${NC}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-echo -e "${YELLOW}Claude will now read your source artifacts and fill the template...${NC}"
+echo "Claude should now:"
+echo ""
+echo "  1. Read source artifacts from available product skills"
+echo "  2. ${GREEN}EDIT${NC} the HTML file: $HTML_FILE"
+echo "  3. Replace placeholders with actual content"
+echo "  4. Enhance styling to make it beautiful and engaging"
+echo "  5. Ensure content matches the communication type: $COMM_NAME"
+echo ""
+echo -e "${CYAN}HTML file location:${NC} $HTML_FILE"
+echo -e "${CYAN}References available:${NC} $SKILL_DIR/references/"
+echo -e "${CYAN}MD template (optional):${NC} $TEMPLATE_FILE"
+echo ""
+echo -e "${YELLOW}Note:${NC} Edit the HTML file directly - don't create new files"
 echo ""
 echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 

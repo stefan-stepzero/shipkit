@@ -40,9 +40,9 @@ Converts product user stories into a sequenced development plan, identifying fou
 
 **Required:**
 - User stories (`.shipkit/skills/prod-user-stories/outputs/user-stories.md`)
-- Technical constitution (`.shipkit/skills/dev-constitution/outputs/constitution.md`)
 
 **Recommended:**
+- Technical constitution (`.shipkit/skills/dev-constitution/outputs/constitution.md`)
 - Assumptions & risks (`.shipkit/skills/prod-assumptions-and-risks/outputs/assumptions-and-risks.md`)
 
 ---

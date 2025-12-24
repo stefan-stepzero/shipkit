@@ -79,6 +79,30 @@ Shipkit adds:
 - **Right:** Create a `/specify` skill that uses Claude Code's skill system
 - **Wrong:** Build a custom command parser outside Claude Code
 
+### 3. Use Simple File Operations - Don't Overcomplicate
+
+**CRITICAL: When editing files, use the simplest available tool.**
+
+**For file edits:**
+1. **Read** the file first (required before Write)
+2. **Write** the file with new content
+3. Done.
+
+**DO NOT:**
+- ❌ Use complex bash heredocs or cat commands
+- ❌ Use Python scripts for simple file writes
+- ❌ Create temporary files and copy them
+- ❌ Use sed/awk when Write tool is simpler
+- ❌ Overthink the operation
+
+**Right:** `Read(file.md)` then `Write(file.md, new_content)`
+
+**Wrong:** Complex bash heredocs, Python scripts, temp files
+
+**Exception:** Bash IS appropriate for git, tests, builds, system operations.
+
+**If you catch yourself writing complex bash for a simple file edit, STOP and use Read + Write instead.**
+
 ---
 
 ## Working Documents - Where to Create and Find Tracking Documents
@@ -155,3 +179,5 @@ You: [Check claude-working-documents/RESTRUCTURING-PLAN.md first]
 **Keep `claude-working-documents/` focused on tracking and planning documents only.**
 
 ---
+
+      IMPORTANT: this context may or may not be relevant to your tasks. You should not respond to this context unless it is highly relevant to your task.

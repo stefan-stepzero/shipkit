@@ -1,243 +1,93 @@
 ---
 name: prod-communicator
-description: "Use anytime to transform ProdKit working docs into polished HTML stakeholder communications"
+description: "Transform product artifacts into polished HTML stakeholder communications. Use anytime after product discovery to create investor decks, team updates, executive summaries, customer announcements, or board presentations."
 ---
 
-# Communicator
+# Stakeholder Communication Generator
 
 ## Agent Persona
 
-**Load:** `.claude/agents/discovery-agent.md`
-
-Adopt: Audience-aware, storytelling focus, distills complexity into clarity.
+**Load:** `.claude/agents/prod-product-designer-agent.md`
 
 ## Purpose
-Transform ProdKit working docs (markdown) into polished, visually rich HTML stakeholder communications.
 
-**Can run ANYTIME** after artifacts exist.
+Transform product discovery artifacts into polished, visually engaging HTML communications for stakeholders.
 
 ## When to Trigger
-User says:
-- "Create an investor deck"
-- "Make a one-pager for executives"
-- "I need to present this to the team"
-- "Turn this into a customer brief"
-- "Generate a product summary"
-- "Create stakeholder documentation"
 
-## Inputs
-- One or more ProdKit artifacts from `.prodkit/`
-- Target audience
-- Optional: Format preference
+User says: "Create team update", "Make investor one-pager", "Generate executive summary", "Create customer announcement", "I need board deck"
 
-## Audiences
+## Communication Types
 
-**investors**: Pitch deck style
-- Focus: Opportunity, traction, ask
-- Tone: Confident, data-driven
-- Includes: Market size, competitive advantage, business model
-
-**team**: Internal alignment
-- Focus: Context for developers, design rationale
-- Tone: Collaborative, detailed
-- Includes: Technical constraints, user needs, success metrics
-
-**execs**: Executive summary
-- Focus: Recommendation with risks, ROI
-- Tone: Strategic, concise
-- Includes: Business case, risks, next steps
-
-**customers**: Product brief
-- Focus: Value proposition, benefits
-- Tone: User-focused, compelling
-- Includes: Problems solved, how it works, pricing
-
-**developers**: Technical context
-- Focus: Product requirements, design constraints
-- Tone: Specific, actionable
-- Includes: User stories, journeys, brand guidelines
-
-## Formats (all HTML)
-
-**onepager**: Single-page document
-- Print-ready
-- Self-contained
-- Visual hierarchy
-- Perfect for handouts
-
-**memo**: Multi-section narrative
-- Detailed exploration
-- Sections with deep-dive
-- Good for async reading
-
-**summary**: Executive summary format
-- TL;DR at top
-- Key points highlighted
-- Supporting details below
+- **investor-one-pager** - Opportunity, traction, competitive advantage
+- **exec-summary** - Strategic brief, business case, risks
+- **team-update** - Product vision, roadmap, context
+- **customer-announcement** - Product launch, value proposition
+- **board-deck** - Strategic review, progress, decisions
 
 ## Process
 
 ### Step 1: Read References
 
-Read all files in the skill's references directory:
-```bash
-.shipkit/skills/prod-communicator/references/
-```
+Read all files in: `.shipkit/skills/prod-communicator/references/`
 
-**If >2 files exist:** Ask the user which files are most relevant for this task.
-
-This includes built-in guidance (reference.md, examples.md) and any user-added files (PDFs, research, notes).
+**If >2 files exist:** Ask user which are most relevant.
 
 ---
 
-### Step 2: Identify Artifacts to Include
-
-Ask user or infer from request:
-
-Common combinations:
-- **Investor pitch**: strategy, market, personas, metrics
-- **Team onboarding**: all artifacts
-- **Customer brief**: personas, JTBD, value prop, journeys
-- **Executive summary**: strategy, risks, metrics, trade-offs
-
-### Step 3: Select Appropriate Template
-
-Match audience + format:
-- `investors-onepager.template.html`
-- `team-memo.template.html`
-- `execs-summary.template.html`
-- `customers-brief.template.html`
-- `developers-context.template.html`
-
-### Step 4: Read Source Artifacts
-
-Read the specified `.prodkit/` files to extract content.
-
-**IMPORTANT**: Actually read the files, don't make up content.
-
-### Step 5: Transform Content for Audience
-
-**For investors**:
-- Emphasize market opportunity
-- Highlight traction metrics
-- Show competitive advantage
-- Include the ask
-
-**For team**:
-- Full product context
-- Design rationale
-- Technical considerations
-- Success metrics
-
-**For execs**:
-- Business case
-- Risk assessment
-- Recommendation
-- Resource requirements
-
-**For customers**:
-- Problem they relate to
-- How product solves it
-- Value delivered
-- Social proof (if available)
-
-**For developers**:
-- User needs driving features
-- Interaction patterns
-- Brand constraints
-- Acceptance criteria
-
-### Step 6: Call Script
+### Step 2: Run Script
 
 ```bash
-.prodkit/scripts/bash/generate-communication.sh \
-  --artifacts "strategy,personas,market,metrics" \
-  --audience "investors" \
-  --format "onepager"
+.shipkit/skills/prod-communicator/scripts/create-communication.sh --type team-update
 ```
 
-Or for team memo:
+**Script behavior:**
+1. Scans for available product artifacts
+2. Archives old HTML: `update-*.html` → `archive-YYYY-MM-DD.html`
+3. Creates timestamped HTML: `update-YYYY-MM-DD.html`
+4. Tells Claude to EDIT the HTML file
 
-```bash
-.prodkit/scripts/bash/generate-communication.sh \
-  --artifacts "all" \
-  --audience "team" \
-  --format "memo"
-```
+---
+
+### Step 3: Read Source Artifacts
+
+Read available product artifacts that script identified.
+
+**IMPORTANT:** Actually read files - dont invent content.
+
+---
+
+### Step 4: EDIT the HTML File
+
+**CRITICAL:** EDIT the HTML file created by script - DO NOT create new file.
+
+**File location:** `.shipkit/skills/prod-communicator/outputs/update-YYYY-MM-DD.html`
+
+**What to do:**
+1. Replace all `{{PLACEHOLDER}}` markers with actual content
+2. Add content sections based on communication type
+3. Enhance minimal CSS to make it beautiful (colors, spacing, hierarchy)
+4. Ensure print-ready (good margins, readable fonts)
+
+---
 
 ## Outputs
 
-HTML file in `.prodkit/comms/`:
-- Filename pattern: `[date]-[audience]-[format].html`
-- Example: `2024-12-20-investors-onepager.html`
+**Primary:** `.shipkit/skills/prod-communicator/outputs/update-YYYY-MM-DD.html`
+
+**Archived:** `.shipkit/skills/prod-communicator/outputs/archive-YYYY-MM-DD.html`
+
+---
 
 ## Constraints
-- **DO NOT** create HTML manually
-- **ALWAYS** use `generate-communication.sh` script
-- **HTML must be self-contained** (inline CSS, no external resources)
-- **MUST be print-ready** (PDF via browser print)
-- **ACTUALLY READ** source artifacts (don't invent data)
 
-## HTML Requirements
+- **ALWAYS** run script first
+- **EDIT** HTML file created by script - never create new files
+- **ALL CSS inline** - no external resources
+- **FILE STAYS IN** `.shipkit/skills/prod-communicator/outputs/`
 
-Generated HTML must:
-- Include all CSS inline (no external stylesheets)
-- Be responsive (looks good on screen and print)
-- Have print-specific styles (@media print)
-- Use professional typography and spacing
-- Include visual hierarchy (headings, sections, callouts)
-- Have proper metadata (title, description)
-
-## Use Cases
-
-**Fundraising**:
-- Investor onepager
-- Pitch deck supplement
-- Business plan summary
-
-**Team Alignment**:
-- Product kickoff memo
-- Developer context doc
-- Design handoff
-
-**Stakeholder Updates**:
-- Executive summary
-- Board deck content
-- Strategic review
-
-**Customer Communication**:
-- Product launch announcement
-- Feature explainer
-- Value proposition page
-
-**Sales Enablement**:
-- One-pager for sales team
-- Customer pitch deck
-- Demo script
-
-## Tips for Effective Communications
-
-**Know Your Audience**:
-- Investors care about ROI
-- Team needs context
-- Execs want recommendations
-- Customers want value
-
-**Be Visual**:
-- Use color to highlight
-- Break up text with sections
-- Include metrics in callout boxes
-- Use whitespace generously
-
-**Be Concise**:
-- Lead with key insight
-- Support with details
-- Cut fluff ruthlessly
-
-**Be Specific**:
-- Use real numbers
-- Name actual competitors
-- Quote real users (if available)
+---
 
 ## Context
-This is an **ASYNC** skill - can be called anytime, not part of sequential workflow.
+
+This is an **ASYNC** skill - can be called anytime after product artifacts exist.

@@ -34,7 +34,7 @@ EXAMPLES:
 
 PREREQUISITES:
   - User stories must exist (.shipkit/skills/prod-user-stories/outputs/user-stories.md)
-  - Constitution must exist (.shipkit/skills/dev-constitution/outputs/constitution.md)
+  - Constitution recommended (.shipkit/skills/dev-constitution/outputs/constitution.md)
 
 OUTPUT:
   - .shipkit/skills/dev-roadmap/outputs/roadmap.md
