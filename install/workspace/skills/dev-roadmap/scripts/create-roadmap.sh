@@ -93,6 +93,10 @@ OUTPUT_DIR="$SKILL_DIR/outputs"
 OUTPUT_FILE="$OUTPUT_DIR/roadmap.md"
 TEMPLATE_FILE="$SKILL_DIR/templates/roadmap-template.md"
 
+# Registry for existing specs
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+REGISTRY_FILE="$REPO_ROOT/.shipkit/skills/dev-specify/outputs/specs/registry.txt"
+
 # =============================================================================
 # HEADER
 # =============================================================================
@@ -157,6 +161,33 @@ RISKS_PATH="$REPO_ROOT/.shipkit/skills/prod-assumptions-and-risks/outputs/assump
 STRATEGY_PATH="$REPO_ROOT/.shipkit/skills/prod-strategic-thinking/outputs/business-canvas.md"
 
 # =============================================================================
+# CHECK FOR EXISTING SPECS
+# =============================================================================
+
+echo -e "${BLUE}Checking for existing specs...${NC}"
+echo
+
+# List existing specs from registry
+if [[ -f "$REGISTRY_FILE" && -s "$REGISTRY_FILE" ]]; then
+  SPEC_COUNT=$(wc -l < "$REGISTRY_FILE" | tr -d ' ')
+  if [[ $SPEC_COUNT -gt 0 ]]; then
+    echo -e "  ${BLUE}○${NC} Existing specs ($SPEC_COUNT):"
+    head -10 "$REGISTRY_FILE" | while IFS='|' read -r num name created; do
+      echo "     $num: $name"
+    done
+    if [[ $SPEC_COUNT -gt 10 ]]; then
+      echo "     ... and $((SPEC_COUNT - 10)) more"
+    fi
+  else
+    echo -e "  ${BLUE}○${NC} No existing specs (starting from spec 001)"
+  fi
+else
+  echo -e "  ${BLUE}○${NC} No existing specs (starting from spec 001)"
+fi
+
+echo
+
+# =============================================================================
 # REPORT TO CLAUDE
 # =============================================================================
 
@@ -172,13 +203,17 @@ echo "     ${GREEN}✓${NC} $CONSTITUTION_PATH"
 [[ -f "$RISKS_PATH" ]] && echo "     ${BLUE}○${NC} $RISKS_PATH (optional)"
 [[ -f "$STRATEGY_PATH" ]] && echo "     ${BLUE}○${NC} $STRATEGY_PATH (optional)"
 echo
-echo "  2. Analyze and sequence:"
-echo "     - Identify foundation (Spec 1: Core Infrastructure)"
+echo "  2. Analyze existing specs (if any):"
+echo "     - Check registry: $REGISTRY_FILE"
+echo "     - Reference existing spec numbers when sequencing"
+echo
+echo "  3. Analyze and sequence NEW features:"
+echo "     - Identify foundation (Spec 1 or next available: Core Infrastructure)"
 echo "     - Build dependency graph (what blocks what)"
 echo "     - Group tightly coupled features (same domain/tables)"
 echo "     - Sequence by engineering logic (foundation → risky → critical path)"
 echo
-echo "  3. Fill in template placeholders:"
+echo "  4. Fill in template placeholders:"
 echo "     - {{TECH_STACK}} - From constitution"
 echo "     - {{FOUNDATION_REASONING}} - Why infrastructure first"
 echo "     - {{INFRASTRUCTURE_COMPONENTS}} - Database, auth, API, etc."
@@ -186,7 +221,7 @@ echo "     - {{SEQUENCED_SPECS}} - Numbered specs with rationale"
 echo "     - {{TOTAL_SPECS}} - Total number of specs"
 echo "     - {{ADDITIONAL_NOTES}} - Any relevant notes"
 echo
-echo "  4. Write to: $OUTPUT_FILE"
+echo "  5. Write to: $OUTPUT_FILE"
 echo
 echo -e "${CYAN}Output location:${NC} $OUTPUT_FILE"
 echo

@@ -16,6 +16,7 @@ source "$REPO_ROOT/.shipkit/scripts/bash/common.sh"
 # Get skill directory
 SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUTPUT_DIR="$SKILL_DIR/outputs"
+REGISTRY_FILE="$REPO_ROOT/.shipkit/skills/dev-specify/outputs/specs/registry.txt"
 TEMPLATE_DIR="$SKILL_DIR/templates"
 REFERENCES_DIR="$SKILL_DIR/references"
 
@@ -58,32 +59,53 @@ done
 # =============================================================================
 
 if [[ -z "$FEATURE_DIR" ]]; then
-  echo -e "${RED}✗${NC} Error: Feature directory required"
+  echo -e "${RED}✗${NC} Error: Spec number required"
   echo ""
-  echo "Usage: $0 <feature-dir> [flags]"
-  echo "Example: $0 specs/1-user-authentication"
+  echo "Usage: $0 <spec-number> [flags]"
+  echo "Example: $0 001"
   echo ""
-  echo "Run '$0 --help' for more information"
+  echo "Available specs:"
+  if [[ -f "$REGISTRY_FILE" && -s "$REGISTRY_FILE" ]]; then
+    while IFS='|' read -r num name created; do
+      echo "  $num: $name"
+    done < "$REGISTRY_FILE"
+  else
+    echo "  (no specs created yet)"
+  fi
   exit 1
 fi
 
-# Convert to absolute path if relative
-if [[ ! "$FEATURE_DIR" = /* ]]; then
-  FEATURE_DIR="$REPO_ROOT/$FEATURE_DIR"
-fi
+# Normalize to 3-digit spec number
+SPEC_NUM=$(printf "%03d" "$FEATURE_DIR")
 
-# Validate feature directory exists
-if [[ ! -d "$FEATURE_DIR" ]]; then
-  echo -e "${RED}✗${NC} Feature directory not found: $FEATURE_DIR"
+# Validate
+if [[ ! "$SPEC_NUM" =~ ^[0-9]{3}$ ]]; then
+  echo -e "${RED}✗${NC} Invalid spec number: $FEATURE_DIR"
+  echo "Expected: 001, 002, 003, etc."
   exit 1
 fi
 
-# Extract feature name from directory
-FEATURE_NAME=$(basename "$FEATURE_DIR")
+# Read spec name from registry
+SPEC_NAME=""
+if [[ -f "$REGISTRY_FILE" && -s "$REGISTRY_FILE" ]]; then
+  while IFS='|' read -r num name created; do
+    if [[ "$num" == "$SPEC_NUM" ]]; then
+      SPEC_NAME="$name"
+      break
+    fi
+  done < "$REGISTRY_FILE"
 
-echo -e "${CYAN}Feature:${NC} $FEATURE_NAME"
-echo -e "${CYAN}Directory:${NC} $FEATURE_DIR"
+  if [[ -z "$SPEC_NAME" ]]; then
+    echo -e "${RED}✗${NC} Spec $SPEC_NUM not found in registry"
+    exit 1
+  fi
+else
+  SPEC_NAME="Spec $SPEC_NUM"
+fi
+
+echo -e "${CYAN}Spec:${NC} $SPEC_NUM - $SPEC_NAME"
 echo ""
+
 
 # =============================================================================
 # CHECK PREREQUISITES
@@ -101,8 +123,9 @@ fi
 echo -e "${CYAN}Checking required files...${NC}"
 echo ""
 
-SPEC_FILE="$FEATURE_DIR/spec.md"
-PLAN_FILE="$FEATURE_DIR/plan.md"
+# Files come from different skill outputs
+SPEC_FILE="$REPO_ROOT/.shipkit/skills/dev-specify/outputs/specs/$SPEC_NUM/spec.md"
+PLAN_FILE="$REPO_ROOT/.shipkit/skills/dev-plan/outputs/specs/$SPEC_NUM/plan.md"
 CONSTITUTION_FILE="$REPO_ROOT/.shipkit/skills/dev-constitution/outputs/constitution.md"
 
 MISSING_FILES=false
@@ -149,10 +172,10 @@ fi
 echo -e "${CYAN}Checking optional files...${NC}"
 echo ""
 
-DATA_MODEL_FILE="$FEATURE_DIR/data-model.md"
-CONTRACTS_DIR="$FEATURE_DIR/contracts"
-RESEARCH_FILE="$FEATURE_DIR/research.md"
-QUICKSTART_FILE="$FEATURE_DIR/quickstart.md"
+DATA_MODEL_FILE="$REPO_ROOT/.shipkit/skills/dev-plan/outputs/specs/$SPEC_NUM/data-model.md"
+CONTRACTS_DIR="$REPO_ROOT/.shipkit/skills/dev-plan/outputs/specs/$SPEC_NUM/contracts"
+RESEARCH_FILE="$REPO_ROOT/.shipkit/skills/dev-plan/outputs/specs/$SPEC_NUM/research.md"
+QUICKSTART_FILE="$REPO_ROOT/.shipkit/skills/dev-plan/outputs/specs/$SPEC_NUM/quickstart.md"
 
 AVAILABLE_DOCS=()
 
@@ -190,7 +213,7 @@ echo ""
 # =============================================================================
 
 # Create output directory mirroring feature structure
-FEATURE_OUTPUT_DIR="$OUTPUT_DIR/specs/$FEATURE_NAME"
+FEATURE_OUTPUT_DIR="$OUTPUT_DIR/specs/$SPEC_NUM"
 mkdir -p "$FEATURE_OUTPUT_DIR"
 
 # =============================================================================
@@ -200,13 +223,14 @@ mkdir -p "$FEATURE_OUTPUT_DIR"
 OUTPUT_FILE="$FEATURE_OUTPUT_DIR/tasks.md"
 
 echo -e "${CYAN}Output location:${NC} $OUTPUT_FILE"
+echo -e "${CYAN}Feature:${NC} $SPEC_NUM - $SPEC_NAME"
 echo ""
 
 # =============================================================================
 # CHECK IF FILE EXISTS AND HANDLE DECISION
 # =============================================================================
 
-check_output_exists "$OUTPUT_FILE" "Tasks for $FEATURE_NAME" "$UPDATE" "$ARCHIVE"
+check_output_exists "$OUTPUT_FILE" "Tasks for $SPEC_NUM" "$UPDATE" "$ARCHIVE"
 
 # =============================================================================
 # CHECK TEMPLATE EXISTS

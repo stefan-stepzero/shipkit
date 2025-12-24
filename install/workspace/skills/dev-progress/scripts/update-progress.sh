@@ -1,65 +1,6 @@
 #!/usr/bin/env bash
-# Update development progress tracking
-set -euo pipefail
-
-# =============================================================================
-# FLAG PARSING
-# =============================================================================
-
-JSON_MODE=false
-VERBOSE=false
-
-show_help() {
-  cat << 'EOF'
-Usage: update-progress.sh [OPTIONS]
-
-Update the development progress tracking document based on roadmap and git state.
-
-OPTIONS:
-  --json          Output in JSON format (for programmatic use)
-  --verbose       Show detailed scanning information
-  --help, -h      Show this help message
-
-EXAMPLES:
-  # Update progress (normal output)
-  ./update-progress.sh
-
-  # Update progress (JSON output)
-  ./update-progress.sh --json
-
-  # Update progress with detailed logging
-  ./update-progress.sh --verbose
-
-PREREQUISITES:
-  - Roadmap must exist (.shipkit/skills/dev-roadmap/outputs/roadmap.md)
-
-OUTPUT:
-  - .shipkit/skills/dev-progress/outputs/progress.md
-
-EOF
-}
-
-while [[ $# -gt 0 ]]; do
-  case $1 in
-    --json)
-      JSON_MODE=true
-      shift
-      ;;
-    --verbose)
-      VERBOSE=true
-      shift
-      ;;
-    --help|-h)
-      show_help
-      exit 0
-      ;;
-    *)
-      echo "Unknown flag: $1" >&2
-      echo "Use --help for usage information" >&2
-      exit 1
-      ;;
-  esac
-done
+# Simple progress snapshot for session continuity
+set -e
 
 # =============================================================================
 # SETUP
@@ -79,170 +20,101 @@ source "$COMMON_SH"
 
 # Setup paths
 OUTPUT_DIR="$SKILL_DIR/outputs"
-OUTPUT_FILE="$OUTPUT_DIR/progress.md"
+CURRENT_FILE="$OUTPUT_DIR/progress-current.md"
 TEMPLATE_FILE="$SKILL_DIR/templates/progress-template.md"
 
-REPO_ROOT=$(get_repo_root)
-ROADMAP_PATH="$REPO_ROOT/.shipkit/skills/dev-roadmap/outputs/roadmap.md"
-SPECS_DIR="$REPO_ROOT/.shipkit/skills/dev-specify/outputs/specs"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
+REGISTRY_FILE="$REPO_ROOT/.shipkit/skills/dev-specify/outputs/specs/registry.txt"
+
+mkdir -p "$OUTPUT_DIR"
 
 # =============================================================================
 # HEADER
 # =============================================================================
 
-if [[ "$JSON_MODE" != "true" ]]; then
-  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-  echo -e "${CYAN}  Development Progress Tracker${NC}"
-  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-  echo
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${CYAN}  Development Progress Snapshot${NC}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo
+
+# =============================================================================
+# ARCHIVE CURRENT PROGRESS
+# =============================================================================
+
+# Archive current progress file if it exists
+if [[ -f "$CURRENT_FILE" ]]; then
+  TIMESTAMP=$(date +%Y-%m-%d-%H%M%S)
+  ARCHIVE_FILE="$OUTPUT_DIR/progress-$TIMESTAMP.md"
+  cp "$CURRENT_FILE" "$ARCHIVE_FILE"
+  echo -e "${GREEN}✓${NC} Archived: progress-$TIMESTAMP.md"
 fi
 
 # =============================================================================
-# PREREQUISITE CHECKS
+# CREATE FRESH PROGRESS FILE
 # =============================================================================
 
-if [[ "$VERBOSE" == "true" ]]; then
-  echo -e "${BLUE}Checking prerequisites...${NC}"
-  echo
-fi
-
-# Check for roadmap (required)
-if [[ ! -f "$ROADMAP_PATH" ]]; then
-  if [[ "$JSON_MODE" == "true" ]]; then
-    echo '{"error":"roadmap_missing","message":"No roadmap found. Run /dev-roadmap first."}'
-  else
-    echo -e "${YELLOW}⚠️  No roadmap found${NC}" >&2
-    echo >&2
-    echo "Roadmap required for progress tracking." >&2
-    echo >&2
-    echo "Create roadmap first:" >&2
-    echo "  /dev-roadmap" >&2
-    echo >&2
-  fi
+# Check template exists
+if [[ ! -f "$TEMPLATE_FILE" ]]; then
+  echo -e "${RED}ERROR: Template not found: $TEMPLATE_FILE${NC}" >&2
   exit 1
 fi
 
-if [[ "$VERBOSE" == "true" ]]; then
-  echo -e "${GREEN}✓${NC} Roadmap found: $ROADMAP_PATH"
-  echo
-fi
+# Create fresh progress file from template
+cp "$TEMPLATE_FILE" "$CURRENT_FILE"
+echo -e "${GREEN}✓${NC} Created: progress-current.md"
+echo
 
 # =============================================================================
-# SCAN CURRENT STATE
+# SHOW REGISTRY CONTEXT
 # =============================================================================
 
-if [[ "$VERBOSE" == "true" ]]; then
-  echo -e "${BLUE}Scanning current state...${NC}"
+echo -e "${CYAN}Existing specs (from registry):${NC}"
+echo
+
+if [[ -f "$REGISTRY_FILE" && -s "$REGISTRY_FILE" ]]; then
+  SPEC_COUNT=$(wc -l < "$REGISTRY_FILE" | tr -d ' ')
+  echo -e "  ${BLUE}○${NC} Total specs: $SPEC_COUNT"
   echo
-fi
-
-# Count total specs from roadmap (count "### Spec N:" lines)
-TOTAL_SPECS=$(grep -c "^### Spec [0-9]" "$ROADMAP_PATH" 2>/dev/null || echo "0")
-
-# Scan spec directories
-if [[ -d "$SPECS_DIR" ]]; then
-  SPEC_DIRS=$(find "$SPECS_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null || echo "")
-  SPEC_COUNT=$(echo "$SPEC_DIRS" | grep -c "." || echo "0")
+  while IFS='|' read -r num name created; do
+    echo "  $num: $name"
+  done < "$REGISTRY_FILE"
 else
-  SPEC_DIRS=""
-  SPEC_COUNT=0
+  echo -e "  ${YELLOW}⚠${NC} No specs created yet"
 fi
 
-# Check git for merged branches (if git available)
-MERGED_BRANCHES=""
-if has_git; then
-  # Look for merge commits mentioning "Spec" or numbered branches
-  MERGED_BRANCHES=$(git log --all --merges --oneline --grep="Spec" 2>/dev/null | head -20 || echo "")
-fi
-
-if [[ "$VERBOSE" == "true" ]]; then
-  echo -e "  ${GREEN}✓${NC} Total specs in roadmap: $TOTAL_SPECS"
-  echo -e "  ${GREEN}✓${NC} Spec directories found: $SPEC_COUNT"
-  if [[ -n "$MERGED_BRANCHES" ]]; then
-    echo -e "  ${GREEN}✓${NC} Merged branches detected: $(echo "$MERGED_BRANCHES" | wc -l)"
-  fi
-  echo
-fi
+echo
 
 # =============================================================================
-# CREATE OUTPUT DIRECTORY
+# READY FOR CLAUDE
 # =============================================================================
 
-mkdir -p "$OUTPUT_DIR"
-
-# =============================================================================
-# OUTPUT RESULTS
-# =============================================================================
-
-if [[ "$JSON_MODE" == "true" ]]; then
-  # JSON output for programmatic use
-  cat << EOF
-{
-  "roadmap_path": "$ROADMAP_PATH",
-  "total_specs": $TOTAL_SPECS,
-  "spec_count": $SPEC_COUNT,
-  "specs_dir": "$SPECS_DIR",
-  "spec_dirs": [
-$(echo "$SPEC_DIRS" | sed 's/^/    "/' | sed 's/$/"/' | paste -sd ',' -)
-  ],
-  "merged_branches": [
-$(echo "$MERGED_BRANCHES" | sed 's/^/    "/' | sed 's/$/"/' | paste -sd ',' -)
-  ],
-  "output_file": "$OUTPUT_FILE",
-  "template_file": "$TEMPLATE_FILE"
-}
-EOF
-else
-  # Human-readable output
-  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-  echo -e "${GREEN}Ready for Claude${NC}"
-  echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-  echo
-  echo "Claude should now:"
-  echo
-  echo "  1. Read roadmap:"
-  echo "     $ROADMAP_PATH"
-  echo
-  echo "  2. Analyze spec directories:"
-  echo "     $SPECS_DIR"
-  echo "     Found: $SPEC_COUNT spec(s)"
-  echo
-  echo "  3. Check git history:"
-  if [[ -n "$MERGED_BRANCHES" ]]; then
-    echo "     Merged branches detected:"
-    echo "$MERGED_BRANCHES" | head -5 | sed 's/^/       /'
-    [[ $(echo "$MERGED_BRANCHES" | wc -l) -gt 5 ]] && echo "       ... (see git log for more)"
-  else
-    echo "     No merged branches found (or git unavailable)"
-  fi
-  echo
-  echo "  4. Determine status for each spec:"
-  echo "     - ✅ Completed: Directory exists AND branch merged"
-  echo "     - 🔄 Current: Directory exists but NOT merged yet"
-  echo "     - 📋 Next: No directory, next in roadmap sequence"
-  echo
-  echo "  5. Load template:"
-  echo "     $TEMPLATE_FILE"
-  echo
-  echo "  6. Fill in placeholders:"
-  echo "     - {{TIMESTAMP}} - Current date/time"
-  echo "     - {{COMPLETED_COUNT}} - Number of merged specs"
-  echo "     - {{TOTAL_COUNT}} - Total specs from roadmap ($TOTAL_SPECS)"
-  echo "     - {{PERCENTAGE}} - Progress percentage"
-  echo "     - {{COMPLETED_SPECS}} - List of completed specs"
-  echo "     - {{CURRENT_SPEC}} - Current in-progress spec (if any)"
-  echo "     - {{NEXT_SPECS}} - Upcoming specs from roadmap"
-  echo "     - {{IN_PROGRESS_COUNT}} - Number of active specs"
-  echo "     - {{REMAINING_COUNT}} - Specs not started yet"
-  echo "     - {{SUGGESTED_NEXT_ACTION}} - What to do next"
-  echo
-  echo "  7. Write to: $OUTPUT_FILE"
-  echo
-  echo -e "${CYAN}Output location:${NC} $OUTPUT_FILE"
-  echo
-  echo -e "${YELLOW}Remember:${NC}"
-  echo "  - Only count merged specs as complete"
-  echo "  - Show clear completed/current/next sections"
-  echo "  - Suggest the next action"
-  echo
-fi
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}Ready for Claude${NC}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo
+echo "Claude should now:"
+echo
+echo "  1. Read current progress context:"
+echo "     $CURRENT_FILE"
+echo
+echo "  2. Update progress-current.md with:"
+echo "     • {{TIMESTAMP}} - Current date/time"
+echo "     • {{COMPLETED_COUNT}} - Number of completed specs"
+echo "     • {{TOTAL_COUNT}} - Total specs from registry"
+echo "     • {{PERCENTAGE}} - Progress percentage"
+echo "     • {{COMPLETED_SPECS}} - List completed specs (e.g., '001 - User Auth')"
+echo "     • {{CURRENT_SPEC}} - Currently working on (e.g., '002 - Dashboard')"
+echo "     • {{NEXT_SPECS}} - What's next from roadmap"
+echo "     • {{IN_PROGRESS_COUNT}} - Usually 1"
+echo "     • {{REMAINING_COUNT}} - Total - Completed - In Progress"
+echo "     • {{SUGGESTED_NEXT_ACTION}} - What to do next"
+echo
+echo "  3. Base updates on:"
+echo "     • Conversation context (what we just worked on)"
+echo "     • NOT git history"
+echo "     • Manual snapshot for session continuity"
+echo
+echo -e "${CYAN}Output:${NC} $CURRENT_FILE"
+echo
+echo -e "${YELLOW}Note:${NC} This is a manual snapshot - Claude updates based on conversation, not automated scanning"
+echo

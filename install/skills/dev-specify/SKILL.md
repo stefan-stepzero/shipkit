@@ -60,18 +60,18 @@ If product artifacts missing, spec will be less grounded (but still possible).
 ```
 
 Script will:
-- Generate numbered spec directory (e.g., `specs/1-user-authentication/`)
-- Copy template to `specs/1-user-authentication/spec.md`
+- Generate numbered spec directory (e.g., `specs/001/`)
+- Copy template to `specs/001/spec.md`
 - List available product artifacts
 - Indicate ready for Claude
 
 **For updates/clarifications:**
 ```bash
 # Update existing spec (archives old version)
-.shipkit/skills/dev-specify/scripts/create-spec.sh --update --spec 1-user-authentication
+.shipkit/skills/dev-specify/scripts/create-spec.sh --update --spec 001
 
 # Resolve [NEEDS_CLARIFICATION] markers
-.shipkit/skills/dev-specify/scripts/create-spec.sh --clarify --spec 1-user-authentication
+.shipkit/skills/dev-specify/scripts/create-spec.sh --clarify --spec 001
 ```
 
 ### 2. Read References
@@ -221,7 +221,7 @@ Users can log in with email/password or OAuth.
 **DO NOT** write manually to protected outputs.
 
 Fill the spec content and Claude will write it to:
-`.shipkit/skills/dev-specify/outputs/specs/N-feature-name/spec.md`
+`.shipkit/skills/dev-specify/outputs/specs/NNN/spec.md`
 
 ### 7. Verify Quality
 
@@ -237,7 +237,8 @@ Before finalizing, check:
 
 ## Outputs
 
-- `.shipkit/skills/dev-specify/outputs/specs/N-feature-name/spec.md` (PROTECTED)
+- `.shipkit/skills/dev-specify/outputs/specs/NNN/spec.md` (PROTECTED)
+- `.shipkit/skills/dev-specify/outputs/specs/registry.txt` (Registry mapping)
 
 ## Constraints
 
@@ -361,18 +362,18 @@ dev-implement
 **Create spec:**
 ```bash
 /dev-specify "Add OAuth login"
-# Creates specs/3-oauth-login/spec.md
+# Creates specs/003/spec.md
 # May include [NEEDS_CLARIFICATION] markers
 ```
 
 **Resolve ambiguities:**
 ```bash
-/dev-specify --clarify --spec 3-oauth-login
+/dev-specify --clarify --spec 003
 # Claude finds markers, asks questions, updates spec
 ```
 
 **Update spec later:**
 ```bash
-/dev-specify --update --spec 3-oauth-login
+/dev-specify --update --spec 003
 # Archives old version, updates with new info
 ```

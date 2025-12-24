@@ -46,7 +46,7 @@ Run `/dev-tasks` when you have:
 ## What This Skill Does
 
 ### Input
-Reads from feature directory (e.g., `specs/1-user-authentication/`):
+Reads from feature directory (e.g., `specs/001/`):
 - **spec.md** - User stories with priorities (REQUIRED)
 - **plan.md** - Technical design (REQUIRED)
 - **constitution.md** - Technical standards (RECOMMENDED)
@@ -90,13 +90,13 @@ The script (`create-tasks.sh`) will:
 
 **Example invocation:**
 ```bash
-.shipkit/skills/dev-tasks/scripts/create-tasks.sh specs/1-user-authentication
+.shipkit/skills/dev-tasks/scripts/create-tasks.sh specs/001
 ```
 
 or with flags:
 
 ```bash
-.shipkit/skills/dev-tasks/scripts/create-tasks.sh specs/1-user-authentication --update
+.shipkit/skills/dev-tasks/scripts/create-tasks.sh specs/001 --update
 ```
 
 ### Step 2: Read References
@@ -133,7 +133,7 @@ This includes built-in guidance (reference.md, examples.md) and any user-added f
 
 3. **Feature Spec (REQUIRED):**
    ```
-   specs/N-feature-name/spec.md
+   specs/NNN/spec.md
    ```
    Extract:
    - User stories with priorities (P1, P2, P3...)
@@ -142,7 +142,7 @@ This includes built-in guidance (reference.md, examples.md) and any user-added f
 
 4. **Feature Plan (REQUIRED):**
    ```
-   specs/N-feature-name/plan.md
+   specs/NNN/plan.md
    ```
    Extract:
    - Tech stack and libraries
@@ -152,10 +152,10 @@ This includes built-in guidance (reference.md, examples.md) and any user-added f
 
 5. **Optional Documents:**
    ```
-   specs/N-feature-name/data-model.md      → Map entities to user stories
-   specs/N-feature-name/contracts/         → Map endpoints to user stories
-   specs/N-feature-name/research.md        → Extract setup decisions
-   specs/N-feature-name/quickstart.md      → Extract test scenarios
+   specs/NNN/data-model.md      → Map entities to user stories
+   specs/NNN/contracts/         → Map endpoints to user stories
+   specs/NNN/research.md        → Extract setup decisions
+   specs/NNN/quickstart.md      → Extract test scenarios
    ```
 
 ### Step 4: Analyze Dependencies
@@ -239,7 +239,7 @@ Add strategy section showing:
 
 Write the complete tasks.md to:
 ```
-.shipkit/skills/dev-tasks/outputs/specs/[feature-name]/tasks.md
+.shipkit/skills/dev-tasks/outputs/specs/NNN/tasks.md
 ```
 
 **File is PROTECTED:** Can only be modified by re-running the skill with `--update`
@@ -273,7 +273,7 @@ Report to user:
   • Delivers core value independently
 
 📁 Generated:
-  • .shipkit/skills/dev-tasks/outputs/specs/1-user-authentication/tasks.md
+  • .shipkit/skills/dev-tasks/outputs/specs/001/tasks.md
 
 👉 Next: Review task breakdown, then run /dev-implement to start execution
 ```

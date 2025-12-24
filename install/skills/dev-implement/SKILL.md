@@ -34,12 +34,12 @@ Or explicitly:
 ## Prerequisites
 
 **Required:**
-- Tasks (`.shipkit/skills/dev-tasks/outputs/specs/N-feature-name/tasks.md`)
+- Tasks (`.shipkit/skills/dev-tasks/outputs/specs/NNN/tasks.md`)
 - Constitution (`.shipkit/skills/dev-constitution/outputs/constitution.md`)
 
 **Recommended:**
-- Spec (`.shipkit/skills/dev-specify/outputs/specs/N-feature-name/spec.md`)
-- Plan (`.shipkit/skills/dev-plan/outputs/specs/N-feature-name/plan.md`)
+- Spec (`.shipkit/skills/dev-specify/outputs/specs/NNN/spec.md`)
+- Plan (`.shipkit/skills/dev-plan/outputs/specs/NNN/plan.md`)
 
 ## Inputs
 
@@ -68,7 +68,7 @@ Or explicitly:
 ### 1. Run Script
 
 ```bash
-.shipkit/skills/dev-implement/scripts/start-implementation.sh specs/N-feature-name
+.shipkit/skills/dev-implement/scripts/start-implementation.sh specs/NNN
 ```
 
 **Available flags:**
@@ -134,13 +134,13 @@ This includes built-in guidance (reference.md, examples.md) and any user-added f
 
 ```bash
 # Required
-.shipkit/skills/dev-tasks/outputs/specs/N-feature-name/tasks.md
+.shipkit/skills/dev-tasks/outputs/specs/NNN/tasks.md
 
 # If exists
-.shipkit/skills/dev-specify/outputs/specs/N-feature-name/spec.md
-.shipkit/skills/dev-plan/outputs/specs/N-feature-name/plan.md
-.shipkit/skills/dev-plan/outputs/specs/N-feature-name/data-model.md
-.shipkit/skills/dev-plan/outputs/specs/N-feature-name/contracts/
+.shipkit/skills/dev-specify/outputs/specs/NNN/spec.md
+.shipkit/skills/dev-plan/outputs/specs/NNN/plan.md
+.shipkit/skills/dev-plan/outputs/specs/NNN/data-model.md
+.shipkit/skills/dev-plan/outputs/specs/NNN/contracts/
 ```
 
 **Also read extended references:**

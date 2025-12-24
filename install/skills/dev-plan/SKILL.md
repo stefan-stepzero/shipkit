@@ -30,7 +30,7 @@ handoffs:
 - `/dev-constitution` has established technical standards (recommended)
 
 **User triggers**:
-- "Create implementation plan for specs/1-feature-name"
+- "Create implementation plan for specs/001"
 - "Plan how to build this feature"
 - "Design the technical architecture"
 - "How should we implement this?"
@@ -40,7 +40,7 @@ handoffs:
 ## Prerequisites
 
 **Required**:
-- Feature specification exists: `.shipkit/skills/dev-specify/outputs/specs/N-feature-name/spec.md`
+- Feature specification exists: `.shipkit/skills/dev-specify/outputs/specs/NNN/spec.md`
 
 **Recommended**:
 - Technical constitution exists: `.shipkit/skills/dev-constitution/outputs/constitution.md`
@@ -51,7 +51,7 @@ handoffs:
 
 ## What This Skill Creates
 
-**Output location**: `.shipkit/skills/dev-plan/outputs/specs/N-feature-name/`
+**Output location**: `.shipkit/skills/dev-plan/outputs/specs/NNN/`
 
 **Artifacts generated**:
 1. **plan.md** - High-level technical blueprint
@@ -81,16 +81,16 @@ handoffs:
 
 ```bash
 # From repository root
-.shipkit/skills/dev-plan/scripts/create-plan.sh specs/1-user-authentication
+.shipkit/skills/dev-plan/scripts/create-plan.sh 001
 
 # With optional checklist
-.shipkit/skills/dev-plan/scripts/create-plan.sh specs/1-user-authentication --with-checklist
+.shipkit/skills/dev-plan/scripts/create-plan.sh 001 --with-checklist
 
 # Update existing plan
-.shipkit/skills/dev-plan/scripts/create-plan.sh specs/1-user-authentication --update
+.shipkit/skills/dev-plan/scripts/create-plan.sh 001 --update
 
 # Archive old plan and create new
-.shipkit/skills/dev-plan/scripts/create-plan.sh specs/1-user-authentication --archive
+.shipkit/skills/dev-plan/scripts/create-plan.sh 001 --archive
 ```
 
 ---
@@ -100,7 +100,7 @@ handoffs:
 ### Step 1: Setup & Validation
 
 **Script runs** (`.shipkit/skills/dev-plan/scripts/create-plan.sh`):
-1. Validates spec path format: `specs/N-feature-name`
+1. Validates spec path format: `specs/NNN`
 2. Checks spec.md exists
 3. Checks constitution.md exists (warns if missing)
 4. Creates output directory structure
@@ -138,7 +138,7 @@ This includes built-in guidance (reference.md, examples.md) and any user-added f
    - `templates/checklist-template.md` (if --with-checklist)
 
 2. **Input artifacts**:
-   - `specs/N-feature-name/spec.md` (feature requirements)
+   - `specs/NNN/spec.md` (feature requirements)
    - `.shipkit/skills/dev-constitution/outputs/constitution.md` (technical standards)
 
 ### Step 4: Constitution Check (Pre-Design)
@@ -217,7 +217,7 @@ This includes built-in guidance (reference.md, examples.md) and any user-added f
 ✅ Implementation plan complete
 
 📁 Created artifacts:
-  • Plan: .shipkit/skills/dev-plan/outputs/specs/1-feature-name/plan.md
+  • Plan: .shipkit/skills/dev-plan/outputs/specs/001/plan.md
   • Research: .../research.md
   • Data Model: .../data-model.md
   • Contracts: .../contracts/
@@ -228,7 +228,7 @@ This includes built-in guidance (reference.md, examples.md) and any user-added f
   • All requirements aligned with technical standards
   [• X violations documented with justification] (if violations)
 
-👉 Next step: /dev-tasks specs/1-feature-name
+👉 Next step: /dev-tasks specs/001
    Break this plan into dependency-ordered tasks
 
 Proceed with /dev-tasks?
@@ -278,7 +278,7 @@ READ CONSTITUTION BEFORE EVERY TECHNICAL DECISION
 
 **After planning complete**, run:
 ```bash
-/dev-tasks specs/N-feature-name
+/dev-tasks specs/NNN
 ```
 
 **dev-tasks will**:

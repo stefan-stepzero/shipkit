@@ -15,6 +15,7 @@ source "$REPO_ROOT/.shipkit/scripts/bash/common.sh"
 
 # Get skill directory
 SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REGISTRY_FILE="$REPO_ROOT/.shipkit/skills/dev-specify/outputs/specs/registry.txt"
 REFERENCES_DIR="$SKILL_DIR/references"
 
 # =============================================================================
@@ -72,21 +73,48 @@ done
 if [[ -z "$SPEC_PATH" ]]; then
   CURRENT_BRANCH=$(get_current_branch)
 
-  # Extract numeric prefix if branch follows NNN- pattern
+  # Extract 3-digit numeric prefix if branch follows NNN- pattern
   if [[ "$CURRENT_BRANCH" =~ ^([0-9]{3})- ]]; then
-    PREFIX="${BASH_REMATCH[1]}"
-    SPEC_PATH=$(find_feature_dir_by_prefix "$REPO_ROOT" "$CURRENT_BRANCH")
+    SPEC_NUM="${BASH_REMATCH[1]}"
   else
-    echo -e "${RED}✗${NC} Could not determine spec path from branch: $CURRENT_BRANCH"
-    echo "Please provide spec path explicitly: $0 specs/N-feature-name"
+    echo -e "${RED}✗${NC} Could not determine spec number from branch: $CURRENT_BRANCH"
+    echo "Expected branch pattern: 001-feature-name"
+    echo ""
+    echo "Please provide spec number explicitly:"
+    echo "  $0 001"
     exit 1
   fi
+else
+  # Normalize provided spec number
+  SPEC_NUM=$(printf "%03d" "$SPEC_PATH")
 fi
 
-# Normalize to absolute path
-if [[ ! "$SPEC_PATH" = /* ]]; then
-  SPEC_PATH="$REPO_ROOT/.shipkit/skills/dev-tasks/outputs/$SPEC_PATH"
+# Validate spec number
+if [[ ! "$SPEC_NUM" =~ ^[0-9]{3}$ ]]; then
+  echo -e "${RED}✗${NC} Invalid spec number: $SPEC_PATH"
+  exit 1
 fi
+
+# Read spec name from registry
+SPEC_NAME=""
+if [[ -f "$REGISTRY_FILE" && -s "$REGISTRY_FILE" ]]; then
+  while IFS='|' read -r num name created; do
+    if [[ "$num" == "$SPEC_NUM" ]]; then
+      SPEC_NAME="$name"
+      break
+    fi
+  done < "$REGISTRY_FILE"
+
+  if [[ -z "$SPEC_NAME" ]]; then
+    echo -e "${RED}✗${NC} Spec $SPEC_NUM not found in registry"
+    exit 1
+  fi
+else
+  SPEC_NAME="Spec $SPEC_NUM"
+fi
+
+echo -e "${CYAN}Spec:${NC} $SPEC_NUM - $SPEC_NAME"
+echo ""
 
 # =============================================================================
 # CHECK PREREQUISITES
@@ -100,7 +128,8 @@ fi
 # VERIFY REQUIRED FILES EXIST
 # =============================================================================
 
-TASKS_FILE="$SPEC_PATH/tasks.md"
+# Required files
+TASKS_FILE="$REPO_ROOT/.shipkit/skills/dev-tasks/outputs/specs/$SPEC_NUM/tasks.md"
 CONSTITUTION_FILE="$REPO_ROOT/.shipkit/skills/dev-constitution/outputs/constitution.md"
 
 if [[ ! -f "$TASKS_FILE" ]]; then
@@ -203,10 +232,11 @@ echo ""
 
 echo -e "${CYAN}Available context files:${NC}"
 
-SPEC_FILE="$SPEC_PATH/spec.md"
-PLAN_FILE="$SPEC_PATH/plan.md"
-DATA_MODEL_FILE="$SPEC_PATH/data-model.md"
-CONTRACTS_DIR="$SPEC_PATH/contracts"
+# Optional context files
+SPEC_FILE="$REPO_ROOT/.shipkit/skills/dev-specify/outputs/specs/$SPEC_NUM/spec.md"
+PLAN_FILE="$REPO_ROOT/.shipkit/skills/dev-plan/outputs/specs/$SPEC_NUM/plan.md"
+DATA_MODEL_FILE="$REPO_ROOT/.shipkit/skills/dev-plan/outputs/specs/$SPEC_NUM/data-model.md"
+CONTRACTS_DIR="$REPO_ROOT/.shipkit/skills/dev-plan/outputs/specs/$SPEC_NUM/contracts"
 
 if [[ -f "$SPEC_FILE" ]]; then
   echo -e "  ${GREEN}✓${NC} $SPEC_FILE"

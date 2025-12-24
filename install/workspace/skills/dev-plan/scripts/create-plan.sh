@@ -16,6 +16,7 @@ source "$REPO_ROOT/.shipkit/scripts/bash/common.sh"
 # Get skill directory
 SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUTPUT_BASE_DIR="$SKILL_DIR/outputs/specs"
+REGISTRY_FILE="$REPO_ROOT/.shipkit/skills/dev-specify/outputs/specs/registry.txt"
 TEMPLATE_DIR="$SKILL_DIR/templates"
 REFERENCES_DIR="$SKILL_DIR/references"
 
@@ -68,27 +69,64 @@ done
 # =============================================================================
 
 if [[ -z "$SPEC_PATH" ]]; then
-  echo "Error: Spec path required"
-  echo "Usage: $0 <spec-path> [flags]"
-  echo "Example: $0 specs/1-user-authentication"
+  echo -e "${RED}Error: Spec number required${NC}"
+  echo "Usage: $0 <spec-number> [flags]"
+  echo "Example: $0 001"
+  echo ""
+  echo "Available specs:"
+  if [[ -f "$REGISTRY_FILE" && -s "$REGISTRY_FILE" ]]; then
+    while IFS='|' read -r num name created; do
+      echo "  $num: $name"
+    done < "$REGISTRY_FILE"
+  else
+    echo "  (no specs created yet)"
+  fi
   exit 1
 fi
 
-# Extract feature number and name from path
-FEATURE_DIR_NAME=$(basename "$SPEC_PATH")
-if [[ ! "$FEATURE_DIR_NAME" =~ ^[0-9]+-[a-z0-9-]+$ ]]; then
-  echo "Error: Invalid spec path format. Expected: specs/N-feature-name"
-  echo "Got: $SPEC_PATH"
+# Normalize to 3-digit spec number
+SPEC_NUM=$(printf "%03d" "$SPEC_PATH")
+
+# Validate it's a valid number
+if [[ ! "$SPEC_NUM" =~ ^[0-9]{3}$ ]]; then
+  echo -e "${RED}Error: Invalid spec number: $SPEC_PATH${NC}"
+  echo "Expected: 001, 002, 003, etc."
   exit 1
 fi
+
+# Read spec name from registry
+SPEC_NAME=""
+if [[ -f "$REGISTRY_FILE" && -s "$REGISTRY_FILE" ]]; then
+  while IFS='|' read -r num name created; do
+    if [[ "$num" == "$SPEC_NUM" ]]; then
+      SPEC_NAME="$name"
+      break
+    fi
+  done < "$REGISTRY_FILE"
+
+  if [[ -z "$SPEC_NAME" ]]; then
+    echo -e "${RED}Error: Spec $SPEC_NUM not found in registry${NC}"
+    echo "Available specs:"
+    while IFS='|' read -r num name created; do
+      echo "  $num: $name"
+    done < "$REGISTRY_FILE"
+    exit 1
+  fi
+else
+  echo -e "${YELLOW}Warning: Registry not found, proceeding without spec name${NC}"
+  SPEC_NAME="Spec $SPEC_NUM"
+fi
+
+echo -e "${CYAN}Spec:${NC} $SPEC_NUM - $SPEC_NAME"
+echo ""
 
 # =============================================================================
 # CHECK PREREQUISITES
 # =============================================================================
 
 # Check that dev-specify has been run (spec.md exists)
-SPECIFY_OUTPUTS_DIR="$REPO_ROOT/.shipkit/skills/dev-specify/outputs"
-SPEC_FILE="$SPECIFY_OUTPUTS_DIR/$SPEC_PATH/spec.md"
+SPECIFY_OUTPUTS_DIR="$REPO_ROOT/.shipkit/skills/dev-specify/outputs/specs"
+SPEC_FILE="$SPECIFY_OUTPUTS_DIR/$SPEC_NUM/spec.md"
 
 if [[ ! -f "$SPEC_FILE" ]]; then
   echo "Error: Spec file not found: $SPEC_FILE"
@@ -108,7 +146,7 @@ CONSTITUTION_FILE="$REPO_ROOT/.shipkit/skills/dev-constitution/outputs/constitut
 # SETUP OUTPUT DIRECTORY
 # =============================================================================
 
-OUTPUT_DIR="$OUTPUT_BASE_DIR/$FEATURE_DIR_NAME"
+OUTPUT_DIR="$OUTPUT_BASE_DIR/$SPEC_NUM"
 mkdir -p "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR/contracts"
 
@@ -156,7 +194,7 @@ echo ""
 echo -e "${GREEN}✓${NC} Ready for Claude to create Implementation Plan"
 echo ""
 echo -e "${CYAN}Input files:${NC}"
-echo "  • Spec: $SPEC_FILE"
+echo "  • Spec: $SPEC_FILE ($SPEC_NAME)"
 if [[ -f "$CONSTITUTION_FILE" ]]; then
   echo "  • Constitution: $CONSTITUTION_FILE"
 else

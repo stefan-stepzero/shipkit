@@ -12,6 +12,7 @@ source "$REPO_ROOT/.shipkit/scripts/bash/common.sh"
 # Get skill directory
 SKILL_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 OUTPUT_DIR="$SKILL_DIR/outputs/specs"
+REGISTRY_FILE="$OUTPUT_DIR/registry.txt"
 TEMPLATE_DIR="$SKILL_DIR/templates"
 REFERENCES_DIR="$SKILL_DIR/references"
 
@@ -140,29 +141,59 @@ else
     exit 1
   fi
 
-  # Generate spec number and name
-  # Find next available number
-  NEXT_NUM=1
-  if [[ -d "$OUTPUT_DIR" ]]; then
-    for dir in "$OUTPUT_DIR"/*; do
-      if [[ -d "$dir" ]]; then
-        dirname=$(basename "$dir")
-        if [[ "$dirname" =~ ^([0-9]+)- ]]; then
-          num="${BASH_REMATCH[1]}"
-          if [[ $num -ge $NEXT_NUM ]]; then
-            NEXT_NUM=$((num + 1))
-          fi
-        fi
-      fi
-    done
+  # Check if user stories exist but no roadmap
+  USER_STORIES="$REPO_ROOT/.shipkit/skills/prod-user-stories/outputs/user-stories.md"
+  ROADMAP_FILE="$REPO_ROOT/.shipkit/skills/dev-roadmap/outputs/roadmap.md"
+
+  if [[ -f "$USER_STORIES" && ! -f "$ROADMAP_FILE" ]]; then
+    echo -e "${YELLOW}⚠${NC} User stories exist but no roadmap found"
+    echo ""
+    echo "Consider running /dev-roadmap first to:"
+    echo "  • Group user stories into logical specs"
+    echo "  • Determine optimal implementation order"
+    echo "  • Plan the full development sequence"
+    echo ""
+    echo "Continue creating individual spec anyway? (yes/no)"
+    read -r response
+    if [[ "$response" != "yes" ]]; then
+      echo ""
+      echo "Run /dev-roadmap first, then return to /dev-specify"
+      exit 0
+    fi
+    echo ""
   fi
 
-  # Convert feature description to kebab-case
-  FEATURE_SLUG=$(echo "$FEATURE_DESC" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//')
+  # Initialize registry if doesn't exist
+  if [[ ! -f "$REGISTRY_FILE" ]]; then
+    mkdir -p "$OUTPUT_DIR"
+    touch "$REGISTRY_FILE"
+  fi
 
-  SPEC_NAME="${NEXT_NUM}-${FEATURE_SLUG}"
-  SPEC_DIR="$OUTPUT_DIR/$SPEC_NAME"
+  # Find next available number from registry
+  NEXT_NUM=1
+  if [[ -f "$REGISTRY_FILE" && -s "$REGISTRY_FILE" ]]; then
+    while IFS='|' read -r num name created; do
+      if [[ "$num" =~ ^[0-9]{3}$ ]]; then
+        # Convert to decimal (removes leading zeros)
+        num_int=$((10#$num))
+        if [[ $num_int -ge $NEXT_NUM ]]; then
+          NEXT_NUM=$((num_int + 1))
+        fi
+      fi
+    done < "$REGISTRY_FILE"
+  fi
+
+  # Zero-pad to 3 digits
+  SPEC_NUM=$(printf "%03d" $NEXT_NUM)
+  SPEC_NAME="$SPEC_NUM"
+  SPEC_DIR="$OUTPUT_DIR/$SPEC_NUM"
   SPEC_FILE="$SPEC_DIR/spec.md"
+
+  # Add to registry (pipe-delimited: number|name|timestamp)
+  TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  echo "$SPEC_NUM|$FEATURE_DESC|$TIMESTAMP" >> "$REGISTRY_FILE"
+
+  echo -e "${GREEN}✓${NC} Assigned spec number: $SPEC_NUM"
 
   # Check if already exists
   if [[ -d "$SPEC_DIR" ]]; then
@@ -188,8 +219,9 @@ else
   cp "$TEMPLATE_FILE" "$SPEC_FILE"
   echo -e "${GREEN}✓${NC} Created spec file: $SPEC_FILE"
   echo ""
+  echo -e "${CYAN}Spec Number:${NC} $SPEC_NUM"
   echo -e "${CYAN}Feature:${NC} $FEATURE_DESC"
-  echo -e "${CYAN}Spec:${NC} $SPEC_FILE"
+  echo -e "${CYAN}Spec File:${NC} $SPEC_FILE"
 fi
 
 # List available product artifacts for Claude to read
