@@ -25,6 +25,7 @@
 ## Skill Invocation
 
 **Project Setup:**
+- `/lite-why-project` - Define strategic vision (who/why/where)
 - `/lite-project-context` - Scan codebase, create stack.md
 - `/lite-project-status` - Health check, show gaps
 
@@ -38,6 +39,7 @@
 - `/lite-component-knowledge` - Document components → append to `implementations.md`
 - `/lite-route-knowledge` - Document routes → append to `implementations.md`
 - `/lite-document-artifact` - Create standalone doc → `docs/[category]/[name].md`
+- `/lite-communications` - Create visual HTML from any lite content
 
 **Quality & Process:**
 - `/lite-quality-confidence` - Pre-ship checks
@@ -45,6 +47,7 @@
 - `/lite-work-memory` - Log session → append to `progress.md`
 
 **Utilities:**
+- `/lite-whats-next` - Smart workflow guidance (auto-called after every skill)
 - `/lite-ux-coherence` - Check UX consistency
 - `/lite-data-consistency` - Manage types/schemas
 - `/lite-integration-guardrails` - Service integration warnings

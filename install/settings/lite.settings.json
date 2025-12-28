@@ -88,7 +88,28 @@
       "WebFetch(domain:pypi.org)",
       "WebFetch(domain:npmjs.com)",
       "WebFetch(domain:stackoverflow.com)",
-      "WebFetch(domain:developer.mozilla.org)"
+      "WebFetch(domain:developer.mozilla.org)",
+
+      "Skill(lite-shipkit-master)",
+      "Skill(lite-project-status)",
+      "Skill(lite-project-context)",
+      "Skill(lite-spec)",
+      "Skill(lite-architecture-memory)",
+      "Skill(lite-ux-coherence)",
+      "Skill(lite-data-consistency)",
+      "Skill(lite-plan)",
+      "Skill(lite-implement)",
+      "Skill(lite-component-knowledge)",
+      "Skill(lite-route-knowledge)",
+      "Skill(lite-document-artifact)",
+      "Skill(lite-quality-confidence)",
+      "Skill(lite-user-instructions)",
+      "Skill(lite-integration-guardrails)",
+      "Skill(lite-work-memory)",
+      "Skill(lite-debug-systematically)",
+      "Skill(lite-communications)",
+      "Skill(lite-why-project)",
+      "Skill(lite-whats-next)"
     ],
 
     "deny": [

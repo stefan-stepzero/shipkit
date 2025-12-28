@@ -43,6 +43,18 @@ def main():
 
     # Load Shipkit Lite context files
     if 'project_root' in locals():
+        why_file = project_root / '.shipkit-lite' / 'why.md'
+        if why_file.exists():
+            print("# Project Vision (cached)")
+            print()
+            print(why_file.read_text(encoding='utf-8'))
+            print()
+            print("---")
+            print()
+        else:
+            print("📝 No project vision found. Run `/lite-why-project` to define who/why/where")
+            print()
+
         stack_file = project_root / '.shipkit-lite' / 'stack.md'
         if stack_file.exists():
             print("# Current Stack (cached)")

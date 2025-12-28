@@ -142,7 +142,9 @@ echo ""
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
-| "What should I do?", "Show status", "Project health" | `/lite-project-status` | All .shipkit-lite/ files (glob scan) |
+| "What's next?", "What should I do?", "Where do I start?", "What now?" | `/lite-whats-next` | All .shipkit-lite/ files (glob scan) |
+| "Define vision", "Why this project?", "What's this about?", "Project goals" | `/lite-why-project` | .shipkit-lite/why.md (if exists) |
+| "Show status", "Project health" | `/lite-project-status` | All .shipkit-lite/ files (glob scan) |
 | "Scan project", "Generate stack", "Refresh context", "What's my tech stack?" | `/lite-project-context` | package.json, .env.example, migrations/ |
 | "Help", "What skills exist?", "What can you do?" | List all lite skills | None |
 
@@ -170,6 +172,7 @@ echo ""
 | "Document component", "How does X work?", "Component docs" | `/lite-component-knowledge` | .shipkit-lite/implementations.md |
 | "Document route", "API endpoint docs", "Route docs" | `/lite-route-knowledge` | .shipkit-lite/implementations.md |
 | "Create docs", "Write guide", "Documentation" | `/lite-document-artifact` | .shipkit-lite/docs/ |
+| "Visualize", "HTML report", "Visual communication", "Create presentation" | `/lite-communications` | Relevant .shipkit-lite/ files based on request |
 
 ### Process & Quality Keywords
 

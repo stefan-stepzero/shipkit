@@ -23,7 +23,10 @@
       "lite-user-instructions",
       "lite-integration-guardrails",
       "lite-work-memory",
-      "lite-debug-systematically"
+      "lite-debug-systematically",
+      "lite-communications",
+      "lite-why-project",
+      "lite-whats-next"
     ],
     "workspace": []
   },
