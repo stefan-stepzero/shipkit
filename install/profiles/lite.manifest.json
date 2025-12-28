@@ -1,0 +1,32 @@
+{
+  "edition": "lite",
+  "description": "Lightweight Shipkit for POCs, side projects, and rapid iteration",
+
+  "settingsFile": "lite.settings.json",
+  "claudeMdFile": "lite.md",
+
+  "skills": {
+    "definitions": [
+      "lite-shipkit-master",
+      "lite-project-status",
+      "lite-project-context",
+      "lite-spec",
+      "lite-architecture-memory",
+      "lite-ux-coherence",
+      "lite-data-consistency",
+      "lite-plan",
+      "lite-implement",
+      "lite-component-knowledge",
+      "lite-route-knowledge",
+      "lite-document-artifact",
+      "lite-quality-confidence",
+      "lite-user-instructions",
+      "lite-integration-guardrails",
+      "lite-work-memory",
+      "lite-debug-systematically"
+    ],
+    "workspace": []
+  },
+
+  "agents": []
+}

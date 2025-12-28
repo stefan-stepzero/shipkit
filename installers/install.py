@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
 install.py - Shipkit Installer (Python)
-Cross-platform installer for the Shipkit framework
+Manifest-based installer supporting multiple editions and languages
 """
 
 import os
 import sys
+import json
 import shutil
 import argparse
 import platform
@@ -26,46 +27,137 @@ class Colors:
     CYAN = '\033[0;36m'
     RED = '\033[0;31m'
     MAGENTA = '\033[1;35m'
-    GRAY = '\033[90m'
+    BRIGHT_GREEN = '\033[1;32m'
+    BRIGHT_CYAN = '\033[1;36m'
+    BRIGHT_MAGENTA = '\033[1;35m'
 
 def print_success(msg):
-    print(f"  {Colors.GREEN}[OK]{Colors.RESET} {msg}")
+    print(f"  {Colors.GREEN}✓{Colors.RESET} {msg}")
 
 def print_info(msg):
-    print(f"  {Colors.CYAN}[>]{Colors.RESET} {msg}")
+    print(f"  {Colors.CYAN}→{Colors.RESET} {msg}")
 
 def print_warning(msg):
-    print(f"  {Colors.YELLOW}[!]{Colors.RESET} {msg}")
+    print(f"  {Colors.YELLOW}⚠{Colors.RESET} {msg}")
 
 def print_error(msg):
-    print(f"  {Colors.RED}[X]{Colors.RESET} {msg}")
+    print(f"  {Colors.RED}✗{Colors.RESET} {msg}")
 
 def print_bullet(msg):
-    print(f"  {Colors.DIM}*{Colors.RESET} {msg}")
+    print(f"  {Colors.DIM}•{Colors.RESET} {msg}")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # LOGO
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def show_logo():
+def show_logo(edition="default"):
+    """Show Shipkit logo with edition-specific info"""
     print()
-    print(f"{Colors.MAGENTA}", end='')
-    # Using simple ASCII to avoid encoding issues on Windows
-    print("""
-    ========================================================================
-                                                        /\\
-       SHIPKIT - Product Development Framework         /  \\
-                                                      / /| \\
-       24 Skills • 6 Agents • Constitution-Driven    / / |  \\
-                                                    /_/__|___\\
-                                                    \\________/
-                                                     ~~~~~~~~~~
-    ========================================================================
+    print(f"{Colors.BRIGHT_MAGENTA}", end='')
+    print(r"""
+    ┌──────────────────────────────────────────────────────────────────────┐
+    │                                                        /\            │
+    │   ███████╗██╗  ██╗██╗██████╗ ██╗  ██╗██╗████████╗     /  \           │
+    │   ██╔════╝██║  ██║██║██╔══██╗██║ ██╔╝██║╚══██╔══╝    / /| \          │
+    │   ███████╗███████║██║██████╔╝█████╔╝ ██║   ██║      / / |  \         │
+    │   ╚════██║██╔══██║██║██╔═══╝ ██╔═██╗ ██║   ██║     /_/__|___\        │
+    │   ███████║██║  ██║██║██║     ██║  ██╗██║   ██║     \________/        │
+    │   ╚══════╝╚═╝  ╚═╝╚═╝╚═╝     ╚═╝  ╚═╝╚═╝   ╚═╝     ~~~~~~~~~~        │
+    │                                                                      │
+    └──────────────────────────────────────────────────────────────────────┘
     """)
     print(f"{Colors.RESET}")
-    print(f"{Colors.DIM}         Complete Product Development Framework{Colors.RESET}")
-    print(f"{Colors.DIM}              24 Skills • 6 Agents • Constitution-Driven{Colors.RESET}")
+
+    if edition == "lite":
+        print(f"{Colors.DIM}         Lightweight Product Development Framework{Colors.RESET}")
+        print(f"{Colors.DIM}              7 Skills • 3 Agents • Fast Iteration{Colors.RESET}")
+    else:
+        print(f"{Colors.DIM}         Complete Product Development Framework{Colors.RESET}")
+        print(f"{Colors.DIM}              24 Skills • 6 Agents • Constitution-Driven{Colors.RESET}")
     print()
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MANIFEST HANDLING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def load_manifest(repo_root, profile):
+    """Load manifest file for the selected profile"""
+    manifest_path = repo_root / "install" / "profiles" / f"{profile}.manifest.json"
+
+    if not manifest_path.exists():
+        print_error(f"Manifest not found: {manifest_path}")
+        sys.exit(1)
+
+    try:
+        with open(manifest_path, 'r') as f:
+            return json.load(f)
+    except json.JSONDecodeError as e:
+        print_error(f"Invalid manifest JSON: {e}")
+        sys.exit(1)
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# INTERACTIVE PROMPTS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def prompt_for_profile():
+    """Prompt user to select edition/profile"""
+    print()
+    print(f"  {Colors.BOLD}Select Edition:{Colors.RESET}")
+    print()
+    print(f"  {Colors.CYAN}[1]{Colors.RESET} Lite      - Fast, minimal (7 skills, POCs and side projects)")
+    print(f"  {Colors.CYAN}[2]{Colors.RESET} Default   - Complete (24 skills, full product development)")
+    print()
+
+    while True:
+        choice = input(f"  {Colors.BOLD}Select edition [1-2]:{Colors.RESET} ").strip()
+        if choice == "1":
+            return "lite"
+        elif choice == "2":
+            return "default"
+        else:
+            print_warning("Invalid choice. Please enter 1 or 2.")
+
+def prompt_for_language():
+    """Prompt user to select scripting language"""
+    print()
+    print(f"  {Colors.BOLD}Select Scripting Language:{Colors.RESET}")
+    print()
+    print(f"  {Colors.CYAN}[1]{Colors.RESET} Bash      - Traditional shell scripts (cross-platform)")
+    print(f"  {Colors.CYAN}[2]{Colors.RESET} Python    - Python scripts (recommended for Windows)")
+    print()
+
+    while True:
+        choice = input(f"  {Colors.BOLD}Select language [1-2]:{Colors.RESET} ").strip()
+        if choice == "1":
+            return "bash"
+        elif choice == "2":
+            return "python"
+        else:
+            print_warning("Invalid choice. Please enter 1 or 2.")
+
+def prompt_for_target_directory():
+    """Prompt user for installation target directory"""
+    print()
+    print(f"  {Colors.BOLD}Where would you like to install Shipkit?{Colors.RESET}")
+    print(f"  {Colors.DIM}(Press Enter for current directory: {Path.cwd()}){Colors.RESET}")
+    print()
+
+    user_input = input(f"  {Colors.CYAN}Install path:{Colors.RESET} ").strip()
+
+    if not user_input:
+        return Path.cwd()
+
+    return Path(user_input).resolve()
+
+def confirm(prompt, default=True):
+    """Ask yes/no confirmation"""
+    hint = "[Y/n]" if default else "[y/N]"
+    response = input(f"  {Colors.BOLD}{prompt}{Colors.RESET} {Colors.DIM}{hint}{Colors.RESET} ").strip().lower()
+
+    if not response:
+        return default
+
+    return response in ['y', 'yes']
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # VALIDATION
@@ -77,14 +169,13 @@ def verify_source_files(repo_root):
     print()
 
     required_paths = [
+        "install/shared",
         "install/skills",
         "install/agents",
         "install/workspace/skills",
-        "install/workspace/scripts",
-        "install/hooks",
-        "install/settings.json",
-        "install/CLAUDE.md",
-        "install/.gitignore",
+        "install/settings",
+        "install/claude-md",
+        "install/profiles",
         "help"
     ]
 
@@ -103,411 +194,338 @@ def verify_source_files(repo_root):
         print_error("Source directory is incomplete!")
         print()
         print(f"  {Colors.DIM}Expected shipkit structure at: {repo_root}{Colors.RESET}")
-        print()
         return False
 
     return True
-
-def check_project_root(target_dir):
-    """Check if target is a git repository"""
-    return (target_dir / ".git").exists()
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # INSTALLATION FUNCTIONS
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def install_skills(repo_root, target_dir):
-    """Install skill definitions"""
+def install_shared_core(repo_root, target_dir, language, edition):
+    """Install shared core files (hooks, scripts, git files)"""
     print()
-    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.BOLD}Installing shared core{Colors.RESET}")
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print()
+
+    shared_dir = repo_root / "install" / "shared"
+
+    # Hooks (edition-specific)
+    print_info("Installing hooks...")
+    hooks_src = shared_dir / "hooks"
+    hooks_dest = target_dir / ".claude" / "hooks"
+    hooks_dest.mkdir(parents=True, exist_ok=True)
+
+    if edition == "lite":
+        # Install lite-specific hooks
+        shutil.copy2(hooks_src / "lite-session-start.py", hooks_dest / "session-start.py")
+        shutil.copy2(hooks_src / "lite-suggest-next-skill.py", hooks_dest / "suggest-next-skill.py")
+        print_success("Hooks installed (lite edition)")
+    else:
+        # Install full Shipkit hooks
+        shutil.copy2(hooks_src / "session-start.py", hooks_dest / "session-start.py")
+        shutil.copy2(hooks_src / "suggest-next-skill.py", hooks_dest / "suggest-next-skill.py")
+        print_success("Hooks installed (full edition)")
+
+    # Scripts (language-specific)
+    print_info(f"Installing {language} scripts...")
+    scripts_src = shared_dir / "scripts" / language
+    if language == "bash":
+        scripts_dest = target_dir / ".shipkit" / "scripts" / "bash"
+    else:
+        scripts_dest = target_dir / ".shipkit" / "scripts"
+    scripts_dest.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(scripts_src, scripts_dest, dirs_exist_ok=True)
+    print_success(f"{language.capitalize()} scripts installed")
+
+    # Git files
+    print_info("Installing git configuration files...")
+    # Only install .gitignore (no longer need .gitattributes - hooks are Python now)
+    filename = ".gitignore"
+    src = shared_dir / filename
+    dest = target_dir / filename
+    if not dest.exists():  # Don't overwrite existing
+        shutil.copy2(src, dest)
+        print_success(f"{filename} installed")
+    else:
+        print_warning(f"{filename} already exists, skipping")
+
+def install_edition_files(repo_root, target_dir, manifest, language):
+    """Install edition-specific settings and CLAUDE.md"""
+    print()
+    print(f"  {Colors.BOLD}Installing edition-specific files{Colors.RESET}")
+    print()
+
+    # Settings
+    settings_file = manifest["settingsFile"]
+    settings_src = repo_root / "install" / "settings" / settings_file
+    settings_dest = target_dir / ".claude" / "settings.json"
+    settings_dest.parent.mkdir(parents=True, exist_ok=True)
+
+    if not settings_dest.exists():
+        shutil.copy2(settings_src, settings_dest)
+        print_success(f"Settings installed: {settings_file}")
+    else:
+        print_warning("settings.json exists, preserving your custom config")
+
+    # CLAUDE.md
+    claude_md_file = manifest["claudeMdFile"]
+    claude_md_src = repo_root / "install" / "claude-md" / claude_md_file
+    claude_md_dest = target_dir / "CLAUDE.md"
+
+    if not claude_md_dest.exists():
+        shutil.copy2(claude_md_src, claude_md_dest)
+        print_success(f"CLAUDE.md installed: {claude_md_file}")
+    else:
+        print_warning("CLAUDE.md exists, skipping")
+
+    # Update settings.json with edition and language metadata
+    if settings_dest.exists():
+        try:
+            with open(settings_dest, 'r') as f:
+                settings = json.load(f)
+
+            settings["shipkit"] = {
+                "edition": manifest["edition"],
+                "language": language
+            }
+
+            with open(settings_dest, 'w') as f:
+                json.dump(settings, f, indent=2)
+
+            print_success(f"Added shipkit metadata (edition: {manifest['edition']}, language: {language})")
+        except Exception as e:
+            print_warning(f"Could not update settings metadata: {e}")
+
+def install_skills(repo_root, target_dir, manifest):
+    """Install skill definitions and workspace implementations from manifest"""
+    print()
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
     print(f"  {Colors.BOLD}Installing skills{Colors.RESET}")
-    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
     print()
 
-    skills_dir = target_dir / ".claude" / "skills"
-    skills_dir.mkdir(parents=True, exist_ok=True)
+    skills_definitions = manifest["skills"]["definitions"]
+    skills_workspace = manifest["skills"]["workspace"]
 
-    print_info("Installing skill definitions...")
-    source_skills = repo_root / "install" / "skills"
+    # Install skill definitions (.claude/skills/)
+    print_info(f"Installing {len(skills_definitions)} skill definitions...")
+    for skill_name in skills_definitions:
+        skill_src = repo_root / "install" / "skills" / skill_name
+        skill_dest = target_dir / ".claude" / "skills" / skill_name
 
-    for skill_dir in source_skills.iterdir():
-        if skill_dir.is_dir():
-            shutil.copytree(skill_dir, skills_dir / skill_dir.name, dirs_exist_ok=True)
+        if skill_src.exists():
+            skill_dest.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(skill_src, skill_dest, dirs_exist_ok=True)
+        else:
+            print_warning(f"Skill not found: {skill_name}")
 
-    skill_count = len(list(skills_dir.iterdir()))
-    print_success(f"Installed {skill_count} skill definitions")
-    print_bullet("12 product skills (prod-*)")
-    print_bullet("9 development skills (dev-*)")
-    print_bullet("3 meta skills (shipkit-master, dev-discussion, dev-writing-skills)")
+    print_success(f"Installed {len(skills_definitions)} skill definitions")
 
-def install_agents(repo_root, target_dir):
-    """Install agent personas"""
+    # Install workspace implementations (.shipkit/skills/)
+    print_info(f"Installing {len(skills_workspace)} skill implementations...")
+    for skill_name in skills_workspace:
+        skill_src = repo_root / "install" / "workspace" / "skills" / skill_name
+        skill_dest = target_dir / ".shipkit" / "skills" / skill_name
+
+        if skill_src.exists():
+            skill_dest.mkdir(parents=True, exist_ok=True)
+
+            # Copy scripts, templates, references
+            for subdir in ["scripts", "templates", "references"]:
+                src_subdir = skill_src / subdir
+                if src_subdir.exists():
+                    dest_subdir = skill_dest / subdir
+                    shutil.copytree(src_subdir, dest_subdir, dirs_exist_ok=True)
+
+            # Create empty outputs
+            (skill_dest / "outputs").mkdir(exist_ok=True)
+        else:
+            print_warning(f"Workspace for skill not found: {skill_name}")
+
+    print_success(f"Installed {len(skills_workspace)} skill implementations")
+
+def install_agents(repo_root, target_dir, manifest):
+    """Install agent personas from manifest"""
     print()
     print(f"  {Colors.BOLD}Installing agent personas{Colors.RESET}")
     print()
 
+    agents = manifest.get("agents", [])
+
+    if not agents:
+        print_info("No agents specified in manifest (lite edition)")
+        return
+
     agents_dir = target_dir / ".claude" / "agents"
     agents_dir.mkdir(parents=True, exist_ok=True)
 
-    print_info(f"Creating .claude/agents directory...")
-
     count = 0
-    source_agents = repo_root / "install" / "agents"
-    print_info(f"Copying agent files from {source_agents}...")
+    for agent_name in agents:
+        agent_file = f"{agent_name}.md"
+        agent_src = repo_root / "install" / "agents" / agent_file
+        agent_dest = agents_dir / agent_file
 
-    for agent_file in source_agents.glob("*.md"):
-        # Skip README.md - it's documentation, not an agent definition
-        if agent_file.name == "README.md":
-            print_info("  Skipping README.md (documentation only)")
-            continue
-        dest_file = agents_dir / agent_file.name
-        print_info(f"  Checking {agent_file.name}...")
-        if not dest_file.exists():
-            print_info(f"    Copying {agent_file.name}...")
-            shutil.copy2(agent_file, dest_file)
+        if agent_src.exists():
+            shutil.copy2(agent_src, agent_dest)
             count += 1
         else:
-            print_info(f"    Skipping {agent_file.name} (already exists)")
+            print_warning(f"Agent not found: {agent_file}")
 
     print_success(f"Installed {count} agent personas")
-    print_bullet("prod-product-manager, prod-product-designer")
-    print_bullet("dev-architect, dev-implementer, dev-reviewer")
-    print_bullet("any-researcher")
 
-def install_hooks(repo_root, target_dir):
-    """Install session hooks"""
+def delete_unused_language(target_dir, language):
+    """Delete scripts for the language not selected"""
     print()
-    print(f"  {Colors.BOLD}Installing session hooks{Colors.RESET}")
+    print(f"  {Colors.BOLD}Cleaning up unused language files{Colors.RESET}")
     print()
 
+    # Determine which extension to delete
+    if language == "python":
+        delete_ext = ".sh"
+        keep_lang = "Python"
+    else:
+        delete_ext = ".py"
+        keep_lang = "Bash"
+
+    print_info(f"Keeping {keep_lang} scripts, removing others...")
+
+    # Delete from .claude/skills
+    skills_dir = target_dir / ".claude" / "skills"
+    if skills_dir.exists():
+        for script in skills_dir.rglob(f"*{delete_ext}"):
+            script.unlink()
+
+    # Delete from .claude/hooks
     hooks_dir = target_dir / ".claude" / "hooks"
-    hooks_dir.mkdir(parents=True, exist_ok=True)
+    if hooks_dir.exists():
+        for script in hooks_dir.rglob(f"*{delete_ext}"):
+            script.unlink()
 
-    print_info("Creating .claude/hooks directory...")
+    # Delete from .shipkit/skills
+    shipkit_skills_dir = target_dir / ".shipkit" / "skills"
+    if shipkit_skills_dir.exists():
+        for script in shipkit_skills_dir.rglob(f"*{delete_ext}"):
+            script.unlink()
 
-    source_hooks = repo_root / "install" / "hooks"
-    print_info(f"Copying hook files from {source_hooks}...")
+    print_success(f"Removed {delete_ext} files, kept {keep_lang} scripts")
 
-    for hook_file in source_hooks.iterdir():
-        if hook_file.is_file():
-            print_info(f"  Copying {hook_file.name}...")
-            shutil.copy2(hook_file, hooks_dir / hook_file.name)
+def make_scripts_executable(target_dir, language):
+    """Make scripts executable (Unix-like systems)"""
+    if platform.system() == "Windows":
+        return  # Not needed on Windows
 
-    print_success("Installed session hooks")
-    print_bullet("SessionStart hook loads shipkit-master")
-
-def install_settings(repo_root, target_dir):
-    """Install settings.json"""
     print()
-    print(f"  {Colors.BOLD}Installing settings.json{Colors.RESET}")
-    print()
+    print_info("Making scripts executable...")
 
-    settings_file = target_dir / ".claude" / "settings.json"
-
-    print_info("Checking if settings.json already exists...")
-    if not settings_file.exists():
-        print_info("No existing settings.json found")
-        source_settings = repo_root / "install" / "settings.json"
-        if source_settings.exists():
-            print_info(f"Copying settings.json from {source_settings}...")
-            shutil.copy2(source_settings, settings_file)
-            print_success("Installed settings.json")
-            print_bullet("File protections: .claude/* and .shipkit/skills/*/outputs|templates|scripts")
-            print_bullet("SessionStart hook configured")
-            print_bullet("SkillComplete prompts enabled")
-        else:
-            print_error("Source settings.json not found!")
-            return False
+    if language == "bash":
+        # Make .sh files executable
+        for script in target_dir.rglob("*.sh"):
+            script.chmod(0o755)
+        print_success("Bash scripts are now executable")
     else:
-        print_warning("settings.json exists, preserving your custom config")
-        print_info("Backup your settings before re-installing if needed")
+        # Make .py files executable
+        for script in target_dir.rglob("*.py"):
+            script.chmod(0o755)
+        print_success("Python scripts are now executable")
 
-    return True
+# ═══════════════════════════════════════════════════════════════════════════════
+# COMPLETION
+# ═══════════════════════════════════════════════════════════════════════════════
 
-def install_workspace(repo_root, target_dir):
-    """Install workspace (.shipkit/)"""
-    print()
-    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
-    print(f"  {Colors.BOLD}Setting up workspace{Colors.RESET}")
-    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
-    print()
+def open_html_docs(repo_root, edition):
+    """Open appropriate HTML overview based on edition"""
+    import webbrowser
+    import platform
 
-    print_info("Creating .shipkit/ workspace structure...")
-
-    # Create base directories
-    (target_dir / ".shipkit" / "scripts").mkdir(parents=True, exist_ok=True)
-    (target_dir / ".shipkit" / "skills").mkdir(parents=True, exist_ok=True)
-    print_success("Created .shipkit base directories")
-
-    # Copy shared scripts
-    source_scripts = repo_root / "install" / "workspace" / "scripts" / "bash"
-    print_info(f"Copying shared scripts from {source_scripts}...")
-    if source_scripts.exists():
-        shutil.copytree(source_scripts, target_dir / ".shipkit" / "scripts" / "bash", dirs_exist_ok=True)
-        print_success("Installed shared scripts (common.sh)")
-    else:
-        print_warning("Shared scripts directory not found, skipping")
-
-    # Copy all skill implementations
-    print_info("Installing skill implementations (scripts, templates, references)...")
-
-    skill_impl_count = 0
-    source_skills = repo_root / "install" / "workspace" / "skills"
-    if source_skills.exists():
-        for skill_dir in source_skills.iterdir():
-            if skill_dir.is_dir():
-                skill_name = skill_dir.name
-                print_info(f"  Processing skill: {skill_name}...")
-
-                dest_skill_dir = target_dir / ".shipkit" / "skills" / skill_name
-                dest_skill_dir.mkdir(parents=True, exist_ok=True)
-
-                # Copy scripts, templates, references
-                for subdir in ["scripts", "templates", "references"]:
-                    source_subdir = skill_dir / subdir
-                    if source_subdir.exists():
-                        print_info(f"    Copying {subdir}...")
-                        shutil.copytree(source_subdir, dest_skill_dir / subdir, dirs_exist_ok=True)
-
-                # Create empty outputs folder
-                print_info("    Creating outputs directory...")
-                (dest_skill_dir / "outputs").mkdir(exist_ok=True)
-
-                skill_impl_count += 1
-                print_info(f"    [OK] {skill_name} complete")
-    else:
-        print_error("Workspace skills directory not found!")
-        return False
-
-    print_success(f"Installed {skill_impl_count} skill implementations")
-    print_bullet("Scripts: Automation for each skill")
-    print_bullet("Templates: Single adaptive template per skill")
-    print_bullet("References: Extended docs, examples, patterns")
-    print_bullet("Outputs: Empty (populated when skills run)")
-
-    print()
-    print_success("Shipkit workspace ready")
-    print_bullet("Unified .shipkit/ structure for all skills")
-
-    return True
-
-def install_claude_md(repo_root, target_dir):
-    """Install CLAUDE.md"""
-    print()
-    print(f"  {Colors.BOLD}Installing CLAUDE.md{Colors.RESET}")
-    print()
-
-    claude_md = target_dir / "CLAUDE.md"
-
-    print_info("Checking if CLAUDE.md already exists...")
-    if not claude_md.exists():
-        print_info("No existing CLAUDE.md found")
-        source_claude_md = repo_root / "install" / "CLAUDE.md"
-        if source_claude_md.exists():
-            print_info(f"Copying CLAUDE.md from {source_claude_md}...")
-            shutil.copy2(source_claude_md, claude_md)
-            print_success("Installed CLAUDE.md (project instructions)")
-            print_bullet("24 skill routing guide")
-            print_bullet("Constitution-driven workflows")
-            print_bullet("Product ->Development integration")
-        else:
-            print_error(f"Source CLAUDE.md not found at {source_claude_md}!")
-            return False
-    else:
-        print_warning("CLAUDE.md exists, skipping")
-        print_info("Delete existing CLAUDE.md if you want to reinstall")
-
-    return True
-
-def install_gitignore(repo_root, target_dir):
-    """Install .gitignore"""
-    print()
-    print(f"  {Colors.BOLD}Installing .gitignore{Colors.RESET}")
-    print()
-
-    gitignore = target_dir / ".gitignore"
-
-    print_info("Checking if .gitignore already exists...")
-    if not gitignore.exists():
-        print_info("No existing .gitignore found")
-        source_gitignore = repo_root / "install" / ".gitignore"
-        if source_gitignore.exists():
-            print_info(f"Copying .gitignore from {source_gitignore}...")
-            shutil.copy2(source_gitignore, gitignore)
-            print_success("Installed .gitignore")
-            print_bullet("Excludes .claude/ and Shipkit infrastructure")
-            print_bullet("KEEPS .shipkit/skills/*/outputs/ (your work product!)")
-            print_bullet("Excludes env files and common IDE folders")
-        else:
-            print_warning("Source .gitignore not found, skipping")
-    else:
-        print_warning(".gitignore exists, skipping automatic install")
-        print_info("Add these entries to your .gitignore manually:")
-        print_bullet(".claude/")
-        print_bullet(".shipkit/scripts/")
-        print_bullet(".shipkit/skills/*/scripts/")
-        print_bullet(".shipkit/skills/*/templates/")
-        print_bullet(".shipkit/skills/*/references/")
-        print_bullet("CLAUDE.md")
-        print_info("NOTE: .shipkit/skills/*/outputs/ should NOT be ignored (your work!)")
-
-    return True
-
-def install_gitattributes(repo_root, target_dir):
-    """Install .gitattributes"""
-    print()
-    print(f"  {Colors.BOLD}Installing .gitattributes{Colors.RESET}")
-    print()
-
-    gitattributes = target_dir / ".gitattributes"
-
-    print_info("Checking if .gitattributes already exists...")
-    if not gitattributes.exists():
-        print_info("No existing .gitattributes found")
-        source_gitattributes = repo_root / "install" / ".gitattributes"
-        if source_gitattributes.exists():
-            print_info(f"Copying .gitattributes from {source_gitattributes}...")
-            shutil.copy2(source_gitattributes, gitattributes)
-            print_success("Installed .gitattributes")
-            print_bullet("Forces LF line endings for shell scripts")
-            print_bullet("Protects .claude/hooks from Git autocrlf")
-        else:
-            print_warning("Source .gitattributes not found, skipping")
-    else:
-        # Check if existing .gitattributes has shell script rules
-        content = gitattributes.read_text()
-        if ".sh" in content and "eol=lf" in content:
-            print_success(".gitattributes exists with shell script protection")
-        else:
-            print_info(".gitattributes exists but missing shell script rules")
-            print_info("Appending shell script protection...")
-            with gitattributes.open('a') as f:
-                f.write('\n')
-                f.write('# Force Unix (LF) line endings for shell scripts (added by Shipkit installer)\n')
-                f.write('# This prevents Git autocrlf from breaking bash scripts on Windows\n')
-                f.write('*.sh text eol=lf\n')
-                f.write('\n')
-                f.write('# Protect installed Shipkit hook scripts\n')
-                f.write('.claude/hooks/* text eol=lf\n')
-            print_success("Added shell script protection to .gitattributes")
-            print_bullet("*.sh text eol=lf")
-            print_bullet(".claude/hooks/* text eol=lf")
-
-    return True
-
-def normalize_line_endings(target_dir):
-    """Remove CRLF line endings from hook scripts"""
-    print()
-    print(f"  {Colors.BOLD}Normalizing line endings{Colors.RESET}")
-    print()
-
-    print_info("Converting hook scripts to Unix (LF) line endings...")
-
-    hooks_dir = target_dir / ".claude" / "hooks"
-    count = 0
-
-    for script in hooks_dir.glob("*.sh"):
-        # Read file and remove \r characters
-        content = script.read_bytes()
-        normalized = content.replace(b'\r\n', b'\n').replace(b'\r', b'\n')
-        script.write_bytes(normalized)
-
-        # Make executable (Unix)
-        script.chmod(script.stat().st_mode | 0o111)
-        count += 1
-
-    print_success(f"Normalized {count} hook scripts")
-    print_bullet("All hooks now have Unix (LF) line endings")
-
-def open_html_docs(repo_root):
-    """Open documentation in browser"""
     html_dir = repo_root / "help"
-
-    print()
-    print(f"  {Colors.CYAN}📖 Opening documentation...{Colors.RESET}")
-    print()
 
     if not html_dir.exists():
         print_warning(f"Documentation files not found in {html_dir}")
         return
 
-    system_overview = html_dir / "system-overview.html"
+    # Choose appropriate overview based on edition
+    if edition == "lite":
+        overview_file = html_dir / "shipkit-lite-overview.html"
+    else:
+        overview_file = html_dir / "system-overview.html"
 
-    if not system_overview.exists():
-        print_warning(f"System overview not found: {system_overview}")
+    if not overview_file.exists():
+        print_warning(f"Overview not found: {overview_file}")
         return
 
-    # Open system overview based on platform
-    if platform.system() == "Darwin":  # macOS
-        subprocess.run(["open", str(system_overview)], check=False)
-        print_success("Opened system-overview.html")
-    elif platform.system() == "Windows":
-        os.startfile(str(system_overview))
-        print_success("Opened system-overview.html")
-    else:  # Linux
-        try:
-            subprocess.run(["xdg-open", str(system_overview)], check=False)
-            print_success("Opened system-overview.html")
-        except FileNotFoundError:
-            print_warning(f"xdg-open not found. View docs at: {html_dir}")
+    print()
+    print(f"  {Colors.BRIGHT_CYAN}📖 Opening documentation...{Colors.RESET}")
+    print()
 
-def show_completion(target_dir):
-    """Show completion screen"""
-    skill_count = len(list((target_dir / ".claude" / "skills").iterdir()))
-    agent_count = len(list((target_dir / ".claude" / "agents").glob("*.md")))
-    skill_impl_count = len(list((target_dir / ".shipkit" / "skills").iterdir()))
+    try:
+        webbrowser.open(f"file://{overview_file}")
+        overview_name = overview_file.name
+        print_success(f"Opened {overview_name}")
+    except Exception as e:
+        overview_name = overview_file.name
+        print_warning(f"Could not open {overview_name}: {e}")
+
+def show_completion(target_dir, manifest, language):
+    """Show completion message"""
+    edition = manifest["edition"]
+    skill_count = len(manifest["skills"]["definitions"])
+    agent_count = len(manifest.get("agents", []))
 
     print()
     print()
-    print(f"{Colors.GREEN}")
+    print(f"{Colors.BRIGHT_GREEN}")
     print("""
-    ===============================================================
-
-         [OK]  Installation Complete!
-
-    ===============================================================
+    ╔═══════════════════════════════════════════════════════════╗
+    ║                                                           ║
+    ║   ✓  Installation Complete!                               ║
+    ║                                                           ║
+    ╚═══════════════════════════════════════════════════════════╝
     """)
     print(f"{Colors.RESET}")
 
     print(f"  {Colors.BOLD}What was installed:{Colors.RESET}")
     print()
     print_success(f"{skill_count} skill definitions (.claude/skills/)")
-    print_success(f"{skill_impl_count} skill implementations (.shipkit/skills/)")
+    print_success(f"{skill_count} skill implementations (.shipkit/skills/)")
     print_success(f"{agent_count} agent personas (.claude/agents/)")
-    print_success("Shared scripts (.shipkit/scripts/bash/common.sh)")
+    print_success(f"Shared scripts (.shipkit/scripts/)")
     print_success("Session hooks (.claude/hooks/)")
-    print_success("Settings with file protections (.claude/settings.json)")
-    print_success("Project instructions (CLAUDE.md)")
-    print_success("Git ignore file (.gitignore)")
+    print_success(f"Settings ({edition} edition) (.claude/settings.json)")
+    print_success(f"Project instructions ({edition}) (CLAUDE.md)")
+    print_success("Git configuration (.gitignore)")
 
     print()
-    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
     print(f"  {Colors.BOLD}Next Steps{Colors.RESET}")
-    print(f"  {Colors.MAGENTA}{'='*60}{Colors.RESET}")
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
     print()
 
     print(f"  {Colors.CYAN}1.{Colors.RESET} Start Claude Code in {Colors.CYAN}{target_dir}{Colors.RESET}")
     print()
-    print(f"  {Colors.CYAN}2.{Colors.RESET} Choose your workflow:")
+
+    if edition == "lite":
+        print(f"  {Colors.CYAN}2.{Colors.RESET} Quick start workflow:")
+        print()
+        print(f"     {Colors.GREEN}/lite-project-context{Colors.RESET} → {Colors.GREEN}/lite-spec{Colors.RESET}")
+        print(f"     → {Colors.GREEN}/lite-plan{Colors.RESET} → {Colors.GREEN}/lite-implement{Colors.RESET}")
+    else:
+        print(f"  {Colors.CYAN}2.{Colors.RESET} Choose your workflow:")
+        print()
+        print(f"     {Colors.DIM}Full product development (Greenfield):{Colors.RESET}")
+        print(f"     {Colors.GREEN}/prod-strategic-thinking{Colors.RESET} → {Colors.GREEN}/prod-constitution-builder{Colors.RESET}")
+        print(f"     → {Colors.GREEN}/prod-personas{Colors.RESET} → {Colors.GREEN}/prod-user-stories{Colors.RESET}")
+        print()
+        print(f"     {Colors.DIM}Quick POC (Fast validation):{Colors.RESET}")
+        print(f"     {Colors.GREEN}/prod-constitution-builder{Colors.RESET} {Colors.DIM}(choose POC){Colors.RESET} → {Colors.GREEN}/dev-specify{Colors.RESET}")
+
     print()
-    print(f"     {Colors.DIM}Full product development (Greenfield):{Colors.RESET}")
-    print(f"     {Colors.GREEN}/prod-strategic-thinking{Colors.RESET} ->{Colors.GREEN}/prod-constitution-builder{Colors.RESET}")
-    print(f"     ->{Colors.GREEN}/prod-personas{Colors.RESET} ->{Colors.GREEN}/prod-user-stories{Colors.RESET} ->{Colors.GREEN}/dev-specify{Colors.RESET}")
-    print()
-    print(f"     {Colors.DIM}Quick POC (Fast validation):{Colors.RESET}")
-    print(f"     {Colors.GREEN}/prod-constitution-builder{Colors.RESET} {Colors.DIM}(choose POC){Colors.RESET} ->{Colors.GREEN}/dev-specify{Colors.RESET} ->{Colors.GREEN}/dev-implement{Colors.RESET}")
-    print()
-    print(f"     {Colors.DIM}Existing codebase (Add feature):{Colors.RESET}")
-    print(f"     {Colors.GREEN}/dev-constitution{Colors.RESET} ->{Colors.GREEN}/dev-specify{Colors.RESET} ->{Colors.GREEN}/dev-implement{Colors.RESET}")
-    print()
-    print(f"  {Colors.CYAN}3.{Colors.RESET} Type {Colors.GREEN}/help{Colors.RESET} to see all 24 skills")
-    print()
-    print(f"  {Colors.CYAN}💡 Constitution-Driven Development:{Colors.RESET}")
-    print(f"     Run {Colors.GREEN}/prod-constitution-builder{Colors.RESET} to choose project type:")
-    print(f"     {Colors.DIM}• B2B/B2C Greenfield (comprehensive){Colors.RESET}")
-    print(f"     {Colors.DIM}• Side Project MVP/POC (minimal){Colors.RESET}")
-    print(f"     {Colors.DIM}• Experimental (learning-focused){Colors.RESET}")
-    print(f"     {Colors.DIM}• Existing Project (document current state){Colors.RESET}")
+    if edition == "lite":
+        print(f"  {Colors.CYAN}3.{Colors.RESET} Type {Colors.GREEN}/lite-project-status{Colors.RESET} to see current state")
+    else:
+        print(f"  {Colors.CYAN}3.{Colors.RESET} Type {Colors.GREEN}/shipkit-status{Colors.RESET} to see current state")
     print()
     print(f"  {Colors.DIM}Happy shipping! 🚀{Colors.RESET}")
     print()
@@ -517,108 +535,94 @@ def show_completion(target_dir):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def main():
-    parser = argparse.ArgumentParser(
-        description='Install Shipkit framework into a target directory',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Interactive mode in current directory
-  python install.py
-
-  # Install to specific directory
-  python install.py /path/to/project
-
-  # Non-interactive installation
-  python install.py /path/to/project -y
-        """
-    )
-
-    parser.add_argument('target', nargs='?', help='Target directory (defaults to current directory)')
-    parser.add_argument('-y', '--yes', action='store_true', help='Skip confirmations')
+    """Main installation process"""
+    parser = argparse.ArgumentParser(description="Shipkit Installer")
+    parser.add_argument("--profile", choices=["lite", "default"], help="Edition profile (lite or default)")
+    parser.add_argument("--language", choices=["bash", "python"], help="Scripting language (bash or python)")
+    parser.add_argument("--target", help="Target directory (default: current directory)")
+    parser.add_argument("-y", "--yes", action="store_true", help="Skip confirmations")
 
     args = parser.parse_args()
 
-    # Determine paths
-    script_dir = Path(__file__).parent.resolve()
-    repo_root = script_dir.parent
+    # Determine profile and language (from args or interactive)
+    if args.profile:
+        profile = args.profile
+    else:
+        profile = prompt_for_profile()
 
+    if args.language:
+        language = args.language
+    else:
+        language = prompt_for_language()
+
+    # Target directory (from args or interactive)
     if args.target:
         target_dir = Path(args.target).resolve()
     else:
-        if args.yes:
-            target_dir = Path.cwd()
-        else:
-            print()
-            print(f"  {Colors.BOLD}Where would you like to install Shipkit?{Colors.RESET}")
-            print(f"  {Colors.DIM}(Press Enter for current directory: {Path.cwd()}){Colors.RESET}")
-            print()
-            user_input = input(f"  {Colors.CYAN}Install path:{Colors.RESET} ").strip()
-            target_dir = Path(user_input).resolve() if user_input else Path.cwd()
+        target_dir = prompt_for_target_directory()
+
+    # Repo root (where this script lives)
+    script_dir = Path(__file__).parent
+    repo_root = script_dir.parent
 
     # Show logo
-    show_logo()
+    show_logo(profile)
 
-    # Detect and verify
-    print(f"  {Colors.BOLD}Detecting installation context...{Colors.RESET}")
-    print()
-    print_info(f"Source: {Colors.CYAN}{repo_root}{Colors.RESET}")
-    print_info(f"Target: {Colors.CYAN}{target_dir}{Colors.RESET}")
-    print()
-
+    # Verify source files
     if not verify_source_files(repo_root):
         sys.exit(1)
 
-    # Check project root
-    if not check_project_root(target_dir):
-        print()
-        print_warning("No .git directory found. This might not be a project root.")
-        if not args.yes:
-            response = input(f"  {Colors.BOLD}Continue anyway?{Colors.RESET} {Colors.DIM}[Y/n]{Colors.RESET} ").strip().lower()
-            if response and not response.startswith('y'):
-                print_info("Installation cancelled.")
-                sys.exit(0)
-
-    # Create target directory if needed
-    if not target_dir.exists():
-        if not args.yes:
-            response = input(f"  {Colors.BOLD}Target directory {target_dir} doesn't exist. Create it?{Colors.RESET} {Colors.DIM}[Y/n]{Colors.RESET} ").strip().lower()
-            if response and not response.startswith('y'):
-                print_info("Installation cancelled.")
-                sys.exit(0)
-        target_dir.mkdir(parents=True)
+    # Load manifest
+    print_info(f"Loading manifest: {profile}.manifest.json")
+    manifest = load_manifest(repo_root, profile)
+    print_success(f"Manifest loaded: {manifest['description']}")
+    print()
 
     # Confirm installation
     if not args.yes:
+        print(f"  {Colors.BOLD}Installation Summary:{Colors.RESET}")
         print()
-        response = input(f"  {Colors.BOLD}Install Shipkit to {target_dir}?{Colors.RESET} {Colors.DIM}[Y/n]{Colors.RESET} ").strip().lower()
-        if response and not response.startswith('y'):
+        print(f"  Edition:  {Colors.CYAN}{profile}{Colors.RESET}")
+        print(f"  Language: {Colors.CYAN}{language}{Colors.RESET}")
+        print(f"  Target:   {Colors.CYAN}{target_dir}{Colors.RESET}")
+        print(f"  Skills:   {Colors.CYAN}{len(manifest['skills']['definitions'])}{Colors.RESET}")
+        print(f"  Agents:   {Colors.CYAN}{len(manifest.get('agents', []))}{Colors.RESET}")
+        print()
+
+        if not confirm(f"Install Shipkit to {target_dir}?"):
             print_info("Installation cancelled.")
             sys.exit(0)
+
+    # Create target directory if needed
+    target_dir.mkdir(parents=True, exist_ok=True)
 
     # Perform installation
     print()
     print_info("Installing Shipkit framework...")
 
-    install_skills(repo_root, target_dir)
-    install_agents(repo_root, target_dir)
-    install_hooks(repo_root, target_dir)
-    if not install_settings(repo_root, target_dir):
-        sys.exit(1)
-    if not install_workspace(repo_root, target_dir):
-        sys.exit(1)
-    if not install_claude_md(repo_root, target_dir):
-        sys.exit(1)
-    if not install_gitignore(repo_root, target_dir):
-        sys.exit(1)
-    if not install_gitattributes(repo_root, target_dir):
-        sys.exit(1)
-    normalize_line_endings(target_dir)
+    install_shared_core(repo_root, target_dir, language, manifest["edition"])
+    install_edition_files(repo_root, target_dir, manifest, language)
+    install_skills(repo_root, target_dir, manifest)
+    install_agents(repo_root, target_dir, manifest)
+    delete_unused_language(target_dir, language)
+    make_scripts_executable(target_dir, language)
 
     # Show completion
-    show_completion(target_dir)
+    show_completion(target_dir, manifest, language)
 
-    # Open documentation
-    open_html_docs(repo_root)
+    # Open HTML documentation
+    open_html_docs(repo_root, manifest["edition"])
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print()
+        print_warning("Installation cancelled by user.")
+        sys.exit(1)
+    except Exception as e:
+        print()
+        print_error(f"Installation failed: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)

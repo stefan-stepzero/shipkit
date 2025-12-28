@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShipKit Lite - Your AI Development Companion</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        header .tagline {
+            font-size: 1.8em;
+            opacity: 0.95;
+            margin-bottom: 30px;
+        }
+
+        header .quick-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 60px 40px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .hero-section h2 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .hero-section p {
+            font-size: 1.3em;
+            color: #64748b;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .benefits {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .benefit-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 16px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+
+        .benefit-card .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .benefit-card h3 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .benefit-card p {
+            color: #475569;
+            font-size: 1.1em;
+        }
+
+        .section {
+            margin: 80px 0;
+        }
+
+        .section h2 {
+            font-size: 2.5em;
+            color: #667eea;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .diagram-container {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .skill-groups {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .skill-group {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .skill-group:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+            transform: translateY(-3px);
+        }
+
+        .skill-group h3 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .skill-group .emoji {
+            font-size: 1.5em;
+        }
+
+        .skill-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .skill-list li {
+            padding: 8px 0;
+            color: #475569;
+            display: flex;
+            align-items: start;
+            gap: 8px;
+        }
+
+        .skill-list li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .workflow {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 16px;
+            padding: 40px;
+            margin: 40px 0;
+        }
+
+        .workflow h3 {
+            color: #d97706;
+            font-size: 2em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .workflow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .workflow-step {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #f59e0b;
+            display: flex;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .workflow-step .step-number {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            flex-shrink: 0;
+        }
+
+        .workflow-step .step-content h4 {
+            color: #d97706;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+        }
+
+        .workflow-step .step-content p {
+            color: #475569;
+            font-size: 1.05em;
+        }
+
+        .callout {
+            background: #e0f2fe;
+            border-left: 5px solid #0ea5e9;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .callout.success {
+            background: #dcfce7;
+            border-left-color: #10b981;
+        }
+
+        .callout.warning {
+            background: #fef3c7;
+            border-left-color: #f59e0b;
+        }
+
+        .callout h4 {
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .callout p {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .comparison-side {
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .comparison-side.before {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 2px solid #ef4444;
+        }
+
+        .comparison-side.after {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border: 2px solid #10b981;
+        }
+
+        .comparison-side h3 {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comparison-side.before h3 {
+            color: #dc2626;
+        }
+
+        .comparison-side.after h3 {
+            color: #059669;
+        }
+
+        .comparison-side ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .comparison-side ul li {
+            padding: 10px 0;
+            font-size: 1.1em;
+            display: flex;
+            align-items: start;
+            gap: 10px;
+        }
+
+        .comparison-side.before ul li:before {
+            content: "✗";
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .comparison-side.after ul li:before {
+            content: "✓";
+            color: #059669;
+            font-weight: bold;
+        }
+
+        footer {
+            background: #1e293b;
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        footer h3 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        footer p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            margin: 10px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 30px;
+            font-size: 1.3em;
+            font-weight: bold;
+            text-decoration: none;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5em;
+            }
+
+            header .tagline {
+                font-size: 1.3em;
+            }
+
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-section h2 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ ShipKit Lite ✨</h1>
+            <p class="tagline">Your AI pair programmer just got a memory upgrade</p>
+            <div class="quick-stats">
+                <div class="stat">
+                    <span class="stat-number">16</span>
+                    <span class="stat-label">Skills Working For You</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">0</span>
+                    <span class="stat-label">Config Required</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">∞</span>
+                    <span class="stat-label">Context Remembered</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <h2>Stop repeating yourself. Start shipping faster.</h2>
+                <p>ShipKit Lite makes Claude Code remember your project, track your decisions, and catch your mistakes before they ship. It's like having a senior dev watching your back 24/7.</p>
+            </div>
+
+            <!-- Before/After -->
+            <div class="comparison">
+                <div class="comparison-side before">
+                    <h3>😓 Without ShipKit Lite</h3>
+                    <ul>
+                        <li>Claude asks "what's your tech stack" every session</li>
+                        <li>You forget to document that component you built</li>
+                        <li>Decisions get lost in chat history</li>
+                        <li>Tasks buried somewhere in paragraph 47</li>
+                        <li>Integration mistakes slip through to production</li>
+                        <li>New teammate: "where's the documentation?"</li>
+                    </ul>
+                </div>
+                <div class="comparison-side after">
+                    <h3>🚀 With ShipKit Lite</h3>
+                    <ul>
+                        <li>Claude loads your stack automatically every time</li>
+                        <li>Components documented as you build them</li>
+                        <li>Every decision logged with reasoning</li>
+                        <li>Tasks tracked in one place, never lost</li>
+                        <li>Stripe webhooks always have signature checks</li>
+                        <li>New teammate: "wow, great docs!"</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Key Benefits -->
+            <div class="benefits">
+                <div class="benefit-card">
+                    <div class="icon">🧠</div>
+                    <h3>Context That Sticks</h3>
+                    <p>Claude remembers your stack, your architecture decisions, and your patterns. No more "what framework are you using?" at every session start.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">🛡️</div>
+                    <h3>Mistakes Caught Early</h3>
+                    <p>Forget to verify that Stripe webhook? Missing RLS policy? Claude catches these before you hit deploy.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">📝</div>
+                    <h3>Docs That Write Themselves</h3>
+                    <p>Components documented automatically. Decisions logged with reasoning. Architecture preserved for future you.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">✅</div>
+                    <h3>Never Lose a Task</h3>
+                    <p>Need to run a migration? Configure an API key? It's tracked in one place, not buried in chat.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">⚡</div>
+                    <h3>Ship With Confidence</h3>
+                    <p>Pre-ship checklist ensures you've got loading states, error handling, and accessibility covered.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="icon">🎯</div>
+                    <h3>Zero Setup Required</h3>
+                    <p>No config files. No customization. Just install and it works. All references are project-agnostic.</p>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="section">
+                <h2>How Your Skills Work Together</h2>
+                
+                <div class="diagram-container">
+                    <div class="mermaid">
+graph TB
+    Start([You Start Coding]) --> Master{ShipKit Lite<br/>Auto-Loads}
+    
+    Master --> Context[📚 Loads Your Context<br/>Stack • Decisions • Patterns]
+    
+    You[You: Add recipe sharing] --> Plan[💡 plan-lite<br/>Asks clarifying questions]
+    
+    Plan --> Impl[⚙️ implement-lite<br/>Guides TDD-lite cycle]
+    
+    Impl --> Guard[🛡️ integration-guardrails<br/>Catches integration mistakes]
+    
+    Guard --> Quality[✅ quality-confidence<br/>Pre-ship checklist]
+    
+    Quality --> Done([🎉 Ship It!])
+    
+    Impl -.auto-documents.-> Docs[📝 Documentation<br/>Components • Routes • Types]
+    
+    Impl -.tracks tasks.-> Tasks[✅ User Tasks<br/>Migrations • Config]
+    
+    Guard -.logs patterns.-> Memory[🧠 Architecture Memory<br/>Decisions • Rationale]
+    
+    style Master fill:#667eea,color:#fff,stroke:#4338ca,stroke-width:3px
+    style Done fill:#10b981,color:#fff,stroke:#059669,stroke-width:3px
+    style Context fill:#e0e7ff,color:#000,stroke:#c7d2fe,stroke-width:2px
+    style Docs fill:#dcfce7,color:#000,stroke:#bbf7d0,stroke-width:2px
+    style Tasks fill:#fef3c7,color:#000,stroke:#fde68a,stroke-width:2px
+    style Memory fill:#ddd6fe,color:#000,stroke:#c4b5fd,stroke-width:2px
+                    </div>
+                </div>
+
+                <div class="callout success">
+                    <h4>🔄 Self-Reinforcing System</h4>
+                    <p>Skills automatically trigger each other. Build a component? It checks for new types. Make a decision? It logs the rationale. Pass quality checks? It syncs all docs. No manual steps needed.</p>
+                </div>
+            </div>
+
+            <!-- Real Workflow -->
+            <div class="workflow">
+                <h3>🎬 Real Example: Building Recipe Sharing</h3>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>You say: "Add recipe sharing"</h4>
+                            <p><strong>plan-lite</strong> asks: "Public link or invite-based? Read-only or editable?" → Generates implementation plan</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>You implement with Claude Code</h4>
+                            <p><strong>implement-lite</strong> guides TDD-lite: Test auth checks, manual test UI → Builds ShareButton + share route</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Integration checks kick in</h4>
+                            <p><strong>integration-guardrails</strong> warns: "⚠️ Share tokens need crypto.randomUUID(), RLS policy missing" → Creates task for you</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>You fix issues and run quality check</h4>
+                            <p><strong>quality-confidence</strong> verifies: Loading states ✓ Error handling ✓ Accessibility ✓ → Green light to ship</p>
+                        </div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Documentation auto-syncs</h4>
+                            <p>ShareButton documented, types updated, decision logged, task archived. Everything current. Zero manual work.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skill Groups -->
+            <div class="section">
+                <h2>Your 16 Skills at a Glance</h2>
+                
+                <div class="skill-groups">
+                    <div class="skill-group">
+                        <h3><span class="emoji">🎯</span> Planning & Implementation</h3>
+                        <ul class="skill-list">
+                            <li><strong>plan-lite</strong> - Q&A before coding</li>
+                            <li><strong>implement-lite</strong> - TDD-lite cycle</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-group">
+                        <h3><span class="emoji">📚</span> Context & Memory</h3>
+                        <ul class="skill-list">
+                            <li><strong>project-context</strong> - Stack always current</li>
+                            <li><strong>architecture-memory</strong> - Decisions logged</li>
+                            <li><strong>project-status</strong> - Health at a glance</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-group">
+                        <h3><span class="emoji">🛡️</span> Quality & Safety</h3>
+                        <ul class="skill-list">
+                            <li><strong>integration-guardrails</strong> - Catch mistakes</li>
+                            <li><strong>data-consistency</strong> - Types aligned</li>
+                            <li><strong>ux-coherence</strong> - UX patterns consistent</li>
+                            <li><strong>quality-confidence</strong> - Pre-ship checklist</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-group">
+                        <h3><span class="emoji">📝</span> Documentation</h3>
+                        <ul class="skill-list">
+                            <li><strong>component-knowledge</strong> - Components documented</li>
+                            <li><strong>route-knowledge</strong> - Routes documented</li>
+                            <li><strong>document-artifact</strong> - Docs organized</li>
+                            <li><strong>behavior-clarity</strong> - Specs before code</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-group">
+                        <h3><span class="emoji">✅</span> Task & Progress</h3>
+                        <ul class="skill-list">
+                            <li><strong>user-instructions</strong> - Tasks never lost</li>
+                            <li><strong>work-memory</strong> - Progress tracked</li>
+                        </ul>
+                    </div>
+
+                    <div class="skill-group">
+                        <h3><span class="emoji">⚙️</span> Orchestration</h3>
+                        <ul class="skill-list">
+                            <li><strong>shipkit-master-lite</strong> - Auto-loads context</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="callout">
+                    <h4>💡 Plus 3 Optional Power-Ups</h4>
+                    <p><strong>session-continuity</strong> for long sessions • <strong>debug-systematically</strong> for structured debugging • <strong>clarify-ambiguity</strong> to force precision</p>
+                </div>
+            </div>
+
+            <!-- Token Optimization -->
+            <div class="section">
+                <h2>Smart About Tokens</h2>
+                
+                <div class="callout warning">
+                    <h4>⚡ 70-90% Fewer Tokens on Subsequent Sessions</h4>
+                    <p>First session: Scans everything (~8,000 tokens). Every session after: Checks timestamps, loads only what changed (~500-1,500 tokens). Your context stays fresh without burning through tokens.</p>
+                </div>
+
+                <div class="diagram-container">
+                    <div class="mermaid">
+graph LR
+    Session[New Session Starts] --> Check{Context<br/>Fresh?}
+    
+    Check -->|Yes<br/>stack.md newer<br/>than package.json| Load[📖 Just Read<br/>~500 tokens]
+    
+    Check -->|No<br/>dependencies<br/>changed| Scan[🔍 Rescan<br/>~1,500 tokens]
+    
+    Load --> Ready[✅ Ready to Code]
+    Scan --> Ready
+    
+    style Load fill:#10b981,color:#fff,stroke:#059669,stroke-width:2px
+    style Scan fill:#f59e0b,color:#fff,stroke:#d97706,stroke-width:2px
+    style Ready fill:#667eea,color:#fff,stroke:#4338ca,stroke-width:2px
+                    </div>
+                </div>
+            </div>
+
+            <!-- What Makes It Different -->
+            <div class="section">
+                <h2>What Makes ShipKit Lite Different?</h2>
+                
+                <div class="benefits">
+                    <div class="benefit-card">
+                        <div class="icon">🎨</div>
+                        <h3>Prompt-Powered, Not Script-Heavy</h3>
+                        <p>Everything runs through SKILL.md prompts. No hardcoded scripts to maintain. Claude generates what it needs on-the-fly.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="icon">⏱️</div>
+                        <h3>Timestamp-Aware</h3>
+                        <p>Checks file dates before loading. If your docs are fresher than your code, it skips the scan. Smart, not wasteful.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="icon">🔗</div>
+                        <h3>Self-Reinforcing</h3>
+                        <p>Skills trigger each other automatically. Build a component → checks for new types → updates docs. No orchestrator needed.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="icon">📦</div>
+                        <h3>Ships Ready to Use</h3>
+                        <p>All templates and checklists are project-agnostic. Install once, works everywhere. No customization dance.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="icon">🎯</div>
+                        <h3>Outcome-Focused</h3>
+                        <p>Skills named for what you GET, not what they DO. "architecture-memory" not "log-decision". "quality-confidence" not "run-checklist".</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="icon">🏠</div>
+                        <h3>Single Source of Truth</h3>
+                        <p>One place for everything. Decisions in architecture.md. Components in implementations.md. Tasks in user-tasks/active.md. No hunting.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <h3>Ready to Stop Repeating Yourself?</h3>
+            <p>ShipKit Lite is installed and ready to go.</p>
+            <p style="margin-top: 20px; font-size: 1em; opacity: 0.8;">Start coding. Claude will handle the rest.</p>
+            <div style="margin-top: 40px; opacity: 0.7;">
+                <p>16 Core Skills • 3 Optional • Zero Config • Forever Free</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Read(.env.example)",
+      "Read(**/.env.example)",
+      "Read(.env.*.example)",
+      "Read(**/.env.*.example)",
+
+      "Write(src/**)",
+      "Write(app/**)",
+      "Write(components/**)",
+      "Write(lib/**)",
+      "Write(utils/**)",
+      "Write(tests/**)",
+      "Write(__tests__/**)",
+      "Write(*.ts)",
+      "Write(*.tsx)",
+      "Write(*.js)",
+      "Write(*.jsx)",
+      "Write(*.py)",
+      "Write(*.json)",
+      "Write(*.md)",
+      "Write(*.yaml)",
+      "Write(*.yml)",
+      "Write(*.toml)",
+      "Write(*.html)",
+      "Write(*.css)",
+      "Write(*.scss)",
+      "Write(*.sass)",
+      "Write(*.sh)",
+      "Write(*.sql)",
+      "Write(*.xml)",
+      "Write(*.txt)",
+      "Write(package.json)",
+      "Write(pyproject.toml)",
+      "Write(requirements.txt)",
+
+      "Bash(git:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(poetry:*)",
+      "Bash(pytest:*)",
+      "Bash(black:*)",
+      "Bash(ruff:*)",
+      "Bash(mypy:*)",
+      "Bash(uvicorn:*)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(pnpm:*)",
+      "Bash(yarn:*)",
+      "Bash(tsc:*)",
+      "Bash(eslint:*)",
+      "Bash(prettier:*)",
+      "Bash(vercel:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(chmod:*)",
+      "Bash(pwd:*)",
+      "Bash(cd:*)",
+      "Bash(echo:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(diff:*)",
+      "Bash(tree:*)",
+
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:nextjs.org)",
+      "WebFetch(domain:python.org)",
+      "WebFetch(domain:fastapi.tiangolo.com)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:npmjs.com)",
+      "WebFetch(domain:stackoverflow.com)",
+      "WebFetch(domain:developer.mozilla.org)"
+    ],
+
+    "deny": [
+      "Read(.env)",
+      "Read(**/.env)",
+      "Read(.env.local)",
+      "Read(**/.env.local)",
+      "Read(.env.production)",
+      "Read(**/.env.production)",
+      "Read(.env.development)",
+      "Read(**/.env.development)",
+      "Read(*.pem)",
+      "Read(*.key)",
+      "Read(**/credentials/**)",
+
+      "Write(.env)",
+      "Write(**/.env)",
+      "Write(.env*)",
+      "Write(**/.env*)",
+      "Write(production.config.*)",
+      "Write(*.pem)",
+      "Write(*.key)",
+
+      "Write(.claude/settings.json)",
+      "Write(.claude/hooks/**)",
+      "Write(.shipkit-lite/specs/**)",
+      "Write(.shipkit-lite/plans/**)",
+      "Write(.shipkit-lite/implementations.md)",
+      "Write(.shipkit-lite/architecture.md)",
+      "Write(.shipkit-lite/stack.md)",
+      "Write(.shipkit-lite/types.md)",
+
+      "Bash(sudo:*)",
+      "Bash(su:*)",
+      "Bash(ssh:*)"
+    ]
+  },
+
+  "defaultMode": "acceptEdits",
+
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 .claude/hooks/session-start.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 .claude/hooks/suggest-next-skill.py"
+          }
+        ]
+      }
+    ]
+  },
+
+  "skills": {
+    "description": "Skill configuration and defaults",
+    "autoLoadConstitutions": false
+  },
+
+  "workspace": {
+    "description": "Workspace paths and conventions",
+    "contextPath": ".shipkit-lite",
+    "specsPath": ".shipkit-lite/specs",
+    "plansPath": ".shipkit-lite/plans"
+  },
+
+  "_notes": {
+    "edition": "Shipkit Lite - Streamlined for POCs and side projects",
+    "permissionsPhilosophy": "Allow by default, deny only critical infrastructure and lite context files.",
+    "deniedFiles": "Critical infrastructure: settings.json, hooks. Protected context: specs, plans, implementations.md, architecture.md, stack.md, types.md. Secrets: actual .env files (not .example), *.pem, *.key, production configs.",
+    "allowedFiles": "Can read .env.example files. Full access to project source code and skill outputs via Read tool.",
+    "sessionHooks": "SessionStart loads lite-shipkit-master, Stop suggests next lite skill",
+    "contextFiles": "All context stored in .shipkit-lite/ folder (not .shipkit/)",
+    "customization": "Users can override by editing this file"
+  }
+}
