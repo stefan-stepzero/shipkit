@@ -177,275 +177,36 @@ description: Provides UX guidance for consistent, user-friendly UI patterns by c
 
 **Only share relevant principles** - Don't dump entire UX knowledge base.
 
-**Based on component type, reference these principles**:
+**Quick reference by component type**:
 
 #### For Forms:
-- Inline validation (validate as user types)
-- Clear error messages (specific, actionable)
-- Submit button states (default, loading, disabled, success)
-- Field focus management (auto-focus first field)
-- Progressive disclosure (show fields only when needed)
-- Mobile-friendly input types (email, tel, number)
+- See `references/common-patterns.md` → Forms Pattern
+- Key: Inline validation, clear errors, submit button states, field focus, progressive disclosure
 
 #### For Modals:
-- Escape key to close
-- Focus trap (tab stays within modal)
-- Backdrop click to close (or disable if destructive)
-- Clear close button (X in corner)
-- Heading for screen readers (aria-labelledby)
-- Return focus to trigger element on close
+- See `references/common-patterns.md` → Modal Pattern
+- Key: Escape to close, focus trap, backdrop click, return focus, ARIA labels
 
 #### For Toggles/Switches:
-- Immediate feedback (no "save" button needed)
-- Loading state while processing
-- Success confirmation (toast or inline)
-- Undo option for reversible actions
-- Confirmation for destructive actions
-- Clear labels (not just on/off)
+- See `references/common-patterns.md` → Toggle Pattern
+- Key: Immediate feedback, loading state, undo option, confirmation for destructive
 
 #### For Lists:
-- Empty states (friendly message + CTA)
-- Loading skeletons (not spinners)
-- Virtualization for >100 items
-- Infinite scroll vs pagination (choose based on use case)
-- Optimistic updates (immediate feedback)
-- Clear item actions (visible on hover/focus)
+- See `references/common-patterns.md` → List Pattern
+- Key: Empty states, loading skeletons, virtualization, optimistic updates
 
 #### For Buttons:
-- Loading states (spinner + disabled)
-- Disabled states (low opacity + cursor)
-- Success feedback (checkmark or toast)
-- Destructive confirmation (modal or inline)
-- Touch target 44px minimum (mobile)
-- Clear label (not just icon)
+- See `references/common-patterns.md` → Button Pattern
+- Key: Loading states, disabled states, success feedback, 44px touch target
 
----
-
-## Core UX Principles (Progressive Disclosure)
-
-**Share only principles relevant to user's specific component.**
-
-### 1. Cognitive Load Reduction
-**When to mention**: Forms, multi-step workflows, complex UIs
-
-**Principles**:
-- Minimize decisions user must make
-- Progressive disclosure (show advanced options only when needed)
-- Sensible defaults (pre-fill when possible)
-- Chunking (group related fields/actions)
-- One primary action per screen
-
-**Example guidance**:
-"Use progressive disclosure: show basic fields first, 'Advanced options' link reveals rest. Reduces cognitive load for 80% of users who need simple flow."
-
----
-
-### 2. Immediate Feedback
-**When to mention**: Forms, toggles, buttons, async actions
-
-**Principles**:
-- Visual feedback within 100ms of action
-- Loading states for >200ms operations
-- Success confirmations (visual or auditory)
-- Error messages immediately (don't wait for submit)
-- Optimistic updates (assume success, rollback if fails)
-
-**Example guidance**:
-"Toggle should update UI immediately (optimistic update), show spinner during API call, toast confirmation on success. User knows action is processing, not wondering if click registered."
-
----
-
-### 3. Reversibility
-**When to mention**: Destructive actions, settings, toggles
-
-**Principles**:
-- Undo option for destructive actions
-- Confirmation modals for irreversible actions
-- Soft deletes (archive, don't permanently delete)
-- Draft auto-save (preserve user work)
-- "Are you sure?" for high-impact changes
-
-**Example guidance**:
-"Delete button should: 1) Show confirmation modal, 2) Soft delete (archive), 3) Show toast with 'Undo' action for 5 seconds. Prevents accidental data loss."
-
----
-
-### 4. Consistency
-**When to mention**: Any component where similar pattern exists
-
-**Principles**:
-- Match existing patterns in implementations.md
-- Consistent terminology across app
-- Consistent button placement (primary right, secondary left)
-- Consistent icon usage (same icon = same meaning)
-- Consistent color semantics (red = danger, green = success)
-
-**Example guidance**:
-"You've used inline switches for NotificationToggle (implementations.md). Reuse that pattern here for consistency. Users learn once, apply everywhere."
-
----
-
-### 5. Accessibility (WCAG 2.1 AA Minimum)
-**When to mention**: ALWAYS include basic accessibility checklist
-
-**Principles**:
-- Keyboard navigation (tab, enter, escape)
-- Screen reader support (aria-labels, roles)
-- Focus management (visible focus indicators)
-- Color contrast 4.5:1 minimum (text)
-- Touch targets 44px minimum (mobile)
-- No text in images (use alt text)
-- Semantic HTML (button, not div)
-
-**Example accessibility checklist**:
-```
-Accessibility Requirements:
-- aria-label="[Descriptive label]"
-- Keyboard: Tab to focus, Enter to activate, Escape to close
-- Focus indicator: 2px solid outline
-- Color contrast: 4.5:1 minimum
-- Touch target: 44px × 44px minimum
-- Screen reader: Announces state changes
-```
-
----
-
-### 6. Error Prevention
-**When to mention**: Forms, destructive actions, critical flows
-
-**Principles**:
-- Inline validation (before submit)
-- Input constraints (maxLength, pattern)
-- Clear format requirements (email, phone)
-- Disable invalid submissions (button disabled until valid)
-- Helpful error messages (not "Invalid input")
-
-**Example guidance**:
-"Email field should: validate format on blur, show error inline (not on submit), disable submit until valid email entered. Prevents user frustration from submitting invalid form."
-
----
-
-### 7. Mobile-First Design
-**When to mention**: Responsive components, touch interactions
-
-**Principles**:
-- Touch targets 44px minimum
-- Thumb-friendly zones (bottom of screen)
-- Swipe gestures (where appropriate)
-- Avoid hover-only interactions
-- Responsive breakpoints (mobile → tablet → desktop)
-- Mobile-friendly input types (email, tel, date)
-
-**Example guidance**:
-"Bottom sheet instead of modal on mobile (thumb-friendly). Touch target 48px for close button. Swipe down to dismiss (in addition to close button)."
-
----
-
-## Common Pattern Guidance (Inline Reference)
-
-**Share only the pattern user is asking about.**
-
-### Forms Pattern
-```
-Best Practices:
-✓ Inline validation (on blur, not on change)
-✓ Clear error messages ("Email must include @" not "Invalid")
-✓ Submit button states:
-  - Default: Enabled with primary color
-  - Validating: "Checking..." + disabled
-  - Invalid: Disabled with tooltip explaining why
-  - Submitting: Spinner + "Saving..."
-  - Success: Checkmark + redirect OR toast
-✓ Field focus: Auto-focus first field on mount
-✓ Enter to submit (when all fields valid)
-✓ Progressive disclosure: Show advanced fields only when needed
-
-Accessibility:
-- Label every input (visible or aria-label)
-- Error messages linked to fields (aria-describedby)
-- Required fields: aria-required="true"
-- Invalid fields: aria-invalid="true"
-```
-
-### Modal Pattern
-```
-Best Practices:
-✓ Escape key to close
-✓ Focus trap (tab cycles within modal)
-✓ Backdrop click closes (unless destructive action)
-✓ Clear close button (X in top-right)
-✓ Return focus to trigger on close
-✓ Max-width for readability (600px typical)
-✓ Scroll content, not entire modal
-
-Accessibility:
-- role="dialog"
-- aria-labelledby="[modal-heading-id]"
-- aria-modal="true"
-- Focus first interactive element on open
-- Visible focus indicators
-```
-
-### Toggle/Switch Pattern
-```
-Best Practices:
-✓ Immediate visual feedback (optimistic update)
-✓ Loading state while API call pending
-✓ Success confirmation (toast or inline checkmark)
-✓ Error rollback (revert to previous state + show error)
-✓ Clear label (not just on/off icons)
-✓ Undo option (for reversible actions)
-✓ Confirmation modal (for destructive actions)
-
-Accessibility:
-- role="switch"
-- aria-checked="true|false"
-- aria-label="[What this toggles]"
-- Keyboard: Space or Enter to toggle
-- Screen reader announces state change
-```
-
-### List Pattern
-```
-Best Practices:
-✓ Empty state (friendly message + "Add first item" CTA)
-✓ Loading skeleton (not spinner for >3 items)
-✓ Virtualization (for >100 items)
-✓ Infinite scroll OR pagination (choose one):
-  - Infinite: For feeds, social, exploration
-  - Pagination: For tables, search results, archives
-✓ Optimistic updates (add/edit immediately, rollback if fails)
-✓ Item actions (visible on hover/focus)
-✓ Sorting/filtering (if >20 items)
-
-Accessibility:
-- Semantic list markup (ul/ol or role="list")
-- aria-label="[List description]"
-- Keyboard navigation (arrow keys for focus)
-- Screen reader announces item count
-```
-
-### Button Pattern
-```
-Best Practices:
-✓ States:
-  - Default: Clear label + icon (optional)
-  - Hover: Slight color change
-  - Active: Pressed appearance
-  - Disabled: 50% opacity + cursor: not-allowed
-  - Loading: Spinner + disabled + "Loading..."
-  - Success: Checkmark + "Saved!" (2 seconds)
-✓ Destructive actions: Red + confirmation
-✓ Touch target: 44px minimum (mobile)
-✓ Icon + text (not icon-only unless aria-label)
-
-Accessibility:
-- Semantic button element (not div)
-- aria-label (if icon-only)
-- aria-busy="true" (when loading)
-- aria-disabled="true" (when disabled)
-- Keyboard: Enter or Space to activate
-```
+**Apply relevant UX principles from** `references/ux-principles.md`:
+1. Cognitive Load Reduction
+2. Immediate Feedback
+3. Reversibility
+4. Consistency
+5. Accessibility (WCAG 2.1 AA - always required)
+6. Error Prevention
+7. Mobile-First Design
 
 ---
 
@@ -498,21 +259,41 @@ Ready to implement?
 
 ---
 
-## Integration with Other Skills
+## When This Skill Integrates with Others
 
-**Before ux-coherence-lite**:
-- `/lite-spec` - Feature requirements (UI needs)
-- `/lite-plan` - Implementation approach
-- `/lite-project-context` - Stack info (UI framework)
+### Before This Skill
 
-**During ux-coherence-lite**:
-- Reads `.shipkit-lite/implementations.md` - Existing patterns
-- Reads `.shipkit-lite/architecture.md` - UX decisions
+- `/lite-spec` - Creates feature requirements
+  - **When**: Spec defines UI components needed
+  - **Why**: UX guidance shapes how specified features should work
+  - **Trigger**: Spec mentions forms, modals, toggles, or other UI elements
 
-**After ux-coherence-lite**:
-- `/lite-architecture-memory` - Log new pattern (if established)
-- `/lite-implement` - Build using guidance
-- `/lite-component-knowledge` - Document component
+- `/lite-plan` - Plans implementation approach
+  - **When**: Plan describes UI component structure
+  - **Why**: UX patterns inform component architecture choices
+  - **Trigger**: Plan needs UX pattern decisions before implementation
+
+- `/lite-project-context` - Generates stack information
+  - **When**: Stack includes UI framework (React, Vue, Svelte)
+  - **Why**: UX guidance references stack.md to understand UI framework capabilities
+  - **Trigger**: Need to know what UI primitives are available
+
+### After This Skill
+
+- `/lite-architecture-memory` - Logs architectural decisions
+  - **When**: UX pattern becomes project-wide standard
+  - **Why**: Document established UX patterns for future consistency
+  - **Trigger**: New pattern created that should be reused across components
+
+- `/lite-implement` - Implements components
+  - **When**: UX guidance complete, ready to build
+  - **Why**: Implementation follows UX patterns and accessibility requirements
+  - **Trigger**: User confirms "ready to implement"
+
+- `/lite-component-knowledge` - Documents components
+  - **When**: Component built and needs documentation
+  - **Why**: Document UX decisions made for component
+  - **Trigger**: Component complete, add to implementations.md
 
 ---
 
@@ -598,108 +379,11 @@ Guidance is complete when:
 
 ## Common Scenarios
 
-### Scenario 1: Building New Toggle
-
-```
-User: "I'm adding a share toggle to my recipe app"
-
-Claude (ux-coherence-lite):
-1. Ask: "Share as in public/private? Any UX concerns?"
-2. Read .shipkit-lite/implementations.md
-3. Find: NotificationToggle pattern exists
-4. Output terminal guidance:
-   - Use inline switch pattern (matches NotificationToggle)
-   - Immediate feedback, loading state, undo
-   - Accessibility checklist
-   - "Reuse NotificationToggle pattern for consistency"
-5. Append to .shipkit-lite/ux-decisions.md:
-   ```
-   ## ShareRecipeToggle - 2025-12-28
-   Component Type: Toggle/Switch
-   Pattern: Inline switch with optimistic updates
-   Rationale: Matches existing NotificationToggle pattern for consistency
-   Existing Match: NotificationToggle in implementations.md
-   ```
-6. Suggest: "Run `/lite-implement` to build"
-```
-
-### Scenario 2: New Pattern, No Existing Reference
-
-```
-User: "Building a drag-and-drop file uploader"
-
-Claude (ux-coherence-lite):
-1. Ask: "File size limits? Mobile support needed?"
-2. Read .shipkit-lite/implementations.md (no similar pattern)
-3. Output terminal guidance:
-   - Drag-and-drop zone pattern
-   - Click to upload fallback (accessibility)
-   - File preview, progress bar, cancel option
-   - Touch-friendly on mobile (large drop zone)
-   - Accessibility: keyboard upload, screen reader announcements
-4. Append to .shipkit-lite/ux-decisions.md:
-   ```
-   ## FileUploader - 2025-12-28
-   Component Type: File Upload
-   Pattern: Drag-and-drop zone with click fallback
-   Rationale: Drag-and-drop is intuitive, click fallback ensures accessibility
-   Existing Match: None (new pattern)
-   ```
-5. Suggest: "Log this as architectural pattern with `/lite-architecture-memory` if it becomes standard"
-6. Then: "Run `/lite-implement` to build"
-```
-
-### Scenario 3: Accessibility-Focused Request
-
-```
-User: "Make this form ADHD-friendly"
-
-Claude (ux-coherence-lite):
-1. Read .shipkit-lite/implementations.md (existing form pattern?)
-2. Output terminal guidance tailored to ADHD:
-   - Minimize fields (5 max per page)
-   - One question at a time (progressive disclosure)
-   - Clear progress indicator (step 2 of 4)
-   - Auto-save drafts (reduce working memory load)
-   - Large, clear buttons (reduce decision fatigue)
-   - No time limits (anxiety-inducing)
-   - Success feedback (dopamine hit)
-3. Append to .shipkit-lite/ux-decisions.md:
-   ```
-   ## OnboardingForm - 2025-12-28
-   Component Type: Multi-step Form
-   Pattern: Progressive disclosure with auto-save
-   Rationale: ADHD-friendly design reduces cognitive load and anxiety
-   User Persona Adaptation: ADHD-friendly
-   ```
-4. Suggest: "Log this ADHD-friendly pattern with `/lite-architecture-memory` if it becomes project-wide standard"
-```
-
-### Scenario 4: Checking Existing UI
-
-```
-User: "Review my modal implementation for UX issues"
-
-Claude (ux-coherence-lite):
-1. Ask: "Share the modal code or describe behavior?"
-2. User shares code
-3. Check against modal pattern:
-   ✓ Escape key works
-   ✓ Backdrop click closes
-   ✗ No focus trap (tab escapes modal)
-   ✗ Missing aria-labelledby
-   ✗ Doesn't return focus on close
-4. Output terminal guidance: "Fix these 3 issues: [specific code changes]"
-5. Append to .shipkit-lite/ux-decisions.md:
-   ```
-   ## ProfileModal - 2025-12-28 (Review)
-   Component Type: Modal
-   Pattern: Standard modal with focus trap and ARIA
-   Rationale: Fixing accessibility gaps in existing implementation
-   Issues Fixed: Focus trap, aria-labelledby, focus return
-   ```
-6. Suggest: "Run `/lite-implement` to apply fixes"
-```
+**See `references/common-scenarios.md` for detailed examples:**
+- Scenario 1: Building New Toggle (reusing existing pattern)
+- Scenario 2: New Pattern, No Existing Reference (file uploader)
+- Scenario 3: Accessibility-Focused Request (ADHD-friendly form)
+- Scenario 4: Checking Existing UI (modal review)
 
 ---
 
@@ -736,40 +420,36 @@ Claude (ux-coherence-lite):
 
 ## User Persona Adaptations
 
-**If user specifies persona, adapt guidance**:
+**When user specifies a persona, adapt guidance accordingly.**
 
-### ADHD-Friendly:
-- Minimize options (decision fatigue)
-- One task at a time (focus)
-- Clear progress indicators (motivation)
-- Auto-save everything (working memory)
-- No time limits (anxiety)
-- Success feedback (dopamine)
-
-### Elderly Users:
-- Large text (18px minimum)
-- High contrast (7:1 ratio)
-- Simple language (no jargon)
-- Large touch targets (48px minimum)
-- Confirmation for all actions
-- Undo for everything
-
-### Mobile-First:
-- Touch targets 44px minimum
-- Thumb-friendly zones (bottom)
-- Swipe gestures (where appropriate)
-- Avoid hover-only interactions
-- Responsive breakpoints
-- Mobile input types (tel, email)
-
-### Low-Bandwidth:
-- Minimize images/media
-- Loading skeletons (not live data)
-- Offline support (service workers)
-- Optimistic updates (immediate feedback)
-- Progress indicators for uploads
+**See `references/persona-adaptations.md` for detailed adaptations:**
+- ADHD-Friendly (minimize options, auto-save, no timers, success feedback)
+- Elderly Users (large text/targets, high contrast, confirmations, undo)
+- Mobile-First (touch targets, thumb zones, swipe gestures, no hover-only)
+- Low-Bandwidth (minimize media, skeletons, offline support, optimistic updates)
+- Accessibility-First (beyond WCAG AA: keyboard efficiency, excellent screen reader support)
 
 **Adapt principles to persona, but maintain accessibility baseline.**
+
+---
+
+## Reference Documentation
+
+**This skill provides detailed guidance in reference files:**
+
+**UX Patterns & Principles:**
+- `references/ux-principles.md` - 7 core UX principles (Cognitive Load, Immediate Feedback, Reversibility, Consistency, Accessibility, Error Prevention, Mobile-First)
+- `references/common-patterns.md` - UI pattern checklists (Forms, Modals, Toggles, Lists, Buttons)
+
+**Practical Guidance:**
+- `references/common-scenarios.md` - 4 UX guidance scenarios with examples
+- `references/persona-adaptations.md` - 5 persona-specific adaptations (ADHD, Elderly, Mobile-First, Low-Bandwidth, Accessibility-First)
+
+**How to use references:**
+- Main SKILL.md provides the process workflow
+- Reference files provide detailed patterns, principles, and examples
+- Progressive disclosure: Only share relevant sections based on user's component type
+- Keep guidance focused and actionable
 
 ---
 

@@ -10,6 +10,37 @@
 4. **Only update changed files** - Use timestamps to detect freshness
 5. **Append, don't replace** - Files accumulate context over time
 
+---
+
+## CRITICAL: Always Use /lite-whats-next After Skills
+
+**After completing ANY lite skill, you MUST immediately invoke `/lite-whats-next`:**
+
+**Why this is mandatory:**
+- Prevents users from getting stuck ("what do I do next?")
+- Enforces optimal workflow order (Vision → Understand → Co-design → Execute → Document)
+- Detects gaps and warns about missing dependencies
+- Provides intelligent, context-aware guidance
+
+**Workflow:**
+1. Complete a skill (e.g., `/lite-spec`)
+2. **IMMEDIATELY invoke `/lite-whats-next`** (not optional!)
+3. `/lite-whats-next` analyzes project state and suggests next step
+4. Present the suggestion to user
+
+**Violation examples:**
+- ❌ Completing `/lite-spec` and saying "Spec created. What would you like to do next?"
+- ❌ Completing `/lite-implement` and just moving on
+- ❌ Suggesting next skill manually instead of using `/lite-whats-next`
+- ✅ Completing `/lite-spec` then invoking `/lite-whats-next` → presenting its analysis
+- ✅ After ANY skill completes, invoke `/lite-whats-next` automatically
+
+**Exception:** If user explicitly says "skip workflow guidance" or "I'll decide what's next"
+
+**This is as important as "Skills Must Use Skills" - it's not a suggestion, it's a requirement.**
+
+---
+
 ## File Structure You'll Create
 
 ```
@@ -31,6 +62,8 @@
 
 **Feature Development:**
 - `/lite-spec` - Write spec → `specs/active/[name].md`
+- `/lite-prototyping` - Rapid UI mockup → `.shipkit-mockups/[name]/`
+- `/lite-prototype-to-spec` - Extract prototype learnings → append to spec
 - `/lite-architecture-memory` - Log decision → append to `architecture.md`
 - `/lite-plan` - Create plan → `plans/[name].md`
 - `/lite-implement` - Build feature with TDD guidance
@@ -47,7 +80,7 @@
 - `/lite-work-memory` - Log session → append to `progress.md`
 
 **Utilities:**
-- `/lite-whats-next` - Smart workflow guidance (auto-called after every skill)
+- `/lite-whats-next` - Smart workflow guidance (MANDATORY after every skill)
 - `/lite-ux-coherence` - Check UX consistency
 - `/lite-data-consistency` - Manage types/schemas
 - `/lite-integration-guardrails` - Service integration warnings
@@ -66,10 +99,11 @@
 ```
 
 **Rules:**
-- Run `/lite-project-status` when user asks "what's next?" or "where are we?"
-- Suggest next skill after each completion
+- **ALWAYS invoke `/lite-whats-next` immediately after completing any skill**
+- Run `/lite-project-status` when user asks for health check
 - Load context files lazily (only when needed)
 - Check timestamps before regenerating (avoid duplicate work)
+- Let `/lite-whats-next` decide workflow order (don't hardcode suggestions)
 
 ## Context Loading
 

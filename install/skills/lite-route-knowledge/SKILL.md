@@ -87,38 +87,12 @@ description: Documents page/route implementations with data flows, auth patterns
 
 ### Step 3: Detect Route Files
 
-**Based on stack.md, find route patterns**:
+**Based on stack.md, find route patterns**.
 
-**Next.js (App Router)**:
-```bash
-app/**/page.tsx
-app/**/page.ts
-app/**/layout.tsx
-```
-
-**Next.js (Pages Router)**:
-```bash
-pages/**/*.tsx
-pages/**/*.ts
-```
-
-**React Router / Vite**:
-```bash
-src/routes/**/*.tsx
-src/pages/**/*.tsx
-```
-
-**SvelteKit**:
-```bash
-src/routes/**/+page.svelte
-src/routes/**/+layout.svelte
-src/routes/**/+page.server.ts
-```
-
-**Nuxt**:
-```bash
-pages/**/*.vue
-```
+**See `references/detection-patterns.md` for:**
+- Framework-specific route file patterns (Next.js, SvelteKit, React Router, Nuxt)
+- Glob patterns for each framework
+- How to map file paths to route paths
 
 **Use Glob tool to find route files**, filtered by framework from stack.md.
 
@@ -128,118 +102,28 @@ pages/**/*.vue
 
 **For EACH route file, extract**:
 
-#### 1. Route Path
-- Next.js App: `/dashboard` from `app/dashboard/page.tsx`
-- Next.js Pages: `/profile` from `pages/profile.tsx`
-- React Router: Infer from file structure
+1. **Route Path** - Derive URL path from file structure
+2. **Data Fetching Strategy** - Server Component vs Client Component vs Hybrid
+3. **Auth Requirements** - Middleware, component guards, server-side checks
+4. **RLS Policies** - Supabase Row Level Security policies referenced
+5. **Dependencies** - Hooks, components, utilities, server actions imported
 
-#### 2. Data Fetching Strategy
-Look for patterns indicating:
-
-**Server Component (Next.js App Router)**:
-```tsx
-// NO 'use client' directive
-async function Page() {
-  const data = await fetch(...) // Direct async
-  const dbData = await supabase.from(...) // Direct DB query
-}
-```
-
-**Client Component**:
-```tsx
-'use client'
-useEffect(() => { fetch(...) }) // Client-side fetching
-const { data } = useSWR(...) // SWR
-const { data } = useQuery(...) // React Query
-```
-
-**Server Actions (Next.js)**:
-```tsx
-import { createTodo } from '@/actions/todos'
-// Uses Server Actions for mutations
-```
-
-**API Routes**:
-```tsx
-// Calls /api/* endpoints
-fetch('/api/users')
-```
-
-#### 3. Auth Requirements
-Look for:
-
-**Middleware protection**:
-```tsx
-// Check if middleware.ts protects this route
-// Common patterns: matcher in middleware.ts
-```
-
-**Component-level auth**:
-```tsx
-const { user } = useUser()
-if (!user) redirect('/login')
-```
-
-**Auth hooks/utilities**:
-```tsx
-import { requireAuth } from '@/lib/auth'
-import { getServerSession } from 'next-auth'
-```
-
-#### 4. RLS Policies Used
-Look for Supabase queries with RLS context:
-
-```tsx
-supabase.from('dashboard_data')...
-// Check for RLS policy name in comments or docs
-// Infer policy from table name if possible
-```
-
-#### 5. Dependencies
-Extract imports and identify:
-- **Custom hooks**: `useUser`, `useDashboard`
-- **Components**: `<DashboardLayout>`, `<DataTable>`
-- **Utilities**: `formatDate`, `validateInput`
-- **Server Actions**: `createItem`, `updateItem`
+**See `references/detection-patterns.md` for:**
+- Complete data fetching classification (Server Component, Client Component, Hybrid, Server Actions, API Routes)
+- Auth pattern detection methods (middleware, component guards, server-side checks, RLS)
+- Dependency extraction patterns (hooks, components, utilities)
 
 ---
 
 ### Step 5: Generate Documentation Entry
 
-**For each route, create entry**:
+**For each route, create entry using standard template**.
 
-```markdown
-### `/route-path` - [Page Type]
-
-**File**: `path/to/file.tsx`
-**Last documented**: [timestamp]
-
-**Data Strategy**:
-- Fetching: [Server Component | Client Component | Hybrid]
-- Method: [Direct async | useEffect | SWR | React Query | Server Actions]
-- Sources: [Supabase | API route | External API]
-
-**Auth**:
-- Protected: [Yes/No]
-- Method: [Middleware | Component guard | Server-side check]
-- Requires: [Authenticated user | Specific role | RLS policy]
-
-**RLS Policies** (if using Supabase):
-- `dashboard_access` - User can only see own dashboard data
-- `team_member` - User must be team member
-
-**Dependencies**:
-- Hooks: `useUser`, `useDashboard`
-- Components: `DashboardLayout`, `StatsCard`
-- Actions: `updateDashboard` (Server Action)
-- Utils: `formatCurrency`, `calculateStats`
-
-**Key Patterns**:
-- [Notable implementation detail 1]
-- [Notable implementation detail 2]
-
----
-```
+**See `references/templates.md` for:**
+- Route documentation entry template
+- Complete file structure template
+- Example entries (simple, complex, hybrid, API routes)
+- Minimal entry format for static pages
 
 ---
 
@@ -388,21 +272,41 @@ echo "Last route documentation scan: $(date -Iseconds)"
 
 ---
 
-## Integration with Other Skills
+## When This Skill Integrates with Others
 
-**Before route-knowledge-lite**:
-- `/lite-implement` - Builds the route
-- `/lite-spec` - Defines what route should do
-- `/lite-project-context` - Generates stack.md (framework info)
+### Before This Skill
 
-**After route-knowledge-lite**:
-- `/lite-quality-confidence` - Verifies routes work
+- `/lite-implement` - Builds the route implementation
+  - **When**: After completing route/page development
+  - **Why**: Can't document routes that don't exist yet
+  - **Trigger**: User built new routes and wants to document them
+
+- `/lite-spec` - Defines feature requirements
+  - **When**: Before implementation
+  - **Why**: Specs guide what routes to build
+  - **Trigger**: Spec defines routes needed for feature
+
+- `/lite-project-context` - Scans stack and generates stack.md
+  - **When**: Project initialization or stack changes
+  - **Why**: Route detection depends on knowing framework (Next.js vs SvelteKit vs etc)
+  - **Trigger**: stack.md must exist to determine route file patterns
+
+### After This Skill
+
+- `/lite-quality-confidence` - Verifies route implementations
+  - **When**: After documenting routes
+  - **Why**: Documentation reveals what to test (auth, data fetching, RLS)
+  - **Trigger**: User asks "ready to ship?" after implementing routes
+
 - `/lite-component-knowledge` - Documents shared components
-- `/lite-work-memory` - Logs documentation session
+  - **When**: After route documentation finds component dependencies
+  - **Why**: Routes use components - both should be documented
+  - **Trigger**: Route documentation lists `<ComponentName>` dependencies
 
-**Complements**:
-- `/lite-data-consistency` - Uses types documented here
-- `/lite-architecture-memory` - References patterns found here
+- `/lite-work-memory` - Logs documentation session progress
+  - **When**: After completing route documentation session
+  - **Why**: Track what was documented and when
+  - **Trigger**: User wants to log session or end of work session
 
 ---
 
@@ -494,263 +398,44 @@ Documentation is complete when:
 
 ---
 
-## Common Scenarios
+## Example Documentation Scenarios
 
-### Scenario 1: First Time Documentation
-
-```
-User: "Document all my routes"
-
-Claude:
-1. Check .shipkit-lite/implementations.md
-2. No "Last route documentation scan" found → First run
-3. Read .shipkit-lite/stack.md (see Next.js App Router)
-4. Glob app/**/page.tsx (find all routes)
-5. For each route:
-   - Extract data strategy
-   - Identify auth
-   - Map dependencies
-6. Create implementations.md with Routes section
-7. Add timestamp: "Last route documentation scan: 2025-12-28T14:30:00Z"
-```
-
-### Scenario 2: Incremental Update
-
-```
-User: "Document the new dashboard route I just built"
-
-Claude:
-1. Read implementations.md
-2. See "Last route documentation scan: 2025-12-28T10:00:00Z"
-3. Check app/dashboard/page.tsx modified at 14:00:00
-4. File is newer than last scan → Document it
-5. Extract:
-   - Data: Server Component with direct Supabase query
-   - Auth: Protected via middleware
-   - RLS: Uses 'dashboard_access' policy
-   - Deps: useUser hook, DashboardLayout component
-6. Append to implementations.md
-7. Update timestamp to 14:30:00
-```
-
-### Scenario 3: Force Full Re-scan
-
-```
-User: "Re-document all routes, patterns changed"
-
-Claude:
-1. User explicitly requests full scan
-2. Ignore timestamp (override freshness check)
-3. Glob all route files
-4. Document all routes (replace old entries)
-5. Update timestamp
-```
-
-### Scenario 4: No Changes
-
-```
-User: "Document routes"
-
-Claude:
-1. Read implementations.md
-2. Last scan: 2025-12-28T14:00:00Z
-3. Check all route files
-4. No files modified after 14:00:00
-5. "No routes modified since last documentation. All routes are up to date."
-6. Don't update timestamp (nothing changed)
-```
+**See `references/example-scenarios.md` for 10 complete scenarios:**
+- Scenario 1: First Time Documentation (no implementations.md exists)
+- Scenario 2: Incremental Update (only changed routes)
+- Scenario 3: Force Full Re-scan (after refactoring)
+- Scenario 4: No Changes (nothing modified)
+- Scenario 5: Specific Route Documentation
+- Scenario 6: Multi-Framework Project
+- Scenario 7: Discovering Undocumented Components
+- Scenario 8: Auth Pattern Evolution
+- Scenario 9: Hybrid Data Fetching Detection
+- Scenario 10: API Route Documentation
 
 ---
 
-## Framework-Specific Detection Patterns
+## Detection Patterns
 
-### Next.js App Router (Server Components)
+**See `references/detection-patterns.md` for comprehensive patterns:**
 
-**Route detection**:
-```bash
-app/**/page.tsx
-app/**/layout.tsx
-app/**/loading.tsx
-app/**/error.tsx
-```
+**Framework Detection**:
+- Next.js App Router (Server Components)
+- Next.js Pages Router (SSR/SSG/Client)
+- SvelteKit (Server load functions)
+- React Router / Vite (Client-only SPA)
 
-**Data strategy indicators**:
-```tsx
-// Server Component (no 'use client')
-export default async function Page() {
-  const data = await db.query(...) // Direct DB
-  const res = await fetch(..., { cache: 'no-store' }) // Server fetch
-}
+**Data Fetching Classification**:
+- Server Component (async, direct DB/fetch)
+- Client Component ('use client', hooks)
+- Hybrid (Server layout + Client children)
+- Server Actions ('use server', form mutations)
+- API Routes (REST endpoints)
 
-// Client Component
-'use client'
-export default function Page() {
-  const { data } = useSWR(...) // Client fetch
-}
-```
-
-**Auth patterns**:
-```tsx
-// Middleware protection
-// Check middleware.ts matcher: ['/dashboard/:path*']
-
-// Server-side check
-import { auth } from '@/auth'
-const session = await auth()
-if (!session) redirect('/login')
-```
-
-### Next.js Pages Router
-
-**Route detection**:
-```bash
-pages/**/*.tsx
-pages/api/**/*.ts (API routes)
-```
-
-**Data strategy indicators**:
-```tsx
-// SSR
-export async function getServerSideProps() { ... }
-
-// SSG
-export async function getStaticProps() { ... }
-
-// Client
-export default function Page() {
-  useEffect(() => fetch(...))
-}
-```
-
-### SvelteKit
-
-**Route detection**:
-```bash
-src/routes/**/+page.svelte
-src/routes/**/+page.server.ts
-src/routes/**/+layout.svelte
-```
-
-**Data strategy indicators**:
-```ts
-// Server load
-export async function load({ fetch }) {
-  const data = await fetch(...) // Server-side
-}
-```
-
-### React Router / Vite
-
-**Route detection**:
-```bash
-src/routes/**/*.tsx
-src/pages/**/*.tsx
-```
-
-**Data strategy indicators**:
-```tsx
-// Client-only (typical for SPA)
-useEffect(() => fetch(...))
-const { data } = useQuery(...)
-```
-
----
-
-## Data Fetching Strategy Classification
-
-**Server Component** (Next.js App Router):
-- No `'use client'` directive
-- `async function` component
-- Direct `await fetch()` or `await db.query()`
-- **Pros**: SEO-friendly, secure, fast initial load
-- **Cons**: Can't use React hooks
-
-**Client Component**:
-- Has `'use client'` directive
-- Uses `useEffect`, `useSWR`, `useQuery`, etc.
-- **Pros**: Interactive, real-time updates
-- **Cons**: Client-side bundle, slower initial render
-
-**Hybrid**:
-- Layout is Server Component
-- Child components are Client Components
-- Combines benefits
-
-**Server Actions** (Next.js):
-- `'use server'` directive
-- Form mutations without API routes
-- **Pattern**: Server Component + Server Action for mutations
-
-**API Routes**:
-- Separate `/api/*` endpoints
-- Called from client via `fetch()`
-- **Pattern**: Traditional REST API
-
----
-
-## Auth Pattern Detection
-
-### Middleware-Based Protection
-
-**File**: `middleware.ts` or `middleware.js`
-
-**Pattern**:
-```ts
-export const config = {
-  matcher: ['/dashboard/:path*', '/admin/:path*']
-}
-
-export function middleware(req: NextRequest) {
-  const token = req.cookies.get('session')
-  if (!token) return NextResponse.redirect('/login')
-}
-```
-
-**Detection**: Check if route path matches middleware matcher
-
-### Component-Level Guards
-
-**Pattern**:
-```tsx
-export default function ProtectedPage() {
-  const { user, isLoading } = useUser()
-
-  if (isLoading) return <Spinner />
-  if (!user) redirect('/login')
-
-  return <Dashboard />
-}
-```
-
-**Detection**: Look for early returns checking `user` or `session`
-
-### Server-Side Checks
-
-**Pattern**:
-```tsx
-export default async function Page() {
-  const session = await getServerSession()
-  if (!session) redirect('/login')
-}
-```
-
-**Detection**: `getServerSession`, `auth()`, or similar in Server Component
-
-### RLS (Row Level Security) - Supabase
-
-**Pattern**:
-```tsx
-// Automatically enforced by Supabase
-const { data } = await supabase
-  .from('dashboard_data')
-  .select('*')
-// RLS policy 'dashboard_access' filters results by user_id
-```
-
-**Detection**:
-- Look for comments mentioning policy names
-- Check table name (e.g., `user_profiles` likely has user RLS)
-- Infer from context (authenticated queries assume RLS)
+**Auth Pattern Detection**:
+- Middleware-Based Protection (middleware.ts matchers)
+- Component-Level Guards (early returns checking user/session)
+- Server-Side Checks (getServerSession, auth())
+- RLS (Row Level Security - Supabase policies)
 
 ---
 

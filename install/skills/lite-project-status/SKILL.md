@@ -254,60 +254,12 @@ ELSE:
 - ⚠ = Warning (exists but issues detected)
 - ✗ = Critical (missing or severely outdated)
 
-### Freshness Calculation
+### Freshness and Gap Detection
 
-```bash
-# Get file modification time in seconds since epoch
-file_modified=$(stat -c %Y "$file" 2>/dev/null)
-
-# Get current time
-now=$(date +%s)
-
-# Calculate age in days
-age_days=$(( (now - file_modified) / 86400 ))
-
-if [ $age_days -le 1 ]; then
-  echo "✓ Fresh (modified today)"
-elif [ $age_days -le 7 ]; then
-  echo "⚠ Aging (modified $age_days days ago)"
-else
-  echo "✗ Stale (modified $age_days days ago)"
-fi
-```
-
-### Gap Detection Patterns
-
-**Large undocumented files**:
-```bash
-# Find files >200 LOC
-large_files=$(find src -type f \( -name "*.ts" -o -name "*.tsx" \) -exec wc -l {} + | awk '$1 > 200 {print $2}')
-
-# Check if mentioned in implementations.md
-for file in $large_files; do
-  if ! grep -q "$file" .shipkit-lite/implementations.md; then
-    echo "⚠ Undocumented: $file"
-  fi
-done
-```
-
-**Stale stack**:
-```bash
-# Compare package.json and stack.md timestamps
-if [ package.json -nt .shipkit-lite/stack.md ]; then
-  echo "⚠ Stack outdated: package.json modified after stack.md"
-fi
-```
-
-**Workflow gaps**:
-```bash
-# Specs without plans
-spec_count=$(ls -1 .shipkit-lite/specs/active/*.md 2>/dev/null | wc -l)
-plan_count=$(ls -1 .shipkit-lite/plans/*.md 2>/dev/null | wc -l)
-
-if [ $spec_count -gt $plan_count ]; then
-  echo "⚠ $((spec_count - plan_count)) specs have no plans"
-fi
-```
+**See `references/bash-commands.md` for complete bash commands:**
+- Freshness calculation logic
+- Gap detection patterns (undocumented files, stale stack, workflow gaps)
+- File scanning commands (specs, plans, tasks)
 
 ---
 
@@ -332,15 +284,41 @@ fi
 
 ---
 
-## Integration with Other Skills
+## When This Skill Integrates with Others
 
-**Before project-status-lite**:
-- Session start (user wants orientation)
-- Any time (user wants to check state)
+### Before This Skill
+- None - This skill can run anytime for orientation
+  - **When**: User wants to check project health
+  - **Why**: Need current status before deciding what to work on
+  - **Trigger**: User asks "what's the status?", "what should I do?", or session start
 
-**After project-status-lite**:
-- Suggests skill based on detected gaps
-- User follows suggestion or ignores
+### After This Skill
+- Suggests skill dynamically based on detected gaps
+  - **When**: After status scan completes
+  - **Why**: Status identifies what's missing or stale - next action should fix it
+  - **Trigger**: Specific gap detected
+
+**Common suggestions**:
+
+- `/lite-project-context` - When stack.md is stale or missing
+  - **When**: package.json modified after stack.md OR .shipkit-lite/ doesn't exist
+  - **Why**: Stale stack causes wrong tech assumptions
+  - **Trigger**: Freshness check fails
+
+- `/lite-plan` - When specs exist but no plans
+  - **When**: Found .shipkit-lite/specs/active/*.md but no .shipkit-lite/plans/*.md
+  - **Why**: Specs without plans block implementation
+  - **Trigger**: Workflow gap detected
+
+- `/lite-component-knowledge` - When large files undocumented
+  - **When**: Found src/**/*.ts files >200 LOC not mentioned in implementations.md
+  - **Why**: Undocumented code becomes unmaintainable
+  - **Trigger**: Gap detection finds undocumented files
+
+- `/lite-implement` - When plans exist but no implementation notes
+  - **When**: Found plans/*.md but no recent implementation entries
+  - **Why**: Plans without execution are just ideas
+  - **Trigger**: Workflow gap detected
 
 ---
 
@@ -409,136 +387,11 @@ Status check is complete when:
 
 ## Example Output Scenarios
 
-### Scenario 1: Healthy Project
-
-```
-📊 Project Status (.shipkit-lite)
-
-════════════════════════════════════════════════════
-
-CORE CONTEXT
-
-✓ Stack: documented (Next.js 14, Supabase, Tailwind)
-  → Last updated: 3 hours ago
-
-✓ Architecture: 8 decisions logged
-  → Last updated: 1 day ago
-
-✓ Implementations: 15 components documented
-  → All large files documented
-
-✓ Progress: 12 sessions logged
-  → Last session: 2 hours ago
-
-════════════════════════════════════════════════════
-
-WORKFLOW STATUS
-
-✓ Specs: 1 active (user-profile.md)
-✓ Plans: 1 plan exists (user-profile-plan.md)
-✓ Implementations: 3 components implemented
-✓ User Tasks: 8 active, 12 completed
-
-════════════════════════════════════════════════════
-
-SUGGESTED NEXT ACTIONS
-
-✓ Project is healthy!
-
-Next: Continue implementing user-profile feature
-      Run /lite-implement to continue coding
-
-════════════════════════════════════════════════════
-```
-
-### Scenario 2: Stale Stack
-
-```
-📊 Project Status (.shipkit-lite)
-
-════════════════════════════════════════════════════
-
-CORE CONTEXT
-
-⚠ Stack: outdated
-  → Last updated: 5 days ago
-  → package.json modified today (new dependencies added)
-  → Run /lite-project-context to refresh
-
-✓ Architecture: 3 decisions logged
-✓ Implementations: 7 components documented
-✓ Progress: 4 sessions logged
-
-════════════════════════════════════════════════════
-
-SUGGESTED NEXT ACTIONS
-
-Priority 1: Run /lite-project-context (stack is stale)
-
-════════════════════════════════════════════════════
-```
-
-### Scenario 3: Workflow Gap
-
-```
-📊 Project Status (.shipkit-lite)
-
-════════════════════════════════════════════════════
-
-CORE CONTEXT
-
-✓ Stack: documented (Next.js 14, Supabase)
-✓ Architecture: 6 decisions logged
-⚠ Implementations: 10 components documented
-  → 3 undocumented files >200 LOC
-✓ Progress: 6 sessions logged
-
-════════════════════════════════════════════════════
-
-WORKFLOW STATUS
-
-✓ Specs: 3 active
-  • recipe-sharing.md
-  • user-profile.md
-  • notification-system.md
-
-✗ Plans: 0 plans found
-  → Specs exist but no implementation plans
-
-════════════════════════════════════════════════════
-
-SUGGESTED NEXT ACTIONS
-
-Priority 1: Run /lite-plan for recipe-sharing spec
-Priority 2: After planning, run /lite-implement
-Priority 3: Document large components with /lite-component-knowledge
-
-════════════════════════════════════════════════════
-```
-
-### Scenario 4: Fresh Project
-
-```
-📊 Project Status (.shipkit-lite)
-
-════════════════════════════════════════════════════
-
-CORE CONTEXT
-
-✗ Directory not found: .shipkit-lite/
-
-════════════════════════════════════════════════════
-
-SUGGESTED NEXT ACTIONS
-
-Initialize project context:
-→ Run /lite-project-context to scan codebase and generate:
-  • stack.md (from package.json)
-  • schema.md (from migrations)
-  • Initial context files
-
-════════════════════════════════════════════════════
-```
+**See `references/example-outputs.md` for complete status reports:**
+- Scenario 1: Healthy Project
+- Scenario 2: Stale Stack
+- Scenario 3: Workflow Gap
+- Scenario 4: Fresh Project
 
 ---
 

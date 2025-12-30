@@ -414,7 +414,7 @@
             <p class="tagline">Your AI pair programmer just got a memory upgrade</p>
             <div class="quick-stats">
                 <div class="stat">
-                    <span class="stat-number">19</span>
+                    <span class="stat-number">26</span>
                     <span class="stat-label">Skills Working For You</span>
                 </div>
                 <div class="stat">
@@ -498,30 +498,30 @@
             <!-- How It Works -->
             <div class="section">
                 <h2>How Your Skills Work Together</h2>
-                
+
                 <div class="diagram-container">
                     <div class="mermaid">
 graph TB
     Start([You Start Coding]) --> Master{ShipKit Lite<br/>Auto-Loads}
-    
+
     Master --> Context[📚 Loads Your Context<br/>Stack • Decisions • Patterns]
-    
+
     You[You: Add recipe sharing] --> Plan[💡 plan-lite<br/>Asks clarifying questions]
-    
+
     Plan --> Impl[⚙️ implement-lite<br/>Guides TDD-lite cycle]
-    
+
     Impl --> Guard[🛡️ integration-guardrails<br/>Catches integration mistakes]
-    
+
     Guard --> Quality[✅ quality-confidence<br/>Pre-ship checklist]
-    
+
     Quality --> Done([🎉 Ship It!])
-    
+
     Impl -.auto-documents.-> Docs[📝 Documentation<br/>Components • Routes • Types]
-    
+
     Impl -.tracks tasks.-> Tasks[✅ User Tasks<br/>Migrations • Config]
-    
+
     Guard -.logs patterns.-> Memory[🧠 Architecture Memory<br/>Decisions • Rationale]
-    
+
     style Master fill:#667eea,color:#fff,stroke:#4338ca,stroke-width:3px
     style Done fill:#10b981,color:#fff,stroke:#059669,stroke-width:3px
     style Context fill:#e0e7ff,color:#000,stroke:#c7d2fe,stroke-width:2px
@@ -545,28 +545,28 @@ graph TB
                         <div class="step-number">1</div>
                         <div class="step-content">
                             <h4>You say: "Add recipe sharing"</h4>
-                            <p><strong>plan-lite</strong> asks: "Public link or invite-based? Read-only or editable?" → Generates implementation plan</p>
+                            <p><strong>lite-plan</strong> asks: "Public link or invite-based? Read-only or editable?" → Generates implementation plan</p>
                         </div>
                     </div>
                     <div class="workflow-step">
                         <div class="step-number">2</div>
                         <div class="step-content">
                             <h4>You implement with Claude Code</h4>
-                            <p><strong>implement-lite</strong> guides TDD-lite: Test auth checks, manual test UI → Builds ShareButton + share route</p>
+                            <p><strong>lite-implement</strong> guides TDD-lite: Test auth checks, manual test UI → Builds ShareButton + share route</p>
                         </div>
                     </div>
                     <div class="workflow-step">
                         <div class="step-number">3</div>
                         <div class="step-content">
                             <h4>Integration checks kick in</h4>
-                            <p><strong>integration-guardrails</strong> warns: "⚠️ Share tokens need crypto.randomUUID(), RLS policy missing" → Creates task for you</p>
+                            <p><strong>lite-integration-guardrails</strong> warns: "⚠️ Share tokens need crypto.randomUUID(), RLS policy missing" → Creates task for you</p>
                         </div>
                     </div>
                     <div class="workflow-step">
                         <div class="step-number">4</div>
                         <div class="step-content">
                             <h4>You fix issues and run quality check</h4>
-                            <p><strong>quality-confidence</strong> verifies: Loading states ✓ Error handling ✓ Accessibility ✓ → Green light to ship</p>
+                            <p><strong>lite-quality-confidence</strong> verifies: Loading states ✓ Error handling ✓ Accessibility ✓ → Green light to ship</p>
                         </div>
                     </div>
                     <div class="workflow-step">
@@ -581,44 +581,46 @@ graph TB
 
             <!-- Skill Groups -->
             <div class="section">
-                <h2>Your 16 Skills at a Glance</h2>
-                
+                <h2>Your 26 Skills at a Glance</h2>
+
                 <div class="skill-groups">
                     <div class="skill-group">
                         <h3><span class="emoji">🎯</span> Planning & Implementation</h3>
                         <ul class="skill-list">
-                            <li><strong>plan-lite</strong> - Q&A before coding</li>
-                            <li><strong>implement-lite</strong> - TDD-lite cycle</li>
+                            <li><strong>lite-spec</strong> - Given/When/Then specs</li>
+                            <li><strong>lite-prototyping</strong> - Rapid UI mockups with live iteration</li>
+                            <li><strong>lite-prototype-to-spec</strong> - Extract prototype learnings to specs</li>
+                            <li><strong>lite-plan</strong> - Q&A before coding</li>
+                            <li><strong>lite-implement</strong> - TDD-lite cycle</li>
                         </ul>
                     </div>
 
                     <div class="skill-group">
                         <h3><span class="emoji">📚</span> Context & Memory</h3>
                         <ul class="skill-list">
-                            <li><strong>why-project</strong> - Strategic vision defined</li>
-                            <li><strong>project-context</strong> - Stack always current</li>
-                            <li><strong>architecture-memory</strong> - Decisions logged</li>
-                            <li><strong>project-status</strong> - Health at a glance</li>
+                            <li><strong>lite-why-project</strong> - Strategic vision defined</li>
+                            <li><strong>lite-project-context</strong> - Stack always current</li>
+                            <li><strong>lite-architecture-memory</strong> - Decisions logged</li>
+                            <li><strong>lite-project-status</strong> - Health at a glance</li>
                         </ul>
                     </div>
 
                     <div class="skill-group">
                         <h3><span class="emoji">🛡️</span> Quality & Safety</h3>
                         <ul class="skill-list">
-                            <li><strong>integration-guardrails</strong> - Catch mistakes</li>
-                            <li><strong>data-consistency</strong> - Types aligned</li>
-                            <li><strong>ux-coherence</strong> - UX patterns consistent</li>
-                            <li><strong>quality-confidence</strong> - Pre-ship checklist</li>
+                            <li><strong>lite-integration-guardrails</strong> - Catch mistakes</li>
+                            <li><strong>lite-data-consistency</strong> - Types aligned</li>
+                            <li><strong>lite-ux-coherence</strong> - UX patterns consistent</li>
+                            <li><strong>lite-quality-confidence</strong> - Pre-ship checklist</li>
                         </ul>
                     </div>
 
                     <div class="skill-group">
                         <h3><span class="emoji">📝</span> Documentation</h3>
                         <ul class="skill-list">
-                            <li><strong>component-knowledge</strong> - Components documented</li>
-                            <li><strong>route-knowledge</strong> - Routes documented</li>
-                            <li><strong>document-artifact</strong> - Docs organized</li>
-                            <li><strong>behavior-clarity</strong> - Specs before code</li>
+                            <li><strong>lite-component-knowledge</strong> - Components documented</li>
+                            <li><strong>lite-route-knowledge</strong> - Routes documented</li>
+                            <li><strong>lite-document-artifact</strong> - Docs organized</li>
                             <li><strong>lite-communications</strong> - Visual HTML reports</li>
                         </ul>
                     </div>
@@ -626,30 +628,30 @@ graph TB
                     <div class="skill-group">
                         <h3><span class="emoji">✅</span> Task & Progress</h3>
                         <ul class="skill-list">
-                            <li><strong>user-instructions</strong> - Tasks never lost</li>
-                            <li><strong>work-memory</strong> - Progress tracked</li>
+                            <li><strong>lite-user-instructions</strong> - Tasks never lost</li>
+                            <li><strong>lite-work-memory</strong> - Progress tracked</li>
                         </ul>
                     </div>
 
                     <div class="skill-group">
                         <h3><span class="emoji">⚙️</span> Orchestration</h3>
                         <ul class="skill-list">
-                            <li><strong>shipkit-master-lite</strong> - Auto-loads context</li>
-                            <li><strong>whats-next</strong> - Smart workflow guidance</li>
+                            <li><strong>lite-shipkit-master</strong> - Auto-loads context</li>
+                            <li><strong>lite-whats-next</strong> - Smart workflow guidance</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="callout">
                     <h4>💡 Plus 3 Optional Power-Ups</h4>
-                    <p><strong>session-continuity</strong> for long sessions • <strong>debug-systematically</strong> for structured debugging • <strong>clarify-ambiguity</strong> to force precision</p>
+                    <p><strong>session-continuity</strong> for long sessions • <strong>lite-debug-systematically</strong> for structured debugging • <strong>clarify-ambiguity</strong> to force precision</p>
                 </div>
             </div>
 
             <!-- Token Optimization -->
             <div class="section">
                 <h2>Smart About Tokens</h2>
-                
+
                 <div class="callout warning">
                     <h4>⚡ 70-90% Fewer Tokens on Subsequent Sessions</h4>
                     <p>First session: Scans everything (~8,000 tokens). Every session after: Checks timestamps, loads only what changed (~500-1,500 tokens). Your context stays fresh without burning through tokens.</p>
@@ -659,14 +661,14 @@ graph TB
                     <div class="mermaid">
 graph LR
     Session[New Session Starts] --> Check{Context<br/>Fresh?}
-    
+
     Check -->|Yes<br/>stack.md newer<br/>than package.json| Load[📖 Just Read<br/>~500 tokens]
-    
+
     Check -->|No<br/>dependencies<br/>changed| Scan[🔍 Rescan<br/>~1,500 tokens]
-    
+
     Load --> Ready[✅ Ready to Code]
     Scan --> Ready
-    
+
     style Load fill:#10b981,color:#fff,stroke:#059669,stroke-width:2px
     style Scan fill:#f59e0b,color:#fff,stroke:#d97706,stroke-width:2px
     style Ready fill:#667eea,color:#fff,stroke:#4338ca,stroke-width:2px
@@ -677,7 +679,7 @@ graph LR
             <!-- What Makes It Different -->
             <div class="section">
                 <h2>What Makes ShipKit Lite Different?</h2>
-                
+
                 <div class="benefits">
                     <div class="benefit-card">
                         <div class="icon">🎨</div>
@@ -718,13 +720,13 @@ graph LR
             <p>ShipKit Lite is installed and ready to go.</p>
             <p style="margin-top: 20px; font-size: 1em; opacity: 0.8;">Start coding. Claude will handle the rest.</p>
             <div style="margin-top: 40px; opacity: 0.7;">
-                <p>16 Core Skills • 3 Optional • Zero Config • Forever Free</p>
+                <p>26 Core Skills • Zero Config • Forever Free</p>
             </div>
         </footer>
     </div>
 
     <script>
-        mermaid.initialize({ 
+        mermaid.initialize({
             startOnLoad: true,
             theme: 'default',
             flowchart: {

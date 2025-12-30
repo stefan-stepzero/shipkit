@@ -289,20 +289,41 @@ View full details in .shipkit-lite/user-tasks/active.md
 
 ---
 
-## Integration with Other Skills
+## When This Skill Integrates with Others
 
-**Triggered by these skills**:
-- `/lite-integration-guardrails` - Missing API keys, webhook secrets
-- `/lite-implement` - Package installation, database setup
-- `/lite-project-context` - Environment variable requirements
-- `/lite-quality-confidence` - Deploy configuration, DNS setup
+### Before This Skill
 
-**Can trigger**:
-- Nothing (this is a tracking-only skill)
+- `/lite-integration-guardrails` - Detects missing configuration
+  - **When**: Validation finds missing API keys, webhook secrets, environment variables
+  - **Why**: Track manual configuration tasks that block progress
+  - **Trigger**: Guard rail check fails, requires user action to fix
 
-**Used by**:
-- `/lite-project-status` - Shows active task count
-- `/lite-work-memory` - Logs when tasks created/completed
+- `/lite-implement` - Discovers missing dependencies
+  - **When**: Implementation needs packages, database setup, external services
+  - **Why**: Track installation/setup tasks so they aren't forgotten
+  - **Trigger**: Code requires dependency not yet installed
+
+- `/lite-project-context` - Identifies environment requirements
+  - **When**: Context generation detects missing environment configuration
+  - **Why**: Track setup tasks needed before development can proceed
+  - **Trigger**: stack.md generation reveals missing env vars or tools
+
+- `/lite-quality-confidence` - Pre-deployment checklist
+  - **When**: Quality check reveals manual deploy configuration needed
+  - **Why**: Track deployment tasks (DNS, webhooks, secrets) before shipping
+  - **Trigger**: Deployment readiness check finds missing configuration
+
+### After This Skill
+
+- `/lite-project-status` - Displays active task count
+  - **When**: User asks "what's the project status?"
+  - **Why**: Show pending user tasks as part of overall project health
+  - **Trigger**: Status check reads active.md to count pending tasks
+
+- `/lite-work-memory` - Logs task events
+  - **When**: Tasks created or completed
+  - **Why**: Track task lifecycle in session memory for continuity
+  - **Trigger**: Task added to active.md or moved to completed.md
 
 ---
 
@@ -400,147 +421,36 @@ Task tracking is complete when:
 
 ---
 
-## Common Scenarios
+## Reference Documentation
 
-### Scenario 1: Missing Environment Variable
+**For detailed guidance and examples:**
 
-```
-integration-guardrails-lite detects missing STRIPE_API_KEY
+- **Common scenarios** - `references/common-scenarios.md`
+  - Missing environment variables
+  - Package installation
+  - User-initiated tasks
+  - Task completion workflow
+  - Checking active tasks
 
-Claude:
-1. Invoke /lite-user-instructions
-2. Ask: "This blocks payment testing. High priority?"
-3. User: "Yes"
-4. Create task entry:
-   - Title: "Add Stripe API Key to .env.local"
-   - Priority: 🔴 High
-   - Steps: 1. Get key from Stripe dashboard, 2. Add to .env.local
-   - Verification: File contains STRIPE_API_KEY
-5. Suggest: "This blocks progress. I'll wait for completion before continuing."
-```
+- **Tips for effective tracking** - `references/tips.md`
+  - Be specific in steps
+  - Make verification concrete
+  - Set priority honestly
+  - Keep tasks atomic
+  - Update status regularly
 
-### Scenario 2: Package Installation
+- **Task decision guide** - `references/task-decision-guide.md`
+  - When to create task entries vs. just asking user
+  - Borderline scenarios and edge cases
+  - The "todo vs. respond" rule
 
-```
-implement-lite realizes @stripe/stripe-js package needed
-
-Claude:
-1. Auto-invoke /lite-user-instructions
-2. Create task:
-   - Title: "Install Stripe.js package"
-   - Priority: 🟡 Medium
-   - Steps: npm install @stripe/stripe-js
-   - Verification: Package in package.json
-3. Suggest: "I can continue with other components while you install this."
-```
-
-### Scenario 3: User Manually Adds Task
-
-```
-User: "Remind me to configure the domain DNS after we deploy"
-
-Claude:
-1. Invoke /lite-user-instructions
-2. Ask: "What DNS records need configuring?"
-3. User describes
-4. Create task:
-   - Title: "Configure production DNS records"
-   - Priority: 🟢 Low
-   - Steps: [DNS setup steps]
-   - Verification: Domain resolves to production
-5. Confirm: "Tracked for later. Let's continue with [current work]."
-```
-
-### Scenario 4: Task Completed
-
-```
-User: "I finished setting up the Stripe webhook"
-
-Claude:
-1. Ask: "Did you verify the webhook secret is in .env.local and stripe listen works?"
-2. User: "Yes"
-3. Read active.md
-4. Update task status to ✅ Completed [timestamp]
-5. Copy entry to completed.md
-6. Remove from active.md
-7. Confirm: "✅ Task archived. Ready to continue implementing payment flow?"
-```
-
-### Scenario 5: Check Active Tasks
-
-```
-User: "What do I need to do?"
-
-Claude:
-1. Read .shipkit-lite/user-tasks/active.md
-2. Parse entries
-3. Show summary by priority
-4. Suggest tackling high-priority items first
-```
-
----
-
-## Tips for Effective Task Tracking
-
-**Be specific in steps**:
-- ✅ "Run `stripe listen --forward-to localhost:3000/api/webhooks/stripe`"
-- ❌ "Set up Stripe webhooks"
-
-**Make verification concrete**:
-- ✅ "File `.env.local` contains `STRIPE_WEBHOOK_SECRET` starting with `whsec_`"
-- ❌ "Stripe is configured"
-
-**Set priority honestly**:
-- 🔴 High = Blocks current work
-- 🟡 Medium = Needed before deploy/merge
-- 🟢 Low = Future improvement
-
-**Keep tasks atomic**:
-- One task = One clear outcome
-- If task has 10+ steps, break into multiple tasks
-
-**Update status regularly**:
-- Move tasks to "In Progress" when starting
-- Don't let tasks stay "Pending" forever
-- Archive completed tasks promptly
-
----
-
-## When to Create Tasks vs. Just Telling User
-
-**Create task entry when**:
-- Multiple steps involved
-- Could be forgotten in chat history
-- Needs verification criteria
-- User will do it later (not immediately)
-- Part of larger workflow that continues after
-
-**Just tell user when**:
-- Single obvious action: "Please type 'y' to confirm"
-- Immediate response needed: "Which option do you prefer?"
-- Conversational clarification: "Should I continue?"
-
-**The rule**: If it's a "todo" not a "respond", track it.
-
----
-
-## Error Handling
-
-**If `.shipkit-lite/` directory doesn't exist**:
-- Create it automatically
-- Create `user-tasks/` subdirectory
-- Create `active.md` with header
-- Proceed with task entry
-
-**If task entry is malformed in active.md**:
-- Don't fail silently
-- Tell user: "Task entry format is inconsistent. I'll recreate it."
-- Rewrite the entry properly
-
-**If user marks task complete but verification fails**:
-- Don't move to completed.md
-- Update status to: "⚠️ Verification failed"
-- Ask user to re-do verification steps
+- **Error handling** - `references/error-handling.md`
+  - Missing directory structure
+  - Malformed task entries
+  - Verification failures
+  - File permission issues
+  - Duplicate task detection
+  - Vague task specifications
 
 ---
 

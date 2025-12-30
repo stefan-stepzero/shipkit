@@ -58,11 +58,19 @@ Shipkit adds:
 
 **Reference folder:** `claude-code-best-practices/` contains:
 - **REFERENCES-BEST-PRACTICES.md** - PRIMARY REFERENCE (start here)
+- **BUILDING-LITE-SKILLS.md** - LITE SKILL QUALITY GUIDE (creating/editing lite skills)
 - Official Claude Code documentation extracts
 - Skill authoring best practices
 - Agent persona guidelines
 - Comparative analysis (shipkit vs speckit vs obra)
 - Source repositories (obra-repo/, speckit/)
+
+**When creating or editing Lite skills:**
+- **MUST READ**: `claude-code-best-practices/BUILDING-LITE-SKILLS.md`
+- Covers 7-file integration system (manifest, hooks, routing, etc.)
+- Defines quality standards (cross-references, checklists, Iron Laws, etc.)
+- Production-ready = Integration (7 files) + Quality (Part 10)
+- DO NOT skip quality standards - they ensure causality, discoverability, and maintainability
 
 ### 2. Shipkit is a Layer, Not a Fork
 

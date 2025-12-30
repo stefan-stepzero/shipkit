@@ -82,143 +82,61 @@ If .shipkit-lite/why.md does NOT exist:
 
 #### Question 1: Who Is This For?
 
-**Ask:**
-```
-Let's define your project vision. This will help me make better suggestions aligned with your goals.
+**Ask**: "Who is this project for?" (target users, audience, stakeholders)
 
-Question 1 of 5: Who is this project for?
-
-Think: target users, audience, or stakeholders.
-
-Examples:
-  • "Solo developers building side projects"
-  • "Small teams at early-stage startups"
-  • "Enterprise customers needing compliance tools"
-  • "Myself - learning new framework"
-
-Your answer:
-```
+**Examples**: Solo developers, small teams, enterprise customers, myself (learning)
 
 **Capture**: 1-3 sentences max
 
-**If updating (old answer exists):**
-```
-Current answer: "{old answer}"
-
-Has this changed? (Enter new answer, or press Enter to keep current)
-```
+**If updating**: Show current answer, ask if changed
 
 ---
 
 #### Question 2: Why Does This Exist?
 
-**Ask:**
-```
-Question 2 of 5: Why does this project exist?
+**Ask**: "Why does this project exist?" (problem solving, value provided)
 
-Think: What problem are you solving? What value does it provide?
-
-Examples:
-  • "Developers waste time re-explaining context to AI every session"
-  • "No good tool for tracking architecture decisions in small projects"
-  • "Need to automate our manual deployment process"
-  • "Learning React by building something real"
-
-Your answer:
-```
+**Examples**: Solve wasted time, fill tooling gap, automate process, learn by building
 
 **Capture**: 1-3 sentences max
 
-**If updating (old answer exists):**
-```
-Current answer: "{old answer}"
-
-Has this changed?
-```
+**If updating**: Show current answer, ask if changed
 
 ---
 
 #### Question 3: Where Are We Now?
 
-**Ask:**
-```
-Question 3 of 5: Where are we now?
+**Ask**: "Where are we now?" (current state: POC/MVP/Beta/Production/Starting)
 
-Think: Current state - POC? MVP? Beta? Production? Just starting?
-
-Examples:
-  • "Early POC - proving the concept works"
-  • "MVP with core features, testing with 10 users"
-  • "Production app, adding new features"
-  • "Just started - have idea, no code yet"
-
-Your answer:
-```
+**Examples**: Early POC, MVP with users, production adding features, just started
 
 **Capture**: 1-2 sentences max
 
-**If updating (old answer exists):**
-```
-Current answer: "{old answer}"
-
-Has this changed?
-```
+**If updating**: Show current answer, ask if changed
 
 ---
 
 #### Question 4: Where Do We Need To Be?
 
-**Ask:**
-```
-Question 4 of 5: Where do we need to be?
+**Ask**: "Where do we need to be?" (vision, success state, what "done" looks like)
 
-Think: Vision, success state, what "done" looks like (even if far away)
-
-Examples:
-  • "Stable product used by 100+ developers daily"
-  • "Launched and making $1k/month MRR"
-  • "Feature complete, ready to hand off to team"
-  • "Personal tool I use every day, well-documented"
-
-Your answer:
-```
+**Examples**: Stable with users, revenue target, feature complete, personal tool used daily
 
 **Capture**: 1-3 sentences max
 
-**If updating (old answer exists):**
-```
-Current answer: "{old answer}"
-
-Has this changed?
-```
+**If updating**: Show current answer, ask if changed
 
 ---
 
 #### Question 5: How Are We Getting There?
 
-**Ask:**
-```
-Question 5 of 5: How are we getting there?
+**Ask**: "How are we getting there?" (approach, methodology, constraints, priorities)
 
-Think: Approach, methodology, constraints, priorities
-
-Examples:
-  • "Ship fast, iterate based on feedback, keep it simple"
-  • "TDD approach, deploy weekly, focus on reliability"
-  • "Learn by doing, document as I build, no deadlines"
-  • "Agile sprints, user testing every 2 weeks"
-
-Your answer:
-```
+**Examples**: Ship fast & iterate, TDD weekly deploys, learn by doing, agile sprints
 
 **Capture**: 1-3 sentences max
 
-**If updating (old answer exists):**
-```
-Current answer: "{old answer}"
-
-Has this changed?
-```
+**If updating**: Show current answer, ask if changed
 
 ---
 
@@ -377,85 +295,67 @@ Prompt-driven skills (no bash complexity). Iterate quickly based on user feedbac
 
 ## Workspace Structure
 
-**This skill creates:**
-
-```
-.shipkit-lite/
-  why.md              # One-page strategic vision
-```
-
-**Auto-loaded at session start by `lite-session-start.py`**
+Creates `.shipkit-lite/why.md` (auto-loaded by lite-session-start.py)
 
 ---
 
 ## What Makes This "Lite"
 
-**Included**:
-- ✅ One page (not dozens)
-- ✅ 5 core questions (not 50)
-- ✅ 2-5 minutes to complete (not hours)
-- ✅ High-level strategic context
-- ✅ Auto-loads at session start
-- ✅ Easy to update (overwrite entire file)
+**Lite approach**: 5 questions, 1 file, 2-5 minutes. Auto-loads at session start (~150 tokens).
 
-**Not included** (vs full ShipKit prod-* skills):
-- ❌ Detailed personas (prod-personas)
-- ❌ Jobs-to-be-done analysis (prod-jobs-to-be-done)
-- ❌ Market analysis (prod-market-analysis)
-- ❌ Brand guidelines (prod-brand-guidelines)
-- ❌ Interaction design (prod-interaction-design)
-- ❌ User stories with ACs (prod-user-stories)
+**Full ShipKit approach**: 10 skills, 10+ files, 2-4 hours (personas, JTBD, market analysis, brand, stories, etc.).
 
-**Philosophy**: Answer "why" in 5 minutes, not 5 hours. Provide enough strategic context for Claude to make aligned suggestions, without the ceremony of full product discovery.
+**Philosophy**: Answer "why" in 5 minutes, not 5 hours. Enough strategic context without full product discovery.
+
+**See `references/full-vs-lite.md` for detailed comparison.**
 
 ---
 
 ## Difference from Full ShipKit
 
-| Aspect | Full ShipKit (prod-*) | lite-why-project |
-|--------|----------------------|------------------|
-| **Time to complete** | 2-4 hours (10 skills) | 2-5 minutes (5 questions) |
-| **Detail level** | Comprehensive product discovery | High-level strategic overview |
-| **Output files** | 10+ files (personas, JTBD, market, brand, stories, etc.) | 1 file (why.md) |
-| **When to use** | Greenfield products needing validation | POCs, MVPs, side projects |
-| **Update frequency** | Rarely (major pivots only) | Anytime vision evolves |
-| **Session loading** | Not auto-loaded (too large) | Auto-loads (~150 tokens) |
+**See `references/full-vs-lite.md` for detailed comparison.**
 
-**Use lite-why-project for:**
-- Side projects
-- POCs and experiments
-- MVPs and early products
-- Learning projects
-- Internal tools
-- When you just need alignment, not validation
+**Quick summary:**
+- **Full ShipKit**: 2-4 hours, 10+ files, comprehensive product discovery
+- **lite-why-project**: 2-5 minutes, 1 file, high-level strategic overview
 
-**Use full ShipKit prod-* skills for:**
-- Startups raising funding
-- Products needing market validation
-- B2B SaaS with complex user types
-- When you need detailed product artifacts
-- Enterprise products
+Use lite-why-project for side projects, POCs, MVPs. Use full ShipKit for startups, market validation, enterprise products.
 
 ---
 
-## Integration with Other Skills
+## When This Skill Integrates with Others
 
-**Before lite-why-project**:
-- Nothing (can be first skill)
+### Before This Skill
 
-**After lite-why-project**:
+- None (can be first skill)
+  - **When**: Starting a brand new project
+  - **Why**: Vision provides strategic context before any other work
+  - **Trigger**: User wants to define "why" before "what" or "how"
+
+### After This Skill
+
 - `/lite-project-context` - Scan technical stack
-- `/lite-architecture-memory` - Log decisions aligned with vision
-- `/lite-spec` - Create feature specs aligned with vision
-- Any other skill - Claude now has strategic context
+  - **When**: Vision defined, ready to document current state
+  - **Why**: Stack info combined with vision enables better suggestions
+  - **Trigger**: User runs "/lite-project-context" after defining vision
 
-**When to use**:
-- **New project**: Run this first (before even scanning stack)
-- **Mid-project**: When you realize Claude doesn't understand your goals
-- **Team onboarding**: Share why.md to align everyone
-- **Vision shift**: When direction changes, update the vision
+- `/lite-architecture-memory` - Log architectural decisions
+  - **When**: Making technical decisions that need strategic alignment
+  - **Why**: Decisions should align with vision (e.g., "ship fast" → simpler solutions)
+  - **Trigger**: User logs decision like "using SQLite instead of Postgres"
 
-**How other skills use this**:
+- `/lite-spec` - Create feature specs
+  - **When**: Building features for the project
+  - **Why**: Specs can reference vision for alignment checks
+  - **Trigger**: User says "build feature X" and spec references vision priorities
+
+- Any other skill - Strategic context available
+  - **When**: Any session after why.md created
+  - **Why**: Auto-loads at session start, influences all Claude suggestions
+  - **Trigger**: lite-session-start.py loads why.md automatically
+
+### How Other Skills Use This
+
 ```
 User: "Should we add OAuth or keep simple email auth?"
 
@@ -496,30 +396,9 @@ Claude (WITHOUT why.md):
 
 ## Session Start Behavior
 
-**lite-session-start.py will auto-load why.md:**
+**lite-session-start.py auto-loads why.md** (~150 tokens)
 
-```python
-# If why.md exists
-why_file = project_root / '.shipkit-lite' / 'why.md'
-if why_file.exists():
-    print("# Project Vision (cached)")
-    print()
-    print(why_file.read_text(encoding='utf-8'))
-    print()
-    print("---")
-    print()
-```
-
-**Result**: Claude starts every session knowing:
-- Who the project is for
-- Why it exists
-- Current state
-- Future vision
-- Approach and priorities
-
-**Token cost**: ~150 tokens (one-page document)
-
-**Benefit**: Better suggestions aligned with strategic goals
+**Result**: Claude starts every session knowing who/why/where (current/future)/how, enabling better aligned suggestions.
 
 ---
 
@@ -538,173 +417,60 @@ Vision is defined when:
 
 ## Common Scenarios
 
-### Scenario 1: Brand New Project
-
-```
-User: "Define the project vision"
-
-Claude:
-1. Check: why.md doesn't exist
-2. Ask Question 1: "Who is this for?"
-3. User: "Solo developers learning React"
-4. Ask Question 2: "Why does this exist?"
-5. User: "I need a real project to learn React hooks and state management"
-6. Ask Question 3: "Where are we now?"
-7. User: "Just started, have basic setup"
-8. Ask Question 4: "Where do we need to be?"
-9. User: "Working app I can show in portfolio, well-documented code I can reference later"
-10. Ask Question 5: "How are we getting there?"
-11. User: "Build feature by feature, document each pattern as I learn it"
-12. Ask: Constraints/priorities?
-13. User: "Priority: learning over shipping fast"
-14. Write: why.md with all answers
-15. Confirm: "Vision defined. Will auto-load at session start."
-```
-
-### Scenario 2: Updating Existing Vision
-
-```
-User: "Update the project vision"
-
-Claude:
-1. Check: why.md exists
-2. Ask: "Vision exists. View, Update, or Cancel?"
-3. User: "Update"
-4. Read: old why.md
-5. Ask Question 1: "Who is this for?"
-   Show: "Current: Solo developers learning React"
-   Ask: "Has this changed?"
-6. User: "Now for small dev teams at startups"
-7. Ask Questions 2-5 (showing old answers, asking for changes)
-8. User updates answers 1 and 4, keeps others
-9. Ask: Constraints/priorities?
-10. User keeps old constraints
-11. Write: why.md (preserve Created date, update Last Updated)
-12. Confirm: Updated vision shown
-```
-
-### Scenario 3: Mid-Session Suggestion
-
-```
-[Session starts]
-lite-session-start.py: "📝 No project vision found. Run /lite-why-project to define who/why/where"
-
-User: "Scan my project"
-Claude: Runs /lite-project-context
-
-User: "Should I use TypeScript or JavaScript?"
-Claude: "Before I recommend, would you like to run /lite-why-project?
-         Knowing your goals (learning vs shipping, team size, priorities)
-         will help me give you a better answer."
-
-User: "/lite-why-project"
-Claude: [Runs through 5 questions]
-Claude: "Now that I know this is a learning project with priority on
-         understanding fundamentals, I'd recommend starting with JavaScript.
-         Once you're comfortable, add TypeScript to learn type systems."
-```
+**See `references/common-scenarios.md` for detailed examples:**
+- Scenario 1: Brand New Project
+- Scenario 2: Updating Existing Vision
+- Scenario 3: Mid-Session Suggestion
 
 ---
 
 ## Tips for Effective Vision Definition
 
-**Keep it concise**:
-- 1-3 sentences per question
+**See `references/tips.md` for detailed guidance on:**
+- Keeping it concise (1-3 sentences per question)
+- Being honest about project scope
+- Understanding how vision influences Claude's decisions
+- When to update the vision
+- Sharing vision with team
+- When NOT to use this skill (vs full ShipKit)
+
+**Quick tips:**
 - High-level, not detailed
 - Strategic, not tactical
-
-**Be honest**:
-- "Learning project" is valid
-- "Just for me" is valid
-- "No deadline" is valid
-
-**Think about Claude's decisions**:
-- Your answers will influence every suggestion Claude makes
-- Example: "Priority: speed" → Claude suggests simpler solutions
-- Example: "Priority: learning" → Claude suggests educational approaches
-
-**Update when things change**:
-- Pivot from solo to team? Update.
-- Shift from POC to production? Update.
-- Changed priorities? Update.
-
-**Share with team**:
-- why.md is onboarding documentation
-- Gets everyone aligned on vision
-- Reference it in discussions
-
----
-
-## When NOT to Use This Skill
-
-**Skip lite-why-project if:**
-- You're doing a 10-minute code spike (too small)
-- You're modifying someone else's codebase (not your vision to define)
-- You're following strict requirements (vision already defined elsewhere)
-
-**Use full ShipKit prod-* skills if:**
-- Raising funding (need comprehensive business case)
-- Validating market (need market analysis)
-- Complex product (need detailed personas, JTBD)
-- B2B SaaS (need multiple user types mapped)
+- Update when direction changes
+- Share why.md for team alignment
 
 ---
 
 ## Example Output
 
-**File**: `.shipkit-lite/why.md`
+**See `references/example-output.md` for a complete example of why.md.**
 
-```markdown
-# Why This Project
+**Structure:**
+- Created/Last Updated dates
+- 5 core sections (Who/Why/Where Now/Where To Be/How)
+- Optional Constraints & Priorities section
 
-**Created**: 2025-12-28
-**Last Updated**: 2025-12-28
-
----
-
-## Who Is This For?
-
-Solo developers building side projects who want structure without complexity. People who have good ideas but get lost in implementation without a framework.
+**Remember**: This is strategic context, not requirements. Keep it high-level. Answer "why" not "how". Think vision, not spec.
 
 ---
 
-## Why Does This Exist?
+## Reference Documentation
 
-Claude Code is powerful but forgets everything between sessions. Developers waste 10-15 minutes every session re-explaining their stack, architecture decisions, and project goals. This framework gives Claude persistent memory.
+**This skill provides detailed guidance in reference files:**
 
----
+**Process Examples:**
+- `references/common-scenarios.md` - 3 scenarios (brand new project, updating vision, mid-session suggestion)
 
-## Where Are We Now?
+**Best Practices:**
+- `references/tips.md` - Tips for effective vision definition, when NOT to use this skill
 
-Early MVP with 18 lite skills. Being tested by a handful of developers on POCs and side projects. Core patterns proven, ready to expand.
+**Templates & Examples:**
+- `references/example-output.md` - Complete example of why.md file
+- `references/full-vs-lite.md` - Comparison between lite-why-project and full ShipKit prod-* skills
 
----
-
-## Where Do We Need To Be?
-
-Stable Lite edition with 20 skills, used by 100+ developers daily. Full edition ready for teams working on complex greenfield products. Solid documentation so anyone can install and use it.
-
----
-
-## How Are We Getting There?
-
-Ship quickly, iterate based on user feedback. Keep Lite simple (prompt-driven, no bash complexity). Make Full comprehensive (full product discovery + dev workflow). Document everything as we build.
-
----
-
-## Constraints & Priorities
-
-**Constraints:**
-- Solo maintainer with limited time (~10 hours/week)
-- Must work cross-platform (Windows/Mac/Linux)
-- No external dependencies (just Claude Code + Python)
-
-**Priorities:**
-1. Speed of execution (ship fast, iterate)
-2. Developer experience (make it obvious)
-3. Documentation (make it learnable)
-```
-
----
-
-**Remember**: This is strategic context, not requirements. Keep it high-level. Answer "why" not "how". Think vision, not spec. Claude will use this to make better decisions aligned with your goals.
+**How to use references:**
+- Main SKILL.md provides the 5-question process
+- Reference files provide examples and best practices
+- Keep answers concise (1-3 sentences each)
+- Update vision when direction changes

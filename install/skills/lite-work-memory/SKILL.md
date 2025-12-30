@@ -217,6 +217,65 @@ Ready to continue or end session?
 
 ---
 
+### Step 6: Auto-Archive Old Sessions (48-Hour Window)
+
+**After appending session, automatically archive entries older than 48 hours:**
+
+**Process:**
+1. Calculate cutoff date: `current_date - 48 hours`
+2. Scan progress.md for entries older than cutoff
+3. If old entries found:
+   - Group by month (YYYY-MM)
+   - Append to `.shipkit-lite/archives/progress-archive-YYYY-MM.md`
+   - Remove from progress.md
+   - Notify user
+
+**Archive file structure:**
+```
+.shipkit-lite/
+  progress.md              # Last 48 hours only (3-5 sessions)
+  archives/
+    progress-archive-2025-12.md   # December sessions
+    progress-archive-2025-11.md   # November sessions
+    progress-archive-2025-10.md   # October sessions
+```
+
+**Archive file format:**
+```markdown
+# Progress Archive: December 2025
+
+Archived sessions from December 2025. For recent sessions, see progress.md.
+
+---
+
+## [2025-12-28] | Feature Implementation
+[... session entry ...]
+
+## [2025-12-27] | Bug Fix
+[... session entry ...]
+```
+
+**Notification to user:**
+```
+📦 Archived 3 sessions (>48hrs old) to archives/progress-archive-2025-12.md
+
+Recent working memory: last 48 hours (4 sessions)
+Searchable history: archives/ folder
+```
+
+**Why 48-hour window:**
+- Keeps progress.md under 500 lines (~200-400 tokens to load)
+- True "working memory" - recent context for active work
+- Archives preserve full history by month
+- Easy to search archives if needed: "When did we add X?"
+
+**Creating archives/ folder:**
+- If doesn't exist: create `.shipkit-lite/archives/`
+- If archive file doesn't exist: create with header
+- If archive file exists: append old entries
+
+---
+
 ## What Makes This "Lite"
 
 **Included**:
@@ -239,21 +298,45 @@ Ready to continue or end session?
 
 ---
 
-## Integration with Other Skills
+## When This Skill Integrates with Others
 
-**Before work-memory-lite**:
+### Before This Skill
+
 - `/lite-implement` - Completes features
+  - **When**: Feature implementation finished
+  - **Why**: Log what was built before context is lost
+  - **Trigger**: User says "feature is done" or "/lite-implement" completes
+
 - `/lite-quality-confidence` - Verifies work
+  - **When**: Quality verification complete
+  - **Why**: Log verification results and confidence level
+  - **Trigger**: Quality check passes/fails with findings
+
 - Any development work session
+  - **When**: Ending active work session
+  - **Why**: Capture progress while context is fresh
+  - **Trigger**: User says "end session", "log progress", or "save work"
 
-**After work-memory-lite**:
-- `/lite-session-continuity` - Prepares detailed handoff for next session (optional)
+### After This Skill
+
+- `/lite-session-continuity` - Prepares detailed handoff
+  - **When**: Session ending, need rich context for next time
+  - **Why**: Combines progress log with active context for seamless resume
+  - **Trigger**: User wants comprehensive handoff document beyond simple log
+
 - End session with clear record
+  - **When**: Work session complete, progress logged
+  - **Why**: Future sessions can reference what was accomplished
+  - **Trigger**: Progress logged, user ready to close session
 
-**Complementary**:
-- Works alongside implementations.md (detailed feature docs)
-- Works alongside architecture.md (decision rationale)
-- Provides timeline view that other files don't
+### Complementary Usage
+
+Works alongside other context files:
+- `implementations.md` - Detailed feature documentation (what exists)
+- `architecture.md` - Decision rationale (why choices made)
+- `progress.md` - Timeline view (when things happened)
+
+Each provides different view of project evolution.
 
 ---
 
@@ -311,210 +394,42 @@ Session is logged when:
 
 ## Common Scenarios
 
-### Scenario 1: Feature Just Completed
-
-```
-User: "Log what we did today"
-
-Claude:
-1. Ask: "What did we accomplish?"
-   User: "Built the recipe sharing feature"
-2. Ask: "Any blockers?"
-   User: "None, it's shipped"
-3. Ask: "What's next?"
-   User: "Add analytics tracking"
-4. Read .shipkit-lite/progress.md
-5. Append session:
-   ## [2025-01-15] | Recipe Sharing Feature
-   **Completed**: Recipe sharing feature
-   **Files**: ShareButton.tsx, share/[token]/page.tsx, api/share/route.ts
-   **Status**: ✓ Shipped
-   **Next Steps**: Add analytics tracking
-```
-
-### Scenario 2: Work In Progress
-
-```
-User: "Save progress, I need to stop"
-
-Claude:
-1. Ask: "What did we get done?"
-   User: "Started the sharing feature, got the UI done but API not finished"
-2. Ask: "What's blocking?"
-   User: "Need to figure out auth for the share token"
-3. Ask: "Next session plan?"
-   User: "Finish the API, add tests"
-4. Append session:
-   ## [2025-01-15] | Sharing Feature (Partial)
-   **Completed**: Share button UI component
-   **Files**: ShareButton.tsx
-   **Status**: 🚧 In Progress
-   **Blockers**: Need to design auth for share tokens
-   **Next Steps**: Implement share API, add token auth, write tests
-```
-
-### Scenario 3: Infer from Conversation
-
-```
-User: "Just infer what we did"
-
-Claude:
-1. Review conversation history
-2. Note:
-   - Created 3 files (ShareButton.tsx, route.ts, types.ts)
-   - Discussed token-based auth approach
-   - Ran tests, all passing
-   - Suggested analytics as next step
-3. Read progress.md
-4. Append session:
-   ## [2025-01-15] | Recipe Sharing Implementation
-   **Completed**:
-   - Share button component with copy-to-clipboard
-   - Share API endpoint with token generation
-   - Type definitions for sharing
-   **Files**:
-   - `components/ShareButton.tsx` - Share UI
-   - `app/api/share/route.ts` - Token generation
-   - `types/sharing.ts` - Type definitions
-   **Key Decisions**:
-   - Token-based sharing (UUID v4, 24hr expiry)
-   - Copy-to-clipboard using navigator.clipboard
-   **Status**: ✓ Shipped
-   **Next Steps**: Add analytics tracking for share events
-```
-
-### Scenario 4: Debugging Session
-
-```
-User: "Log this debugging session"
-
-Claude:
-1. Ask: "What bug did we fix?"
-   User: "Share button wasn't working in Safari"
-2. Ask: "What was the issue?"
-   User: "Clipboard API needs https, was failing in dev"
-3. Ask: "How did we fix it?"
-   User: "Added fallback to document.execCommand"
-4. Append session:
-   ## [2025-01-15] | Safari Clipboard Bug Fix
-   **Completed**: Fixed share button Safari compatibility
-   **Files**: `components/ShareButton.tsx` - Added clipboard fallback
-   **Key Decisions**:
-   - Use navigator.clipboard with fallback to execCommand for Safari/http
-   - Show error toast if both methods fail
-   **Status**: ✓ Shipped
-   **Next Steps**: Test on mobile Safari, consider adding share sheet API
-```
-
-### Scenario 5: Multiple Features in One Session
-
-```
-User: "We did a lot today, log it all"
-
-Claude:
-1. Ask: "What did we complete?"
-   User: "Share feature, analytics, and dark mode toggle"
-2. Ask: "Any issues?"
-   User: "Analytics is shipping errors to console, need to debug"
-3. Ask: "Next session?"
-   User: "Fix analytics errors, add user settings page"
-4. Append session:
-   ## [2025-01-15] | Multi-Feature Session
-   **Completed**:
-   - Recipe sharing with token-based auth (✓ shipped)
-   - Dark mode toggle in settings (✓ shipped)
-   - Analytics tracking (🚧 partial - has bugs)
-   **Files**:
-   - `components/ShareButton.tsx` - Share UI
-   - `app/api/share/route.ts` - Share API
-   - `components/DarkModeToggle.tsx` - Theme toggle
-   - `lib/analytics.ts` - Event tracking (buggy)
-   **Status**: 🚧 In Progress
-   **Blockers**: Analytics throwing console errors on page load
-   **Next Steps**:
-   - Debug analytics initialization
-   - Add user settings page
-   - Test dark mode persistence
-   **Session Duration**: ~3 hours
-```
+**See `references/common-scenarios.md` for detailed examples:**
+- Scenario 1: Feature Just Completed
+- Scenario 2: Work In Progress
+- Scenario 3: Infer from Conversation
+- Scenario 4: Debugging Session
+- Scenario 5: Multiple Features in One Session
 
 ---
 
 ## Tips for Effective Session Logging
 
-**Be specific**:
-- "Added share button" → "Share button with copy-to-clipboard and success toast"
-- "Fixed bug" → "Fixed Safari clipboard API fallback"
-- "Updated API" → "Added token-based auth to share endpoint"
+**See `references/tips.md` for detailed guidance on:**
+- Being specific in descriptions
+- Logging decisions (WHY not just WHAT)
+- Tracking blockers honestly
+- Making next steps actionable
+- Including file paths
+- Using progress log as project history
 
-**Log decisions**:
-- Document WHY, not just WHAT
-- Future you will thank present you
-- "Used UUID v4 because crypto.randomUUID() has better browser support than custom tokens"
-
-**Track blockers honestly**:
-- Don't hide problems
-- Note impact: "Blocking deployment" vs "Nice to have"
-- Include what's needed to unblock
-
-**Make next steps actionable**:
-- ❌ "Continue working on feature"
-- ✅ "Implement POST endpoint, add validation, write integration test"
-
-**Include file paths**:
-- Absolute or relative (but consistent)
-- Makes it easy to find code later
-- Shows scope of changes
+**See `references/lite-vs-full.md` for when to upgrade to full /work-memory.**
 
 ---
 
-## Progress Log as Project History
+## Reference Documentation
 
-**Over time, progress.md becomes**:
-- Timeline of feature evolution
-- Record of architectural decisions
-- Log of blockers and resolutions
-- Reference for "when did we do X?"
-- Handoff document for new team members
-- Evidence of progress for stakeholders
+**This skill provides detailed guidance in reference files:**
 
-**Example entry after 10 sessions**:
-```markdown
-## [2025-01-15] | Recipe Sharing Feature ✓
-## [2025-01-14] | Dark Mode Implementation ✓
-## [2025-01-13] | Analytics Integration (Partial) 🚧
-## [2025-01-12] | User Authentication Refactor ✓
-## [2025-01-11] | Database Schema Migration ✓
-## [2025-01-10] | Initial Project Setup ✓
-## [2025-01-09] | Planning & Architecture ✓
-## [2025-01-08] | Product Discovery Complete ✓
-## [2025-01-07] | User Research & Personas ✓
-## [2025-01-06] | Strategic Thinking & Constitution ✓
-```
+**Process Examples:**
+- `references/common-scenarios.md` - 5 session logging scenarios (feature complete, WIP, inferred, debugging, multi-feature)
 
-**You can grep/search this file** to answer:
-- "When did we add dark mode?" → Search for "dark mode"
-- "What was that auth decision?" → Search for "auth"
-- "What's still in progress?" → Search for "🚧"
+**Best Practices:**
+- `references/tips.md` - Effective session logging tips, using progress as history
+- `references/lite-vs-full.md` - When to upgrade from lite to full work-memory
 
----
-
-## When to Upgrade to Full /work-memory
-
-**Lite is sufficient for**:
-- Solo developers or small teams
-- POC/MVP projects
-- Session-by-session tracking
-- Simple "what did we do?" questions
-
-**Upgrade to full /work-memory when**:
-- Need automatic metrics (LoC, complexity, coverage)
-- Want git commit integration
-- Require time tracking/velocity
-- Managing multiple developers
-- Need sprint/milestone planning
-- Stakeholder reporting with charts
-
----
-
-**Remember**: The goal is a simple, consistent log of what happened. Write entries as if you're explaining to future you what you did and why. Keep it brief but informative.
+**How to use references:**
+- Main SKILL.md provides the logging process workflow
+- Reference files provide examples and best practices
+- Keep session entries brief but informative
+- Let auto-archiving handle history management

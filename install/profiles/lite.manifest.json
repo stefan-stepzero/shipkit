@@ -11,6 +11,8 @@
       "lite-project-status",
       "lite-project-context",
       "lite-spec",
+      "lite-prototyping",
+      "lite-prototype-to-spec",
       "lite-architecture-memory",
       "lite-ux-coherence",
       "lite-data-consistency",

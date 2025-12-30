@@ -432,6 +432,35 @@ def make_scripts_executable(target_dir, language):
         print_success("Python scripts are now executable")
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# MCP CONFIGURATION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def install_mcp_config(repo_root, target_dir):
+    """Install MCP server configuration (Context7)"""
+    mcp_config_path = target_dir / ".mcp.json"
+    template_path = repo_root / "install" / "templates" / ".mcp.json"
+
+    # Check if .mcp.json already exists
+    if mcp_config_path.exists():
+        print_warning(f".mcp.json already exists at {target_dir}")
+        print_info("Skipping MCP configuration (keeping existing)")
+        return
+
+    # Check if template exists
+    if not template_path.exists():
+        print_warning("MCP template not found - skipping Context7 setup")
+        print_info(f"Expected: {template_path}")
+        return
+
+    try:
+        # Copy template to target
+        shutil.copy2(template_path, mcp_config_path)
+        print_success("MCP configuration installed (.mcp.json)")
+        print_info("Context7 server configured (use 'use context7' in prompts)")
+    except Exception as e:
+        print_error(f"Failed to install MCP config: {e}")
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # COMPLETION
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -496,6 +525,7 @@ def show_completion(target_dir, manifest, language):
     print_success(f"Settings ({edition} edition) (.claude/settings.json)")
     print_success(f"Project instructions ({edition}) (CLAUDE.md)")
     print_success("Git configuration (.gitignore)")
+    print_success("MCP configuration - Context7 (.mcp.json)")
 
     print()
     print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
@@ -606,6 +636,7 @@ def main():
     install_agents(repo_root, target_dir, manifest)
     delete_unused_language(target_dir, language)
     make_scripts_executable(target_dir, language)
+    install_mcp_config(repo_root, target_dir)
 
     # Show completion
     show_completion(target_dir, manifest, language)

@@ -1,11 +1,11 @@
 ---
 name: lite-whats-next
-description: Analyzes project state across 4 pillars (Vision → Understand → Co-design → Execute → Document) and suggests next skill with rationale. Auto-called after every skill via hook.
+description: Analyzes project state across 5 pillars (Vision → Understand → Co-design → Execute → Document) and suggests next skill with rationale. Auto-invoked after every skill via Stop hook.
 ---
 
 # lite-whats-next - Intelligent Workflow Guidance
 
-**Purpose**: Analyze current project state, identify gaps, and suggest the next logical skill based on 4-pillar strategic framework.
+**Purpose**: Analyze current project state, identify gaps, and suggest the next logical skill based on 5-pillar strategic framework.
 
 **What it does**: Scans `.shipkit-lite/`, evaluates completion across pillars, detects workflow phase, suggests next skill with rationale.
 
@@ -14,7 +14,8 @@ description: Analyzes project state across 4 pillars (Vision → Understand → 
 ## When to Invoke
 
 **Auto-invoked**:
-- After EVERY skill completes (via suggest-next-skill.py hook)
+- After EVERY skill completes (via suggest-next-skill.py Stop hook)
+- Mandatory per `lite.md` meta-rule
 
 **Manual invocation**:
 - User asks: "What should I do next?", "What's next?", "Where should I start?"
@@ -28,7 +29,21 @@ description: Analyzes project state across 4 pillars (Vision → Understand → 
 
 ---
 
-## The 4-Pillar Framework
+## Prerequisites
+
+**Required**:
+- `.shipkit-lite/` folder exists (created by any lite skill)
+
+**Optional** (enhances analysis):
+- `why.md` - Strategic vision (better suggestions)
+- `stack.md` - Technical context (smarter routing)
+- Any other context files (more accurate gap detection)
+
+**This skill can run even on empty projects** - it detects the brand-new state and suggests `/lite-why-project` as starting point.
+
+---
+
+## The 5-Pillar Framework
 
 **Order**: Vision → Understand → Co-design → Execute → Document
 
@@ -61,11 +76,17 @@ description: Analyzes project state across 4 pillars (Vision → Understand → 
 
 **Skills**:
 - lite-spec (feature specifications)
+- lite-prototyping (rapid UI mockups)
+- lite-prototype-to-spec (extract prototype learnings to specs)
 - lite-plan (implementation plans)
+- lite-ux-coherence (ensure UX consistency)
 
 **Outputs**:
 - `.shipkit-lite/specs/active/*.md`
+- `.shipkit-mockups/[name]/` (prototypes)
+- Specs updated with UI/UX section (from prototype extraction)
 - `.shipkit-lite/plans/*.md`
+- UX analysis (console only, or appended to spec)
 
 ---
 
@@ -91,6 +112,7 @@ description: Analyzes project state across 4 pillars (Vision → Understand → 
 - lite-route-knowledge (document routes)
 - lite-architecture-memory (log decisions)
 - lite-data-consistency (capture types)
+- lite-work-memory (log session progress)
 - lite-communications (visual HTML reports)
 - lite-document-artifact (structured docs)
 
@@ -98,6 +120,7 @@ description: Analyzes project state across 4 pillars (Vision → Understand → 
 - `.shipkit-lite/implementations.md`
 - `.shipkit-lite/architecture.md`
 - `.shipkit-lite/types.md`
+- `.shipkit-lite/progress.md`
 - `.shipkit-lite/docs/**/*.md`
 - `.shipkit-lite/communications/latest.html`
 
@@ -119,11 +142,13 @@ Read/Check:
 - architecture.md (exists? entry count?)
 - types.md (exists?)
 - user-tasks/active.md (exists? task count?)
+- progress.md (exists? session count?)
 - communications/ (exists?)
 - docs/ (exists? count files?)
 ```
 
 **Also check:**
+- `.shipkit-mockups/` (count prototype folders)
 - Source code existence (src/, app/, components/ folders)
 - Git status (uncommitted changes?)
 
@@ -153,7 +178,7 @@ Read/Check:
 
 **Pillar 5: Document Current - Check completion:**
 - ✅ Complete: implementations.md exists with content
-- ⏳ Partial: Some docs exist (implementations OR architecture)
+- ⏳ Partial: Some docs exist (implementations OR architecture OR progress)
 - ❌ Missing: No documentation of current state
 
 ---
@@ -176,19 +201,19 @@ Read/Check:
 - Missing: Specs
 - Suggest: /lite-spec
 
-**Phase 4: Implementation** (specs exist, need plans or implementation)
+**Phase 4: Prototyping/Implementation** (specs exist, ready to build)
 - Has: Vision, Stack, Specs
-- Missing: Plans or implementation incomplete
-- Suggest: /lite-plan OR /lite-implement
+- Missing: Plans, prototypes, or implementation incomplete
+- Suggest: /lite-prototyping (if UI-heavy) OR /lite-plan OR /lite-implement
 
 **Phase 5: Documentation** (code exists, docs missing)
 - Has: Source code
 - Missing: Documentation (implementations.md sparse)
-- Suggest: /lite-component-knowledge
+- Suggest: /lite-component-knowledge OR /lite-work-memory
 
 **Phase 6: Quality** (ready to ship)
 - Has: Implementation complete
-- Suggest: /lite-quality-confidence
+- Suggest: /lite-quality-confidence OR /lite-ux-coherence
 
 ---
 
@@ -211,6 +236,8 @@ Read/Check:
 **lite-component-knowledge dependencies:**
 - Required: Source code exists
 - Error if missing: "No components to document yet. Implement first."
+
+**See `references/pillar-dependencies.md` for complete dependency rules.**
 
 ---
 
@@ -275,152 +302,19 @@ Read/Check:
 
 ---
 
-## Example Scenarios
-
-### Scenario 1: Brand New Project
-
-**State**: Nothing exists
-
-**Analysis**:
-- Pillar 1 (Vision): ❌ Missing (no why.md)
-- Pillar 2 (Understand): ❌ Missing (no stack.md)
-- Pillar 3 (Co-design): ❌ Missing (no specs)
-- Pillar 4 (Execute): ❌ Not started
-- Pillar 5 (Document): ❌ Missing
-
-**Recommendation**:
-```
-Run: /lite-why-project
-
-Why: Starting a project without vision leads to aimless decisions.
-     Define who/why/where first, then everything else aligns.
-
-What this accomplishes:
-- Pillar 1: Vision defined
-- Outcome: Claude knows your goals for better suggestions
-```
-
----
-
-### Scenario 2: Vision + Stack, No Specs
-
-**State**: why.md and stack.md exist, no specs
-
-**Analysis**:
-- Pillar 1 (Vision): ✅ Complete
-- Pillar 2 (Understand): ✅ Complete
-- Pillar 3 (Co-design): ❌ Missing
-- Pillar 4 (Execute): ❌ Not started
-- Pillar 5 (Document): ❌ Missing
-
-**Recommendation**:
-```
-Run: /lite-spec
-
-Why: You know your vision and tech stack. Time to plan your first feature.
-
-What this accomplishes:
-- Pillar 3: Co-design initiated
-- Outcome: Clear feature spec guides implementation
-```
-
----
-
-### Scenario 3: Code Exists, No Docs
-
-**State**: Source code in src/, no implementations.md
-
-**Analysis**:
-- Pillar 1 (Vision): ✅ Complete
-- Pillar 2 (Understand): ✅ Complete
-- Pillar 3 (Co-design): ✅ Complete (2 specs, 2 plans)
-- Pillar 4 (Execute): ⏳ In Progress
-- Pillar 5 (Document): ❌ Missing (no implementations.md)
-
-**Recommendation**:
-```
-Run: /lite-component-knowledge
-
-Why: You've built components but haven't documented them.
-     Document now (2 min) vs trying to remember later (20 min).
-
-What this accomplishes:
-- Pillar 5: Document current state
-- Outcome: Future you (or teammates) can understand your code
-
-Alternative Paths:
-- Continue building: /lite-implement (if rushing)
-- Ship current feature: /lite-quality-confidence
-```
-
----
-
-### Scenario 4: Spec Exists, No Plan
-
-**State**: specs/active/recipe-sharing.md exists, no plan
-
-**Analysis**:
-- Pillar 3 (Co-design): ⏳ Partial (spec exists, plan missing)
-
-**Recommendation**:
-```
-Run: /lite-plan
-
-Why: You have a spec but no implementation plan.
-     Planning helps break work into manageable tasks.
-
-What this accomplishes:
-- Pillar 3: Co-design complete
-- Outcome: Clear roadmap from spec to implementation
-```
-
----
-
-### Scenario 5: Missing Dependencies Warning
-
-**State**: User just ran /lite-plan but no spec exists
-
-**Recommendation**:
-```
-Run: /lite-spec
-
-⚠️  Note: You created a plan without a spec. Consider creating
-          a spec first for better alignment.
-
-Why: Plans work best when based on clear specifications.
-
-What this accomplishes:
-- Pillar 3: Proper co-design flow (spec → plan)
-- Outcome: Implementation has clear requirements
-
-Alternative Paths:
-- Proceed anyway: /lite-implement (use plan as-is)
-```
-
----
-
 ## Integration with suggest-next-skill.py Hook
 
-**Old hook** (80+ lines):
-```python
-# Detect which skill just ran
-# Check 8+ file locations
-# Map to 8+ different suggestions
-```
-
-**New hook** (10 lines):
+**Hook is simple** (10 lines of logic):
 ```python
 def main():
-    # Just invoke lite-whats-next skill
-    # Let the skill do all intelligence
-    print()
-    print("---")
-    print()
-    # Skill outputs recommendation
+    # Directive to Claude (not suggestion to user)
+    print("🤖 CLAUDE: Invoke /lite-whats-next now to provide workflow guidance")
     return 0
 ```
 
-**Massive simplification**: Hook delegates to skill
+**All intelligence lives in this skill** - the hook just triggers invocation.
+
+**Massive simplification**: Hook delegates to skill instead of containing logic.
 
 ---
 
@@ -440,6 +334,75 @@ def main():
 - Suggests optimal path
 - Allows user to override
 
+**See `references/workflow-patterns.md` for smart routing logic.**
+
+---
+
+## When This Skill Integrates with Others
+
+### Before This Skill
+
+**All 18 other lite skills** - This skill is invoked AFTER them
+- **When**: After ANY lite skill completes
+- **Why**: Provide intelligent workflow guidance based on project state
+- **Trigger**: Stop hook fires after Claude finishes response
+
+**This is the workflow brain** - it analyzes what was just done and suggests what's next.
+
+### After This Skill
+
+**The skill it recommends** - Suggests next logical step
+- **When**: This skill analyzes project state and identifies gaps
+- **Why**: Enforce optimal workflow order (Vision → Understand → Co-design → Execute → Document)
+- **Trigger**: User chooses to follow recommendation (or overrides)
+
+**Example flow**:
+```
+User completes /lite-spec
+→ Stop hook fires
+→ /lite-whats-next invoked
+→ Analyzes: spec exists, no plan
+→ Recommends: /lite-plan
+→ User runs /lite-plan
+```
+
+### Special Relationships
+
+**lite-project-status** - Complementary gap detection
+- **When**: User asks "what's the status?" or "where are we?"
+- **Why**: lite-project-status gives detailed health check, lite-whats-next gives workflow guidance
+- **Difference**: Status = comprehensive gaps, Whats-next = next single action
+
+**lite-why-project** - First skill suggested for new projects
+- **When**: No .shipkit-lite/ files exist
+- **Why**: Vision provides strategic context for all future decisions
+- **Trigger**: Brand new project detected
+
+**lite-prototyping** - Suggested for UI-heavy features after spec exists
+- **When**: Spec exists and feature has significant UI/UX component
+- **Why**: Validate UI decisions before committing to full implementation
+- **Trigger**: Spec mentions UI, user wants to "see it" before building
+
+**lite-prototype-to-spec** - Suggested after prototype iteration complete
+- **When**: Prototype exists in .shipkit-mockups/ and user says "done prototyping"
+- **Why**: Preserve validated UI/UX patterns before prototype is deleted
+- **Trigger**: User completed prototype iteration, ready to document learnings
+
+**lite-work-memory** - Often suggested at session end
+- **When**: User has been working for a while, no recent progress log
+- **Why**: Capture knowledge before ending session
+- **Trigger**: Context window getting large, or explicit "end session"
+
+**lite-ux-coherence** - Suggested when UX divergence detected
+- **When**: Multiple features implemented with different patterns
+- **Why**: Early UX audit prevents costly refactoring later
+- **Trigger**: 3+ components exist, no recent UX check
+
+**lite-user-instructions** - Suggested when blockers detected
+- **When**: Implementation stalled, or manual tasks mentioned
+- **Why**: Track blocking tasks so they don't get forgotten
+- **Trigger**: User mentions "need to configure X" or "waiting on Y"
+
 ---
 
 ## Context Files This Skill Reads
@@ -450,6 +413,7 @@ def main():
 - `architecture.md`
 - `implementations.md`
 - `types.md`
+- `progress.md`
 - `specs/active/*.md`
 - `plans/*.md`
 - `user-tasks/active.md`
@@ -457,6 +421,7 @@ def main():
 - `docs/**/*.md`
 
 **Also checks:**
+- `.shipkit-mockups/` (prototype folders)
 - Source code folders (src/, app/, components/)
 - Git status
 
@@ -485,110 +450,6 @@ Recommendation is helpful when:
 
 ---
 
-## Special Behaviors
-
-### Multi-Gap Scenarios
-
-**If multiple critical gaps exist:**
-```
-Vision missing + Stack missing
-→ Suggest: /lite-why-project (vision first always)
-
-Spec exists + Plan missing + Docs missing
-→ Suggest: /lite-plan (complete co-design before documenting)
-```
-
-**Priority hierarchy:**
-1. Vision (always first if missing)
-2. Understand Current (need tech context)
-3. Co-design (plan before building)
-4. Execute (build the thing)
-5. Document (capture knowledge)
-
----
-
-### Staleness Detection
-
-**Files can become stale:**
-
-**why.md stale** (>30 days old):
-```
-⚠️  Vision is 45 days old. Consider refreshing: /lite-why-project
-```
-
-**stack.md stale** (older than package.json):
-```
-⚠️  Stack outdated (older than package.json). Refresh: /lite-project-context
-```
-
-**Suggests updates when appropriate**
-
----
-
-### Completion Detection
-
-**When all pillars complete:**
-```
-## What's Next? 🧭
-
-### 🎉 All Pillars Complete!
-
-✅ Vision defined
-✅ Current state understood
-✅ Features co-designed
-✅ Implementation in progress
-✅ Documentation current
-
-### Recommended Next Step
-
-**Continue iterating**:
-- New feature: /lite-spec → /lite-plan → /lite-implement
-- Quality check: /lite-quality-confidence
-- Team update: /lite-communications
-
-### Or Maintain
-
-- Update vision: /lite-why-project
-- Refresh stack: /lite-project-context
-- Health check: /lite-project-status
-```
-
----
-
-## Pillar Dependency Rules
-
-**Strict dependencies** (warn if violated):
-- lite-plan requires spec exists
-- lite-component-knowledge requires source code exists
-
-**Recommended dependencies** (suggest but allow):
-- lite-spec recommends why.md exists
-- lite-implement recommends plan exists
-- lite-architecture-memory recommends why.md exists
-
-**No dependencies** (always allowed):
-- lite-why-project (can run anytime)
-- lite-project-context (can run anytime)
-- lite-project-status (can run anytime)
-- lite-communications (can run anytime)
-
----
-
-## Smart Routing Based on Context
-
-**If user has been implementing for a while** (3+ commits, no docs):
-→ Suggest: /lite-component-knowledge (before knowledge is lost)
-
-**If user has multiple specs but no implementations**:
-→ Suggest: /lite-implement (stop planning, start building)
-
-**If user keeps creating specs without plans**:
-→ Suggest: /lite-plan (complete the co-design phase)
-
-**Context-aware, not just rule-based**
-
----
-
 ## Manual Invocation Benefits
 
 **User can run `/lite-whats-next` anytime to:**
@@ -601,34 +462,39 @@ Spec exists + Plan missing + Docs missing
 
 ---
 
-## Output Verbosity Levels
+## Common Scenarios
 
-**Auto-invoked** (after skill via hook):
-- Brief recommendation only
-- Skip full pillar analysis (user just completed a skill, knows state)
-
-**Manual invocation** (user asks "what's next?"):
-- Full analysis with pillar breakdown
-- Show all gaps and alternatives
-- Comprehensive state summary
-
-**Adaptive based on invocation method**
+**See `references/common-scenarios.md` for 8 detailed scenarios:**
+- Scenario 1: Brand New Project
+- Scenario 2: Vision + Stack, No Specs
+- Scenario 3: Code Exists, No Docs
+- Scenario 4: Spec Exists, No Plan
+- Scenario 5: Missing Dependencies Warning
+- Scenario 6: Just Completed Implementation
+- Scenario 7: UX Inconsistency Detected
+- Scenario 8: Spec Exists, UI Uncertain (→ prototyping)
 
 ---
 
-## This Skill Eliminates
+## Workflow Patterns
 
-**From ALL 18 existing skills:**
-- "Next steps" sections (50-100 lines each)
-- Hardcoded workflow suggestions
-- Fragile "after X do Y" logic
+**See `references/workflow-patterns.md` for:**
+- Smart routing based on context
+- Output verbosity levels (auto vs manual invocation)
+- What this skill eliminates (hardcoded suggestions)
+- Multi-gap priority hierarchy
+- Staleness detection rules
+- Completion detection
 
-**From suggest-next-skill.py hook:**
-- 80+ lines of detection logic
-- Brittle file checking
-- Hardcoded skill mappings
+---
 
-**Result**: Single source of truth for workflow
+## Pillar Dependencies
+
+**See `references/pillar-dependencies.md` for:**
+- Strict dependencies (block if missing)
+- Recommended dependencies (warn if missing)
+- No-dependency skills (always allowed)
+- Dependency check algorithm
 
 ---
 

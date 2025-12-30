@@ -89,53 +89,12 @@ Developer: "Root cause found. Fix: Add auth validation"
 
 **Evidence Collection Template**:
 
-```markdown
-## Bug Investigation - [Feature/Component]
+See `references/debugging-templates.md` for:
+- Complete evidence collection template
+- "Where to look for evidence" guide by symptom type
+- Environment and recent changes tracking
 
-**Started**: [timestamp]
-**Reported by**: User
-**Status**: Investigating
-
----
-
-### Phase 1: OBSERVE
-
-**Symptom**:
-- User action: [what they tried]
-- Expected: [what should happen]
-- Actual: [what happened instead]
-
-**Evidence**:
-- Browser console: [errors/warnings]
-- Network tab: [failed requests, status codes, response bodies]
-- Server logs: [error traces, stack traces]
-- Terminal output: [build errors, runtime errors]
-
-**Environment**:
-- Browser: [Chrome/Firefox/Safari]
-- Environment: [dev/staging/prod]
-- User state: [logged in/out, permissions]
-
-**Recent changes**:
-- [What was modified recently that might be related]
-
----
-```
-
-**Where to look for evidence** (guide user):
-
-| Symptom Type | Check These |
-|--------------|-------------|
-| UI not rendering | Browser console, React errors, component tree |
-| API call failing | Network tab (status, headers, response), server logs |
-| Authentication issues | Auth middleware logs, session/token validity |
-| Database errors | Server logs, query output, migration status |
-| Build failures | Terminal output, dependency versions |
-| Styling broken | Browser DevTools, CSS specificity, Tailwind classes |
-
-**Complete Phase 1 before moving to Phase 2.** No guessing yet.
-
----
+**Complete Phase 1 before moving to Phase 2.**---
 
 ### Phase 2: HYPOTHESIZE - List Possible Causes
 
@@ -143,52 +102,16 @@ Developer: "Root cause found. Fix: Add auth validation"
 
 **Based on evidence collected, list 3-5 hypotheses ranked by likelihood**:
 
-```markdown
-### Phase 2: HYPOTHESIZE
-
-**Possible causes** (ranked by likelihood):
-
-1. **[Most likely cause]**
-   - Why: [Evidence that points to this]
-   - If true: [What we'd expect to see]
-
-2. **[Second possibility]**
-   - Why: [Evidence that suggests this]
-   - If true: [What we'd expect to see]
-
-3. **[Third possibility]**
-   - Why: [Less evidence but still possible]
-   - If true: [What we'd expect to see]
-
-4. **[Edge case]**
-   - Why: [Rare but matches symptoms]
-   - If true: [What we'd expect to see]
-
-**Ruled out**:
-- [X] [Hypothesis we can eliminate based on evidence]
-- [X] [Another ruled-out option]
-
----
-```
-
-**Common Bug Patterns to Check**:
-
-| Evidence | Likely Hypotheses |
-|----------|-------------------|
-| 500 error in API call | Missing error handling, unhandled exception, database constraint violation |
-| 401/403 error | Missing auth check, expired token, insufficient permissions |
-| Network request not sent | Missing event handler, form not submitting, validation blocking |
-| Blank screen | Uncaught exception in component, missing data causing crash |
-| Infinite loop/hang | Missing dependency in useEffect, recursive call, circular reference |
-| Styling not applied | CSS specificity conflict, Tailwind not compiling, typo in class name |
+See `references/debugging-templates.md` for:
+- Complete hypothesis ranking template
+- Common bug pattern → hypothesis mapping
+- How to rule out hypotheses
 
 **Ask user**:
 - "Based on [evidence], my top hypothesis is [X]. Does that align with what you're seeing?"
 - "Should I test hypothesis #1 first, or do you have a different theory?"
 
-**Don't skip this phase.** Writing down hypotheses prevents tunnel vision.
-
----
+**Don't skip this phase.**---
 
 ### Phase 3: TEST - Validate Hypotheses
 
@@ -196,53 +119,12 @@ Developer: "Root cause found. Fix: Add auth validation"
 
 **For each hypothesis, determine the fastest way to test it**:
 
-```markdown
-### Phase 3: TEST
+See `references/debugging-templates.md` for:
+- Complete test execution template
+- Test methods by bug type (auth, data, race conditions, etc.)
+- Evidence-based testing patterns
 
-**Testing Hypothesis #1: [hypothesis]**
-
-**Test method**:
-- [Specific action to take to validate]
-
-**Executing test**:
-[Use Read, Grep, Bash, or Browser tools to investigate]
-
-**Result**:
-- ✅ Confirmed: [Evidence found]
-- ❌ Ruled out: [Evidence contradicts this]
-- ⚠️ Partial: [Mixed evidence, need more testing]
-
-**Findings**:
-[What we learned from this test]
-
----
-
-**Testing Hypothesis #2: [hypothesis]**
-[Repeat above]
-
----
-```
-
-**Test Methods by Bug Type**:
-
-| Hypothesis Type | How to Test |
-|-----------------|-------------|
-| "Function not called" | Add console.log, check if it fires |
-| "Wrong data returned" | Log the data, inspect actual values |
-| "Auth check missing" | Read the server action code, verify auth validation exists |
-| "Database constraint" | Check migration files, inspect schema |
-| "Race condition" | Add delays, check timing of async calls |
-| "Wrong component rendered" | React DevTools component tree inspection |
-
-**Evidence-based testing**:
-- Use Read tool to check actual code
-- Use Grep to find relevant functions/imports
-- Use Bash to run tests, check logs
-- Use Browser tools for runtime inspection
-
-**Keep testing until ONE hypothesis is confirmed as root cause.**
-
----
+**Keep testing until ONE hypothesis is confirmed as root cause.**---
 
 ### Phase 4: FIX - Implement Solution
 
@@ -262,33 +144,12 @@ Developer: "Root cause found. Fix: Add auth validation"
 
 3. **Execute fix**:
 
-```markdown
-### Phase 4: FIX
+See `references/debugging-templates.md` for:
+- Complete fix implementation template
+- Verification checklist (symptom gone, no new errors, test added)
+- Fix testing guidelines
 
-**Root cause identified**:
-[Specific technical problem]
-
-**Fix implemented**:
-- File: [path to file]
-- Change: [what was modified]
-- Why: [how this addresses root cause]
-
-**Verification**:
-- [ ] Original symptom is gone
-- [ ] No new errors introduced
-- [ ] Test added (if applicable)
-
-**Testing the fix**:
-[Specific steps to verify fix works]
-
-**Result**:
-✅ Bug resolved
-❌ Fix didn't work (return to Phase 2 with new evidence)
-
----
-```
-
-**After fix verified**, document the bug:
+**After fix verified**, document the bug:**After fix verified**, document the bug:
 
 ---
 
@@ -296,53 +157,10 @@ Developer: "Root cause found. Fix: Add auth validation"
 
 **Use Write tool to APPEND to `.shipkit-lite/architecture.md`**:
 
-```markdown
----
-
-## Bug Fix - [Feature/Component] - [Date]
-
-**Symptom**: [What was broken]
-
-**Root cause**: [Technical problem that caused it]
-
-**Fix**: [What was changed]
-
-**File(s)**: [Paths to modified files]
-
-**Lesson learned**: [Pattern to avoid in future, or check to add]
-
-**Prevention**: [How to prevent this bug type in future]
-
----
-```
-
-**Example documentation**:
-
-```markdown
----
-
-## Bug Fix - Recipe Sharing - 2025-12-28
-
-**Symptom**: Users couldn't share recipes - got 500 error when clicking Share button
-
-**Root cause**: Server Action `shareRecipe()` had no auth validation, threw exception when accessing `user.id` with null user
-
-**Fix**: Added `requireAuth()` check at start of Server Action before accessing user data
-
-**File(s)**:
-- `app/actions/share-recipe.ts` - Added auth check
-
-**Lesson learned**: All Server Actions that access user data need auth validation
-
-**Prevention**: Template for Server Actions should include auth check boilerplate
-
----
-```
-
-**Why document bugs?**
-- Future debugging reference (similar bugs → check past fixes)
-- Team learning (avoid same mistakes)
-- Architecture memory (patterns to enforce)
+See `references/debugging-templates.md` for:
+- Complete bug documentation template
+- Example filled documentation
+- Why document bugs (future reference, team learning, pattern recognition)
 
 ---
 
@@ -428,88 +246,16 @@ Debug session is complete when:
 
 ## Common Debugging Scenarios
 
-### Scenario 1: API Call Failing
+See `references/debugging-scenarios.md` for detailed examples:
+- Scenario 1: API Call Failing (auth check missing)
+- Scenario 2: UI Not Rendering (null check missing)
+- Scenario 3: Build Error (package not installed)
 
-```
-User: "The share button isn't working"
-
-Phase 1 - OBSERVE:
-- Network tab shows: 500 error on POST /api/share
-- Response body: "Cannot read property 'id' of null"
-- Browser console: No client errors
-- Server logs: Stack trace points to shareRecipe function
-
-Phase 2 - HYPOTHESIZE:
-1. Missing auth check (most likely - null user)
-2. Database constraint violation (possible)
-3. Missing form data (less likely - error says null user)
-
-Phase 3 - TEST:
-- Read app/actions/share-recipe.ts
-- Find: No auth validation, directly accesses user.id
-- Confirmed: Hypothesis #1 is correct
-
-Phase 4 - FIX:
-- Add requireAuth() at start of function
-- Verify: Share button now works
-- Document: Append to architecture.md
-```
-
-### Scenario 2: UI Not Rendering
-
-```
-User: "Recipe list is blank"
-
-Phase 1 - OBSERVE:
-- Browser console: "Cannot read property 'map' of undefined"
-- Component: RecipeList.tsx
-- Network tab: GET /api/recipes returns []
-- Expected: Should show sample recipes
-
-Phase 2 - HYPOTHESIZE:
-1. Component expects array but gets undefined (most likely)
-2. API returns empty array incorrectly (possible)
-3. Conditional rendering bug (less likely)
-
-Phase 3 - TEST:
-- Read components/RecipeList.tsx
-- Find: recipes.map() called without null check
-- API actually returns null on first load
-- Confirmed: Hypothesis #1
-
-Phase 4 - FIX:
-- Change: recipes?.map() or default to []
-- Verify: List renders empty state gracefully
-- Document: "UI components should handle null/undefined data"
-```
-
-### Scenario 3: Build Error
-
-```
-User: "Build is failing"
-
-Phase 1 - OBSERVE:
-- Terminal: "Module not found: 'lucide-react'"
-- Error in: components/Icon.tsx
-- Recent change: Added new icon imports
-
-Phase 2 - HYPOTHESIZE:
-1. Package not installed (most likely)
-2. Import path wrong (possible)
-3. Version mismatch (less likely)
-
-Phase 3 - TEST:
-- Check package.json: lucide-react is listed
-- Check node_modules: lucide-react folder missing
-- Confirmed: Hypothesis #1
-
-Phase 4 - FIX:
-- Run: npm install
-- Verify: Build succeeds
-- Document: "After adding dependencies, run install"
-```
+Each scenario demonstrates the full 4-phase process from observation to fix.
 
 ---
+
+## Tips for Effective Debugging---
 
 ## Tips for Effective Debugging
 

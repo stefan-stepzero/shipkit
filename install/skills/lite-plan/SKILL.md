@@ -277,16 +277,85 @@ Ready to start implementing?
 
 ---
 
-## Integration with Other Skills
+## The Iron Law
 
-**Before plan-lite**:
+**PLANS ANSWER "HOW", NOT "WHY" OR "WHAT"**
+
+**What this means**:
+- Plan assumes spec already defined the "what" (requirements) and "why" (value)
+- Plan focuses solely on "how" (implementation approach, file structure, steps)
+- If you're questioning WHAT to build → Go back to `/lite-spec`
+- If you're questioning WHY to build it → Go back to `/lite-spec` or product discovery
+- Plan is technical roadmap, not requirements document
+
+**Breaking this law leads to**:
+- Planning features nobody asked for
+- Solving problems not in the spec
+- Over-engineering solutions
+- Mixing requirements gathering with implementation planning
+
+**The fix**: Before planning, read the spec. Plan what's in the spec. Nothing more.
+
+---
+
+## Red Flags
+
+**Watch for these rationalizations that violate the Iron Law**:
+
+### 🚩 "While I'm planning, I should add..."
+**The trap**: Scope creep during planning
+**Why it's tempting**: "It would be easy to add feature X while building feature Y"
+**The reality**: Spec didn't ask for feature X
+**Alternative**: Note the idea in spec, let user decide if it belongs
+
+### 🚩 "The spec doesn't say HOW to do X, so I'll figure it out"
+**The trap**: Over-interpreting requirements
+**Why it's tempting**: Spec has ambiguity, you want to be helpful
+**The reality**: Ambiguity = ask user, don't assume
+**Alternative**: Use `/lite-spec` to clarify before planning
+
+### 🚩 "This plan needs more research/design/prototyping first"
+**The trap**: Analysis paralysis
+**Why it's tempting**: Want perfect plan before coding
+**The reality**: POC/MVP plans should be "good enough to start"
+**Alternative**: Plan with what you know, iterate as you learn
+
+### 🚩 "Let me plan edge cases not in the spec"
+**The trap**: Gold-plating
+**Why it's tempting**: Want robust solution
+**The reality**: POC/MVP = happy path first
+**Alternative**: Note edge cases for future, plan only what spec requires
+
+---
+
+## When This Skill Integrates with Others
+
+### Before This Skill
 - `/lite-spec` - Creates feature specification
-- `/lite-project-context` - Generates stack.md, schema.md
-- `/lite-architecture-memory` - Logs past decisions
+  - **When**: User has described what to build
+  - **Why**: Plan needs a spec to reference - can't plan implementation without knowing requirements
+  - **Trigger**: Spec file exists at `.shipkit-lite/specs/active/[feature].md`
 
-**After plan-lite**:
+- `/lite-project-context` - Generates stack.md, schema.md
+  - **When**: New project or stack not yet documented
+  - **Why**: Plan must align with chosen tech stack - prevents "planning for React when you're using Vue"
+  - **Trigger**: First time planning any feature in project
+
+- `/lite-architecture-memory` - Logs past decisions
+  - **When**: Prior features have established patterns
+  - **Why**: Plan should follow existing conventions - consistency matters
+  - **Trigger**: architecture.md exists with logged decisions
+
+### After This Skill
 - `/lite-implement` - Executes the plan with TDD-lite
-- `/lite-architecture-memory` - Logs significant decisions (optional)
+  - **When**: Plan approved and ready to code
+  - **Why**: Plan provides roadmap for implementation - implement follows plan steps
+  - **Trigger**: User says "start coding" or "implement this"
+
+- `/lite-architecture-memory` - Logs significant decisions
+  - **When**: Plan makes architectural choice (library selection, pattern adoption)
+  - **Why**: Future plans should know about this decision - prevents reinventing choices
+  - **Trigger**: Plan establishes new pattern not yet in architecture.md (optional)
 
 ---
 

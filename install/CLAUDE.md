@@ -25,6 +25,52 @@ Plus **6 agent personas** that specialize behaviors for different workflow stage
 
 ---
 
+## CRITICAL: Skills Must Use Skills (Meta-Rule)
+
+**When building, editing, or validating skills - you MUST use the appropriate meta-skill:**
+
+### Validating Skills
+- **ALWAYS use `/shipkit-validate-lite-skill [skill-name]`** when validating lite skills
+- **NEVER manually check** with bash/grep/wc commands as a replacement for the skill
+- The validation skill has standardized checks you might miss
+- Follow the skill's methodology completely
+
+### Creating Skills
+- **ALWAYS use `/shipkit-create-lite-skill`** when creating new lite skills
+- Ensures proper 7-file integration from the start
+- Uses correct templates and structure
+
+### Fixing Skills
+- **ALWAYS use `/shipkit-fix-lite-skill [skill-name]`** when applying fixes found by validation
+- Automated corrections prevent human error
+- Updates all integration files consistently
+
+### Writing Skills (General)
+- **ALWAYS use `/dev-writing-skills`** for guidance on skill authoring
+- Reference skill quality standards before writing
+
+**Why this matters:**
+- Skills ensure consistency and completeness
+- Manual approaches skip critical checks
+- Skills are self-documenting (methodology is explicit)
+- Framework depends on skills using skills (dogfooding)
+
+**Violation examples:**
+- ❌ Running `wc -l SKILL.md` instead of `/shipkit-validate-lite-skill`
+- ❌ Manually editing 7 integration files instead of `/shipkit-create-lite-skill`
+- ❌ Grep-ing for issues instead of using validation skill
+- ✅ Using `/shipkit-validate-lite-skill` for each skill validation
+- ✅ Using `/shipkit-fix-lite-skill` to apply discovered fixes
+
+**Exception:** After using skills, you MAY use manual tools to:
+- Verify skill output
+- Debug skill behavior
+- Gather context FOR the skill to use
+
+But the primary methodology must go through the skill system.
+
+---
+
 ## External Tools & MCPs
 
 **Use external tools proactively during skills when they add value:**

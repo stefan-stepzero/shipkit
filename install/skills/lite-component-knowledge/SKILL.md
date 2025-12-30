@@ -371,57 +371,15 @@ Documentation is complete when:
 
 ---
 
-## Template Structure (Inline)
+## Template Structure
 
-**Metadata header** (top of implementations.md):
-```markdown
-<!-- Component Documentation Metadata
-Last Full Scan: [ISO 8601 timestamp]
-Documented Files:
-- [file-path] ([ISO 8601 timestamp])
-- [file-path] ([ISO 8601 timestamp])
--->
-```
+**Complete documentation templates**: See `references/documentation-templates.md`
 
-**Component entry** (appended to end):
-```markdown
----
-
-## Component: [Name] - Documented [Date]
-
-**File**: `[path]`
-**Size**: [LOC] lines
-**Last Modified**: [timestamp]
-**Documented**: [timestamp]
-
-### Purpose
-[Description]
-
-### Pattern & Architecture
-- **Type**: [type]
-- **Rendering**: [CSR/SSR/etc]
-- **State**: [state management]
-- **Data fetching**: [approach]
-
-### Props/API
-```typescript
-[interface or function signature]
-```
-
-### Key Decisions
-- **[Decision]**: [Rationale]
-
-### Usage Locations
-- [location 1]
-
-### Dependencies
-- [library 1]
-
-### Notes
-[Additional details]
-
----
-```
+**Includes**:
+- Metadata header format (for timestamp tracking)
+- Component entry template (for each documented component)
+- ISO 8601 timestamp format
+- Example filled templates
 
 ---
 
@@ -534,32 +492,13 @@ grep -r "import.*RecipeCard" src/
 
 ## Metadata Format Specification
 
-**Header format** (must be valid HTML comment):
-```html
-<!-- Component Documentation Metadata
-Last Full Scan: 2025-01-15T14:30:00Z
-Documented Files:
-- src/components/RecipeCard.tsx (2025-01-15T14:25:00Z)
-- src/components/UserProfile.tsx (2025-01-14T10:00:00Z)
--->
-```
+**Complete metadata specification**: See `references/documentation-templates.md`
 
-**Timestamp format**: ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)
-
-**File path format**: Relative to project root
-
-**Parsing logic**:
-1. Read implementations.md
-2. Extract metadata comment block
-3. Parse "Last Full Scan" timestamp
-4. Parse file list with timestamps
-5. Use these for freshness comparison
-
-**Why metadata header**:
-- Enables timestamp-based freshness checking
-- Tracks which files were documented when
-- Allows incremental updates
-- Provides audit trail
+**Key details**:
+- Timestamp format: ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)
+- Tracks: Last full scan timestamp + per-file timestamps
+- Enables: Incremental updates via timestamp comparison
+- Provides: Audit trail of documentation changes
 
 ---
 
