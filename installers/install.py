@@ -438,7 +438,6 @@ def make_scripts_executable(target_dir, language):
 def install_mcp_config(repo_root, target_dir):
     """Install MCP server configuration (Context7)"""
     mcp_config_path = target_dir / ".mcp.json"
-    template_path = repo_root / "install" / "templates" / ".mcp.json"
 
     # Check if .mcp.json already exists
     if mcp_config_path.exists():
@@ -446,15 +445,33 @@ def install_mcp_config(repo_root, target_dir):
         print_info("Skipping MCP configuration (keeping existing)")
         return
 
-    # Check if template exists
-    if not template_path.exists():
-        print_warning("MCP template not found - skipping Context7 setup")
-        print_info(f"Expected: {template_path}")
-        return
-
     try:
-        # Copy template to target
-        shutil.copy2(template_path, mcp_config_path)
+        # Generate platform-specific MCP configuration
+        # Windows requires 'cmd /c' wrapper to execute npx
+        if platform.system() == "Windows":
+            mcp_config = {
+                "mcpServers": {
+                    "context7": {
+                        "command": "cmd",
+                        "args": ["/c", "npx", "-y", "@upstash/context7-mcp@latest"]
+                    }
+                }
+            }
+        else:
+            mcp_config = {
+                "mcpServers": {
+                    "context7": {
+                        "command": "npx",
+                        "args": ["-y", "@upstash/context7-mcp@latest"]
+                    }
+                }
+            }
+
+        # Write the configuration
+        with open(mcp_config_path, 'w', encoding='utf-8') as f:
+            json.dump(mcp_config, f, indent=2)
+            f.write('\n')
+
         print_success("MCP configuration installed (.mcp.json)")
         print_info("Context7 server configured (use 'use context7' in prompts)")
     except Exception as e:
