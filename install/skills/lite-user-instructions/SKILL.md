@@ -103,7 +103,7 @@ Tasks that require manual action outside Claude Code's control.
 
 **Related work**:
 - Feature: [feature name if applicable]
-- Skill: [which skill triggered this, e.g., /lite-integration-guardrails]
+- Skill: [which skill triggered this, e.g., /lite-integration-docs]
 
 ---
 ```
@@ -133,7 +133,7 @@ Local webhook testing requires Stripe CLI to forward events to localhost. Withou
 
 **Related work**:
 - Feature: Payment processing
-- Skill: /lite-integration-guardrails
+- Skill: /lite-integration-docs
 
 ---
 ```
@@ -293,10 +293,10 @@ View full details in .shipkit-lite/user-tasks/active.md
 
 ### Before This Skill
 
-- `/lite-integration-guardrails` - Detects missing configuration
-  - **When**: Validation finds missing API keys, webhook secrets, environment variables
-  - **Why**: Track manual configuration tasks that block progress
-  - **Trigger**: Guard rail check fails, requires user action to fix
+- `/lite-integration-docs` - Fetches integration documentation
+  - **When**: Preparing to integrate with external services
+  - **Why**: May identify missing configuration or manual setup tasks
+  - **Trigger**: Integration docs reveal setup steps requiring user action
 
 - `/lite-implement` - Discovers missing dependencies
   - **When**: Implementation needs packages, database setup, external services

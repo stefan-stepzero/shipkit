@@ -1,6 +1,6 @@
 ---
-name: lite-ux-coherence
-description: Provides UX guidance for consistent, user-friendly UI patterns by checking existing implementations and applying best practices. Use when user asks "what's the best UX pattern", "how should this UI work", or before building new UI components.
+name: lite-ux-audit
+description: Audits interactive components for missing UX best practices (loading states, error handling, accessibility, success feedback) to prevent bad user experience. Creates checklist of UX gaps to fix before shipping. Use post-implementation before quality checks.
 ---
 
 # ux-coherence-lite - Lightweight UX Guidance
@@ -43,7 +43,27 @@ description: Provides UX guidance for consistent, user-friendly UI patterns by c
 
 ## Process
 
-### Step 1: Confirm What User is Building
+### Step 0: Check for Queue (Auto-Detect Mode)
+
+**First, check if running in queue-driven mode**:
+
+Read file (if exists): `.shipkit-lite/.queues/ux-audit-needed.md`
+
+**If queue file exists and has pending items**:
+1. Parse the `## Pending` section for components needing UX audit
+2. For each pending component:
+   - Audit loading states, error handling, accessibility (Step 2-4 logic)
+   - Document findings in component documentation
+   - Move item from Pending to Completed in queue
+3. Skip Step 1 questions (components already identified)
+4. Continue with Step 2-5 for each component
+
+**If queue file doesn't exist or is empty**:
+- Continue to Step 1 (manual mode - ask user what they're building)
+
+---
+
+### Step 1: (Manual Mode) Confirm What User is Building
 
 **Before providing guidance**, ask 2-3 questions:
 
@@ -229,8 +249,8 @@ description: Provides UX guidance for consistent, user-friendly UI patterns by c
 3. Run `/lite-implement` when ready to build
 
 [IF integration needed]
-- Run `/lite-integration-guardrails` if connecting to external service
-- Run `/lite-data-consistency` if managing complex state
+- Run `/lite-integration-docs` if connecting to external service
+- Run `/lite-data-contracts` if managing complex state
 
 Ready to implement?
 ```
@@ -351,7 +371,7 @@ Ready to implement?
 
 **This skill loads context on demand**:
 
-1. User invokes `/lite-ux-coherence`
+1. User invokes `/lite-ux-audit`
 2. Claude asks what component user is building
 3. Claude optionally reads implementations.md (if exists) to check for similar patterns
 4. Claude optionally reads architecture.md (if exists) for established UX decisions

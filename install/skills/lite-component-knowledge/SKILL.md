@@ -36,7 +36,28 @@ description: Documents components >200 LOC by comparing file modification times 
 
 ## Process
 
-### Step 1: Confirm What to Document
+### Step 0: Check for Queue (Auto-Detect Mode)
+
+**First, check if running in queue-driven mode**:
+
+Read file (if exists): `.shipkit-lite/.queues/components-to-document.md`
+
+**If queue file exists and has pending items**:
+1. Parse the `## Pending` section for components needing documentation
+2. For each pending component:
+   - Read component source code
+   - Extract props, state, events (Step 2-3 logic)
+   - Document component contract in `.shipkit-lite/component-contracts.md`
+   - Move item from Pending to Completed in queue
+3. Skip Step 1 questions (components already identified)
+4. Continue with Step 2-5 for each component
+
+**If queue file doesn't exist or is empty**:
+- Continue to Step 1 (manual mode - ask what to document)
+
+---
+
+### Step 1: (Manual Mode) Confirm What to Document
 
 **Before doing anything**, ask user 2-3 questions:
 

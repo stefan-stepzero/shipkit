@@ -46,10 +46,10 @@
     Suggest: /lite-why-project first
 ```
 
-**lite-ux-coherence recommends implementations.md exists:**
+**lite-ux-audit recommends implementations.md exists:**
 ```
 ⚠️  No components documented yet.
-    UX check works best with documented components.
+    UX audit works best with documented components.
     Suggest: /lite-component-knowledge first
 ```
 
@@ -68,11 +68,11 @@
 - `/lite-user-instructions` - Can run anytime (track manual tasks)
 - `/lite-work-memory` - Can run anytime (log session progress)
 - `/lite-debug-systematically` - Can run anytime (troubleshooting)
-- `/lite-integration-guardrails` - Can run anytime (service warnings)
+- `/lite-integration-docs` - Can run anytime (fetch integration patterns)
 
 **Documentation skills (if content exists):**
 - `/lite-document-artifact` - Can run anytime (create standalone docs)
-- `/lite-data-consistency` - Can run anytime (type checking)
+- `/lite-data-contracts` - Can run anytime (validate data contracts)
 
 ---
 

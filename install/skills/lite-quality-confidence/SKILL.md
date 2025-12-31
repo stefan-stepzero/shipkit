@@ -234,17 +234,43 @@ Mark: ⚠ Partially handled (error caught, no retry option)
 
 **Logged to**: .shipkit-lite/quality-checks/[feature-name].md
 
-**Next**: Move spec to implemented folder?
-  • From: .shipkit-lite/specs/active/[feature].md
-  • To: .shipkit-lite/specs/implemented/[feature].md
+**Next**: Mark feature as complete?
 
-Proceed with moving spec? (yes/no)
+This will move:
+  • Spec: .shipkit-lite/specs/active/[feature].md
+       → .shipkit-lite/specs/implemented/[feature].md
+  • Plan: .shipkit-lite/plans/active/[feature]-plan.md
+       → .shipkit-lite/plans/implemented/[feature]-plan.md
+
+Archive spec and plan? (Y/n)
 ```
 
-**If user says yes**:
-1. Move file: `specs/active/[feature].md` → `specs/implemented/[feature].md`
-2. Append completion note to implementations.md (optional)
-3. Suggest: "Feature complete! Update progress or start next feature?"
+**Default: YES** (user just hits Enter to proceed)
+
+**If user confirms (Y or just Enter)**:
+1. Add completion metadata to spec:
+   ```markdown
+   ---
+   **Status**: Implemented
+   **Date**: [YYYY-MM-DD]
+   **Completed**: Quality checks passed
+   ---
+   ```
+2. Move spec: `specs/active/[feature].md` → `specs/implemented/[feature].md`
+3. Add completion note to plan:
+   ```markdown
+   ---
+   **Status**: Completed
+   **Date**: [YYYY-MM-DD]
+   ---
+   ```
+4. Move plan: `plans/active/[feature]-plan.md` → `plans/implemented/[feature]-plan.md`
+5. Show: "✅ Feature complete! Spec and plan archived to implemented/"
+
+**If user says no (n)**:
+- Spec and plan stay in active/ folders
+- User can iterate more or run quality check again later
+- Warn: "Spec/plan will remain in active/ until you archive them"
 
 **If FAILED (blockers or recommended gaps exist)**:
 ```
@@ -417,7 +443,8 @@ For complex checks (acceptance criteria, edge cases):
   - **Format**: Timestamped markdown entries separated by `---` dividers
 
 **Can move files**:
-- `.shipkit-lite/specs/active/[feature].md` → `.shipkit-lite/specs/implemented/[feature].md` (only if user confirms after passing)
+- `.shipkit-lite/specs/active/[feature].md` → `.shipkit-lite/specs/implemented/[feature].md` (when user confirms)
+- `.shipkit-lite/plans/active/[feature]-plan.md` → `.shipkit-lite/plans/implemented/[feature]-plan.md` (when user confirms)
 
 **Never modifies**:
 - Implementation files (read-only inspection)

@@ -138,6 +138,7 @@ description: Orchestrator that enforces skill usage, manages intelligent context
 |-----------|----------|--------------|
 | "What's next?", "What should I do?", "Where do I start?", "What now?" | `/lite-whats-next` | All .shipkit-lite/ files (glob scan) |
 | "Define vision", "Why this project?", "What's this about?", "Project goals" | `/lite-why-project` | .shipkit-lite/why.md (if exists) |
+| "Who are our users?", "Create personas", "User research", "Product discovery", "User journey", "User stories" | `/lite-product-discovery` | .shipkit-lite/why.md, .shipkit-lite/stack.md |
 | "Show status", "Project health" | `/lite-project-status` | All .shipkit-lite/ files (glob scan) |
 | "Scan project", "Generate stack", "Refresh context", "What's my tech stack?" | `/lite-project-context` | package.json, .env.example, migrations/ |
 | "Help", "What skills exist?", "What can you do?" | List all lite skills | None |
@@ -147,9 +148,9 @@ description: Orchestrator that enforces skill usage, manages intelligent context
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
 | "Log this decision", "Architecture choice", "Why did we choose X?" | `/lite-architecture-memory` | .shipkit-lite/architecture.md |
-| "UX guidance", "Design patterns", "ADHD principles" | `/lite-ux-coherence` | .shipkit-lite/architecture.md (UX section) |
-| "Stripe integration", "Supabase help", "Service warning" | `/lite-integration-guardrails` | .shipkit-lite/stack.md (determine services) |
-| "Type consistency", "Update types", "Data contracts" | `/lite-data-consistency` | .shipkit-lite/types.md, component-contracts.md |
+| "Audit UX", "Check UX patterns", "Missing UX features", "UX gaps" | `/lite-ux-audit` | .shipkit-lite/implementations.md |
+| "Fetch integration docs", "Current API patterns", "Service integration help" | `/lite-integration-docs` | .shipkit-lite/stack.md (determine services) |
+| "Validate data contracts", "Check type alignment", "Define data shapes" | `/lite-data-contracts` | .shipkit-lite/types.md, component-contracts.md |
 
 ### Implementation Workflow Keywords
 

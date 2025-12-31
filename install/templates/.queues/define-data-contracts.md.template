@@ -1,0 +1,52 @@
+# Data Contracts To Define
+
+**Created:** {{TIMESTAMP}}
+**Reason:** {{DETECTION_REASON}}
+
+## Pending
+
+{{#DATA_STRUCTURES}}
+- [ ] {{TYPE_NAME}}
+  - Mentioned in: {{SOURCE_FILE}}
+  - Layers: {{LAYERS}}
+  - Contract needed: {{CONTRACT_DESCRIPTION}}
+{{/DATA_STRUCTURES}}
+
+## Completed
+
+<!-- Items move here after /lite-data-contracts validates contracts -->
+
+---
+
+**Usage:**
+1. Detection skill creates this file when plan defines new data structures
+2. `/lite-data-contracts` reads this queue
+3. Skill validates data shapes across database → backend → frontend
+4. Creates contract documentation in `.shipkit-lite/references/contracts/`
+5. Marks items complete in this queue
+
+**Example:**
+
+```markdown
+# Data Contracts To Define
+
+**Created:** 2025-12-30 15:45
+**Reason:** Plan defines User and Post data structures
+
+## Pending
+
+- [ ] User
+  - Mentioned in: plans/auth-implementation.md
+  - Layers: Database (users table) → API (GET /api/users/:id) → Frontend (User interface)
+  - Contract needed: Define shape across all layers, prevent type mismatches
+
+- [ ] Post
+  - Mentioned in: plans/content-management.md
+  - Layers: Database (posts table) → API (POST /api/posts, GET /api/posts) → Frontend (Post interface)
+  - Contract needed: Ensure metadata field is consistently typed
+
+## Completed
+
+- [x] Session (contracts validated 2025-12-29)
+  - Reference: references/contracts/data-contracts.md#session
+```

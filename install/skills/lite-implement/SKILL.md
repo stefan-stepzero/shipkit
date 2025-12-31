@@ -26,7 +26,7 @@ description: Guides TDD-lite implementation of features by providing real-time c
 ## Prerequisites
 
 **Recommended**:
-- Plan exists: `.shipkit-lite/plans/[feature]-plan.md`
+- Plan exists: `.shipkit-lite/plans/active/[feature]-plan.md`
 - Spec exists: `.shipkit-lite/specs/active/[feature].md`
 
 **Optional but helpful**:
@@ -42,7 +42,7 @@ description: Guides TDD-lite implementation of features by providing real-time c
 **Before starting**, ask user:
 
 1. **Which feature are we implementing?**
-   - List available plans from `.shipkit-lite/plans/`
+   - List available plans from `.shipkit-lite/plans/active/`
    - OR list specs from `.shipkit-lite/specs/active/`
    - Let user choose
 
@@ -65,7 +65,7 @@ description: Guides TDD-lite implementation of features by providing real-time c
 
 ```bash
 # If plan exists (recommended)
-.shipkit-lite/plans/[feature]-plan.md
+.shipkit-lite/plans/active/[feature]-plan.md
 
 # If no plan, read spec directly
 .shipkit-lite/specs/active/[feature].md
@@ -326,9 +326,9 @@ What would you like to do?
 - `/lite-project-context` - Stack/schema info
 
 **During implement-lite**:
-- `/lite-integration-guardrails` - Warns about service integration mistakes
-- `/lite-data-consistency` - Ensures types stay consistent
-- `/lite-ux-coherence` - Guides UI patterns
+- `/lite-integration-docs` - Fetches current integration patterns from official docs
+- `/lite-data-contracts` - Validates data shapes across layers
+- `/lite-ux-audit` - Audits for missing UX best practices post-implementation
 
 **After implement-lite**:
 - `/lite-component-knowledge` - Documents complex components
@@ -340,7 +340,7 @@ What would you like to do?
 ## Context Files This Skill Reads
 
 **Primary**:
-- `.shipkit-lite/plans/[feature]-plan.md` - Implementation steps
+- `.shipkit-lite/plans/active/[feature]-plan.md` - Implementation steps
 - `.shipkit-lite/specs/active/[feature].md` - Feature requirements
 - `.shipkit-lite/stack.md` - Tech stack
 
@@ -402,6 +402,38 @@ Implementation is complete when:
 
 ---
 
+## Next Steps After Implementation
+
+**When implementation is complete, ALWAYS suggest:**
+
+```
+✅ Feature implemented!
+
+Next: /lite-quality-confidence
+
+This will:
+• Verify all acceptance criteria from spec
+• Run final quality checks
+• Move spec and plan to implemented/ folder (marks feature complete)
+
+Run /lite-quality-confidence now to verify and complete this feature?
+```
+
+**Why this matters:**
+- Ensures quality checks before moving on
+- Marks spec/plan as complete (prevents accumulation in active/)
+- Creates clear completion record with metadata
+- Triggers archival workflow automatically
+
+**If user skips quality check:**
+- Spec/plan stay in active/ (looks pending)
+- No completion metadata added
+- Harder to track what's done vs in-progress
+
+**Always recommend /lite-quality-confidence as the immediate next step.**
+
+---
+
 ## Common Scenarios
 
 ### Scenario 1: Starting Fresh Feature
@@ -427,7 +459,7 @@ User: "Continue implementing - the form is done, need to add the API"
 
 Claude:
 1. Read .shipkit-lite/implementations.md (see what's complete)
-2. Read .shipkit-lite/plans/[feature]-plan.md (see what's next)
+2. Read .shipkit-lite/plans/active/[feature]-plan.md (see what's next)
 3. Focus on API endpoint step
 4. Reference stack.md for API patterns
 5. Write test for endpoint

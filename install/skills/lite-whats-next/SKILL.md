@@ -52,9 +52,11 @@ description: Analyzes project state across 5 pillars (Vision → Understand → 
 
 **Skills**:
 - lite-why-project (who/why/where/how)
+- lite-product-discovery (personas, user journeys, user stories)
 
 **Outputs**:
 - `.shipkit-lite/why.md`
+- `.shipkit-lite/product-discovery.md`
 
 ---
 
@@ -79,7 +81,7 @@ description: Analyzes project state across 5 pillars (Vision → Understand → 
 - lite-prototyping (rapid UI mockups)
 - lite-prototype-to-spec (extract prototype learnings to specs)
 - lite-plan (implementation plans)
-- lite-ux-coherence (ensure UX consistency)
+- lite-ux-audit (audit UX best practices)
 
 **Outputs**:
 - `.shipkit-lite/specs/active/*.md`
@@ -111,7 +113,7 @@ description: Analyzes project state across 5 pillars (Vision → Understand → 
 - lite-component-knowledge (document components)
 - lite-route-knowledge (document routes)
 - lite-architecture-memory (log decisions)
-- lite-data-consistency (capture types)
+- lite-data-contracts (validate data shapes across layers)
 - lite-work-memory (log session progress)
 - lite-communications (visual HTML reports)
 - lite-document-artifact (structured docs)
@@ -127,6 +129,107 @@ description: Analyzes project state across 5 pillars (Vision → Understand → 
 ---
 
 ## Process
+
+### Step 0: Check for Pending Queue Work (PRIORITY)
+
+**CRITICAL: Queue work takes precedence over normal workflow progression.**
+
+**Check if `.shipkit-lite/.queues/` folder exists:**
+
+```bash
+# If .queues/ doesn't exist, skip to Step 1
+# If .queues/ exists, check for pending work:
+
+Read/Check:
+- .queues/fetch-integration-docs.md (has ## Pending items?)
+- .queues/define-data-contracts.md (has ## Pending items?)
+- .queues/components-to-document.md (has ## Pending items?)
+- .queues/routes-to-document.md (has ## Pending items?)
+- .queues/ux-audit-needed.md (has ## Pending items?)
+```
+
+**Queue file format:**
+```markdown
+# [Queue Name]
+
+## Pending
+
+- [ ] Item 1
+- [ ] Item 2
+
+## Completed
+
+- [x] Item 3
+```
+
+**If ANY queue has pending items, suggest corresponding skill:**
+
+| Queue File | Suggest Skill | Priority | Rationale |
+|------------|---------------|----------|-----------|
+| fetch-integration-docs.md | `/lite-integration-docs` | 🔴 URGENT | External APIs change - outdated docs = bugs |
+| define-data-contracts.md | `/lite-data-contracts` | 🔴 URGENT | Type mismatches cause runtime errors |
+| components-to-document.md | `/lite-component-knowledge` | 🟡 HIGH | Undocumented components = integration bugs |
+| routes-to-document.md | `/lite-route-knowledge` | 🟡 HIGH | Undocumented APIs = integration errors |
+| ux-audit-needed.md | `/lite-ux-audit` | 🟢 MEDIUM | Missing UX = poor experience, not blocking |
+
+**Recommendation format when queues exist:**
+
+```
+🎯 PRIORITY: Bug prevention work queued
+
+Detected pending work in .queues/[queue-file].md:
+- [ ] [Item 1 from queue]
+- [ ] [Item 2 from queue]
+
+Recommendation: /[skill-name]
+
+Why: [Bug prevention rationale - explain what bugs this prevents]
+
+After completing queued work, I'll suggest next workflow step.
+```
+
+**If multiple queues have pending work:**
+- Suggest the HIGHEST priority queue first
+- Mention other pending queues: "Also pending: /lite-component-knowledge (3 items), /lite-ux-audit (2 items)"
+
+**If NO queues have pending work:**
+- Continue to Step 0.5 (check for post-implementation)
+
+---
+
+### Step 0.5: Check for Post-Implementation Quality Check (PRIORITY)
+
+**After queue check, check if implementation just completed:**
+
+**Detection signals:**
+1. `implementations.md` has entries modified in last 60 minutes
+2. Source files (src/, app/) modified in last 60 minutes
+3. BUT no recent quality-checks/ entry for this feature
+
+**If detected:**
+
+```
+🎯 PRIORITY: Implementation complete, quality check recommended
+
+Detected recent implementation work:
+• implementations.md updated recently
+• Source files modified in last hour
+• No quality check run yet
+
+Recommendation: /lite-quality-confidence
+
+Why: Verify acceptance criteria, run quality checks, and mark feature as complete (archives spec and plan).
+
+After quality check passes, spec/plan will move to implemented/ folders automatically.
+```
+
+**Priority:**
+- 🟡 HIGH (after queue work, before normal workflow)
+
+**If no recent implementation:**
+- Continue to Step 1 (normal workflow analysis)
+
+---
 
 ### Step 1: Scan Project State
 
@@ -157,9 +260,11 @@ Read/Check:
 ### Step 2: Evaluate Each Pillar
 
 **Pillar 1: Vision - Check completion:**
-- ✅ Complete: why.md exists
+- ✅ Complete: why.md AND product-discovery.md exist
+- ⏳ Partial: Only why.md exists (suggest /lite-product-discovery for user understanding)
+- ⏳ Partial: Only product-discovery.md exists (suggest /lite-why-project for strategic vision)
 - ⚠️ Stale: why.md older than 30 days (suggest update)
-- ❌ Missing: why.md doesn't exist
+- ❌ Missing: Neither file exists
 
 **Pillar 2: Understand Current - Check completion:**
 - ✅ Complete: stack.md exists and fresh
@@ -213,7 +318,7 @@ Read/Check:
 
 **Phase 6: Quality** (ready to ship)
 - Has: Implementation complete
-- Suggest: /lite-quality-confidence OR /lite-ux-coherence
+- Suggest: /lite-quality-confidence OR /lite-ux-audit
 
 ---
 
@@ -368,6 +473,24 @@ User completes /lite-spec
 
 ### Special Relationships
 
+**🎯 PRIORITY: Bug Prevention Queue System**
+- **When**: Detection skills create queue files (.queues/*.md)
+- **Why**: Bug prevention work takes PRIORITY over normal workflow progression
+- **Trigger**: Step 0 detects pending items in queue files
+- **Detection skills that create queues:**
+  - lite-post-spec-check → .queues/fetch-integration-docs.md
+  - lite-post-plan-check → .queues/define-data-contracts.md
+  - lite-post-implement-check → .queues/components-to-document.md, routes-to-document.md
+  - lite-pre-ship-check → .queues/ux-audit-needed.md
+- **Consumer skills suggested when queues exist:**
+  - /lite-integration-docs (fetch current API patterns)
+  - /lite-data-contracts (validate data shape contracts)
+  - /lite-component-knowledge (document components)
+  - /lite-route-knowledge (document routes/APIs)
+  - /lite-ux-audit (audit UX best practices)
+- **Priority order**: Integration docs > Data contracts > Documentation > UX audit
+- **Behavior**: Queue work suggested BEFORE pillar analysis (prevents bugs proactively)
+
 **lite-project-status** - Complementary gap detection
 - **When**: User asks "what's the status?" or "where are we?"
 - **Why**: lite-project-status gives detailed health check, lite-whats-next gives workflow guidance
@@ -377,6 +500,11 @@ User completes /lite-spec
 - **When**: No .shipkit-lite/ files exist
 - **Why**: Vision provides strategic context for all future decisions
 - **Trigger**: Brand new project detected
+
+**lite-product-discovery** - Suggested after vision defined, before specifications
+- **When**: why.md exists but no product-discovery.md, OR user asks about users/personas
+- **Why**: Understanding users and their needs informs better feature specifications
+- **Trigger**: Vision defined, ready to understand users; OR user mentions "personas", "user journey", "user stories"
 
 **lite-prototyping** - Suggested for UI-heavy features after spec exists
 - **When**: Spec exists and feature has significant UI/UX component
@@ -393,10 +521,10 @@ User completes /lite-spec
 - **Why**: Capture knowledge before ending session
 - **Trigger**: Context window getting large, or explicit "end session"
 
-**lite-ux-coherence** - Suggested when UX divergence detected
-- **When**: Multiple features implemented with different patterns
-- **Why**: Early UX audit prevents costly refactoring later
-- **Trigger**: 3+ components exist, no recent UX check
+**lite-ux-audit** - Suggested post-implementation for UX gap detection
+- **When**: Components built, ready for UX quality check
+- **Why**: Audit for missing UX best practices (loading states, errors, accessibility) before shipping
+- **Trigger**: Implementation complete, pre-quality-confidence phase
 
 **lite-user-instructions** - Suggested when blockers detected
 - **When**: Implementation stalled, or manual tasks mentioned
@@ -406,6 +534,13 @@ User completes /lite-spec
 ---
 
 ## Context Files This Skill Reads
+
+**PRIORITY: Check for queued bug prevention work:**
+- `.queues/fetch-integration-docs.md` (pending integration docs)
+- `.queues/define-data-contracts.md` (pending contract validation)
+- `.queues/components-to-document.md` (pending component docs)
+- `.queues/routes-to-document.md` (pending route docs)
+- `.queues/ux-audit-needed.md` (pending UX audit)
 
 **Scans entire `.shipkit-lite/` folder:**
 - `why.md`
@@ -425,7 +560,7 @@ User completes /lite-spec
 - Source code folders (src/, app/, components/)
 - Git status
 
-**Reads everything to build complete picture**
+**Reads everything to build complete picture, with queue work taking priority**
 
 ---
 

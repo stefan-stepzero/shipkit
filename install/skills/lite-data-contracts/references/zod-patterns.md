@@ -1,6 +1,6 @@
 # Zod Schema Patterns Reference
 
-Complete reference for Zod validation patterns used by `/lite-data-consistency`.
+Complete reference for Zod validation patterns used by `/lite-data-contracts`.
 
 ## Basic Types
 

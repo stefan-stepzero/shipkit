@@ -1,0 +1,59 @@
+# Service Integrations Detected
+
+**Created:** {{TIMESTAMP}}
+**Reason:** {{DETECTION_REASON}}
+
+## Pending Review
+
+{{#INTEGRATIONS}}
+- [ ] {{SERVICE_NAME}}
+  - Detected in: {{FILE_PATH}}
+  - Usage: {{USAGE_PATTERN}}
+  - Check needed: {{CHECK_DESCRIPTION}}
+{{/INTEGRATIONS}}
+
+## Verified Correct
+
+<!-- Items move here after /lite-integration-docs verifies patterns match current best practices -->
+
+---
+
+**Usage:**
+1. Detection skill creates this file after code analysis finds service integrations
+2. Scans codebase for imports/usage of Stripe, Supabase, OpenAI, S3, etc.
+3. `/lite-integration-docs` reads this queue
+4. Skill compares current code against latest official patterns
+5. Creates/updates reference in `.shipkit-lite/references/integrations/`
+6. Marks items verified when patterns match current docs
+
+**Example:**
+
+```markdown
+# Service Integrations Detected
+
+**Created:** 2025-12-30 19:00
+**Reason:** Code analysis found 3 service integrations
+
+## Pending Review
+
+- [ ] Stripe webhooks
+  - Detected in: src/app/api/webhooks/stripe/route.ts
+  - Usage: Using stripe.webhooks.constructEvent()
+  - Check needed: Verify signature verification matches current pattern
+
+- [ ] Supabase auth
+  - Detected in: src/lib/supabase/auth.ts
+  - Usage: Using createClient() with auth helpers
+  - Check needed: Verify auth flow matches current best practices
+
+- [ ] OpenAI embeddings
+  - Detected in: src/lib/ai/embeddings.ts
+  - Usage: Using openai.embeddings.create()
+  - Check needed: Verify API version and error handling
+
+## Verified Correct
+
+- [x] SendGrid email (verified 2025-12-29)
+  - Reference: references/integrations/sendgrid.md
+  - Status: Matches current API v3 patterns
+```

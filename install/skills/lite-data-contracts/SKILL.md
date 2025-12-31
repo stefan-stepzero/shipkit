@@ -1,6 +1,6 @@
 ---
-name: lite-data-consistency
-description: Maintains canonical TypeScript types and validation schemas across codebase. Reads existing types, component contracts, and database schema. Defines or updates types when user creates components or Server Actions. Generates Zod validation. Detects schema mismatches and suggests migrations.
+name: lite-data-contracts
+description: Validates data shape contracts across layers (database to backend to frontend) to prevent type mismatch bugs. Detects when frontend expects different data shape than backend returns. Creates reference documentation of data contracts. Use when defining new data structures or after schema changes.
 ---
 
 # data-consistency-lite - Type Definitions & Validation Schema Manager
@@ -40,7 +40,29 @@ description: Maintains canonical TypeScript types and validation schemas across 
 
 ## Process
 
-### Step 1: Read Existing Context
+### Step 0: Check for Queue (Auto-Detect Mode)
+
+**First, check if running in queue-driven mode**:
+
+Read file (if exists): `.shipkit-lite/.queues/define-data-contracts.md`
+
+**If queue file exists and has pending items**:
+1. Parse the `## Pending` section for data types needing validation
+2. For each pending type:
+   - Check database alignment (Step 3 logic)
+   - Generate TypeScript types (Step 4 logic)
+   - Create Zod schemas (Step 5 logic)
+   - Save to `.shipkit-lite/types.md` and `.shipkit-lite/validation-schemas.md`
+   - Move item from Pending to Completed in queue
+3. Skip Step 2 questions (types already identified)
+4. Continue with Step 3-6 for each type
+
+**If queue file doesn't exist or is empty**:
+- Continue to Step 1 (manual mode - read context and ask questions)
+
+---
+
+### Step 1: (Manual Mode) Read Existing Context
 
 **Before asking questions, read existing type definitions**:
 
@@ -635,7 +657,7 @@ IF standalone type definition:
 - `/lite-plan` - Create plan using defined types
 
 **During implementation**:
-- `/lite-implement` can invoke `/lite-data-consistency` when creating components with data
+- `/lite-implement` can invoke `/lite-data-contracts` when creating components with data
 
 ---
 
@@ -670,7 +692,7 @@ IF standalone type definition:
 
 **This skill loads context ON DEMAND**:
 
-1. User invokes `/lite-data-consistency`
+1. User invokes `/lite-data-contracts`
 2. Claude reads this SKILL.md
 3. Claude reads `.shipkit-lite/schema.md` (if exists) - ~500-1000 tokens
 4. Claude reads `.shipkit-lite/types.md` (if exists) - ~500-1500 tokens

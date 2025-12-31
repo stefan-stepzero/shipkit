@@ -44,7 +44,28 @@ description: Documents page/route implementations with data flows, auth patterns
 
 ## Process
 
-### Step 1: Ask Questions First
+### Step 0: Check for Queue (Auto-Detect Mode)
+
+**First, check if running in queue-driven mode**:
+
+Read file (if exists): `.shipkit-lite/.queues/routes-to-document.md`
+
+**If queue file exists and has pending items**:
+1. Parse the `## Pending` section for routes/APIs needing documentation
+2. For each pending route:
+   - Read route handler code
+   - Extract request/response schemas (Step 2-3 logic)
+   - Document API contract in `.shipkit-lite/api-contracts.md`
+   - Move item from Pending to Completed in queue
+3. Skip Step 1 questions (routes already identified)
+4. Continue with Step 2-5 for each route
+
+**If queue file doesn't exist or is empty**:
+- Continue to Step 1 (manual mode - ask what to document)
+
+---
+
+### Step 1: (Manual Mode) Ask Questions First
 
 **Before scanning or generating**, ask user 2-3 questions:
 

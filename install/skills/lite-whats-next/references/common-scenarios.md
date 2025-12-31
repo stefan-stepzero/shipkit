@@ -25,7 +25,36 @@ What this accomplishes:
 
 ---
 
-## Scenario 2: Vision + Stack, No Specs
+## Scenario 2: Vision Defined, Need User Understanding
+
+**State**: why.md exists, no product-discovery.md
+
+**Analysis**:
+- Pillar 1 (Vision): ⏳ Partial (vision defined, user understanding missing)
+- Pillar 2 (Understand): ❌ Missing (no stack.md)
+- Pillar 3 (Co-design): ❌ Missing (no specs)
+- Pillar 4 (Execute): ❌ Not started
+- Pillar 5 (Document): ❌ Missing
+
+**Recommendation**:
+```
+Run: /lite-product-discovery
+
+Why: Vision tells you WHERE you're going, but product discovery tells you WHO you're building for.
+     Understanding users, their pain points, and their needs informs better feature decisions.
+
+What this accomplishes:
+- Pillar 1: Complete user understanding (personas, journeys, stories)
+- Outcome: User-centered feature specifications instead of assumptions
+
+Alternative Paths:
+- Skip product discovery: /lite-project-context → /lite-spec (faster but riskier - no user validation)
+- Technical focus only: /lite-project-context (if you already know your users well)
+```
+
+---
+
+## Scenario 3: Vision + Stack, No Specs
 
 **State**: why.md and stack.md exist, no specs
 
@@ -49,7 +78,7 @@ What this accomplishes:
 
 ---
 
-## Scenario 3: Code Exists, No Docs
+## Scenario 4: Code Exists, No Docs
 
 **State**: Source code in src/, no implementations.md
 
@@ -78,7 +107,7 @@ Alternative Paths:
 
 ---
 
-## Scenario 4: Spec Exists, No Plan
+## Scenario 5: Spec Exists, No Plan
 
 **State**: specs/active/recipe-sharing.md exists, no plan
 
@@ -99,7 +128,7 @@ What this accomplishes:
 
 ---
 
-## Scenario 5: Missing Dependencies Warning
+## Scenario 6: Missing Dependencies Warning
 
 **State**: User just ran /lite-plan but no spec exists
 
@@ -122,7 +151,7 @@ Alternative Paths:
 
 ---
 
-## Scenario 6: Just Completed Implementation
+## Scenario 7: Just Completed Implementation
 
 **State**: User just completed /lite-implement, code works
 
@@ -148,7 +177,7 @@ Alternative Paths:
 
 ---
 
-## Scenario 7: UX Inconsistency Detected
+## Scenario 8: UX Inconsistency Detected
 
 **State**: User built multiple features with different UX patterns
 
@@ -158,14 +187,14 @@ Alternative Paths:
 
 **Recommendation**:
 ```
-Run: /lite-ux-coherence
+Run: /lite-ux-audit
 
-Why: Inconsistent UX confuses users. Early detection prevents
-     costly refactoring later.
+Why: Audit for missing UX best practices (loading states, error handling,
+     accessibility) before shipping.
 
 What this accomplishes:
-- Pillar 5: Quality check for UX consistency
-- Outcome: Unified interaction patterns across features
+- Pillar 4: Post-implementation UX gap detection
+- Outcome: Checklist of UX issues to fix before quality checks
 
 Alternative Paths:
 - Document first: /lite-component-knowledge (capture current state)
@@ -174,7 +203,7 @@ Alternative Paths:
 
 ---
 
-## Scenario 8: Spec Exists, UI Uncertain
+## Scenario 9: Spec Exists, UI Uncertain
 
 **State**: Spec exists for UI-heavy feature, user unsure about interaction design
 
@@ -195,13 +224,13 @@ What this accomplishes:
 
 Alternative Paths:
 - Skip prototyping: /lite-plan (proceed directly to implementation)
-- Get UX guidance: /lite-ux-coherence (design patterns first)
+- Document UX decisions: /lite-architecture-memory (log design rationale)
 ```
 
 
 ---
 
-## Scenario 9: Prototype Complete, Ready to Document
+## Scenario 10: Prototype Complete, Ready to Document
 
 **State**: Prototype iteration complete, user satisfied with UI/UX direction
 

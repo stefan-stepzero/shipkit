@@ -1,0 +1,68 @@
+# UX Audit Needed
+
+**Created:** {{TIMESTAMP}}
+**Reason:** {{DETECTION_REASON}}
+
+## Components To Audit
+
+{{#COMPONENTS}}
+- [ ] {{COMPONENT_NAME}}
+  - Location: {{COMPONENT_PATH}}
+  - Type: {{INTERACTION_TYPE}}
+  - Audit for: {{AUDIT_ITEMS}}
+{{/COMPONENTS}}
+
+## Completed
+
+<!-- Items move here after /lite-ux-audit checks UX best practices -->
+
+---
+
+**Usage:**
+1. Detection skill creates this file when implementation reaches threshold (e.g., 3+ interactive components)
+2. OR triggered pre-ship by lite-pre-ship-check
+3. `/lite-ux-audit` reads this queue
+4. Skill audits for missing UX patterns (loading states, errors, accessibility, feedback)
+5. Creates checklist in `.shipkit-lite/references/ux/ux-checklist.md`
+6. Marks items complete in this queue
+
+**Example:**
+
+```markdown
+# UX Audit Needed
+
+**Created:** 2025-12-30 18:00
+**Reason:** 5 interactive components built, pre-ship check triggered
+
+## Components To Audit
+
+- [ ] LoginForm
+  - Location: src/components/LoginForm.tsx
+  - Type: Form with async submit
+  - Audit for: Loading state during submit, error display, success feedback
+
+- [ ] UserCard
+  - Location: src/components/UserCard.tsx
+  - Type: Interactive card with actions
+  - Audit for: Loading states for actions, disabled states, accessibility
+
+- [ ] DashboardStats
+  - Location: src/app/dashboard/DashboardStats.tsx
+  - Type: Data widget with refresh
+  - Audit for: Loading skeleton, error handling, empty state
+
+- [ ] PostEditor
+  - Location: src/components/PostEditor.tsx
+  - Type: Rich text editor
+  - Audit for: Auto-save feedback, error recovery, accessibility
+
+- [ ] ImageUpload
+  - Location: src/components/ImageUpload.tsx
+  - Type: File upload with preview
+  - Audit for: Upload progress, error messages, file size limits
+
+## Completed
+
+- [x] Button component (audited 2025-12-28)
+  - Reference: references/ux/ux-checklist.md#button-patterns
+```

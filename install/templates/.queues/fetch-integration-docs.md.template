@@ -1,0 +1,49 @@
+# Integration Docs Needed
+
+**Created:** {{TIMESTAMP}}
+**Reason:** {{DETECTION_REASON}}
+
+## Pending
+
+{{#SERVICES}}
+- [ ] {{SERVICE_NAME}} integration
+  - Mentioned in: {{SOURCE_FILE}}
+  - Need: {{DOCS_NEEDED}}
+{{/SERVICES}}
+
+## Completed
+
+<!-- Items move here after /lite-integration-docs fetches current patterns -->
+
+---
+
+**Usage:**
+1. Detection skill creates this file when spec/plan mentions external services
+2. `/lite-integration-docs` reads this queue
+3. Skill fetches current patterns from official docs
+4. Creates reference material in `.shipkit-lite/references/integrations/`
+5. Marks items complete in this queue
+
+**Example:**
+
+```markdown
+# Integration Docs Needed
+
+**Created:** 2025-12-30 14:32
+**Reason:** Spec mentions Stripe webhooks
+
+## Pending
+
+- [ ] Stripe webhooks
+  - Mentioned in: specs/active/payment-flow.md
+  - Need: Webhook signature verification pattern
+
+- [ ] Supabase RLS policies
+  - Mentioned in: plans/auth-plan.md
+  - Need: Current RLS policy patterns for user data
+
+## Completed
+
+- [x] OpenAI API (docs fetched 2025-12-28)
+  - Reference: references/integrations/openai-api.md
+```

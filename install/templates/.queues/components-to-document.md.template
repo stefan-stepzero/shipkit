@@ -1,0 +1,58 @@
+# Components To Document
+
+**Created:** {{TIMESTAMP}}
+**Reason:** {{DETECTION_REASON}}
+
+## Pending
+
+{{#COMPONENTS}}
+- [ ] {{COMPONENT_PATH}}
+  - Modified: {{MODIFICATION_TIME}}
+  - Type: {{COMPONENT_TYPE}}
+  - Props/API: {{NEEDS_DOCUMENTATION}}
+{{/COMPONENTS}}
+
+## Completed
+
+<!-- Items move here after /lite-component-knowledge documents components -->
+
+---
+
+**Usage:**
+1. Detection skill creates this file after implementation completes
+2. Scans for new/modified components in src/components, src/app, etc.
+3. `/lite-component-knowledge` reads this queue
+4. Skill documents component contracts (props, events, usage)
+5. Creates reference in `.shipkit-lite/references/components/`
+6. Marks items complete in this queue
+
+**Example:**
+
+```markdown
+# Components To Document
+
+**Created:** 2025-12-30 16:20
+**Reason:** New components detected after implementation
+
+## Pending
+
+- [ ] src/components/UserCard.tsx
+  - Modified: 2025-12-30 16:15
+  - Type: Display component
+  - Props/API: Needs props contract, styling variants
+
+- [ ] src/components/LoginForm.tsx
+  - Modified: 2025-12-30 16:18
+  - Type: Form component
+  - Props/API: Needs onSubmit signature, validation rules
+
+- [ ] src/app/dashboard/DashboardStats.tsx
+  - Modified: 2025-12-30 16:12
+  - Type: Widget component
+  - Props/API: Needs data shape definition
+
+## Completed
+
+- [x] src/components/Button.tsx (documented 2025-12-28)
+  - Reference: references/components/Button.md
+```

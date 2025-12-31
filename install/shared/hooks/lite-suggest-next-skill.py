@@ -59,12 +59,12 @@ def detect_last_skill():
         if mtime > datetime.now() - timedelta(minutes=1):
             return 'lite-architecture-memory'
 
-    # Check types.md (lite-data-consistency updates here)
+    # Check types.md (lite-data-contracts updates here)
     types_file = shipkit_lite / 'types.md'
     if types_file.exists():
         mtime = datetime.fromtimestamp(types_file.stat().st_mtime)
         if mtime > datetime.now() - timedelta(minutes=1):
-            return 'lite-data-consistency'
+            return 'lite-data-contracts'
 
     # Check stack.md (lite-project-context updates here)
     stack_file = shipkit_lite / 'stack.md'
@@ -102,16 +102,16 @@ def suggest_next_skill(last_skill):
 👉 Next: /lite-plan - Create implementation plan
    Or: /lite-implement - Start implementation
 """,
-        'lite-data-consistency': """
-✅ Types updated
+        'lite-data-contracts': """
+✅ Data contracts validated
 
-👉 Next: /lite-implement - Use these types in implementation
+👉 Next: /lite-implement - Use these contracts in implementation
 """,
-        'lite-ux-coherence': """
-✅ UX guidance provided
+        'lite-ux-audit': """
+✅ UX audit complete
 
-👉 Next: /lite-implement - Apply this pattern
-   Or: /lite-architecture-memory - Log this as a pattern decision
+👉 Next: Fix identified UX gaps
+   Or: /lite-quality-confidence - Proceed to quality checks if gaps are acceptable
 """,
         'lite-quality-confidence': """
 ✅ Quality check complete

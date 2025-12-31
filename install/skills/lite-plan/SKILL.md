@@ -92,7 +92,7 @@ description: Creates focused implementation plans for POC/MVP features by readin
 
 **Create plan file using Write tool**:
 
-**Location**: `.shipkit-lite/plans/[feature-name]-plan.md`
+**Location**: `.shipkit-lite/plans/active/[feature-name]-plan.md`
 
 **Plan structure**:
 
@@ -239,7 +239,7 @@ If yes, suggest:
 ```
 ✅ Implementation plan created
 
-📁 Location: .shipkit-lite/plans/[feature-name]-plan.md
+📁 Location: .shipkit-lite/plans/active/[feature-name]-plan.md
 
 📋 Summary:
   • [X] implementation steps
@@ -375,7 +375,7 @@ Ready to start implementing?
 ## Context Files This Skill Writes
 
 **Creates**:
-- `.shipkit-lite/plans/[feature]-plan.md` - Implementation plan
+- `.shipkit-lite/plans/active/[feature]-plan.md` - Implementation plan
 
 **Write Strategy**: **OVERWRITE AND REPLACE**
 
@@ -388,7 +388,7 @@ Ready to start implementing?
 - Checkboxes track implementation progress, but that state belongs in implementation tracking, not the plan itself
 
 **Behavior**:
-- If `.shipkit-lite/plans/[feature]-plan.md` exists, completely replace it
+- If `.shipkit-lite/plans/active/[feature]-plan.md` exists, completely replace it
 - Use Write tool (after Read) to overwrite with new content
 - No archiving needed - plans are regenerated artifacts, not historical documents
 - User can always re-generate by re-running `/lite-plan`

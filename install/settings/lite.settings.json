@@ -93,12 +93,13 @@
       "Skill(lite-shipkit-master)",
       "Skill(lite-project-status)",
       "Skill(lite-project-context)",
+      "Skill(lite-product-discovery)",
       "Skill(lite-spec)",
       "Skill(lite-prototyping)",
       "Skill(lite-prototype-to-spec)",
       "Skill(lite-architecture-memory)",
-      "Skill(lite-ux-coherence)",
-      "Skill(lite-data-consistency)",
+      "Skill(lite-ux-audit)",
+      "Skill(lite-data-contracts)",
       "Skill(lite-plan)",
       "Skill(lite-implement)",
       "Skill(lite-component-knowledge)",
@@ -106,12 +107,18 @@
       "Skill(lite-document-artifact)",
       "Skill(lite-quality-confidence)",
       "Skill(lite-user-instructions)",
-      "Skill(lite-integration-guardrails)",
+      "Skill(lite-integration-docs)",
       "Skill(lite-work-memory)",
       "Skill(lite-debug-systematically)",
       "Skill(lite-communications)",
       "Skill(lite-why-project)",
-      "Skill(lite-whats-next)"
+      "Skill(lite-whats-next)",
+
+      "Skill(lite-milestone-detector)",
+      "Skill(lite-post-spec-check)",
+      "Skill(lite-post-plan-check)",
+      "Skill(lite-post-implement-check)",
+      "Skill(lite-pre-ship-check)"
     ],
 
     "deny": [
@@ -138,11 +145,20 @@
     ],
     "Stop": [
       {
-        "matcher": ".*",
         "hooks": [
           {
             "type": "command",
-            "command": "python -X utf8 .claude/hooks/suggest-next-skill.py"
+            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/skills/lite-milestone-detector/scripts/route-to-check.py"
+          },
+          {
+            "type": "prompt",
+            "prompt": "If significant work was done this session (files created/modified, decisions made, features completed), invoke /lite-work-memory with a concise 2-3 sentence summary. Skip if only trivial reading/checking occurred.",
+            "timeout": 15
+          },
+          {
+            "type": "prompt",
+            "prompt": "Invoke /lite-whats-next to analyze project state and suggest the next logical skill. This provides intelligent workflow guidance based on the 5-pillar framework and checks for pending bug prevention work in .queues/.",
+            "timeout": 30
           }
         ]
       }

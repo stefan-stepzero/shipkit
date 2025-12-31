@@ -140,8 +140,8 @@ description: Converts feature descriptions into Given/When/Then specifications w
 
 👉 Next steps:
   1. /lite-plan - Create implementation plan
-  2. /lite-ux-coherence - Review UX patterns (optional)
-  3. /lite-architecture-memory - Log architectural decisions (if any)
+  2. /lite-architecture-memory - Log architectural decisions (if any)
+  3. /lite-prototyping - Rapid UI mockup (if UI-heavy feature)
 
 Ready to plan implementation?
 ```
@@ -296,7 +296,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 
 **After spec approval:**
 1. Run `/lite-plan` to create implementation plan
-2. Or run `/lite-ux-coherence` for UX review first (optional)
+2. Or run `/lite-prototyping` for UI mockup first (if UI-heavy feature)
 3. Or run `/lite-architecture-memory` to log architectural decisions
 
 ---
@@ -351,10 +351,10 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
   - **Why**: Spec defines WHAT to build, plan defines HOW
   - **Trigger**: Spec saved to specs/active/, user confirms "ready to plan"
 
-- `/lite-ux-coherence` - Reviews UX patterns against design principles
-  - **When**: Spec includes user-facing features (optional step)
-  - **Why**: Catch UX inconsistencies before implementation
-  - **Trigger**: User wants UX review before committing to implementation approach
+- `/lite-prototyping` - Creates rapid UI mockup
+  - **When**: Spec includes significant UI/UX components (optional step)
+  - **Why**: Validate UI direction before committing to full implementation
+  - **Trigger**: User wants to see UI mockup before building real code
 
 - `/lite-architecture-memory` - Logs architectural decisions made during spec
   - **When**: Spec reveals architectural choices (optional step)

@@ -1,6 +1,6 @@
 # Common UX Guidance Scenarios
 
-Practical examples of how lite-ux-coherence works in different situations.
+Practical examples of how lite-ux-audit works in different situations.
 
 ---
 

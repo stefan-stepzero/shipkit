@@ -393,10 +393,10 @@ Specifically:
 - **Why**: Prototype serves as reference for what to build
 - **Trigger**: User says "let's build this for real" after prototyping
 
-**lite-ux-coherence** - Checks UX consistency
-- **When**: Multiple prototypes exist for different features
-- **Why**: Ensure prototypes follow consistent patterns before extracting to specs
-- **Trigger**: 3+ prototypes created, need coherence check
+**lite-architecture-memory** - Documents UX design decisions
+- **When**: Prototype validated and UX patterns established
+- **Why**: Capture UX rationale from prototyping for future reference
+- **Trigger**: Prototype complete, design decisions need documentation
 
 ### Special Relationships
 

@@ -49,14 +49,19 @@
   architecture.md       # Decisions log (append-only)
   implementations.md    # Component/route docs (append-only)
   types.md              # TypeScript types
-  specs/active/         # Feature specs
-  plans/                # Implementation plans
+  specs/
+    active/             # Pending feature specs
+    implemented/        # Completed feature specs
+  plans/
+    active/             # Pending implementation plans
+    implemented/        # Completed implementation plans
 ```
 
 ## Skill Invocation
 
 **Project Setup:**
 - `/lite-why-project` - Define strategic vision (who/why/where)
+- `/lite-product-discovery` - Create personas, user journeys, user stories → `product-discovery.md`
 - `/lite-project-context` - Scan codebase, create stack.md
 - `/lite-project-status` - Health check, show gaps
 
@@ -65,8 +70,9 @@
 - `/lite-prototyping` - Rapid UI mockup → `.shipkit-mockups/[name]/`
 - `/lite-prototype-to-spec` - Extract prototype learnings → append to spec
 - `/lite-architecture-memory` - Log decision → append to `architecture.md`
-- `/lite-plan` - Create plan → `plans/[name].md`
-- `/lite-implement` - Build feature with TDD guidance
+- `/lite-plan` - Create plan → `plans/active/[name].md`
+- `/lite-implement` - Build feature with TDD guidance → suggests `/lite-quality-confidence`
+- `/lite-quality-confidence` - Verify acceptance criteria → moves spec & plan to implemented/
 
 **Documentation:**
 - `/lite-component-knowledge` - Document components → append to `implementations.md`
@@ -81,9 +87,9 @@
 
 **Utilities:**
 - `/lite-whats-next` - Smart workflow guidance (MANDATORY after every skill)
-- `/lite-ux-coherence` - Check UX consistency
-- `/lite-data-consistency` - Manage types/schemas
-- `/lite-integration-guardrails` - Service integration warnings
+- `/lite-ux-audit` - Audit for missing UX best practices post-implementation
+- `/lite-data-contracts` - Validate data shape contracts across layers
+- `/lite-integration-docs` - Fetch current integration patterns from official docs
 - `/lite-debug-systematically` - 4-phase debugging
 
 ## Workflow Pattern
@@ -91,11 +97,11 @@
 **Typical flow:**
 ```
 /lite-project-context (once)
-  → /lite-spec (per feature)
-    → /lite-plan
+  → /lite-spec (per feature) → specs/active/
+    → /lite-plan → plans/active/
       → /lite-implement
-        → /lite-component-knowledge
-          → /lite-quality-confidence
+        → /lite-quality-confidence → moves spec & plan to implemented/
+          → (queued: /lite-component-knowledge)
 ```
 
 **Rules:**
@@ -115,8 +121,10 @@
 **Load on-demand:**
 - `implementations.md` - When documenting components/routes
 - `types.md` - When checking type consistency
-- `specs/` - When planning implementation
-- `plans/` - When implementing
+- `specs/active/` - When planning implementation (pending specs)
+- `specs/implemented/` - For reference (completed features)
+- `plans/active/` - When implementing (pending plans)
+- `plans/implemented/` - For reference (completed plans)
 
 ## Protected Files (Read-Only)
 
@@ -125,8 +133,29 @@ Skills create these via Write tool. You read them, but only update via the skill
 - `stack.md` - Update via `/lite-project-context`
 - `architecture.md` - Append via `/lite-architecture-memory`
 - `implementations.md` - Append via `/lite-component-knowledge` or `/lite-route-knowledge`
-- `specs/` - Create via `/lite-spec`
-- `plans/` - Create via `/lite-plan`
+- `specs/active/` - Create via `/lite-spec`, move to implemented/ via `/lite-quality-confidence`
+- `specs/implemented/` - Archived by `/lite-quality-confidence` (read-only)
+- `plans/active/` - Create via `/lite-plan`, move to implemented/ via `/lite-quality-confidence`
+- `plans/implemented/` - Archived by `/lite-quality-confidence` (read-only)
+
+## Agent Personas
+
+Shipkit Lite includes 6 pure domain-expertise personas for POC/MVP development. Agents provide personality and expertise; skills provide process.
+
+| Agent | Domain Expertise | Mindset |
+|-------|------------------|---------|
+| `lite-product-owner` | Vision, user needs, prioritization | "Smallest thing to validate" |
+| `lite-ux-designer` | UI patterns, prototyping | "Proven patterns over custom" |
+| `lite-architect` | Stack decisions, data modeling | "Leverage the platform" |
+| `lite-implementer` | TDD-lite, integrations | "Working code beats perfect" |
+| `lite-reviewer` | Security, quality gates | "Blockers vs suggestions" |
+| `lite-researcher` | Official docs, troubleshooting | "Source of truth first" |
+
+**Location**: `.claude/agents/` (after installation)
+
+**Stack knowledge**: All agents understand Vercel + Supabase + Stripe ecosystem.
+
+---
 
 ## Quick Reference
 

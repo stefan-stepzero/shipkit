@@ -188,4 +188,4 @@ npx @upstash/context7-mcp@latest
 
 ---
 
-**Pro tip:** Add "use context7" to prompts in `/lite-integration-guardrails` skill to fetch latest security best practices for Stripe, Supabase, OpenAI, etc.
+**Pro tip:** Add "use context7" to prompts in `/lite-integration-docs` skill to fetch latest security best practices for Stripe, Supabase, OpenAI, etc.

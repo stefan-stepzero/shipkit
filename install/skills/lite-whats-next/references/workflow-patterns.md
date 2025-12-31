@@ -13,8 +13,8 @@
 **If user keeps creating specs without plans**:
 → Suggest: /lite-plan (complete the co-design phase)
 
-**If UX patterns diverging across components**:
-→ Suggest: /lite-ux-coherence (ensure consistency)
+**If components built but UX not audited**:
+→ Suggest: /lite-ux-audit (check for missing UX best practices)
 
 **If manual tasks detected but not tracked**:
 → Suggest: /lite-user-instructions (capture blocking tasks)
@@ -168,5 +168,5 @@ Then after stack:
 - Update vision: /lite-why-project (if direction changed)
 - Refresh stack: /lite-project-context (if dependencies updated)
 - Health check: /lite-project-status (comprehensive gap analysis)
-- UX audit: /lite-ux-coherence (ensure consistency)
+- UX audit: /lite-ux-audit (check for missing UX best practices)
 ```

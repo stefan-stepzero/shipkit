@@ -1,6 +1,6 @@
 ---
-name: lite-integration-guardrails
-description: Prevents service integration mistakes by fetching live documentation from official sources, caching patterns in references/ with 7-day freshness, and warning about security pitfalls. Detects services (stripe, supabase, openai, s3, sendgrid), fetches latest best practices, saves snippets. Use when implementing external service integrations.
+name: lite-integration-docs
+description: Fetches current integration patterns from official documentation for external services (Stripe, Supabase, OpenAI, S3, SendGrid) to prevent coding against outdated APIs. Creates reference documentation that prevents integration bugs. Use when spec mentions external services or before implementing integrations.
 ---
 
 # integration-guardrails-lite - Live Documentation Integration Safety
@@ -45,7 +45,27 @@ description: Prevents service integration mistakes by fetching live documentatio
 
 ## Process
 
-### Step 1: Detect Service Integration Context
+### Step 0: Check for Queue (Auto-Detect Mode)
+
+**First, check if running in queue-driven mode**:
+
+Read file (if exists): `.shipkit-lite/.queues/fetch-integration-docs.md`
+
+**If queue file exists and has pending items**:
+1. Parse the `## Pending` section for services needing docs
+2. For each pending service:
+   - Fetch current integration patterns (Step 3 logic)
+   - Save to `references/[service]-patterns.md`
+   - Move item from Pending to Completed in queue
+3. Skip Step 1 questions (services already identified)
+4. Continue with Step 3-4 for each service
+
+**If queue file doesn't exist or is empty**:
+- Continue to Step 1 (manual mode - ask user questions)
+
+---
+
+### Step 1: Detect Service Integration Context (Manual Mode)
 
 **Before loading anything**, ask user 2-3 questions:
 
