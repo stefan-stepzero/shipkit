@@ -200,10 +200,6 @@ export async function createUser(input: CreateUserInput): Promise<CreateUserOutp
   plans/
     active/             # Pending implementation plans
     implemented/        # Completed implementation plans
-  implementations/
-    index.md            # Auto-generated TOC
-    components/         # Per-component docs
-    routes/             # Per-route docs
   .queues/              # Auto-generated work queues
 ```
 
@@ -237,8 +233,6 @@ export async function createUser(input: CreateUserInput): Promise<CreateUserOutp
 |-------|---------|---------|
 | `/lite-architecture-memory` | Log architectural decisions | Append to `architecture.md` |
 | `/lite-data-contracts` | Define type shapes | `types.md` |
-| `/lite-component-knowledge` | Document components | `implementations/components/` |
-| `/lite-route-knowledge` | Document routes | `implementations/routes/` |
 | `/lite-integration-docs` | External service patterns | `integrations/[service].md` |
 
 ### Quality & Communication

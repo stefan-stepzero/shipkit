@@ -132,8 +132,6 @@ This skill provides:
 |-----------|----------|--------------|
 | "Log this decision", "Architecture choice", "Why did we choose X?" | `/lite-architecture-memory` | .shipkit-lite/architecture.md |
 | "Define data shapes", "Type definitions", "Data contracts" | `/lite-data-contracts` | .shipkit-lite/types.md |
-| "Document component", "How does X work?", "Component docs" | `/lite-component-knowledge` | implementations/components/ |
-| "Document route", "API endpoint docs", "Route docs" | `/lite-route-knowledge` | implementations/routes/ |
 | "Fetch integration docs", "API patterns", "Service integration" | `/lite-integration-docs` | .shipkit-lite/stack.md |
 
 ### Quality & Communication
@@ -172,8 +170,6 @@ Use the appropriate skill instead:
   • stack.md → /lite-project-context
   • specs/* → /lite-spec
   • plans/* → /lite-plan
-  • implementations/components/* → /lite-component-knowledge
-  • implementations/routes/* → /lite-route-knowledge
   • architecture.md → /lite-architecture-memory
 ```
 
@@ -235,7 +231,7 @@ This skill is the **central router** that connects all other skills.
 | Vision/Discovery | `lite-why-project`, `lite-product-discovery` |
 | Context/Status | `lite-project-status`, `lite-project-context`, `lite-work-memory` |
 | Spec/Planning | `lite-spec`, `lite-plan`, `lite-prototyping`, `lite-prototype-to-spec` |
-| Knowledge | `lite-architecture-memory`, `lite-data-contracts`, `lite-component-knowledge`, `lite-route-knowledge`, `lite-integration-docs` |
+| Knowledge | `lite-architecture-memory`, `lite-data-contracts`, `lite-integration-docs` |
 | Quality | `lite-ux-audit`, `lite-quality-confidence`, `lite-user-instructions`, `lite-communications` |
 
 **Does NOT Route:**
