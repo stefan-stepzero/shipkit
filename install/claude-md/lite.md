@@ -1,6 +1,111 @@
 # Shipkit Lite - Project Instructions
 
-**You are working with Shipkit Lite** - a lightweight framework for POC/MVP development.
+**You are working with Shipkit Lite** - a framework for shipping production-ready MVPs for SaaS applications.
+
+**Context:** Solo developer or tiny team. AI-assisted development (you + human). Ship fast, iterate on real feedback.
+
+---
+
+## The Shipkit Mindset
+
+### MVP ≠ Low Quality
+
+**Production-ready MVP means:**
+- ✅ Core user paths work flawlessly
+- ✅ Authentication and authorization are solid
+- ✅ Payment flows are bulletproof (money is involved)
+- ✅ Errors are handled gracefully for users
+- ✅ Basic security (input validation, SQL injection prevention, CSRF)
+
+**MVP means we skip:**
+- ❌ Comprehensive test coverage (test critical paths only)
+- ❌ Edge cases for non-critical features
+- ❌ Performance optimization beyond basics
+- ❌ Features users haven't asked for yet
+
+**The rule:** Core paths bulletproof. Everything else minimal.
+
+---
+
+### Context Over Defaults
+
+**You have implicit defaults from training. This project has explicit context.**
+
+Before making architectural decisions, **always check:**
+1. `.shipkit-lite/why.md` - Project scope, constraints, approach
+2. `.shipkit-lite/architecture.md` - Decisions already made
+3. `.shipkit-lite/stack.md` - Technology choices
+
+**If context exists → follow it, even if different from "best practice"**
+**If context is missing → ask, don't assume**
+
+Example:
+- Your default: Modular architecture, comprehensive error handling
+- Project context (why.md): "MVP in 2 weeks, solo dev"
+- Your behavior: Simple structure, error handling for critical paths only
+
+---
+
+### Solo Dev Patterns (Not Team Patterns)
+
+**Skip team ceremony:**
+- ❌ Don't suggest PR workflows (no team to review)
+- ❌ Don't create documentation for "other developers" (there are none)
+- ❌ Don't add abstraction layers for "future flexibility"
+- ❌ Don't suggest code review processes
+
+**Do solo-appropriate things:**
+- ✅ Self-documenting code (clear names, obvious structure)
+- ✅ Inline comments for "why", not "what"
+- ✅ Minimal abstractions (duplicate code is fine if it's clearer)
+- ✅ Direct solutions over flexible ones
+
+---
+
+### AI-First Code Patterns
+
+**The next developer is also an AI (future Claude sessions). Optimize for:**
+
+| Do This | Not This |
+|---------|----------|
+| One concept per file | Multiple concerns interleaved |
+| Explicit imports | Barrel files or re-exports |
+| "Why" comments | "What" comments (code shows what) |
+| Flat structures | Deep nesting |
+| Obvious patterns | Clever abstractions |
+| Self-contained functions | Functions requiring full codebase context |
+
+**Why:** Each session starts fresh. Code should be understandable without remembering the whole project.
+
+---
+
+### SaaS Defaults
+
+**For SaaS MVPs, always consider:**
+
+| Concern | Default Approach |
+|---------|------------------|
+| Multi-tenancy | User ID on every table from day 1 |
+| Auth | Supabase Auth + RLS policies |
+| Payments | Lemon Squeezy webhooks (they handle tax) |
+| Onboarding | First-run experience matters for conversion |
+| Errors | Log to console + user-friendly messages |
+| Analytics | Basic events from day 1 (sign up, purchase, key actions) |
+
+---
+
+### Shipping > Perfecting
+
+**Launch with known limitations:**
+- Document what's not done in `progress.md`
+- "Good enough" beats "not shipped"
+- Real user feedback > hypothetical requirements
+- Technical debt is fine if consciously chosen
+
+**Stop refining when:**
+- Core feature works
+- User can complete their goal
+- Code is readable (not perfect)
 
 ---
 
