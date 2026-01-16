@@ -1,6 +1,6 @@
 ---
 name: lite-integration-docs
-description: Fetches current integration patterns from official documentation for external services (Stripe, Supabase, OpenAI, S3, SendGrid) to prevent coding against outdated APIs. Creates reference documentation that prevents integration bugs. Use when spec mentions external services or before implementing integrations.
+description: "Use when needing current API patterns for external services. Triggers: 'fetch docs', 'integration help', 'current API patterns', 'how to use [service]'."
 ---
 
 # integration-guardrails-lite - Live Documentation Integration Safety
@@ -12,15 +12,14 @@ description: Fetches current integration patterns from official documentation fo
 ## When to Invoke
 
 **Auto-invoked by implement-lite** when external service keywords detected:
-- "stripe", "webhook", "payment"
+- "lemonsqueezy", "lemon squeezy", "webhook", "payment", "subscription"
 - "supabase", "RLS", "auth", "postgres"
 - "openai", "api", "llm", "embedding"
-- "s3", "upload", "storage"
-- "sendgrid", "email", "transactional"
-- "twilio", "sms", "phone"
+- "resend", "email", "transactional"
+- "prisma", "orm", "migration"
 
 **Manual invocation**:
-- User: "Check my Stripe integration"
+- User: "Check my Lemon Squeezy integration"
 - User: "Review this webhook handler"
 - User: "Is my Supabase auth secure?"
 
@@ -71,7 +70,7 @@ Read file (if exists): `.shipkit-lite/.queues/fetch-integration-docs.md`
 
 1. **Which service are you integrating?**
    - If auto-invoked: "I detected [service] keywords. Is this a [service] integration?"
-   - If manual: "Which service? (Stripe, Supabase, OpenAI, S3, SendGrid, Twilio, other)"
+   - If manual: "Which service? (Lemon Squeezy, Supabase, OpenAI, Resend, Prisma, other)"
 
 2. **What integration type?**
    - "Webhooks/callbacks?"
@@ -144,15 +143,15 @@ Using WebFetch to retrieve:
 This will take ~10-15 seconds...
 ```
 
-**Documentation sources by service**:
+**Documentation sources by service (Solo Dev MVP Stack 2025)**:
 
 | Service | Documentation URL | Focus Areas |
 |---------|------------------|-------------|
-| Stripe | https://docs.stripe.com/webhooks | Webhook signature validation, test mode detection |
+| Lemon Squeezy | https://docs.lemonsqueezy.com/guides/developer-guide/webhooks | Webhook signature validation, order events, subscriptions |
 | Supabase | https://supabase.com/docs/guides/auth | RLS policies, Row Level Security, auth helpers |
 | OpenAI | https://platform.openai.com/docs/guides/safety-best-practices | API key management, prompt injection prevention |
-| S3/AWS | https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html | Presigned URLs, bucket policies, CORS |
-| SendGrid | https://docs.sendgrid.com/for-developers/tracking-events/getting-started-event-webhook-security | Webhook verification, SPF/DKIM setup |
+| Resend | https://resend.com/docs/api-reference/webhooks | Email event webhooks, domain verification |
+| Prisma | https://www.prisma.io/docs/guides/migrate | Migrations, schema changes, type safety |
 
 **WebFetch prompt template**:
 
@@ -227,7 +226,7 @@ Read `references/[service]-patterns.md` and extract:
 # [Service] Integration Patterns
 
 **Last Updated**: 2025-12-29T10:30:00Z
-**Source**: https://docs.stripe.com/webhooks, https://stripe.com/docs/security
+**Source**: https://docs.lemonsqueezy.com/guides/developer-guide/webhooks
 **Next Refresh**: 2026-01-05T10:30:00Z
 
 ---
@@ -252,6 +251,18 @@ Integration check is complete when:
 - [ ] Critical issues identified and explained
 - [ ] Security checklist provided
 - [ ] Fix recommendations given
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Identified integration service needed
+- [ ] Fetched current patterns from official docs
+- [ ] Saved patterns to references
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

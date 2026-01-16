@@ -1,6 +1,6 @@
 ---
 name: lite-communications
-description: Transform any ShipKit Lite content into visual HTML reports. Creates styled, shareable HTML from architecture decisions, project status, quality checks, or any .shipkit-lite/ content.
+description: "Use when user wants to visualize or present lite content as HTML. Triggers: 'create presentation', 'visualize this', 'HTML report'."
 ---
 
 # lite-communications - Visual HTML Reports
@@ -259,6 +259,18 @@ Write tool:
 **Always one `latest.html`** - Easy to find current report
 
 **Archive preserves history** - Never lose previous visualizations
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Identified source content to visualize
+- [ ] Generated HTML with appropriate styling
+- [ ] Saved to appropriate location
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

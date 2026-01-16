@@ -19,7 +19,7 @@ How to handle common error scenarios when tracking user tasks.
 **Example:**
 ```
 "Created task tracking structure at .shipkit-lite/user-tasks/
-✓ Added task: Install Stripe CLI"
+✓ Added task: Configure Lemon Squeezy webhook"
 ```
 
 ---
@@ -42,7 +42,7 @@ How to handle common error scenarios when tracking user tasks.
 
 **Example:**
 ```
-"Found malformed task entry for 'Install Stripe'.
+"Found malformed task entry for 'Configure Lemon Squeezy'.
 Reformatting with proper structure...
 ✓ Task entry corrected"
 ```
@@ -55,10 +55,10 @@ Reformatting with proper structure...
 
 **Example:**
 ```
-User: "I finished installing Stripe CLI"
+User: "I finished setting up Lemon Squeezy"
 
-Verification check: stripe --version
-Result: Command not found
+Verification check: .env.local contains LEMONSQUEEZY_API_KEY
+Result: Variable not found
 ```
 
 **Solution:**
@@ -70,15 +70,13 @@ Result: Command not found
 
 **Response:**
 ```
-"⚠️ Verification failed: `stripe --version` command not found.
-
-The Stripe CLI may not be installed correctly or not in PATH.
+"⚠️ Verification failed: LEMONSQUEEZY_API_KEY not found in .env.local
 
 Verification steps:
-1. Run `stripe --version`
-2. Should output: stripe version X.X.X
+1. Check .env.local file exists
+2. Ensure LEMONSQUEEZY_API_KEY is set with a valid key from dashboard
 
-Please retry installation or check PATH configuration."
+Please add the API key or check the file path."
 ```
 
 ---
@@ -118,8 +116,8 @@ Please add this manually to active.md or fix file permissions."
 
 **Example:**
 ```
-"I found an existing task: 'Install Stripe CLI'
-Your new task: 'Set up Stripe command line tools'
+"I found an existing task: 'Configure Lemon Squeezy webhook'
+Your new task: 'Set up Lemon Squeezy payment integration'
 
 Are these the same? (y/n)
 → If yes: I'll update the existing task

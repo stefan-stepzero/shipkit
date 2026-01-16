@@ -1,6 +1,6 @@
 ---
 name: lite-ux-audit
-description: Audits interactive components for missing UX best practices (loading states, error handling, accessibility, success feedback) to prevent bad user experience. Creates checklist of UX gaps to fix before shipping. Use post-implementation before quality checks.
+description: "Use when auditing implemented UI for missing UX patterns. Triggers: 'audit UX', 'check UX', 'missing patterns', 'UX gaps'."
 ---
 
 # ux-coherence-lite - Lightweight UX Guidance
@@ -232,28 +232,19 @@ Read file (if exists): `.shipkit-lite/.queues/ux-audit-needed.md`
 
 ## Step 6: Suggest Next Steps
 
-**After providing guidance and logging decision, suggest**:
+**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
 
-```
-**Next Steps**:
+---
 
-[IF pattern exists in implementations.md]
-1. Review [ExistingComponent] in implementations.md
-2. Reuse that pattern for consistency
-3. Run `/lite-implement` when ready to build
+## Completion Checklist
 
-[IF new pattern]
-1. Use the pattern above
-2. Run `/lite-architecture-memory` to log this UX decision
-   (Log: "[Pattern name] pattern for [component type]")
-3. Run `/lite-implement` when ready to build
+Copy and track:
+- [ ] Reviewed implemented components
+- [ ] Checked against UX pattern checklist
+- [ ] Documented gaps and recommendations
+- [ ] Invoke `/lite-whats-next` for workflow guidance
 
-[IF integration needed]
-- Run `/lite-integration-docs` if connecting to external service
-- Run `/lite-data-contracts` if managing complex state
-
-Ready to implement?
-```
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

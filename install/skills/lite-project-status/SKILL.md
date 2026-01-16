@@ -1,6 +1,6 @@
 ---
 name: lite-project-status
-description: Provides instant project health summary by scanning .shipkit-lite context files, detecting gaps, checking freshness, and suggesting next actions. Use when user asks "what's the state?", "project status?", or needs orientation.
+description: "Use when user asks about project health or needs orientation. Triggers: 'what's the status', 'project health', 'where are we', 'what's done'."
 ---
 
 # project-status-lite - Project Health Dashboard
@@ -260,6 +260,18 @@ ELSE:
 - Freshness calculation logic
 - Gap detection patterns (undocumented files, stale stack, workflow gaps)
 - File scanning commands (specs, plans, tasks)
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Scanned `.shipkit-lite/` for context files
+- [ ] Checked freshness and completeness
+- [ ] Reported gaps and suggested actions
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

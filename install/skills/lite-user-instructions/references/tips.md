@@ -7,10 +7,10 @@ Guidelines for creating clear, actionable task entries.
 ## Be Specific in Steps
 
 **Good:**
-- ✅ "Run `stripe listen --forward-to localhost:3000/api/webhooks/stripe`"
+- ✅ "Go to Lemon Squeezy dashboard → Settings → Webhooks → Add endpoint"
 
 **Bad:**
-- ❌ "Set up Stripe webhooks"
+- ❌ "Set up Lemon Squeezy webhooks"
 
 **Why:** Specificity ensures the user knows exactly what command to run.
 
@@ -19,10 +19,10 @@ Guidelines for creating clear, actionable task entries.
 ## Make Verification Concrete
 
 **Good:**
-- ✅ "File `.env.local` contains `STRIPE_WEBHOOK_SECRET` starting with `whsec_`"
+- ✅ "File `.env.local` contains `LEMONSQUEEZY_WEBHOOK_SECRET` and `LEMONSQUEEZY_API_KEY`"
 
 **Bad:**
-- ❌ "Stripe is configured"
+- ❌ "Lemon Squeezy is configured"
 
 **Why:** Concrete verification criteria make it obvious when the task is complete.
 
@@ -49,12 +49,12 @@ Guidelines for creating clear, actionable task entries.
 **One task = One clear outcome**
 
 **Good:**
-- "Install Stripe CLI"
-- "Configure webhook endpoint"
+- "Get Lemon Squeezy API key from dashboard"
+- "Configure webhook endpoint in Lemon Squeezy"
 - "Add webhook secret to .env.local"
 
 **Bad:**
-- "Set up Stripe webhooks and configure payments and test everything"
+- "Set up Lemon Squeezy webhooks and configure payments and test everything"
 
 **Why:** If a task has 10+ steps, break into multiple tasks.
 

@@ -1,6 +1,6 @@
 ---
 name: lite-spec
-description: Converts feature descriptions into Given/When/Then specifications with edge cases, acceptance criteria, and test scenarios. Creates lightweight specs for POC/MVP features. Use when user describes new feature or says "spec this".
+description: "Use when user describes a feature to build. Triggers: 'spec this', 'create specification', 'define requirements', 'I want to build'."
 ---
 
 # spec-lite - Lightweight Feature Specification
@@ -138,13 +138,22 @@ description: Converts feature descriptions into Given/When/Then specifications w
   • Edge cases: ✓ (all 6 categories)
   • Acceptance criteria: ✓
 
-👉 Next steps:
-  1. /lite-plan - Create implementation plan
-  2. /lite-architecture-memory - Log architectural decisions (if any)
-  3. /lite-prototyping - Rapid UI mockup (if UI-heavy feature)
-
-Ready to plan implementation?
 ```
+
+**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Asked 2-3 clarifying questions
+- [ ] Created spec with Given/When/Then scenarios
+- [ ] Applied all 6 edge case categories
+- [ ] Saved to `.shipkit-lite/specs/active/[name].md`
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

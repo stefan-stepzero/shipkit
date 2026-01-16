@@ -1,6 +1,6 @@
 ---
 name: lite-data-contracts
-description: Validates data shape contracts across layers (database to backend to frontend) to prevent type mismatch bugs. Detects when frontend expects different data shape than backend returns. Creates reference documentation of data contracts. Use when defining new data structures or after schema changes.
+description: "Use when validating data shapes across layers or checking type alignment. Triggers: 'validate contracts', 'check types', 'data shape mismatch'."
 ---
 
 # data-consistency-lite - Type Definitions & Validation Schema Manager
@@ -596,26 +596,21 @@ CREATE INDEX idx_recipes_share_token ON recipes(share_token) WHERE share_token I
   • Fields: [X] fields
   • Zod schema: ✓ Generated
   • Schema alignment: [✓ Aligned | ⚠️ Migration needed]
-
-**Next steps**:
-[Context-specific suggestion]
 ```
 
-**Context-specific suggestions**:
+**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
 
-```
-IF schema mismatch detected:
-  → "Run `/lite-user-instructions` to track migration task"
+---
 
-IF types defined during implementation:
-  → "Continue with `/lite-implement` to use these types"
+## Completion Checklist
 
-IF types defined during planning:
-  → "Run `/lite-plan` to create implementation plan"
+Copy and track:
+- [ ] Identified data contracts to validate
+- [ ] Checked alignment across layers
+- [ ] Documented any mismatches or fixes
+- [ ] Invoke `/lite-whats-next` for workflow guidance
 
-IF standalone type definition:
-  → "Types ready. Use in components or Server Actions."
-```
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

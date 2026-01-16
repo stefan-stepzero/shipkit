@@ -1,6 +1,6 @@
 ---
 name: lite-product-discovery
-description: Creates user personas, maps user journeys, and generates user stories with acceptance criteria from feature descriptions. Use when starting product discovery for POC/MVP projects.
+description: "Use when defining users, personas, or user journeys. Triggers: 'who are users', 'create personas', 'user research', 'user stories'."
 ---
 
 # lite-product-discovery - Lightweight Product Discovery
@@ -290,13 +290,22 @@ File exists: `.shipkit-lite/product-discovery.md`
 
 📦 Previous version archived: .shipkit-lite/archive/product-discovery/[filename]
 (if replaced)
-
-👉 Next steps:
-  1. /lite-spec - Create detailed specifications from user stories
-  2. /lite-architecture-memory - Document key product decisions (optional)
-
-Ready to create specifications for your first feature?
 ```
+
+**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Defined target personas
+- [ ] Created user journeys
+- [ ] Documented user stories
+- [ ] Saved to `.shipkit-lite/product-discovery.md`
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

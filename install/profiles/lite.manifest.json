@@ -18,25 +18,16 @@
       "lite-ux-audit",
       "lite-data-contracts",
       "lite-plan",
-      "lite-implement",
       "lite-component-knowledge",
       "lite-route-knowledge",
-      "lite-document-artifact",
-      "lite-quality-confidence",
       "lite-user-instructions",
       "lite-integration-docs",
       "lite-work-memory",
-      "lite-debug-systematically",
       "lite-communications",
-      "lite-why-project",
-      "lite-whats-next"
+      "lite-why-project"
     ],
     "system": [
-      "lite-milestone-detector",
-      "lite-post-spec-check",
-      "lite-post-plan-check",
-      "lite-post-implement-check",
-      "lite-pre-ship-check"
+      "lite-detect"
     ],
     "workspace": []
   },

@@ -1,23 +1,19 @@
 # ═══════════════════════════════════════════════════════════════════════════════
-# SHIPKIT FRAMEWORK FILES
+# SHIPKIT LITE FRAMEWORK FILES
 # ═══════════════════════════════════════════════════════════════════════════════
-# This .gitignore works for BOTH Shipkit and Shipkit Lite editions
 
 # Framework Infrastructure (ignore - these are installed, not created by you)
 .claude/
 CLAUDE.md
 
-# Full Shipkit - Scripts/Templates/References (ignore - framework infrastructure)
-.shipkit/scripts/
-.shipkit/skills/*/scripts/
-.shipkit/skills/*/templates/
-.shipkit/skills/*/references/
+# Shipkit Lite - Scripts only (ignore - framework infrastructure)
+.shipkit-lite/scripts/
 
 # IMPORTANT: DO NOT IGNORE YOUR WORK PRODUCTS!
-# ✅ Shipkit Lite: .shipkit-lite/ contains YOUR context files (commit these!)
-# ✅ Full Shipkit: .shipkit/skills/*/outputs/ contains YOUR work product (commit these!)
+# ✅ .shipkit-lite/ contains YOUR context files (commit these!)
 #
-# These files represent your product discovery, specs, plans, and decisions.
+# Files like specs/, plans/, architecture.md, stack.md, implementations.md
+# represent your product discovery, specs, plans, and decisions.
 # They should be committed to git so your team has shared context.
 
 # ═══════════════════════════════════════════════════════════════════════════════

@@ -100,22 +100,12 @@ def load_manifest(repo_root, profile):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def prompt_for_profile():
-    """Prompt user to select edition/profile"""
+    """Return lite profile (now the only edition)"""
     print()
-    print(f"  {Colors.BOLD}Select Edition:{Colors.RESET}")
+    print(f"  {Colors.BOLD}Edition:{Colors.RESET} Shipkit Light")
+    print(f"  {Colors.DIM}28 skills • 6 agents • Streamlined workflow{Colors.RESET}")
     print()
-    print(f"  {Colors.CYAN}[1]{Colors.RESET} Lite      - Fast, minimal (7 skills, POCs and side projects)")
-    print(f"  {Colors.CYAN}[2]{Colors.RESET} Default   - Complete (24 skills, full product development)")
-    print()
-
-    while True:
-        choice = input(f"  {Colors.BOLD}Select edition [1-2]:{Colors.RESET} ").strip()
-        if choice == "1":
-            return "lite"
-        elif choice == "2":
-            return "default"
-        else:
-            print_warning("Invalid choice. Please enter 1 or 2.")
+    return "lite"
 
 def prompt_for_language():
     """Prompt user to select scripting language"""
@@ -172,11 +162,9 @@ def verify_source_files(repo_root):
         "install/shared",
         "install/skills",
         "install/agents",
-        "install/workspace/skills",
         "install/settings",
         "install/claude-md",
-        "install/profiles",
-        "help"
+        "install/profiles"
     ]
 
     missing = 0
@@ -233,9 +221,9 @@ def install_shared_core(repo_root, target_dir, language, edition):
     print_info(f"Installing {language} scripts...")
     scripts_src = shared_dir / "scripts" / language
     if language == "bash":
-        scripts_dest = target_dir / ".shipkit" / "scripts" / "bash"
+        scripts_dest = target_dir / ".shipkit-lite" / "scripts" / "bash"
     else:
-        scripts_dest = target_dir / ".shipkit" / "scripts"
+        scripts_dest = target_dir / ".shipkit-lite" / "scripts"
     scripts_dest.mkdir(parents=True, exist_ok=True)
     shutil.copytree(scripts_src, scripts_dest, dirs_exist_ok=True)
     print_success(f"{language.capitalize()} scripts installed")
@@ -300,19 +288,21 @@ def install_edition_files(repo_root, target_dir, manifest, language):
             print_warning(f"Could not update settings metadata: {e}")
 
 def install_skills(repo_root, target_dir, manifest):
-    """Install skill definitions and workspace implementations from manifest"""
+    """Install skill definitions from manifest"""
     print()
     print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
     print(f"  {Colors.BOLD}Installing skills{Colors.RESET}")
     print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
     print()
 
+    # Combine user-invocable and system skills
     skills_definitions = manifest["skills"]["definitions"]
-    skills_workspace = manifest["skills"]["workspace"]
+    skills_system = manifest["skills"].get("system", [])
+    all_skills = skills_definitions + skills_system
 
     # Install skill definitions (.claude/skills/)
-    print_info(f"Installing {len(skills_definitions)} skill definitions...")
-    for skill_name in skills_definitions:
+    print_info(f"Installing {len(all_skills)} skill definitions...")
+    for skill_name in all_skills:
         skill_src = repo_root / "install" / "skills" / skill_name
         skill_dest = target_dir / ".claude" / "skills" / skill_name
 
@@ -322,30 +312,7 @@ def install_skills(repo_root, target_dir, manifest):
         else:
             print_warning(f"Skill not found: {skill_name}")
 
-    print_success(f"Installed {len(skills_definitions)} skill definitions")
-
-    # Install workspace implementations (.shipkit/skills/)
-    print_info(f"Installing {len(skills_workspace)} skill implementations...")
-    for skill_name in skills_workspace:
-        skill_src = repo_root / "install" / "workspace" / "skills" / skill_name
-        skill_dest = target_dir / ".shipkit" / "skills" / skill_name
-
-        if skill_src.exists():
-            skill_dest.mkdir(parents=True, exist_ok=True)
-
-            # Copy scripts, templates, references
-            for subdir in ["scripts", "templates", "references"]:
-                src_subdir = skill_src / subdir
-                if src_subdir.exists():
-                    dest_subdir = skill_dest / subdir
-                    shutil.copytree(src_subdir, dest_subdir, dirs_exist_ok=True)
-
-            # Create empty outputs
-            (skill_dest / "outputs").mkdir(exist_ok=True)
-        else:
-            print_warning(f"Workspace for skill not found: {skill_name}")
-
-    print_success(f"Installed {len(skills_workspace)} skill implementations")
+    print_success(f"Installed {len(all_skills)} skill definitions")
 
 def install_agents(repo_root, target_dir, manifest):
     """Install agent personas from manifest"""
@@ -404,8 +371,8 @@ def delete_unused_language(target_dir, language):
         for script in hooks_dir.rglob(f"*{delete_ext}"):
             script.unlink()
 
-    # Delete from .shipkit/skills
-    shipkit_skills_dir = target_dir / ".shipkit" / "skills"
+    # Delete from .shipkit-lite/skills
+    shipkit_skills_dir = target_dir / ".shipkit-lite" / "skills"
     if shipkit_skills_dir.exists():
         for script in shipkit_skills_dir.rglob(f"*{delete_ext}"):
             script.unlink()
@@ -517,7 +484,7 @@ def open_html_docs(repo_root, edition):
 def show_completion(target_dir, manifest, language):
     """Show completion message"""
     edition = manifest["edition"]
-    skill_count = len(manifest["skills"]["definitions"])
+    skill_count = len(manifest["skills"]["definitions"]) + len(manifest["skills"].get("system", []))
     agent_count = len(manifest.get("agents", []))
 
     print()
@@ -535,9 +502,8 @@ def show_completion(target_dir, manifest, language):
     print(f"  {Colors.BOLD}What was installed:{Colors.RESET}")
     print()
     print_success(f"{skill_count} skill definitions (.claude/skills/)")
-    print_success(f"{skill_count} skill implementations (.shipkit/skills/)")
     print_success(f"{agent_count} agent personas (.claude/agents/)")
-    print_success(f"Shared scripts (.shipkit/scripts/)")
+    print_success(f"Shared scripts (.shipkit-lite/scripts/)")
     print_success("Session hooks (.claude/hooks/)")
     print_success(f"Settings ({edition} edition) (.claude/settings.json)")
     print_success(f"Project instructions ({edition}) (CLAUDE.md)")
@@ -584,7 +550,7 @@ def show_completion(target_dir, manifest, language):
 def main():
     """Main installation process"""
     parser = argparse.ArgumentParser(description="Shipkit Installer")
-    parser.add_argument("--profile", choices=["lite", "default"], help="Edition profile (lite or default)")
+    parser.add_argument("--profile", choices=["lite"], default="lite", help="Edition profile (lite only)")
     parser.add_argument("--language", choices=["bash", "python"], help="Scripting language (bash or python)")
     parser.add_argument("--target", help="Target directory (default: current directory)")
     parser.add_argument("-y", "--yes", action="store_true", help="Skip confirmations")

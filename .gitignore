@@ -39,3 +39,6 @@ CLAUDE.md
 # Development reference materials (not for distribution)
 claude-code-best-practices/
 claude-working-documents/
+
+# Exported packages (keep script, ignore ZIPs)
+exported/*.zip

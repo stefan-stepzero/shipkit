@@ -1,6 +1,6 @@
 ---
 name: lite-prototyping
-description: Creates interactive React + Tailwind UI mockups for rapid iteration with live preview and user feedback. Use when spec exists and you want to validate UI/UX before full implementation.
+description: "Use when user wants to quickly mockup UI before implementing. Triggers: 'prototype', 'mockup', 'quick UI', 'sketch this'."
 ---
 
 # lite-prototyping - Rapid UI Prototyping
@@ -444,6 +444,18 @@ Session successful when:
 - [ ] User knows next step
 
 **Not required:** Completeness, edge cases, production quality. **Goal: Learning, not shipping.**
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Created rapid HTML/CSS mockup
+- [ ] Validated with user
+- [ ] Saved to `.shipkit-mockups/[name]/`
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

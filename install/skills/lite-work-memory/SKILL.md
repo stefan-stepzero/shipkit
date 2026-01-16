@@ -1,6 +1,6 @@
 ---
 name: lite-work-memory
-description: Captures session summaries in append-only progress log. At session end, prompts for what was accomplished or infers from conversation. Logs completed work, files changed, status, blockers, next steps to .shipkit-lite/progress.md with date headers.
+description: "Use when logging session progress or summarizing work done. Triggers: 'log progress', 'session summary', 'what did we do', 'save progress'."
 ---
 
 # work-memory-lite - Session Progress Tracking
@@ -184,36 +184,9 @@ Historical record of development sessions, decisions, and evolution.
   • [Z] decisions logged
 
 🎯 Status: [status emoji + description]
-
-👉 Next session:
-  [Next steps from log]
-
-Ready to continue or end session?
 ```
 
-**Suggest contextually**:
-
-**If feature just completed**:
-```
-👉 Options:
-  1. /lite-quality-confidence - Verify before shipping
-  2. /lite-session-continuity - Prepare context for next session
-  3. End session
-```
-
-**If feature in progress**:
-```
-👉 Next session:
-  Continue implementation: [next task from plan]
-  Consider: /lite-session-continuity to preserve context
-```
-
-**If blocked**:
-```
-👉 Before next session:
-  Resolve: [blocker description]
-  Then: [next task]
-```
+**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
 
 ---
 
@@ -273,6 +246,18 @@ Searchable history: archives/ folder
 - If doesn't exist: create `.shipkit-lite/archives/`
 - If archive file doesn't exist: create with header
 - If archive file exists: append old entries
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Summarized session accomplishments
+- [ ] Noted decisions made
+- [ ] Appended to `.shipkit-lite/progress.md`
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

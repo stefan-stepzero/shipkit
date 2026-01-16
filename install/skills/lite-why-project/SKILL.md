@@ -1,6 +1,6 @@
 ---
 name: lite-why-project
-description: Define project vision in one page. Captures who it's for, why it exists, current state, future vision, and how you're getting there. Auto-loads at session start for strategic context.
+description: "Use when defining project vision and strategic direction. Triggers: 'why this project', 'define vision', 'project goals', 'what are we building'."
 ---
 
 # lite-why-project - Project Vision & Strategy
@@ -296,6 +296,19 @@ Prompt-driven skills (no bash complexity). Iterate quickly based on user feedbac
 ## Workspace Structure
 
 Creates `.shipkit-lite/why.md` (auto-loaded by lite-session-start.py)
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Defined who the project serves
+- [ ] Clarified why it matters
+- [ ] Identified where it's going
+- [ ] Saved to `.shipkit-lite/why.md`
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

@@ -2,145 +2,161 @@
 
 **You are working with Shipkit Lite** - a lightweight framework for POC/MVP development.
 
+---
+
+## Why Skills Exist
+
+**You are trained on human coding patterns, but you operate under different constraints.**
+
+| You (Claude) | Human Coder |
+|--------------|-------------|
+| No memory between sessions | Remembers yesterday |
+| Context-limited | Knows entire project history |
+| Each session starts fresh | Picks up where they left off |
+| Doesn't know what skills exist | Knows their own tools |
+
+**Shipkit Lite skills compensate for these AI-specific limitations:**
+- They create **persistence** you don't naturally have
+- They capture **human decisions** you can't make
+- They provide **discoverability** so you know what's available
+
+**Without these skills, you'll code like someone with memory - but you don't have memory.**
+
+---
+
 ## Critical Rules
 
-1. **ALL context lives in `.shipkit-lite/`** - Never create context or documentation files outside this folder
-2. **Skills are pure guidance** - Use Read/Write tools directly, no script execution
-3. **Ask before generating** - 2-3 questions, then generate (avoid wasted tokens)
-4. **Only update changed files** - Use timestamps to detect freshness
-5. **Append, don't replace** - Files accumulate context over time
+1. **ALL context lives in `.shipkit-lite/`** - Never create context files outside this folder
+2. **Skills capture decisions or create persistence** - Don't invoke skills for things you can do naturally
+3. **Ask before generating** - 2-3 questions, then generate
+4. **Load context lazily** - Only read files when needed
+5. **Check for existing context first** - You don't "just know" what exists; check `.shipkit-lite/`
 
 ---
 
-## CRITICAL: Always Use /lite-whats-next After Skills
-
-**After completing ANY lite skill, you MUST immediately invoke `/lite-whats-next`:**
-
-**Why this is mandatory:**
-- Prevents users from getting stuck ("what do I do next?")
-- Enforces optimal workflow order (Vision → Understand → Co-design → Execute → Document)
-- Detects gaps and warns about missing dependencies
-- Provides intelligent, context-aware guidance
-
-**Workflow:**
-1. Complete a skill (e.g., `/lite-spec`)
-2. **IMMEDIATELY invoke `/lite-whats-next`** (not optional!)
-3. `/lite-whats-next` analyzes project state and suggests next step
-4. Present the suggestion to user
-
-**Violation examples:**
-- ❌ Completing `/lite-spec` and saying "Spec created. What would you like to do next?"
-- ❌ Completing `/lite-implement` and just moving on
-- ❌ Suggesting next skill manually instead of using `/lite-whats-next`
-- ✅ Completing `/lite-spec` then invoking `/lite-whats-next` → presenting its analysis
-- ✅ After ANY skill completes, invoke `/lite-whats-next` automatically
-
-**Exception:** If user explicitly says "skip workflow guidance" or "I'll decide what's next"
-
-**This is as important as "Skills Must Use Skills" - it's not a suggestion, it's a requirement.**
-
----
-
-## File Structure You'll Create
+## File Structure
 
 ```
 .shipkit-lite/
+  why.md                # Strategic vision (human decisions)
   stack.md              # Tech stack (auto-scanned)
   architecture.md       # Decisions log (append-only)
-  implementations.md    # Component/route docs (append-only)
   types.md              # TypeScript types
+  progress.md           # Session continuity (work memory)
   specs/
     active/             # Pending feature specs
     implemented/        # Completed feature specs
   plans/
     active/             # Pending implementation plans
     implemented/        # Completed implementation plans
+  implementations/
+    index.md            # Auto-generated TOC
+    components/         # Per-component docs
+    routes/             # Per-route docs
+  .queues/              # Auto-generated work queues
 ```
 
-## Skill Invocation
+---
 
-**Project Setup:**
-- `/lite-why-project` - Define strategic vision (who/why/where)
-- `/lite-product-discovery` - Create personas, user journeys, user stories → `product-discovery.md`
-- `/lite-project-context` - Scan codebase, create stack.md
-- `/lite-project-status` - Health check, show gaps
+## Available Skills
 
-**Feature Development:**
-- `/lite-spec` - Write spec → `specs/active/[name].md`
-- `/lite-prototyping` - Rapid UI mockup → `.shipkit-mockups/[name]/`
-- `/lite-prototype-to-spec` - Extract prototype learnings → append to spec
-- `/lite-architecture-memory` - Log decision → append to `architecture.md`
-- `/lite-plan` - Create plan → `plans/active/[name].md`
-- `/lite-implement` - Build feature with TDD guidance → suggests `/lite-quality-confidence`
-- `/lite-quality-confidence` - Verify acceptance criteria → moves spec & plan to implemented/
+### Vision & Discovery (Human Decisions)
+| Skill | Purpose | Creates |
+|-------|---------|---------|
+| `/lite-why-project` | Define strategic vision | `why.md` |
+| `/lite-product-discovery` | Personas, journeys, stories | `product-discovery.md` |
 
-**Documentation:**
-- `/lite-component-knowledge` - Document components → append to `implementations.md`
-- `/lite-route-knowledge` - Document routes → append to `implementations.md`
-- `/lite-document-artifact` - Create standalone doc → `docs/[category]/[name].md`
-- `/lite-communications` - Create visual HTML from any lite content
+### Context & Status (Persistence)
+| Skill | Purpose | Creates |
+|-------|---------|---------|
+| `/lite-project-context` | Scan codebase, detect stack | `stack.md` |
+| `/lite-project-status` | Health check, show gaps | Status report |
+| `/lite-work-memory` | Log session for continuity | Append to `progress.md` |
 
-**Quality & Process:**
-- `/lite-quality-confidence` - Pre-ship checks
-- `/lite-user-instructions` - Track manual tasks → `user-tasks/active.md`
-- `/lite-work-memory` - Log session → append to `progress.md`
+### Specification & Planning (Human Decisions + Persistence)
+| Skill | Purpose | Creates |
+|-------|---------|---------|
+| `/lite-spec` | Define what to build | `specs/active/[name].md` |
+| `/lite-plan` | Define how to build it | `plans/active/[name].md` |
+| `/lite-prototyping` | Rapid throwaway mockup | `.shipkit-mockups/[name]/` |
+| `/lite-prototype-to-spec` | Extract learnings | Append to spec |
 
-**Utilities:**
-- `/lite-whats-next` - Smart workflow guidance (MANDATORY after every skill)
-- `/lite-ux-audit` - Audit for missing UX best practices post-implementation
-- `/lite-data-contracts` - Validate data shape contracts across layers
-- `/lite-integration-docs` - Fetch current integration patterns from official docs
-- `/lite-debug-systematically` - 4-phase debugging
+### Knowledge Persistence
+| Skill | Purpose | Creates |
+|-------|---------|---------|
+| `/lite-architecture-memory` | Log architectural decisions | Append to `architecture.md` |
+| `/lite-data-contracts` | Define type shapes | `types.md` |
+| `/lite-component-knowledge` | Document components | `implementations/components/` |
+| `/lite-route-knowledge` | Document routes | `implementations/routes/` |
+| `/lite-integration-docs` | External service patterns | `integrations/[service].md` |
 
-## Workflow Pattern
+### Quality & Communication
+| Skill | Purpose | Creates |
+|-------|---------|---------|
+| `/lite-ux-audit` | Audit UX patterns | UX report |
+| `/lite-user-instructions` | Track manual tasks | `user-tasks/active.md` |
+| `/lite-communications` | Rich HTML visual output | `.shipkit-comms/` |
 
-**Typical flow:**
-```
-/lite-project-context (once)
-  → /lite-spec (per feature) → specs/active/
-    → /lite-plan → plans/active/
-      → /lite-implement
-        → /lite-quality-confidence → moves spec & plan to implemented/
-          → (queued: /lite-component-knowledge)
-```
+### System (Auto-triggered)
+| Skill | Purpose | Trigger |
+|-------|---------|---------|
+| `/lite-detect` | Scan for follow-up work | After spec/plan completion |
 
-**Rules:**
-- **ALWAYS invoke `/lite-whats-next` immediately after completing any skill**
-- Run `/lite-project-status` when user asks for health check
-- Load context files lazily (only when needed)
-- Check timestamps before regenerating (avoid duplicate work)
-- Let `/lite-whats-next` decide workflow order (don't hardcode suggestions)
+---
 
-## Context Loading
+## Quick Reference
 
-**Session start loads:**
-- `lite-shipkit-master` skill (orchestrator)
-- `stack.md` (if exists)
-- `architecture.md` (if exists)
+**User asks "where should I start?"**
+→ `/lite-project-context` to scan their codebase
 
-**Load on-demand:**
-- `implementations.md` - When documenting components/routes
-- `types.md` - When checking type consistency
-- `specs/active/` - When planning implementation (pending specs)
-- `specs/implemented/` - For reference (completed features)
-- `plans/active/` - When implementing (pending plans)
-- `plans/implemented/` - For reference (completed plans)
+**User asks "what's the status?"**
+→ `/lite-project-status` for health check
 
-## Protected Files (Read-Only)
+**User describes a feature**
+→ `/lite-spec` to capture the specification
 
-Skills create these via Write tool. You read them, but only update via the skill:
+**User wants to plan implementation**
+→ `/lite-plan` after spec exists
 
-- `stack.md` - Update via `/lite-project-context`
-- `architecture.md` - Append via `/lite-architecture-memory`
-- `implementations.md` - Append via `/lite-component-knowledge` or `/lite-route-knowledge`
-- `specs/active/` - Create via `/lite-spec`, move to implemented/ via `/lite-quality-confidence`
-- `specs/implemented/` - Archived by `/lite-quality-confidence` (read-only)
-- `plans/active/` - Create via `/lite-plan`, move to implemented/ via `/lite-quality-confidence`
-- `plans/implemented/` - Archived by `/lite-quality-confidence` (read-only)
+**User completed significant work**
+→ `/lite-work-memory` to log for next session
+
+**User made an architectural decision**
+→ `/lite-architecture-memory` to persist it
+
+---
+
+## What You Do Naturally (No Skill Needed)
+
+| Task | Just Do It |
+|------|------------|
+| Implement a feature | Given a spec, just build it |
+| Debug an error | Investigate systematically |
+| Write tests | Write them alongside code |
+| Document code | Add comments and docstrings |
+| Refactor | Improve code when asked |
+
+**Don't invoke a skill for these. Just do them.**
+
+---
+
+## Tech Stack (Solo Dev MVP Stack 2025)
+
+All agents understand this default stack:
+
+- **Framework**: Next.js (App Router)
+- **Hosting**: Vercel
+- **Database/Auth/Storage**: Supabase (Postgres + Auth + Realtime + Storage)
+- **Payments**: Lemon Squeezy (MoR handles global tax)
+- **Email**: Resend + React Email
+- **Styling**: Tailwind + shadcn/ui
+- **ORM**: Prisma
+
+---
 
 ## Agent Personas
 
-Shipkit Lite includes 6 pure domain-expertise personas for POC/MVP development. Agents provide personality and expertise; skills provide process.
+6 domain-expertise personas for POC/MVP development:
 
 | Agent | Domain Expertise | Mindset |
 |-------|------------------|---------|
@@ -151,32 +167,24 @@ Shipkit Lite includes 6 pure domain-expertise personas for POC/MVP development. 
 | `lite-reviewer` | Security, quality gates | "Blockers vs suggestions" |
 | `lite-researcher` | Official docs, troubleshooting | "Source of truth first" |
 
-**Location**: `.claude/agents/` (after installation)
+---
 
-**Stack knowledge**: All agents understand Vercel + Supabase + Stripe ecosystem.
+## Session Behavior
+
+**At session start:**
+- `lite-shipkit-master` loads (skill routing)
+- Quick status shows active specs/plans
+- Stale context warnings displayed
+
+**During session:**
+- Load context files when needed
+- Suggest skills when they would add value
+- Just do work that doesn't need skills
+
+**At session end:**
+- Consider `/lite-work-memory` for continuity
+- Auto-detection may create queues for next session
 
 ---
 
-## Quick Reference
-
-**User asks "where should I start?"**
-→ Run `/lite-project-context` to scan their codebase
-
-**User asks "what's the status?"**
-→ Run `/lite-project-status` to show health check
-
-**User describes a feature**
-→ Run `/lite-spec` to create specification
-
-**User asks "how do I build this?"**
-→ Run `/lite-plan` after spec exists
-
-**User asks "start coding"**
-→ Run `/lite-implement` after plan exists
-
-**User completed work**
-→ Suggest `/lite-component-knowledge` or `/lite-work-memory`
-
----
-
-**Remember:** Shipkit Lite is about speed and efficiency. Ask questions, load context lazily, suggest next steps proactively.
+**Remember:** Skills exist because you don't have memory. Use them to create persistence and capture human decisions. Everything else, just do.

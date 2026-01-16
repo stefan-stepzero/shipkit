@@ -1,6 +1,6 @@
 ---
 name: lite-user-instructions
-description: Tracks manual tasks Claude needs user to complete by maintaining active and completed task lists. Use when Claude detects missing config, needs packages installed, requires external service setup, or any manual action from user.
+description: "Use when there are manual tasks the user must complete. Triggers: 'create task', 'track TODO', 'user needs to', 'manual step required'."
 ---
 
 # user-instructions-lite - Task Tracking for Manual User Actions
@@ -14,7 +14,7 @@ description: Tracks manual tasks Claude needs user to complete by maintaining ac
 **Auto-trigger scenarios** (other skills invoke this):
 - Missing environment variables detected (integration-guardrails-lite)
 - Package installation needed (implement-lite)
-- External service configuration required (Stripe webhooks, API keys)
+- External service configuration required (Lemon Squeezy webhooks, API keys)
 - Database migrations need running
 - Deploy configuration needed
 - Git repository setup required
@@ -44,7 +44,7 @@ description: Tracks manual tasks Claude needs user to complete by maintaining ac
 **Before creating task entry**, ask user 2-3 questions:
 
 1. **What specific task needs to be done?**
-   - "Install Stripe CLI?"
+   - "Set up Lemon Squeezy webhook?"
    - "Configure webhook endpoint?"
    - "Set environment variable?"
    - (Let user describe or Claude infers from context)
@@ -108,26 +108,27 @@ Tasks that require manual action outside Claude Code's control.
 ---
 ```
 
-**Example - Stripe Webhook Task**:
+**Example - Lemon Squeezy Webhook Task**:
 ```markdown
-## [2025-01-15 14:30] Configure Stripe Webhook Secret
+## [2025-01-15 14:30] Configure Lemon Squeezy Webhook
 
 **Priority**: 🔴 High
 
 **Why needed**:
-Local webhook testing requires Stripe CLI to forward events to localhost. Without this, payment flow testing will fail.
+Webhook configuration enables Lemon Squeezy to notify your app of payment events (order_created, subscription_created). Without this, users won't get access after payment.
 
 **Steps**:
-1. Install Stripe CLI: `brew install stripe/stripe-cli/stripe` (Mac) or download from stripe.com/docs/stripe-cli
-2. Login to Stripe: `stripe login`
-3. Forward webhooks: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
-4. Copy the webhook signing secret (starts with `whsec_`)
-5. Add to `.env.local`: `STRIPE_WEBHOOK_SECRET=whsec_...`
+1. Go to Lemon Squeezy dashboard → Settings → Webhooks
+2. Add webhook URL: `https://your-domain.com/api/webhooks/lemonsqueezy`
+3. Select events: `order_created`, `subscription_created`, `subscription_updated`
+4. Copy the signing secret
+5. Add to `.env.local`: `LEMONSQUEEZY_WEBHOOK_SECRET=...`
+6. Add API key: `LEMONSQUEEZY_API_KEY=...`
 
 **Verification**:
-- [ ] `.env.local` contains `STRIPE_WEBHOOK_SECRET`
-- [ ] `stripe listen` command runs without errors
-- [ ] Test payment triggers webhook in terminal
+- [ ] `.env.local` contains `LEMONSQUEEZY_WEBHOOK_SECRET`
+- [ ] `.env.local` contains `LEMONSQUEEZY_API_KEY`
+- [ ] Test purchase triggers webhook (use test mode)
 
 **Status**: ⏳ Pending
 
@@ -160,7 +161,7 @@ Should I continue with other work, or wait for you to complete this?
 
 ### Step 4: Support Task Status Updates
 
-**When user says**: "I'm working on task X", "Started the Stripe setup"
+**When user says**: "I'm working on task X", "Started the Lemon Squeezy setup"
 
 **Action**: Update task status from ⏳ Pending to 🚧 In Progress
 
@@ -180,7 +181,7 @@ You can continue working. Let me know when it's done!
 
 ### Step 5: Move Completed Tasks
 
-**When user says**: "Task done", "Finished the Stripe setup", "Webhook is configured"
+**When user says**: "Task done", "Finished the Lemon Squeezy setup", "Webhook is configured"
 
 **Process**:
 
@@ -235,7 +236,7 @@ Great! Ready to continue with [next step]?
 📋 Active User Tasks
 
 **High Priority (🔴)**:
-1. Configure Stripe Webhook Secret (⏳ Pending)
+1. Configure Lemon Squeezy Webhook (⏳ Pending)
 2. Set up production database (🚧 In Progress)
 
 **Medium Priority (🟡)**:
@@ -251,20 +252,36 @@ View full details in .shipkit-lite/user-tasks/active.md
 
 ---
 
-### Step 7: Suggest Next Skill
+### Step 7: Invoke Workflow Guidance
 
-**After creating task**, suggest based on context:
+**After creating or updating a task, ALWAYS invoke `/lite-whats-next`:**
 
-**If task is blocking**:
-- "This task is blocking further progress. I'll wait for you to complete it."
-- "Once done, we can continue with [previous skill]"
+```
+✅ Task tracked
 
-**If task is not blocking**:
-- "This task can be done later. Should we continue with [next skill]?"
-- Options:
-  - Continue with `/lite-implement` if coding
-  - Continue with `/lite-plan` if planning
-  - Continue with `/lite-quality-confidence` if verifying
+Now invoking /lite-whats-next for workflow guidance...
+```
+
+**Then immediately invoke `/lite-whats-next`** - this is MANDATORY per lite.md meta-rules.
+
+The whats-next skill will:
+- Check if the task is blocking
+- Analyze overall project state
+- Suggest the optimal next step
+
+**Do NOT manually suggest next skills** - let `/lite-whats-next` provide intelligent guidance.
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Identified manual task for user
+- [ ] Created clear step-by-step instructions
+- [ ] Added to `.shipkit-lite/user-tasks/active.md`
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

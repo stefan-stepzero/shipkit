@@ -343,10 +343,10 @@ As a recipe author, I want to create, edit, and delete my recipes, so I can mana
 ### Example 2: Integration Feature
 
 ```markdown
-# Stripe Payment Integration
+# Lemon Squeezy Payment Integration
 
 **User Story:**
-As a user, I want to upgrade to Pro via Stripe, so I can access premium features.
+As a user, I want to upgrade to Pro via Lemon Squeezy, so I can access premium features.
 
 ## Core Scenarios
 
@@ -354,53 +354,53 @@ As a user, I want to upgrade to Pro via Stripe, so I can access premium features
 **Given**: User is on pricing page
 **When**: User clicks "Upgrade to Pro" button
 **Then**:
-- Stripe checkout session created
-- User redirected to Stripe-hosted checkout
-- Session ID stored in local storage
+- Lemon Squeezy checkout URL generated
+- User redirected to Lemon Squeezy-hosted checkout
+- Custom data includes user_id for webhook matching
 
 **Scenario 2: Successful Payment**
-**Given**: User completed Stripe payment
-**When**: Stripe redirects back to success URL
+**Given**: User completed Lemon Squeezy payment
+**When**: order_created webhook received
 **Then**:
 - Webhook confirms payment
 - User role updated to "pro"
 - Success page shows: "Welcome to Pro!"
-- Email sent: "Payment confirmation"
+- Email sent via Resend: "Payment confirmation"
 
 **Scenario 3: Failed Payment**
-**Given**: User's payment failed at Stripe
-**When**: Stripe redirects to cancel URL
+**Given**: User's payment failed at Lemon Squeezy
+**When**: User clicks "Cancel" or payment fails
 **Then**:
-- User sees "Payment failed" message
+- User sees "Payment cancelled" message
 - Retry button available
 - User role unchanged (still "free")
 
 ## Edge Cases
 
 ### Error States
-- [x] Webhook failure → Retry with exponential backoff
-- [x] Card declined → Show Stripe error message
+- [x] Webhook failure → Lemon Squeezy retries automatically
+- [x] Card declined → Show error message from checkout
 - [x] Network timeout → Show "Try again" with support link
 
 ### Permission States
-- [x] Already Pro user → Redirect to billing management
+- [x] Already Pro user → Redirect to Lemon Squeezy customer portal
 - [x] Unauthenticated → Redirect to login first
 
 ### Data Consistency
-- [x] Webhook idempotency (prevent duplicate charges)
-- [x] Handle Stripe event ordering (payment before upgrade)
+- [x] Webhook idempotency (check order_id before processing)
+- [x] Handle event ordering (order_created before subscription_created)
 
 ## Technical Notes
 
-**Stripe Integration:**
-- Use Stripe Checkout (not Elements - simpler for MVP)
-- Webhook endpoint: POST `/api/stripe/webhook`
-- Verify webhook signature with STRIPE_WEBHOOK_SECRET
-- Store Stripe customer_id in users table
+**Lemon Squeezy Integration:**
+- Use Lemon Squeezy Checkout (hosted - MoR handles tax)
+- Webhook endpoint: POST `/api/webhooks/lemonsqueezy`
+- Verify webhook signature with LEMONSQUEEZY_WEBHOOK_SECRET
+- Store Lemon Squeezy customer_id in users table
 
 **Database changes:**
-- Add `stripe_customer_id` (varchar, nullable) to users
-- Add `stripe_subscription_id` (varchar, nullable) to users
+- Add `lemonsqueezy_customer_id` (varchar, nullable) to users
+- Add `lemonsqueezy_subscription_id` (varchar, nullable) to users
 - Add `role` (enum: free, pro) to users (default: free)
 ```
 

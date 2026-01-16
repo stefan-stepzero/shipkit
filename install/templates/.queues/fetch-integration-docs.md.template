@@ -30,11 +30,11 @@
 # Integration Docs Needed
 
 **Created:** 2025-12-30 14:32
-**Reason:** Spec mentions Stripe webhooks
+**Reason:** Spec mentions Lemon Squeezy webhooks
 
 ## Pending
 
-- [ ] Stripe webhooks
+- [ ] Lemon Squeezy webhooks
   - Mentioned in: specs/active/payment-flow.md
   - Need: Webhook signature verification pattern
 

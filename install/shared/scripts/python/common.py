@@ -28,8 +28,8 @@ def copy_template(template_path: str, output_path: str) -> None:
 
 
 def get_skill_root() -> Path:
-    """Get the root .shipkit/skills directory."""
-    return Path(".shipkit/skills")
+    """Get the root .shipkit-lite directory."""
+    return Path(".shipkit-lite")
 
 
 def get_skill_path(skill_name: str) -> Path:

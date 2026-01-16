@@ -1,6 +1,6 @@
 ---
 name: lite-prototype-to-spec
-description: Extracts prototype learnings and UI/UX decisions into formal specifications by analyzing prototype iterations. Use when prototype iteration complete and ready to document validated UI patterns.
+description: "Use when extracting learnings from a prototype into a spec. Triggers: 'prototype done', 'extract patterns', 'document prototype', 'capture UI patterns'."
 ---
 
 # lite-prototype-to-spec - Prototype Learning Extractor
@@ -261,6 +261,18 @@ Delete prototype now? (y/n)
 
 **If yes:** Delete `.shipkit-mockups/[name]/` folder
 **If no:** Leave prototype as reference
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Reviewed prototype in `.shipkit-mockups/`
+- [ ] Extracted key patterns and learnings
+- [ ] Updated or created spec with insights
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

@@ -101,24 +101,14 @@
       "Skill(lite-ux-audit)",
       "Skill(lite-data-contracts)",
       "Skill(lite-plan)",
-      "Skill(lite-implement)",
       "Skill(lite-component-knowledge)",
       "Skill(lite-route-knowledge)",
-      "Skill(lite-document-artifact)",
-      "Skill(lite-quality-confidence)",
       "Skill(lite-user-instructions)",
       "Skill(lite-integration-docs)",
       "Skill(lite-work-memory)",
-      "Skill(lite-debug-systematically)",
       "Skill(lite-communications)",
       "Skill(lite-why-project)",
-      "Skill(lite-whats-next)",
-
-      "Skill(lite-milestone-detector)",
-      "Skill(lite-post-spec-check)",
-      "Skill(lite-post-plan-check)",
-      "Skill(lite-post-implement-check)",
-      "Skill(lite-pre-ship-check)"
+      "Skill(lite-detect)"
     ],
 
     "deny": [
@@ -148,17 +138,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/skills/lite-milestone-detector/scripts/route-to-check.py"
-          },
-          {
-            "type": "prompt",
-            "prompt": "If significant work was done this session (files created/modified, decisions made, features completed), invoke /lite-work-memory with a concise 2-3 sentence summary. Skip if only trivial reading/checking occurred.",
-            "timeout": 15
-          },
-          {
-            "type": "prompt",
-            "prompt": "Invoke /lite-whats-next to analyze project state and suggest the next logical skill. This provides intelligent workflow guidance based on the 5-pillar framework and checks for pending bug prevention work in .queues/.",
-            "timeout": 30
+            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/lite-after-skill-router.py"
           }
         ]
       }
@@ -182,8 +162,9 @@
     "permissionsPhilosophy": "Allow by default, deny only critical infrastructure and lite context files.",
     "deniedFiles": "Critical infrastructure: settings.json, hooks. Protected context: specs, plans, implementations.md, architecture.md, stack.md, types.md. Secrets: actual .env files (not .example), *.pem, *.key, production configs.",
     "allowedFiles": "Can read .env.example files. Full access to project source code and skill outputs via Read tool.",
-    "sessionHooks": "SessionStart loads lite-shipkit-master, Stop suggests next lite skill",
+    "sessionHooks": "SessionStart loads lite-shipkit-master with status summary, Stop runs lite-after-skill-router for auto-detection",
     "contextFiles": "All context stored in .shipkit-lite/ folder (not .shipkit/)",
+    "autoDetection": "After parent skills complete, lite-detect scans artifacts and creates queues for follow-up skills",
     "customization": "Users can override by editing this file"
   }
 }

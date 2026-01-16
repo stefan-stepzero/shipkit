@@ -1,6 +1,6 @@
 ---
 name: lite-project-context
-description: Maintains current tech stack, environment variables, and database schema through selective scanning with smart caching. Only rescans when source files are newer than cached context. Use when starting a project or when stack.md becomes stale.
+description: "Use when starting a new project or refreshing tech stack context. Triggers: 'scan project', 'what's my stack', 'refresh context', 'generate stack'."
 ---
 
 # project-context-lite - Smart Project Context Scanner
@@ -377,6 +377,18 @@ recipes
 
 Ready to continue?
 ```
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Scanned package.json and project structure
+- [ ] Identified tech stack and dependencies
+- [ ] Created `.shipkit-lite/stack.md`
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 

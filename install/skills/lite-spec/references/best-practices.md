@@ -564,4 +564,841 @@ For each applicable category, add specific checks:
 
 ---
 
+## Architecture Patterns (DRY & Centralization)
+
+**These patterns prevent the "patching 10 pages" problem.**
+
+### 1. Authentication - Global Middleware, Not Per-Page
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Auth check duplicated on every page
+// pages/dashboard.tsx
+export default function Dashboard() {
+  const { user } = useAuth();
+  if (!user) redirect('/login');  // Duplicated everywhere
+  // ...
+}
+
+// pages/settings.tsx
+export default function Settings() {
+  const { user } = useAuth();
+  if (!user) redirect('/login');  // Same check, copied
+  // ...
+}
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Centralized auth middleware
+// middleware.ts (Next.js) or auth-guard.tsx (React)
+export function middleware(request: NextRequest) {
+  const session = await getSession(request);
+
+  if (protectedRoutes.includes(request.pathname) && !session) {
+    return NextResponse.redirect('/login');
+  }
+}
+
+// Or: Layout-level protection
+// app/(protected)/layout.tsx
+export default async function ProtectedLayout({ children }) {
+  const session = await getSession();
+  if (!session) redirect('/login');
+  return <>{children}</>;
+}
+```
+
+**Why It Matters:**
+- One place to update auth logic
+- Impossible to forget auth on new pages
+- Easier to audit security
+- Consistent behavior across routes
+
+---
+
+### 2. Error Handling - Global Boundary, Not Per-Component Try/Catch
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Try/catch scattered everywhere
+function ComponentA() {
+  try {
+    const data = await fetchData();
+  } catch (e) {
+    return <div>Error occurred</div>;  // Inconsistent error UI
+  }
+}
+
+function ComponentB() {
+  try {
+    const data = await fetchOther();
+  } catch (e) {
+    console.error(e);  // Different handling, no UI
+  }
+}
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Centralized error boundary + consistent handling
+// app/error.tsx (Next.js) or ErrorBoundary.tsx
+export default function GlobalError({ error, reset }) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
+  return (
+    <ErrorPage
+      message="Something went wrong"
+      onRetry={reset}
+    />
+  );
+}
+
+// Components just throw - boundary catches
+function Component() {
+  const data = await fetchData(); // Throws on error, boundary catches
+  return <Display data={data} />;
+}
+```
+
+**Why It Matters:**
+- Consistent error UI across app
+- Centralized error logging (Sentry, etc.)
+- Components stay clean (no try/catch noise)
+- One place to update error handling behavior
+
+---
+
+### 3. Data Fetching - Provider Pattern, Not Prop Drilling
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Fetching same data in multiple places
+function Page() {
+  const user = await getUser();  // Fetched here
+  return <Header user={user} />;  // Passed down
+}
+
+function Header({ user }) {
+  return <Avatar user={user} />;  // Passed again
+}
+
+function Avatar({ user }) {
+  return <img src={user.avatar} />;  // Finally used
+}
+
+// Later: Another component needs user
+function Sidebar() {
+  const user = await getUser();  // Fetched AGAIN!
+}
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Centralized data provider + hooks
+// context/user-context.tsx
+const UserContext = createContext<User | null>(null);
+
+export function UserProvider({ children }) {
+  const user = useSWR('/api/user', fetcher);  // Cached, single fetch
+  return <UserContext.Provider value={user}>{children}</UserContext.Provider>;
+}
+
+export function useUser() {
+  const context = useContext(UserContext);
+  if (!context) throw new Error('useUser must be within UserProvider');
+  return context;
+}
+
+// Any component can access without prop drilling
+function Avatar() {
+  const { user } = useUser();  // Gets cached user
+  return <img src={user.avatar} />;
+}
+```
+
+**Why It Matters:**
+- Single source of truth for data
+- No duplicate API calls
+- Any component can access without drilling
+- Cache invalidation in one place
+
+---
+
+### 4. Logging & Monitoring - Central Service, Not Scattered Console.log
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Inconsistent logging everywhere
+function handleSubmit() {
+  console.log('Form submitted');  // No structure
+}
+
+function fetchData() {
+  console.error('API Error:', error);  // Different format
+}
+
+function processPayment() {
+  console.log({ event: 'payment', amount });  // Yet another format
+}
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Centralized logger with consistent structure
+// lib/logger.ts
+class Logger {
+  private send(level: 'info' | 'warn' | 'error', event: string, data?: object) {
+    const payload = {
+      timestamp: new Date().toISOString(),
+      level,
+      event,
+      ...data,
+      userId: getCurrentUserId(),  // Auto-attached
+      sessionId: getSessionId(),
+    };
+
+    if (process.env.NODE_ENV === 'production') {
+      sendToLoggingService(payload);  // Datadog, LogRocket, etc.
+    } else {
+      console.log(JSON.stringify(payload, null, 2));
+    }
+  }
+
+  info(event: string, data?: object) { this.send('info', event, data); }
+  warn(event: string, data?: object) { this.send('warn', event, data); }
+  error(event: string, error: Error, data?: object) {
+    this.send('error', event, { ...data, error: error.message, stack: error.stack });
+    Sentry.captureException(error);
+  }
+}
+
+export const logger = new Logger();
+
+// Usage - consistent everywhere
+logger.info('form.submitted', { formId: 'signup' });
+logger.error('api.failed', error, { endpoint: '/users' });
+```
+
+**Why It Matters:**
+- Consistent log format (parseable by tools)
+- Automatic context (userId, sessionId)
+- One place to add/change logging destinations
+- Easy to search/filter logs in production
+
+---
+
+### 5. Configuration - Environment Abstraction, Not Scattered env Access
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: process.env scattered everywhere
+function sendEmail() {
+  const apiKey = process.env.SENDGRID_API_KEY;  // Here
+}
+
+function connectDB() {
+  const url = process.env.DATABASE_URL;  // And here
+}
+
+function stripe() {
+  const key = process.env.STRIPE_SECRET_KEY!;  // And here (with !)
+}
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Centralized, typed, validated config
+// lib/config.ts
+import { z } from 'zod';
+
+const envSchema = z.object({
+  DATABASE_URL: z.string().url(),
+  SENDGRID_API_KEY: z.string().min(1),
+  STRIPE_SECRET_KEY: z.string().startsWith('sk_'),
+  NODE_ENV: z.enum(['development', 'production', 'test']),
+});
+
+// Validates at startup - fails fast if missing
+const parsed = envSchema.safeParse(process.env);
+if (!parsed.success) {
+  console.error('❌ Invalid environment variables:', parsed.error.flatten());
+  process.exit(1);
+}
+
+export const config = parsed.data;
+
+// Usage - typed, validated, single source
+import { config } from '@/lib/config';
+const db = connectDB(config.DATABASE_URL);  // TypeScript knows it's string
+```
+
+**Why It Matters:**
+- Fails fast on startup if env missing (not at runtime)
+- TypeScript knows exact types
+- One file documents all required env vars
+- No `!` assertions scattered everywhere
+
+---
+
+### 6. API Response Format - Consistent Structure, Not Ad-hoc
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Different response shapes per endpoint
+// /api/users
+return { users: [...] };
+
+// /api/posts
+return { data: [...], count: 10 };
+
+// /api/orders
+return [...];  // Just array, no wrapper
+
+// Error handling equally inconsistent
+return { error: 'Failed' };
+return { message: 'Not found', code: 404 };
+return new Error('Unauthorized');
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Consistent API response wrapper
+// lib/api-response.ts
+type ApiResponse<T> =
+  | { success: true; data: T }
+  | { success: false; error: { message: string; code: string } };
+
+function success<T>(data: T): ApiResponse<T> {
+  return { success: true, data };
+}
+
+function error(message: string, code: string): ApiResponse<never> {
+  return { success: false, error: { message, code } };
+}
+
+// Usage - consistent everywhere
+export async function GET() {
+  const users = await db.user.findMany();
+  return Response.json(success(users));
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const result = schema.safeParse(body);
+
+  if (!result.success) {
+    return Response.json(error('Validation failed', 'VALIDATION_ERROR'), { status: 400 });
+  }
+
+  const user = await db.user.create({ data: result.data });
+  return Response.json(success(user), { status: 201 });
+}
+```
+
+**Why It Matters:**
+- Frontend can use single response handler
+- Consistent error shape for error boundaries
+- TypeScript can narrow on `success` boolean
+- API documentation is predictable
+
+---
+
+## TypeScript Patterns & Anti-Patterns
+
+**TypeScript-specific patterns that prevent bugs and improve DX.**
+
+### 1. The `any` Escape Hatch Problem
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: any defeats TypeScript's purpose
+function processData(data: any) {
+  return data.user.profile.name.toUpperCase();  // No type safety
+}
+
+// Later crashes: Cannot read property 'name' of undefined
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Proper typing or unknown + narrowing
+// Option A: Define the type
+interface UserData {
+  user: {
+    profile: {
+      name: string;
+    };
+  };
+}
+
+function processData(data: UserData) {
+  return data.user.profile.name.toUpperCase();  // Type safe
+}
+
+// Option B: Use unknown + type guard
+function processData(data: unknown) {
+  if (!isUserData(data)) {
+    throw new Error('Invalid data shape');
+  }
+  return data.user.profile.name.toUpperCase();  // Safe after guard
+}
+
+function isUserData(data: unknown): data is UserData {
+  return (
+    typeof data === 'object' && data !== null &&
+    'user' in data && typeof data.user === 'object'
+    // ... full validation
+  );
+}
+```
+
+---
+
+### 2. Type Assertions (`as`) Overuse
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: as bypasses type checking
+const user = response.data as User;  // Assumes shape is correct
+const element = document.getElementById('root') as HTMLDivElement;  // Might be null
+
+// Crashes later when assumptions are wrong
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Type guards and proper null handling
+// For API responses: Validate with Zod
+const userSchema = z.object({ id: z.string(), name: z.string() });
+const user = userSchema.parse(response.data);  // Throws if wrong shape
+
+// For DOM: Handle null case
+const element = document.getElementById('root');
+if (!(element instanceof HTMLDivElement)) {
+  throw new Error('Root element not found or wrong type');
+}
+// Now element is HTMLDivElement
+```
+
+---
+
+### 3. Non-null Assertion (`!`) Everywhere
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: ! ignores null possibility
+const user = users.find(u => u.id === id)!;  // Might be undefined
+const config = process.env.API_KEY!;  // Might be undefined
+
+user.name;  // Runtime error if not found
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Handle the null case explicitly
+// Option A: Throw meaningful error
+const user = users.find(u => u.id === id);
+if (!user) {
+  throw new Error(`User not found: ${id}`);
+}
+// user is now User (not User | undefined)
+
+// Option B: Provide default
+const config = process.env.API_KEY ?? 'default-key';
+
+// Option C: Early validation (for env vars - see config pattern above)
+```
+
+---
+
+### 4. Zod as Single Source of Truth
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Types and validation defined separately
+interface User {
+  id: string;
+  email: string;
+  age: number;
+}
+
+// Validation duplicates the same info
+function validateUser(data: unknown) {
+  if (typeof data.id !== 'string') throw new Error('id must be string');
+  if (typeof data.email !== 'string') throw new Error('email must be string');
+  // ... duplicated logic, can drift from interface
+}
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Zod schema is the single source of truth
+import { z } from 'zod';
+
+// Schema defines shape AND validation in one place
+const userSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  age: z.number().int().positive().max(120),
+});
+
+// Type is inferred from schema - always in sync
+type User = z.infer<typeof userSchema>;
+
+// Validation uses the same schema
+function validateUser(data: unknown): User {
+  return userSchema.parse(data);  // Throws ZodError if invalid
+}
+
+// Safe parse for handling errors
+const result = userSchema.safeParse(data);
+if (!result.success) {
+  console.error(result.error.flatten());
+}
+```
+
+---
+
+### 5. Discriminated Unions for State
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Separate booleans for state
+interface FetchState {
+  isLoading: boolean;
+  isError: boolean;
+  data: User | null;
+  error: Error | null;
+}
+
+// Impossible states are possible
+const state: FetchState = {
+  isLoading: true,
+  isError: true,  // Loading AND error?
+  data: user,     // Has data while loading?
+  error: err,     // Has error while has data?
+};
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Discriminated union makes impossible states impossible
+type FetchState<T> =
+  | { status: 'idle' }
+  | { status: 'loading' }
+  | { status: 'success'; data: T }
+  | { status: 'error'; error: Error };
+
+// TypeScript enforces valid states
+const state: FetchState<User> = { status: 'loading' };  // ✓
+
+// Exhaustive handling
+function render(state: FetchState<User>) {
+  switch (state.status) {
+    case 'idle':
+      return <Placeholder />;
+    case 'loading':
+      return <Spinner />;
+    case 'success':
+      return <UserCard user={state.data} />;  // data available here
+    case 'error':
+      return <Error message={state.error.message} />;  // error available here
+    default:
+      const _exhaustive: never = state;  // Compile error if case missed
+      return _exhaustive;
+  }
+}
+```
+
+---
+
+### 6. Branded Types for IDs
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: All IDs are just strings
+function getUser(userId: string) { /* ... */ }
+function getOrder(orderId: string) { /* ... */ }
+
+// Easy to mix up - no compile error
+getUser(orderId);  // Wrong! But TypeScript doesn't catch it
+getOrder(userId);  // Wrong! But TypeScript doesn't catch it
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Branded types prevent ID mixups
+type Brand<K, T> = K & { __brand: T };
+
+type UserId = Brand<string, 'UserId'>;
+type OrderId = Brand<string, 'OrderId'>;
+
+function getUser(userId: UserId) { /* ... */ }
+function getOrder(orderId: OrderId) { /* ... */ }
+
+// Create branded IDs
+const userId = 'user_123' as UserId;
+const orderId = 'order_456' as OrderId;
+
+// Now TypeScript catches mixups
+getUser(userId);   // ✓
+getUser(orderId);  // ✗ Type error!
+getOrder(orderId); // ✓
+getOrder(userId);  // ✗ Type error!
+```
+
+---
+
+### 7. Exhaustive Switch with `never`
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Switch without exhaustive check
+type Status = 'pending' | 'approved' | 'rejected';
+
+function getStatusColor(status: Status) {
+  switch (status) {
+    case 'pending': return 'yellow';
+    case 'approved': return 'green';
+    // Forgot 'rejected'! No compile error, returns undefined
+  }
+}
+
+// Later: Status type extended
+type Status = 'pending' | 'approved' | 'rejected' | 'cancelled';
+// Old switch silently broken - no compile error
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Exhaustive check catches missing cases at compile time
+function assertNever(x: never): never {
+  throw new Error(`Unexpected value: ${x}`);
+}
+
+function getStatusColor(status: Status): string {
+  switch (status) {
+    case 'pending': return 'yellow';
+    case 'approved': return 'green';
+    case 'rejected': return 'red';
+    default:
+      return assertNever(status);  // Compile error if case missing!
+  }
+}
+
+// When 'cancelled' is added to Status:
+// TypeScript error: Argument of type '"cancelled"' is not assignable to parameter of type 'never'
+// Forces you to handle the new case
+```
+
+---
+
+### 8. Const Assertions for Literal Types
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Object loses literal types
+const config = {
+  endpoint: '/api/users',
+  method: 'GET',
+};
+// Type is { endpoint: string; method: string }
+// Lost the literal values!
+
+function fetch(url: string, method: 'GET' | 'POST') { /* ... */ }
+fetch(config.endpoint, config.method);  // Error: string is not 'GET' | 'POST'
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: as const preserves literal types
+const config = {
+  endpoint: '/api/users',
+  method: 'GET',
+} as const;
+// Type is { readonly endpoint: "/api/users"; readonly method: "GET" }
+
+fetch(config.endpoint, config.method);  // ✓ Works!
+
+// Also great for arrays
+const STATUSES = ['pending', 'approved', 'rejected'] as const;
+type Status = typeof STATUSES[number];  // 'pending' | 'approved' | 'rejected'
+```
+
+---
+
+### 9. Generic Constraints for Reusable Functions
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: any to make it "flexible"
+function getProperty(obj: any, key: string) {
+  return obj[key];  // Returns any, no type safety
+}
+
+// Or overly specific - not reusable
+function getUserName(user: User) {
+  return user.name;
+}
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Generics with constraints
+function getProperty<T, K extends keyof T>(obj: T, key: K): T[K] {
+  return obj[key];  // Return type is exactly T[K]
+}
+
+const user = { id: 1, name: 'Alice', email: 'alice@example.com' };
+const name = getProperty(user, 'name');  // Type: string
+const id = getProperty(user, 'id');      // Type: number
+getProperty(user, 'age');                // Error: 'age' not in keyof User
+
+// Generic with constraint
+function merge<T extends object, U extends object>(a: T, b: U): T & U {
+  return { ...a, ...b };
+}
+```
+
+---
+
+### 10. Utility Types Instead of Manual Typing
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Manually redefining types
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+}
+
+// For API response (no password)
+interface PublicUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
+// For creation (no id)
+interface CreateUser {
+  name: string;
+  email: string;
+  password: string;
+}
+
+// For update (all optional)
+interface UpdateUser {
+  name?: string;
+  email?: string;
+  password?: string;
+}
+// Duplicated! Will drift out of sync.
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: Derive types with utility types
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+}
+
+type PublicUser = Omit<User, 'password'>;
+type CreateUser = Omit<User, 'id'>;
+type UpdateUser = Partial<Omit<User, 'id'>>;
+
+// Other useful utilities:
+type RequiredUser = Required<User>;          // All fields required
+type ReadonlyUser = Readonly<User>;          // All fields readonly
+type NameAndEmail = Pick<User, 'name' | 'email'>;  // Only these fields
+type UserRecord = Record<string, User>;      // Dictionary of users
+```
+
+---
+
+### 11. Satisfies for Type Checking Without Widening
+
+**The Problem:**
+```typescript
+// ❌ ANTI-PATTERN: Type annotation widens the type
+const routes: Record<string, string> = {
+  home: '/',
+  about: '/about',
+  contact: '/contact',
+};
+
+routes.home;     // Type: string (lost the literal '/')
+routes.invalid;  // No error! Record<string, string> allows any key
+
+// Or: as const loses the type constraint
+const routes = {
+  home: '/',
+  about: '/about',
+  contact: 123,  // No error! No type checking
+} as const;
+```
+
+**The Solution:**
+```typescript
+// ✅ PATTERN: satisfies checks type while preserving literals
+const routes = {
+  home: '/',
+  about: '/about',
+  contact: '/contact',
+} satisfies Record<string, string>;
+
+routes.home;     // Type: "/" (literal preserved!)
+routes.invalid;  // Error: Property 'invalid' does not exist
+
+// Type checking still works
+const badRoutes = {
+  home: '/',
+  about: 123,  // Error: number is not assignable to string
+} satisfies Record<string, string>;
+```
+
+---
+
+## Architecture Pattern Checklist
+
+**Use this checklist during `/lite-plan` to catch anti-patterns early.**
+
+### Before Implementation, Ask:
+
+- [ ] **Auth**: Will auth be checked in middleware/layout, or per-page?
+  - If per-page → STOP: Centralize first
+
+- [ ] **Error Handling**: Is there a global error boundary?
+  - If no → STOP: Add error boundary first
+
+- [ ] **Data Fetching**: Will same data be fetched in multiple components?
+  - If yes → STOP: Create provider/context first
+
+- [ ] **Logging**: Is there a central logger service?
+  - If no → STOP: Create logger first
+
+- [ ] **Config**: Are env vars validated at startup?
+  - If no → STOP: Create config validation first
+
+- [ ] **API Responses**: Is there a consistent response wrapper?
+  - If no → STOP: Define response format first
+
+### TypeScript Checks:
+
+- [ ] **No `any`**: Are there `any` types that should be properly typed?
+- [ ] **No `as` abuse**: Are type assertions used only when necessary?
+- [ ] **No `!` abuse**: Are non-null assertions replaced with proper checks?
+- [ ] **Zod schemas**: Are runtime validations using Zod with inferred types?
+- [ ] **Discriminated unions**: Are state types using discriminated unions?
+- [ ] **Exhaustive switches**: Do all switches have `never` exhaustive check?
+
+---
+
 **Remember:** Best practices prevent 90% of production issues. Invest upfront to save debugging time later.

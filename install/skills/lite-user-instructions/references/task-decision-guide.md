@@ -15,7 +15,7 @@ Use `/lite-user-instructions` to create a tracked task when:
 - **Part of larger workflow** - Work continues after task completion
 
 **Examples:**
-- "Install Stripe CLI, configure webhook endpoint, add secret to .env"
+- "Configure Lemon Squeezy webhook, add API key and secret to .env"
 - "Deploy to Vercel after we finish feature X"
 - "Configure DNS records after domain purchase"
 - "Run database migration when ready"

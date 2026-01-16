@@ -1,11 +1,11 @@
 ---
 name: lite-component-knowledge
-description: Documents components >200 LOC by comparing file modification times against documentation timestamps. Only documents new/changed components using timestamp-based freshness checking. Appends to implementations.md with metadata tracking.
+description: "Use when documenting a React/UI component after implementation. Triggers: 'document component', 'how does X component work', 'component docs'."
 ---
 
-# component-knowledge-lite - Timestamp-Based Component Documentation
+# component-knowledge-lite - Per-File Component Documentation
 
-**Purpose**: Document components intelligently by checking modification times against last documentation, avoiding redundant work and token waste.
+**Purpose**: Document components with one file per component, enabling easy staleness detection and clean replacement when components change.
 
 ---
 
@@ -14,7 +14,7 @@ description: Documents components >200 LOC by comparing file modification times 
 **User triggers**:
 - "Document this component"
 - "Update component docs"
-- "What changed since last documentation?"
+- "How does [ComponentName] work?"
 - "Document new components"
 
 **After**:
@@ -27,10 +27,28 @@ description: Documents components >200 LOC by comparing file modification times 
 ## Prerequisites
 
 **Optional but helpful**:
-- Existing docs: `.shipkit-lite/implementations.md`
+- Existing docs: `.shipkit-lite/implementations/components/`
 - Spec/plan context: `.shipkit-lite/specs/active/[feature].md`
 
 **No strict prerequisites** - can document at any time.
+
+---
+
+## File Structure
+
+```
+.shipkit-lite/
+  implementations/
+    components/
+      ComicConverter.md     ← One file per component (REPLACED on update)
+      UserAvatar.md
+      LoginForm.md
+    routes/                 ← Managed by /lite-route-knowledge
+      ...
+    index.md                ← Auto-generated TOC with staleness
+```
+
+**Key principle**: One component = one file. No duplicates, no stale entries.
 
 ---
 
@@ -44,483 +62,332 @@ Read file (if exists): `.shipkit-lite/.queues/components-to-document.md`
 
 **If queue file exists and has pending items**:
 1. Parse the `## Pending` section for components needing documentation
-2. For each pending component:
-   - Read component source code
-   - Extract props, state, events (Step 2-3 logic)
-   - Document component contract in `.shipkit-lite/component-contracts.md`
-   - Move item from Pending to Completed in queue
-3. Skip Step 1 questions (components already identified)
-4. Continue with Step 2-5 for each component
+2. For each pending component, proceed to Step 2
+3. Move item from Pending to Completed in queue
 
 **If queue file doesn't exist or is empty**:
-- Continue to Step 1 (manual mode - ask what to document)
+- Continue to Step 1 (manual mode)
 
 ---
 
-### Step 1: (Manual Mode) Confirm What to Document
+### Step 1: Identify Component to Document
 
-**Before doing anything**, ask user 2-3 questions:
+**Ask user**:
 
-1. **Which components should I check?**
-   - "Specific component(s)?" (user provides path)
-   - "All components in a directory?" (e.g., src/components/)
-   - "Scan entire project?"
+1. **Which component?**
+   - "Specific component?" (user provides name or path)
+   - "Scan for undocumented components?"
+   - "Scan for stale component docs?"
 
-2. **What level of detail?**
-   - "Quick summary (1-2 paragraphs per component)?"
-   - "Detailed docs (purpose, props, patterns, usage)?"
-   - "Minimal (just what changed)?"
-
-3. **Documentation scope?**
-   - "Only components >200 LOC?"
-   - "Include smaller components?"
-   - "Skip utility/helper files?"
-
-**Why ask first**: Don't scan thousands of files if user wants specific component documented.
-
----
-
-### Step 2: Check Documentation Freshness
-
-**Read existing documentation metadata**:
+**If scanning**, use staleness detection:
 
 ```bash
-# Read implementations.md to find last documentation timestamp
-.shipkit-lite/implementations.md
+# Find component source files
+find src/components app/components -name "*.tsx" -o -name "*.jsx" 2>/dev/null
+
+# For each component, check if doc exists and compare mtimes
 ```
 
-**Look for metadata header** (at top of file):
-```markdown
-<!-- Component Documentation Metadata
-Last Full Scan: 2025-01-15T14:30:00Z
-Documented Files:
-- src/components/RecipeCard.tsx (2025-01-15T14:25:00Z)
-- src/components/UserProfile.tsx (2025-01-14T10:00:00Z)
--->
+**Output**:
 ```
+🔍 Component scan:
 
-**If metadata missing**: This is first documentation run, scan all components.
+| Component | Source | Doc | Status |
+|-----------|--------|-----|--------|
+| ComicConverter | 2h ago | 5d ago | ⚠️ STALE |
+| UserAvatar | 3d ago | 2d ago | ✅ Fresh |
+| LoginForm | 1h ago | missing | ❌ Undocumented |
 
----
-
-### Step 3: Find Changed Files Using Bash
-
-**Use bash find command to identify new/changed files**:
-
-```bash
-# Find files newer than implementations.md
-find src/components -type f -name "*.tsx" -newer .shipkit-lite/implementations.md
-
-# Or find files newer than specific timestamp (from metadata)
-find src/components -type f -name "*.tsx" -newermt "2025-01-15 14:30:00"
-
-# Count lines in changed files (skip if <200 LOC)
-wc -l [changed-file-paths]
-```
-
-**Filter logic**:
-- Only components >200 LOC (configurable based on user answer)
-- Skip test files (*.test.tsx, *.spec.tsx)
-- Skip utility files if requested
-
-**Output to user**:
-```
-🔍 Freshness check:
-  • implementations.md last updated: 2025-01-15 14:30:00
-  • Found 23 total components
-  • 21 already documented
-  • 2 changed since last doc:
-    - src/components/RecipeCard.tsx (450 LOC) ⚠️ Modified
-    - src/components/NewFeature.tsx (320 LOC) ✨ New
-
-📊 Token savings: Reading 2 files (~770 LOC) instead of all 23 (~5,200 LOC)
-   → 92% reduction
-
-Proceed with documenting these 2 components?
+Found 1 stale, 1 undocumented. Document these?
 ```
 
 ---
 
-### Step 4: Read Only Changed Components
+### Step 2: Read Component Source
 
-**For each changed component, read the file**:
+**Read the component file**:
 
 ```bash
-# Use Read tool for each changed file
-Read(src/components/RecipeCard.tsx)
-Read(src/components/NewFeature.tsx)
+Read(src/components/ComicConverter.tsx)
 ```
 
-**Extract from each file**:
+**Extract**:
 1. **Purpose**: What does this component do? (1-2 sentences)
-2. **Pattern**: React patterns used (hooks, context, state management)
-3. **Props/API**: Key props or function signatures
-4. **Key decisions**: Why was it built this way?
-5. **Usage locations**: Where is it used? (grep for imports if needed)
-6. **Dependencies**: External libraries used
-7. **State management**: Local state, context, or external store?
-
-**Token budget**: ~200-500 tokens per component analysis.
+2. **Props/API**: Interface and key props
+3. **Pattern**: React patterns used (hooks, context, state)
+4. **Dependencies**: External libraries
+5. **Key decisions**: Why built this way?
+6. **Usage**: Where is it imported? (grep if needed)
+7. **Gotchas**: Non-obvious behavior, common errors
 
 ---
 
-### Step 5: Generate Documentation
+### Step 3: Write Component Documentation
 
-**Use Write tool to APPEND to implementations.md**:
+**Write to individual file** (REPLACE strategy):
 
-**Location**: `.shipkit-lite/implementations.md`
+**Location**: `.shipkit-lite/implementations/components/[ComponentName].md`
 
-**Format** (append to end of file):
+**Template**:
 
 ```markdown
----
+# [ComponentName]
 
-## Component: [ComponentName] - Documented [Date]
+> [One-line purpose]
 
-**File**: `[file-path]`
-**Size**: [LOC] lines
-**Last Modified**: [timestamp from file]
-**Documented**: [current timestamp]
+**Source**: `[file-path]`
+**Documented**: [YYYY-MM-DD HH:MM]
+**Source Modified**: [timestamp from file]
 
-### Purpose
-[1-2 sentence description of what this component does]
+## Purpose
 
-### Pattern & Architecture
-- **Type**: [Presentational/Container/Page/Layout/etc.]
-- **Rendering**: [CSR/SSR/Static]
-- **State**: [Local useState/Context/Redux/Zustand/None]
-- **Data fetching**: [None/useQuery/useEffect/Server Component/etc.]
+[1-2 sentence description]
 
-### Props/API
+## Props/API
+
 ```typescript
-interface Props {
-  [key props extracted from file]
+interface [ComponentName]Props {
+  [key props]
 }
 ```
 
-### Key Decisions
-- **[Decision 1]**: [Why this approach]
-- **[Decision 2]**: [Rationale]
+## Pattern & Architecture
 
-### Usage Locations
-- [File 1 that imports this]
-- [File 2 that imports this]
+- **Type**: [Presentational/Container/Page/Layout]
+- **Rendering**: [CSR/SSR/Static]
+- **State**: [Local/Context/Redux/Zustand/None]
+- **Data fetching**: [None/useQuery/Server Component]
 
-### Dependencies
-- [External library 1]
-- [External library 2]
+## Key Decisions
 
-### Notes
-[Any non-obvious implementation details, gotchas, or future improvements]
+- **[Decision]**: [Rationale]
 
----
+## Dependencies
+
+- [Library]: [What it's used for]
+
+## Usage
+
+Imported by:
+- `[file1]`
+- `[file2]`
+
+## Gotchas & Common Errors
+
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| [Error] | [Why] | [Solution] |
+
+## Notes
+
+[Any other relevant details]
 ```
 
-**Before appending, update metadata header**:
+---
+
+### Step 4: Update Index
+
+**Regenerate index file**:
+
+**Location**: `.shipkit-lite/implementations/index.md`
 
 ```markdown
-<!-- Component Documentation Metadata
-Last Full Scan: [current timestamp]
-Documented Files:
-- src/components/RecipeCard.tsx ([current timestamp])
-- src/components/UserProfile.tsx (2025-01-14T10:00:00Z)
-- src/components/NewFeature.tsx ([current timestamp])
--->
+# Implementations Index
+
+*Auto-generated. Do not edit manually.*
+
+**Last Updated**: [timestamp]
+
+## Components
+
+| Component | Documented | Source Modified | Status |
+|-----------|------------|-----------------|--------|
+| [ComicConverter](components/ComicConverter.md) | 2h ago | 2h ago | ✅ Fresh |
+| [UserAvatar](components/UserAvatar.md) | 5d ago | 1d ago | ⚠️ Stale |
+
+## Routes
+
+| Route | Documented | Source Modified | Status |
+|-------|------------|-----------------|--------|
+| [api-comic](routes/api-comic.md) | 1d ago | 1d ago | ✅ Fresh |
+
+---
+
+**Staleness threshold**: Doc is stale if source modified after documentation.
+```
+
+**Index generation logic**:
+1. Glob `.shipkit-lite/implementations/components/*.md`
+2. For each doc, extract source path from frontmatter
+3. Compare doc mtime vs source file mtime
+4. Generate table with status
+
+---
+
+### Step 5: Confirm to User
+
+**Output**:
+```
+✅ Component documented
+
+📁 Created/Updated: .shipkit-lite/implementations/components/ComicConverter.md
+📋 Index updated: .shipkit-lite/implementations/index.md
+
+📊 Status:
+  • Total components documented: 5
+  • Fresh: 4
+  • Stale: 1 (UserAvatar - source changed)
+
+🔗 Source: src/components/ComicConverter.tsx
 ```
 
 ---
 
-### Step 6: Suggest Next Step
+## Completion Checklist
 
-**After documentation complete**:
+Copy and track:
+- [ ] Read component source file
+- [ ] Extracted props, patterns, decisions
+- [ ] Wrote to `implementations/components/[Name].md`
+- [ ] Updated `implementations/index.md`
+- [ ] Invoke `/lite-whats-next` for workflow guidance
 
-```
-✅ Component documentation updated
-
-📁 Updated: .shipkit-lite/implementations.md
-
-📋 Documented:
-  • RecipeCard.tsx (450 LOC) - Updated existing docs
-  • NewFeature.tsx (320 LOC) - New documentation
-
-🔖 Metadata updated:
-  • Last scan: [timestamp]
-  • Total documented: 23 components
-
-👉 Next options:
-  1. /lite-quality-confidence - Pre-ship verification
-  2. /lite-work-memory - Log this session's progress
-  3. /lite-route-knowledge - Document API routes/pages
-  4. Continue implementing
-
-What would you like to do?
-```
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
 ## What Makes This "Lite"
 
 **Included**:
-- ✅ Timestamp-based freshness checking
-- ✅ Incremental documentation (only changed files)
-- ✅ LOC filtering (skip small utilities)
-- ✅ Purpose, pattern, props, decisions
-- ✅ Metadata tracking
+- ✅ One file per component (easy staleness detection)
+- ✅ Replace strategy (no duplicates)
+- ✅ Auto-generated index with status
+- ✅ Source mtime comparison
+- ✅ Purpose, props, patterns, gotchas
 
 **Not included** (vs full component-knowledge):
 - ❌ Dependency graph analysis
 - ❌ Performance profiling
 - ❌ Accessibility audit
-- ❌ Visual regression testing
 - ❌ Storybook integration
-- ❌ Automated prop extraction via AST parsing
-
-**Philosophy**: Document what changed efficiently, not comprehensive component catalog.
 
 ---
 
-## Freshness Algorithm
+## Write Strategy
 
-**How timestamp checking works**:
+**Strategy: REPLACE (per-file)**
 
+| Location | Strategy | Rationale |
+|----------|----------|-----------|
+| `implementations/components/[Name].md` | **REPLACE** | One source of truth per component |
+| `implementations/index.md` | **REGENERATE** | Always reflects current state |
+
+**Why REPLACE beats APPEND**:
+- No duplicate entries
+- Easy to detect staleness (compare mtimes)
+- Clean git diffs (one file changed)
+- Selective loading (read only what you need)
+
+**History preservation**: Git tracks file history. Each documentation update is a commit showing what changed.
+
+---
+
+## Staleness Detection
+
+**Algorithm**:
+
+```python
+for each component doc in implementations/components/:
+    source_path = extract from doc header
+    doc_mtime = file modification time of doc
+    source_mtime = file modification time of source
+
+    if source_mtime > doc_mtime:
+        status = "STALE"
+    else:
+        status = "FRESH"
 ```
-IF implementations.md doesn't exist:
-  → Document all components
-ELSE:
-  → Read metadata header for last scan timestamp
-  → Use bash find -newermt to get changed files
-  → Read only changed files
-  → Update only changed documentation
-  → Update metadata header
-```
 
-**Example savings**:
-
-| Scenario | Total Components | Changed | Tokens Without Freshness | Tokens With Freshness | Savings |
-|----------|------------------|---------|--------------------------|----------------------|---------|
-| Initial scan | 0 | 0 | 0 | 0 | N/A |
-| After 1 week | 23 | 2 | ~5,000 | ~400 | 92% |
-| After 1 day | 23 | 1 | ~5,000 | ~200 | 96% |
-| No changes | 23 | 0 | ~5,000 | ~50 | 99% |
-
-**This is the "lite" advantage**: Only read what changed.
+**Session start integration**: The session-start hook checks this and warns about stale docs.
 
 ---
 
 ## Integration with Other Skills
 
-**Before component-knowledge-lite**:
-- `/lite-implement` - Creates components
-- `/lite-plan` - May reference component architecture
+**Before**:
+- `/lite-implement` - Creates components (may queue for documentation)
+- `/lite-post-implement-check` - May add to `.queues/components-to-document.md`
 
-**After component-knowledge-lite**:
-- `/lite-quality-confidence` - Verify component quality
-- `/lite-work-memory` - Log documentation work
-- `/lite-route-knowledge` - Document routes that use these components
-
-**During implement-lite**:
-- After completing complex component (>200 LOC), suggest:
-  ```
-  Component complete. Document it?
-  → /lite-component-knowledge
-  ```
-
----
-
-## Context Files This Skill Reads
-
-**Always reads**:
-- `.shipkit-lite/implementations.md` - Existing docs + metadata
-
-**Conditionally reads**:
-- Component files (only changed ones based on timestamps)
-- `.shipkit-lite/specs/active/[feature].md` - Context for why component exists
-- `.shipkit-lite/architecture.md` - Patterns to reference
-
----
-
-## Context Files This Skill Writes
-
-**Write Strategy: APPEND (with metadata header update)**
-
-**Primary output**:
-- `.shipkit-lite/implementations.md`
-  - **Strategy**: APPEND
-  - **Content**: Component documentation entries appended to end of file
-  - **Metadata**: Header updated each run with new timestamps and file list
-  - **Why APPEND**: Preserves historical documentation trail showing component evolution over time. Essential for tracking when components were documented and enabling timestamp-based freshness checking (the core "lite" optimization).
-
-**Never modifies**:
-- Component source files (read-only analysis)
-- Specs, plans, architecture
-
-**Archive behavior**: None (APPEND keeps all history in single file)
-
-**When history matters**: Always. Each documentation run appends new entries with timestamps, creating an audit trail of component changes. The metadata header tracks latest state while the body preserves full chronological history.
-
----
-
-## Lazy Loading Behavior
-
-**This skill loads minimally**:
-
-1. User invokes `/lite-component-knowledge`
-2. Claude asks: "Which components to check?"
-3. Claude reads implementations.md metadata (~100 tokens)
-4. Claude runs bash find to identify changed files (~50 tokens)
-5. **Only if changes found**: Claude reads changed components (~200-500 tokens each)
-6. Claude appends documentation
-7. Total context: ~500-2000 tokens (vs ~5000+ if reading all components)
-
-**Not loaded unless needed**:
-- Unchanged components
-- Unrelated specs/plans
-- User tasks
-- Other documentation
-
----
-
-## Success Criteria
-
-Documentation is complete when:
-- [ ] Metadata header updated with current timestamp
-- [ ] All changed components documented
-- [ ] Each component doc includes: purpose, pattern, props, decisions, usage
-- [ ] LOC threshold respected (skip small files)
-- [ ] Timestamp-based freshness check performed
-- [ ] User can see what changed vs what's already documented
-
----
-
-## Template Structure
-
-**Complete documentation templates**: See `references/documentation-templates.md`
-
-**Includes**:
-- Metadata header format (for timestamp tracking)
-- Component entry template (for each documented component)
-- ISO 8601 timestamp format
-- Example filled templates
+**After**:
+- `/lite-quality-confidence` - Verify documentation exists
+- `/lite-route-knowledge` - Document routes that use components
 
 ---
 
 ## Common Scenarios
 
-### Scenario 1: First Documentation Run
+### Scenario 1: Document Specific Component
 
 ```
-User: "Document all components"
+User: "Document ComicConverter"
 
 Claude:
-1. Ask: "Scan which directory? Default: src/components/"
-2. Ask: "LOC threshold? Default: >200 LOC"
-3. User confirms
-4. implementations.md doesn't exist
-5. Glob src/components/**/*.tsx
-6. Count LOC for each file
-7. Filter: Keep only files >200 LOC
-8. Read each file
-9. Extract: purpose, pattern, props, decisions, usage
-10. Create implementations.md with metadata header
-11. Append all component docs
+1. Read src/components/ComicConverter.tsx
+2. Extract purpose, props, patterns, decisions
+3. Write to .shipkit-lite/implementations/components/ComicConverter.md
+4. Regenerate index.md
+5. Report success
 ```
 
-### Scenario 2: Incremental Update (Most Common)
+### Scenario 2: Scan for Stale Docs
 
 ```
-User: "Update component docs"
+User: "Check component docs freshness"
 
 Claude:
-1. Read implementations.md metadata header
-2. Last scan: 2025-01-15T14:30:00Z
-3. Run: find src/components -type f -name "*.tsx" -newermt "2025-01-15 14:30:00"
-4. Found 2 changed files
-5. Read only those 2 files
-6. Extract documentation
-7. Update existing entries OR append new entries
-8. Update metadata header with new timestamp
-9. Report: "Documented 2 changed components (21 unchanged)"
+1. Glob implementations/components/*.md
+2. For each, compare doc mtime vs source mtime
+3. Report: "2 components have stale docs"
+4. Offer to update them
 ```
 
-### Scenario 3: No Changes Detected
+### Scenario 3: Document All New Components
 
 ```
-User: "Document components"
+User: "Document undocumented components"
 
 Claude:
-1. Read implementations.md metadata
-2. Last scan: 1 hour ago
-3. Run: find src/components -newer .shipkit-lite/implementations.md
-4. No files found
-5. Output:
-   "No components changed since last documentation (1 hour ago).
-    All 23 components are up to date.
-
-    Run anyway to re-document everything? (not recommended)"
-```
-
-### Scenario 4: Specific Component
-
-```
-User: "Document RecipeCard component"
-
-Claude:
-1. Skip timestamp check (user specified exact file)
-2. Read src/components/RecipeCard.tsx
-3. Extract documentation
-4. Update/append to implementations.md
-5. Update metadata for just this file
+1. Find all component source files
+2. Check which have docs in implementations/components/
+3. List undocumented ones
+4. Ask which to document
+5. Document each, regenerate index
 ```
 
 ---
 
-## Tips for Effective Component Documentation
+## Tips
 
-**Keep it focused**:
-- Purpose in 1-2 sentences max
+**Keep docs focused**:
+- Purpose in 1-2 sentences
 - Only key props (not every prop)
-- Major decisions only (not every line choice)
+- Major decisions only
 
-**Use grep for usage**:
-```bash
-# Find where component is imported
-grep -r "import.*RecipeCard" src/
-```
-
-**Extract patterns efficiently**:
-- Look for useState/useEffect/useContext/useQuery near top
-- Check if file exports default or named
-- Scan for external imports (libraries)
+**Gotchas section is crucial**:
+- Document API quirks
+- Note required parameters
+- Capture error causes and fixes
+- This prevents repeat mistakes!
 
 **When to document**:
-- After implementing complex component (>200 LOC)
-- Before PR/merge (document what you built)
-- After modifying existing component significantly
+- After implementing complex component
+- Before PR/merge
+- After fixing a bug (update gotchas!)
 
 **When NOT to document**:
 - Tiny utility components (<50 LOC)
-- Test files
-- Component is obvious (basic button wrapper)
-
-**When to upgrade to full /component-knowledge**:
-- Need dependency graph analysis
-- Building component library
-- Multiple teams sharing components
-- Require accessibility audit
-- Performance profiling needed
+- Component is self-explanatory
 
 ---
 
-## Metadata Format Specification
-
-**Complete metadata specification**: See `references/documentation-templates.md`
-
-**Key details**:
-- Timestamp format: ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)
-- Tracks: Last full scan timestamp + per-file timestamps
-- Enables: Incremental updates via timestamp comparison
-- Provides: Audit trail of documentation changes
-
----
-
-**Remember**: This skill's superpower is efficiency. By checking timestamps and reading only changed files, it saves 90%+ tokens compared to naive "read everything" approach. Perfect for POC/MVP where components evolve rapidly.
+**Remember**: One file per component. Replace, don't append. Staleness detection keeps knowledge fresh.

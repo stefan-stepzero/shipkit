@@ -1,6 +1,6 @@
 ---
 name: lite-architecture-memory
-description: Logs architectural decisions with rationale in append-only format. Captures decision context, reason, alternatives considered, implications, and what it supersedes. Use when user makes architectural choices or asks to "log this decision".
+description: "Use when making or documenting an architectural decision, technology choice, or design pattern. Triggers: 'log decision', 'why did we choose', 'architecture choice'."
 ---
 
 # architecture-memory-lite - Architectural Decision Logger
@@ -131,6 +131,8 @@ New: "Use GraphQL for all APIs"
 ```markdown
 ## [YYYY-MM-DD] [Decision Title]
 
+**Status**: Current | Superseded | Deprecated
+
 **Decision**: [What was decided - 1 clear sentence]
 
 **Reason**: [Why this was chosen - rationale and problem it solves]
@@ -149,14 +151,25 @@ New: "Use GraphQL for all APIs"
 ---
 ```
 
+**Status values**:
+- **Current**: Active decision, still applies
+- **Superseded**: Replaced by a newer decision (link in superseding entry)
+- **Deprecated**: No longer recommended, may still exist in codebase but should be migrated
+
 **Rules**:
 - Timestamp is date only (YYYY-MM-DD), not full timestamp
+- Status tracks decision lifecycle (new entries start as "Current")
 - Title is concise (5-10 words)
 - Decision statement is ONE clear sentence
 - Reason captures WHY, not just WHAT
 - Alternatives show what was considered
 - Implications capture requirements/constraints
 - Supersedes links to replaced decisions
+
+**When a decision is superseded**:
+1. Create new decision entry with Status: Current
+2. Edit the old decision entry to change Status: Current → Status: Superseded
+3. This is the ONE exception to append-only - status updates are allowed
 
 ---
 
@@ -235,28 +248,19 @@ IF decision is simple (single pattern choice):
 
 ### Step 8: Suggest Next Step
 
-**Output to user**:
+**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
 
-```
-✅ Decision logged
+---
 
-📁 Location: .shipkit-lite/architecture.md
+## Completion Checklist
 
-📋 Decision: [Decision title]
+Copy and track:
+- [ ] Identified the decision context
+- [ ] Documented rationale and alternatives considered
+- [ ] Appended to `.shipkit-lite/architecture.md`
+- [ ] Invoke `/lite-whats-next` for workflow guidance
 
-**Next steps**:
-- Continue planning? Run `/lite-plan`
-- Start implementing? Run `/lite-implement`
-- Document further? Run `/lite-document-artifact`
-
-What would you like to do?
-```
-
-**Context-specific suggestions**:
-- If user was in planning phase → Suggest continuing with `/lite-plan`
-- If user was implementing → Suggest continuing with `/lite-implement`
-- If decision is complex → Suggest `/lite-document-artifact`
-- If just documenting → Ask "Any other decisions to log?"
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -382,6 +386,8 @@ New: "Use Zod for runtime validation"
 ```markdown
 ## [2025-01-15] Server Actions for Mutations
 
+**Status**: Current
+
 **Decision**: Use Server Actions instead of API routes for all data mutations
 
 **Reason**: Co-location with components, automatic revalidation, simpler error handling
@@ -399,9 +405,20 @@ New: "Use Zod for runtime validation"
 **Supersedes**: None
 ```
 
-### Example 2: Technology Change
+### Example 2: Technology Change (with Supersession)
 ```markdown
+## [2025-01-10] Use Prisma for Database Access
+
+**Status**: Superseded
+
+**Decision**: Use Prisma ORM for all database access
+...
+
+---
+
 ## [2025-01-20] Switch to Drizzle ORM
+
+**Status**: Current
 
 **Decision**: Replace Prisma with Drizzle ORM for database access
 
@@ -423,6 +440,8 @@ New: "Use Zod for runtime validation"
 ### Example 3: Architectural Pattern
 ```markdown
 ## [2025-01-25] Component Composition Over Prop Drilling
+
+**Status**: Current
 
 **Decision**: Use component composition pattern instead of prop drilling for deeply nested component trees
 

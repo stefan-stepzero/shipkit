@@ -1,6 +1,6 @@
 ---
 name: lite-plan
-description: Creates focused implementation plans for POC/MVP features by reading existing context and generating step-by-step technical designs. Use when user asks to "plan how to build", "create implementation plan", or "design the approach" after a spec exists.
+description: "Use when a spec exists and user wants implementation steps. Triggers: 'how to implement', 'create plan', 'plan this', 'what are the steps'."
 ---
 
 # plan-lite - Lightweight Implementation Planning
@@ -29,6 +29,11 @@ description: Creates focused implementation plans for POC/MVP features by readin
 - Spec exists: `.shipkit-lite/specs/active/[feature-name].md`
 - Stack defined: `.shipkit-lite/stack.md` (from project-context-lite)
 
+**UI-Heavy Feature Check** (CRITICAL):
+- If spec describes significant UI/UX → Prototype MUST exist before planning
+- Check: `.shipkit-mockups/[feature-name]/` OR spec contains `## UI/UX Patterns` section
+- See "Step 1.5: UI-Heavy Gate" below
+
 **Optional but helpful**:
 - Architecture decisions: `.shipkit-lite/architecture.md`
 - Type definitions: `.shipkit-lite/types.md`
@@ -54,6 +59,84 @@ description: Creates focused implementation plans for POC/MVP features by readin
    - "Detailed plan (more thorough)?"
 
 **Why ask first**: Avoid token-heavy generation if user wants different approach.
+
+---
+
+### Step 1.5: UI-Heavy Gate (CRITICAL)
+
+**Before proceeding to planning, check if spec is UI-heavy.**
+
+**Scan spec for UI keywords:**
+```
+UI-heavy indicators (if 3+ found, spec is UI-heavy):
+- form, forms, input, field, validation
+- modal, dialog, popup, drawer, sidebar
+- table, list, grid, card, dashboard
+- button, toggle, switch, checkbox, dropdown
+- navigation, menu, tabs, breadcrumb
+- layout, responsive, mobile, desktop
+- animation, transition, loading, skeleton
+- drag, drop, resize, sortable
+- chart, graph, visualization
+- upload, preview, gallery, carousel
+```
+
+**Check for existing prototype:**
+```bash
+# Check for prototype folder
+ls .shipkit-mockups/[feature-name]*/index.html 2>/dev/null
+
+# OR check if spec already has UI/UX section (from lite-prototype-to-spec)
+grep -l "## UI/UX Patterns" .shipkit-lite/specs/active/[feature-name].md
+```
+
+**Decision logic:**
+
+| UI-Heavy? | Prototype Exists? | Action |
+|-----------|-------------------|--------|
+| No | - | ✅ Proceed to Step 2 |
+| Yes | Yes (folder or UI/UX section) | ✅ Proceed to Step 2 |
+| Yes | No | ⛔ BLOCK - Require prototype first |
+
+**If BLOCKED (UI-heavy + no prototype):**
+
+```
+⚠️  UI-Heavy Feature Detected
+
+This spec describes significant UI/UX:
+- Found: [list UI keywords found]
+
+Before planning, you should validate the UI with a prototype.
+
+**Why this matters:**
+- UI assumptions are often wrong
+- Prototyping takes 30 min, rebuilding takes days
+- Users reveal issues immediately when they see mockups
+
+**Options:**
+1. Run `/lite-prototyping` now (recommended)
+   → Creates HTML mockup with React + Tailwind
+   → Iterate with user watching
+   → Extract learnings with `/lite-prototype-to-spec`
+   → Then return to `/lite-plan`
+
+2. Skip prototype (user takes responsibility)
+   → Acknowledge: "I accept risk of UI rework"
+   → Proceed to planning
+
+Which option? (1/2)
+```
+
+**If user chooses "1":** Stop and invoke `/lite-prototyping`
+**If user chooses "2":** Log warning in plan, proceed with caution
+
+**Log in plan if skipped:**
+```markdown
+## ⚠️ UI Prototype Skipped
+
+User chose to skip UI prototyping for this UI-heavy feature.
+Risk: May require significant UI rework during implementation.
+```
 
 ---
 
@@ -85,6 +168,152 @@ description: Creates focused implementation plans for POC/MVP features by readin
 ```
 
 **Token budget**: Keep context reading under 2000 tokens.
+
+---
+
+### Step 2.5: Architecture Anti-Pattern Check (CRITICAL)
+
+**Before generating plan, check for architecture anti-patterns that will cause rework.**
+
+**Reference**: See `lite-spec/references/best-practices.md` → "Architecture Patterns (DRY & Centralization)"
+
+**Scan spec and codebase for these patterns:**
+
+#### 1. Auth Pattern Check
+
+**Scan for**: Does spec mention auth/protected routes?
+
+```bash
+# Check if project has centralized auth
+grep -r "middleware" src/ --include="*.ts" --include="*.tsx" | head -5
+grep -r "ProtectedLayout\|AuthProvider\|useAuth" src/ --include="*.tsx" | head -5
+```
+
+**Decision logic:**
+
+| Spec Mentions Auth? | Centralized Auth Exists? | Action |
+|---------------------|-------------------------|--------|
+| No | - | ✅ Proceed |
+| Yes | Yes (middleware/layout) | ✅ Proceed |
+| Yes | No | ⚠️ WARN: Add auth setup to plan Phase 1 |
+
+**If no centralized auth:**
+```
+⚠️  Auth Anti-Pattern Risk
+
+This feature requires authentication, but no centralized auth found.
+
+**Risk**: Per-page auth checks → patching every page later
+
+**Recommendation**: Add to plan Phase 1:
+1. Create auth middleware OR protected layout
+2. Define protected route patterns
+3. Then implement feature
+
+Add centralized auth to plan? (Y/n)
+```
+
+---
+
+#### 2. Error Handling Pattern Check
+
+**Scan for**: Does spec mention error states?
+
+```bash
+# Check if project has global error boundary
+grep -r "error\.tsx\|ErrorBoundary" src/ --include="*.tsx" | head -3
+```
+
+**If no global error boundary:**
+```
+⚠️  Error Handling Anti-Pattern Risk
+
+No global error boundary found.
+
+**Risk**: Scattered try/catch → inconsistent error UI
+
+**Recommendation**: Add to plan Phase 1:
+1. Create app/error.tsx (Next.js) or ErrorBoundary component
+2. Add Sentry/logging integration
+3. Then implement feature
+
+Add error boundary to plan? (Y/n)
+```
+
+---
+
+#### 3. Data Fetching Pattern Check
+
+**Scan for**: Does spec mention fetching same data in multiple places?
+
+```bash
+# Check for existing providers/contexts
+grep -r "createContext\|Provider\|useSWR\|useQuery" src/ --include="*.tsx" | head -5
+```
+
+**If spec needs shared data but no provider exists:**
+```
+⚠️  Data Fetching Anti-Pattern Risk
+
+This feature shares data across components, but no provider pattern found.
+
+**Risk**: Prop drilling or duplicate fetches
+
+**Recommendation**: Add to plan Phase 1:
+1. Create context/provider for shared data
+2. Add caching (SWR/React Query)
+3. Then implement feature
+
+Add data provider to plan? (Y/n)
+```
+
+---
+
+#### 4. TypeScript Pattern Check (if TypeScript project)
+
+**Scan existing code for anti-patterns:**
+
+```bash
+# Check for any abuse
+grep -r ": any" src/ --include="*.ts" --include="*.tsx" | wc -l
+
+# Check for ! abuse
+grep -r "!\." src/ --include="*.ts" --include="*.tsx" | wc -l
+
+# Check for Zod usage
+grep -r "from 'zod'\|from \"zod\"" src/ --include="*.ts" | head -1
+```
+
+**Report findings:**
+```
+📊 TypeScript Pattern Scan
+
+- `any` usage: 15 occurrences (⚠️ high - consider typing)
+- `!.` assertions: 8 occurrences (⚠️ consider null handling)
+- Zod validation: ✅ Found (good - use for this feature too)
+
+**Recommendation**: Plan should use Zod for validation, avoid any/!
+```
+
+---
+
+#### 5. Centralized Patterns Summary
+
+**Before generating plan, ensure these exist or will be created:**
+
+```
+Architecture Pattern Checklist:
+- [ ] Auth: Centralized middleware/layout exists OR will be created in Phase 1
+- [ ] Errors: Global error boundary exists OR will be created in Phase 1
+- [ ] Data: Provider pattern exists OR will be created in Phase 1 (if needed)
+- [ ] Config: Env validation exists OR will be created in Phase 1
+- [ ] Logging: Central logger exists OR will be created in Phase 1
+- [ ] API Response: Consistent format exists OR will be defined in Phase 1
+```
+
+**If any pattern missing and spec needs it:**
+- Add to plan Phase 1 as "Setup centralized [pattern]"
+- This prevents the "patching 10 pages later" problem
 
 ---
 
@@ -249,11 +478,22 @@ If yes, suggest:
 🎯 Complexity: [Simple/Medium/Complex]
 ⏱️  Estimated: [X hours/days]
 
-👉 Next: /lite-implement
-   Start coding following this plan
-
-Ready to start implementing?
 ```
+
+**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
+
+---
+
+## Completion Checklist
+
+Copy and track:
+- [ ] Read spec from `.shipkit-lite/specs/active/`
+- [ ] Created step-by-step implementation plan
+- [ ] Identified files to create/modify
+- [ ] Saved to `.shipkit-lite/plans/active/[name]-plan.md`
+- [ ] Invoke `/lite-whats-next` for workflow guidance
+
+**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
