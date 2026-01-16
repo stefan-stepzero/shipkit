@@ -109,12 +109,11 @@ A skill is **redundant** if Claude does it well without instruction (debugging, 
 
 ### When Creating or Editing Lite Skills
 
-**Required reading:** `claude-code-best-practices/BUILDING-LITE-SKILLS.md`
+**Required reading:**
+- `claude-code-best-practices/LITE-7-FILE-INTEGRATION.md` — 7-file integration system
+- `claude-code-best-practices/SKILL-QUALITY-AND-PATTERNS.md` — Quality standards
 
-- Covers 7-file integration system (manifest, hooks, routing, etc.)
-- Defines quality standards (cross-references, checklists, Iron Laws)
-- Production-ready = Integration (7 files) + Quality (Part 10)
-- DO NOT skip quality standards
+Production-ready = Integration (7 files) + Quality. DO NOT skip quality standards.
 
 ---
 
@@ -143,7 +142,49 @@ A skill is **redundant** if Claude does it well without instruction (debugging, 
 
 4. **Test edge cases** — Does the skill work for CLI, mobile, API?
 
+5. **Context over defaults** — Claude has implicit defaults that may conflict with project context
+
 **Warning:** Examples bias output toward their format AND content. Use them sparingly, for format only.
+
+### Context Over Defaults
+
+Claude has **implicit defaults** for how to do things — preferences baked in from training. These aren't wrong, but they're **context-blind**.
+
+| Claude's Default | But Context Might Say |
+|------------------|----------------------|
+| Modular architecture | Monolithic for MVP speed |
+| TypeScript strict mode | JavaScript for quick prototype |
+| Comprehensive error handling | Happy path only for POC |
+| Full test coverage | No tests for throwaway code |
+| Component-based UI | Simple HTML for internal tool |
+
+**The Problem:** Claude applies defaults even when project context suggests otherwise.
+
+**The Solution:**
+1. **Skills capture context** — `.shipkit-lite/` files record explicit decisions (why.md, architecture.md, stack.md)
+2. **Skills check context first** — Before assuming an approach, read what's been decided
+3. **Decisions override defaults** — If architecture.md says "monolithic for MVP", that wins
+
+**Skills should:**
+- ✅ Read context files before making architectural assumptions
+- ✅ Ask clarifying questions if context is missing
+- ✅ Respect explicit decisions even if they differ from "best practice"
+- ❌ Never assume "industry standard" when project context exists
+- ❌ Never override user decisions with training defaults
+
+**Example in Practice:**
+```
+User: "Let's build the dashboard"
+
+Claude WITHOUT context: "I'll create separate components for each widget,
+with a shared state management layer using Context API..."
+
+Claude WITH context (reads why.md: "MVP in 2 weeks, solo developer"):
+"Given your MVP timeline and solo dev context, I'll keep this simple —
+one Dashboard component with inline state. We can modularize later."
+```
+
+This is why `.shipkit-lite/` files exist — they're not documentation, they're **decision persistence** that overrides Claude's defaults.
 
 ---
 
@@ -207,5 +248,6 @@ Location: `install/agents/`
 
 ### Reference Materials
 - `claude-code-best-practices/REFERENCES-BEST-PRACTICES.md` — PRIMARY REFERENCE
-- `claude-code-best-practices/BUILDING-LITE-SKILLS.md` — Skill quality guide
-- `claude-code-best-practices/` — Official docs, comparative analysis, source repos
+- `claude-code-best-practices/SKILL-QUALITY-AND-PATTERNS.md` — Quality standards
+- `claude-code-best-practices/LITE-7-FILE-INTEGRATION.md` — Integration system
+- `claude-code-best-practices/LITE-DESIGN-PHILOSOPHY.md` — Lite philosophy
