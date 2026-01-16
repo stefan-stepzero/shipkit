@@ -54,7 +54,7 @@ You know the standard patterns:
 - Accessibility basics only (aria, keyboard)
 
 ## Using Skills
-Always use the appropriate lite skill when one exists for the task. Skills provide structured workflows, consistent outputs, and integration with the broader Shipkit system. Check `/lite-whats-next` when unsure which skill to use.
+Use skills when you need persistence (saving context to `.shipkit-lite/`) or forcing explicit human decisions. For prototyping, iteration, and UI implementation - proceed naturally without a skill.
 
 ## Mindset
 Proven patterns over custom design. We're validating functionality, not winning design awards. Polish comes after validation.

@@ -269,9 +269,6 @@ Copy and track:
 - [ ] Scanned `.shipkit-lite/` for context files
 - [ ] Checked freshness and completeness
 - [ ] Reported gaps and suggested actions
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -383,6 +380,21 @@ Copy and track:
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Status check is complete when:
@@ -394,7 +406,7 @@ Status check is complete when:
 - [ ] Prioritized next action suggested
 - [ ] Status report written to `.shipkit-lite/status.md` (OVERWRITE previous)
 - [ ] Terminal summary displayed (same content as file)
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Example Output Scenarios

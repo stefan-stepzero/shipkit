@@ -250,9 +250,6 @@ Copy and track:
 - [ ] Extracted props, patterns, decisions
 - [ ] Wrote to `implementations/components/[Name].md`
 - [ ] Updated `implementations/index.md`
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -391,3 +388,17 @@ Claude:
 ---
 
 **Remember**: One file per component. Replace, don't append. Staleness detection keeps knowledge fresh.
+
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->

@@ -232,8 +232,6 @@ Read file (if exists): `.shipkit-lite/.queues/ux-audit-needed.md`
 
 ## Step 6: Suggest Next Steps
 
-**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
-
 ---
 
 ## Completion Checklist
@@ -242,9 +240,6 @@ Copy and track:
 - [ ] Reviewed implemented components
 - [ ] Checked against UX pattern checklist
 - [ ] Documented gaps and recommendations
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -375,6 +370,21 @@ Copy and track:
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Guidance is complete when:
@@ -385,7 +395,7 @@ Guidance is complete when:
 - [ ] Existing patterns referenced (if applicable)
 - [ ] UX decision logged to `.shipkit-lite/ux-decisions.md` (APPEND mode)
 - [ ] Next steps suggested (implement or log architectural decision)
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Common Scenarios

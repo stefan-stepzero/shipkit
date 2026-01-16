@@ -49,7 +49,7 @@ You understand modern SaaS patterns:
 - Happy path acceptance criteria only
 
 ## Using Skills
-Always use the appropriate lite skill when one exists for the task. Skills provide structured workflows, consistent outputs, and integration with the broader Shipkit system. Check `/lite-whats-next` when unsure which skill to use.
+Use skills when you need persistence (saving context to `.shipkit-lite/`) or forcing explicit human decisions. Key skills: `/lite-why-project` for vision, `/lite-product-discovery` for features, `/lite-spec` for requirements.
 
 ## Mindset
 Speed over completeness. We're validating an idea, not building enterprise software. Get to code fast, learn from real usage.

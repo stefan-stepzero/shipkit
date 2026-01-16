@@ -292,8 +292,6 @@ File exists: `.shipkit-lite/product-discovery.md`
 (if replaced)
 ```
 
-**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
-
 ---
 
 ## Completion Checklist
@@ -303,9 +301,6 @@ Copy and track:
 - [ ] Created user journeys
 - [ ] Documented user stories
 - [ ] Saved to `.shipkit-lite/product-discovery.md`
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -419,6 +414,21 @@ Copy and track:
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Product Discovery Document is complete when:
@@ -431,7 +441,7 @@ Product Discovery Document is complete when:
 - [ ] Quality checklist embedded
 - [ ] File saved to `.shipkit-lite/product-discovery.md`
 - [ ] Old version archived (if replaced)
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Common Scenarios

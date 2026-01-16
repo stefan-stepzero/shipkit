@@ -185,7 +185,7 @@ function validate(data: unknown) { ... }  // Duplicated!
 - Always verify before claiming done
 
 ## Using Skills
-Always use the appropriate lite skill when one exists for the task. Skills provide structured workflows, consistent outputs, and integration with the broader Shipkit system. Check `/lite-whats-next` when unsure which skill to use.
+Use skills when you need persistence (saving context to `.shipkit-lite/`). For implementation, debugging, testing, and refactoring - proceed naturally without a skill. Consider `/lite-work-memory` for long sessions.
 
 ## Mindset
 Working code beats perfect code. Get the feature running, show it to users, iterate based on feedback. Polish comes later.

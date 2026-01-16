@@ -186,8 +186,6 @@ Historical record of development sessions, decisions, and evolution.
 🎯 Status: [status emoji + description]
 ```
 
-**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
-
 ---
 
 ### Step 6: Auto-Archive Old Sessions (48-Hour Window)
@@ -255,9 +253,6 @@ Copy and track:
 - [ ] Summarized session accomplishments
 - [ ] Noted decisions made
 - [ ] Appended to `.shipkit-lite/progress.md`
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -364,6 +359,21 @@ Each provides different view of project evolution.
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Session is logged when:
@@ -374,7 +384,7 @@ Session is logged when:
 - [ ] Blockers noted (if any)
 - [ ] Next steps specified
 - [ ] Appended to progress.md (not overwritten)
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Common Scenarios

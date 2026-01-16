@@ -13,10 +13,9 @@
 **Queue file lifecycle:**
 1. Detection skill scans project state (e.g., after spec created)
 2. If work needed, creates queue file from template
-3. lite-whats-next reads queues and suggests next skill
-4. User runs suggested skill
-5. Skill reads queue, performs work, marks items complete
-6. Queue file archived or deleted when all items complete
+3. User or hook triggers follow-up skill
+4. Skill reads queue, performs work, marks items complete
+5. Queue file archived or deleted when all items complete
 
 **Why queues?**
 - Automatic detection: Users don't need to remember to run preventative skills

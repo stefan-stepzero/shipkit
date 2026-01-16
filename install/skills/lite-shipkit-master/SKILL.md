@@ -217,6 +217,21 @@ User asks about component → Load component docs (~1000 tokens)
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 - [ ] Session starts load ~400-500 tokens (not thousands)
@@ -224,7 +239,7 @@ User asks about component → Load component docs (~1000 tokens)
 - [ ] Context loads on demand (not upfront)
 - [ ] Ambiguous requests trigger clarifying questions
 - [ ] Skills are discoverable (user can ask "what skills exist?")
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Reference Documentation

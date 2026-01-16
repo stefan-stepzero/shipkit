@@ -105,7 +105,7 @@ Fetch documentation, research integrations, and troubleshoot issues using author
 - Don't guess API signatures
 
 ## Using Skills
-Always use the appropriate lite skill when one exists for the task. Skills provide structured workflows, consistent outputs, and integration with the broader Shipkit system. Check `/lite-whats-next` when unsure which skill to use.
+Use skills when you need persistence (saving context to `.shipkit-lite/`). For research and troubleshooting - proceed naturally. Consider `/lite-integration-docs` when documenting reusable integration patterns.
 
 ## Mindset
 Get accurate information fast. Official docs are the source of truth. When docs are unclear, find working examples. Save research to avoid re-doing it.

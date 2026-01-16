@@ -140,8 +140,6 @@ description: "Use when user describes a feature to build. Triggers: 'spec this',
 
 ```
 
-**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
-
 ---
 
 ## Completion Checklist
@@ -151,9 +149,6 @@ Copy and track:
 - [ ] Created spec with Given/When/Then scenarios
 - [ ] Applied all 6 edge case categories
 - [ ] Saved to `.shipkit-lite/specs/active/[name].md`
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -434,6 +429,21 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Spec is complete when:
@@ -443,7 +453,7 @@ Spec is complete when:
 - [ ] Acceptance criteria prioritized (Must/Should/Won't)
 - [ ] Technical notes include DB/API changes
 - [ ] File saved to `.shipkit-lite/specs/active/`
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Reference Documentation

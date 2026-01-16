@@ -268,9 +268,6 @@ Copy and track:
 - [ ] Identified source content to visualize
 - [ ] Generated HTML with appropriate styling
 - [ ] Saved to appropriate location
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -412,6 +409,21 @@ Copy and track:
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Visualization is complete when:
@@ -424,7 +436,7 @@ Visualization is complete when:
 - [ ] Styling matches ShipKit Lite purple theme
 - [ ] Mobile-responsive
 - [ ] User knows where to find latest.html
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Common Scenarios

@@ -241,29 +241,6 @@ Read `references/[service]-patterns.md` and extract:
 
 ---
 
-## Success Criteria
-
-Integration check is complete when:
-- [ ] Service detected and confirmed in stack.md
-- [ ] Documentation fetched (if stale) OR loaded from cache (if fresh)
-- [ ] Relevant patterns loaded (not all patterns)
-- [ ] Code scanned for common mistakes
-- [ ] Critical issues identified and explained
-- [ ] Security checklist provided
-- [ ] Fix recommendations given
-
----
-
-## Completion Checklist
-
-Copy and track:
-- [ ] Identified integration service needed
-- [ ] Fetched current patterns from official docs
-- [ ] Saved patterns to references
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
-
 ---
 
 ## Tips for Effective Integration Guardrails
@@ -293,3 +270,17 @@ Copy and track:
 ---
 
 **Remember**: This skill prevents the most common and dangerous integration mistakes. It's not exhaustive, but it catches 80% of issues with minimal overhead.
+
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->

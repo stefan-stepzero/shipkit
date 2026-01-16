@@ -306,9 +306,6 @@ Copy and track:
 - [ ] Clarified why it matters
 - [ ] Identified where it's going
 - [ ] Saved to `.shipkit-lite/why.md`
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -415,6 +412,21 @@ Claude (WITHOUT why.md):
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Vision is defined when:
@@ -425,7 +437,7 @@ Vision is defined when:
 - [ ] Dates are correct (Created preserved if updating)
 - [ ] User knows vision will auto-load at session start
 - [ ] Constraints/priorities included (if provided)
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Common Scenarios

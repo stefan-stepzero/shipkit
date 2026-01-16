@@ -598,8 +598,6 @@ CREATE INDEX idx_recipes_share_token ON recipes(share_token) WHERE share_token I
   • Schema alignment: [✓ Aligned | ⚠️ Migration needed]
 ```
 
-**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
-
 ---
 
 ## Completion Checklist
@@ -608,9 +606,6 @@ Copy and track:
 - [ ] Identified data contracts to validate
 - [ ] Checked alignment across layers
 - [ ] Documented any mismatches or fixes
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -715,7 +710,6 @@ Copy and track:
 
 ---
 
-
 ## Schema Mismatch Detection Logic
 
 **Inline guidance for detecting mismatches** (no references/ folder):
@@ -785,7 +779,21 @@ IF mismatch:
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
 
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Types are defined when:
@@ -796,7 +804,7 @@ Types are defined when:
 - [ ] Migration suggested (if mismatch detected)
 - [ ] Files have proper timestamps and notes
 - [ ] User informed of next steps
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Common Scenarios

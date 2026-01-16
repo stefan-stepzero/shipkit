@@ -252,36 +252,13 @@ View full details in .shipkit-lite/user-tasks/active.md
 
 ---
 
-### Step 7: Invoke Workflow Guidance
-
-**After creating or updating a task, ALWAYS invoke `/lite-whats-next`:**
-
-```
-✅ Task tracked
-
-Now invoking /lite-whats-next for workflow guidance...
-```
-
-**Then immediately invoke `/lite-whats-next`** - this is MANDATORY per lite.md meta-rules.
-
-The whats-next skill will:
-- Check if the task is blocking
-- Analyze overall project state
-- Suggest the optimal next step
-
-**Do NOT manually suggest next skills** - let `/lite-whats-next` provide intelligent guidance.
-
----
-
 ## Completion Checklist
 
 Copy and track:
 - [ ] Identified manual task for user
 - [ ] Created clear step-by-step instructions
 - [ ] Added to `.shipkit-lite/user-tasks/active.md`
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
+- [ ] User confirmed task is clear
 
 ---
 
@@ -392,6 +369,21 @@ Copy and track:
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Task tracking is complete when:
@@ -401,7 +393,7 @@ Task tracking is complete when:
 - [ ] User knows how to update status
 - [ ] Clear verification criteria defined
 - [ ] User knows how to mark complete
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Task Entry Template

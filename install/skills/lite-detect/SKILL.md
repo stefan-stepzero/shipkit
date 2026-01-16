@@ -186,8 +186,7 @@ To add a new detection type:
 All queues are created in: `.shipkit-lite/.queues/`
 
 This folder is:
-- Scanned by lite-whats-next for suggestions
-- Processed by follow-up skills
+- Processed by follow-up skills when triggered
 - Cleaned up when items completed
 
 ---
@@ -223,3 +222,17 @@ This folder is:
 ---
 
 **Remember**: This skill runs automatically. Users never invoke it directly. It's the invisible bridge between creation skills and documentation/verification skills.
+
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->

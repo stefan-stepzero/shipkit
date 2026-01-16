@@ -248,8 +248,6 @@ IF decision is simple (single pattern choice):
 
 ### Step 8: Suggest Next Step
 
-**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
-
 ---
 
 ## Completion Checklist
@@ -258,9 +256,6 @@ Copy and track:
 - [ ] Identified the decision context
 - [ ] Documented rationale and alternatives considered
 - [ ] Appended to `.shipkit-lite/architecture.md`
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -463,6 +458,21 @@ New: "Use Zod for runtime validation"
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Decision is logged when:
@@ -474,7 +484,7 @@ Decision is logged when:
 - [ ] Notes what it supersedes (if applicable)
 - [ ] No contradictions with existing decisions (or user confirmed supersession)
 - [ ] Consistency with stack.md verified
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Common Scenarios

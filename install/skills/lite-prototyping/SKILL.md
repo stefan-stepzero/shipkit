@@ -435,28 +435,6 @@ Specifically:
 
 ---
 
-## Success Criteria
-
-Session successful when:
-- [ ] User watched iterations in browser (3+ changes based on feedback)
-- [ ] Core interaction validated ("this feels right")
-- [ ] Learnings documented in iterations.md
-- [ ] User knows next step
-
-**Not required:** Completeness, edge cases, production quality. **Goal: Learning, not shipping.**
-
----
-
-## Completion Checklist
-
-Copy and track:
-- [ ] Created rapid HTML/CSS mockup
-- [ ] Validated with user
-- [ ] Saved to `.shipkit-mockups/[name]/`
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
-
 ---
 
 ## Red Flags
@@ -489,3 +467,17 @@ Copy and track:
 ---
 
 **Remember:** Prototype is disposable. Value is in learning, not code. Iterate fast, extract insights, delete after shipping.
+
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->

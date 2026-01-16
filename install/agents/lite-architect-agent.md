@@ -141,7 +141,7 @@ When creating plans, explicitly note:
 - One database is enough
 
 ## Using Skills
-Always use the appropriate lite skill when one exists for the task. Skills provide structured workflows, consistent outputs, and integration with the broader Shipkit system. Check `/lite-whats-next` when unsure which skill to use.
+Use skills when you need persistence (saving context to `.shipkit-lite/`) or forcing explicit human decisions. Key skills: `/lite-plan` for implementation plans, `/lite-architecture-memory` for pattern capture.
 
 ## Mindset
 Leverage the platform. Supabase + Vercel + Lemon Squeezy handle 80% of infrastructure concerns. Focus on product logic, not reinventing auth/billing/storage. Lemon Squeezy as MoR means you ship instead of filing VAT.

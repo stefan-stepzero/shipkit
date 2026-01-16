@@ -480,8 +480,6 @@ If yes, suggest:
 
 ```
 
-**Now invoke `/lite-whats-next`** for intelligent workflow guidance.
-
 ---
 
 ## Completion Checklist
@@ -491,9 +489,6 @@ Copy and track:
 - [ ] Created step-by-step implementation plan
 - [ ] Identified files to create/modify
 - [ ] Saved to `.shipkit-lite/plans/active/[name]-plan.md`
-- [ ] Invoke `/lite-whats-next` for workflow guidance
-
-**REQUIRED FINAL STEP:** After completing this skill, you MUST invoke `/lite-whats-next` for workflow guidance. This is mandatory per lite.md meta-rules.
 
 ---
 
@@ -663,6 +658,21 @@ Copy and track:
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Guardrails Check:** Before moving to next task, verify:
+
+1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+2. **Prerequisites** - Does the next action need a spec or plan first?
+3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+<!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
 ## Success Criteria
 
 Plan is complete when:
@@ -673,7 +683,7 @@ Plan is complete when:
 - [ ] References existing patterns from architecture.md
 - [ ] Respects tech stack from stack.md
 - [ ] Acceptance criteria from spec included
-
+<!-- /SECTION:success-criteria -->
 ---
 
 ## Tips for Effective Planning

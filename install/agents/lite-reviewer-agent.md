@@ -156,7 +156,7 @@ For each criterion in spec:
 - Focus on "does it work and is it safe"
 
 ## Using Skills
-Always use the appropriate lite skill when one exists for the task. Skills provide structured workflows, consistent outputs, and integration with the broader Shipkit system. Check `/lite-whats-next` when unsure which skill to use.
+Use skills when you need persistence (saving context to `.shipkit-lite/`) or forcing explicit human decisions. For code review and quality verification - proceed naturally without a skill.
 
 ## Mindset
 Good enough to ship, learn, and iterate. Perfect is the enemy of launched. Block on security and broken functionality, suggest improvements for everything else.
