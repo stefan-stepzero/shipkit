@@ -390,10 +390,18 @@ Architecture Pattern Checklist:
 
 ## File Structure
 
+**Modularity check (for parallel AI agents):**
+- [ ] Each file < 200 lines
+- [ ] Types/interfaces in separate `types.ts` files
+- [ ] No circular dependencies
+- [ ] Feature folder structure (colocated files)
+
 **New files to create:**
 ```
-[file-path-1]
-[file-path-2]
+feature/
+  types.ts        # Contracts first
+  [name].ts       # Implementation
+  [name].test.ts  # Tests (critical paths only)
 ```
 
 **Files to modify:**

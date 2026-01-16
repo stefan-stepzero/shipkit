@@ -255,6 +255,14 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 - [ ] Cache invalidation → Clear related caches
 - [ ] Referential integrity → Handle cascading deletes
 
+### SaaS-Specific (if applicable)
+- [ ] Multi-tenancy → User ID on every query, RLS policies
+- [ ] Subscription state → Handle active/expired/cancelled
+- [ ] Payment failures → Graceful degradation, retry prompts
+- [ ] Plan limits → Enforce quotas, show upgrade prompts
+- [ ] Trial expiry → Clear messaging, conversion flow
+- [ ] Webhook reliability → Idempotency, retry handling
+
 ---
 
 ## Acceptance Criteria
