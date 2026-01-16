@@ -79,6 +79,52 @@ Example:
 
 ---
 
+### Modular by Default (Parallel-Agent Friendly)
+
+**Small files with clear contracts enable parallel AI work.**
+
+**Structure for AI collaboration:**
+```
+feature/
+  types.ts        # Contracts first (inputs, outputs, shared types)
+  [name].ts       # Implementation (imports from types.ts)
+  [name].test.ts  # Tests (optional, critical paths only)
+```
+
+**Rules:**
+| Rule | Why |
+|------|-----|
+| **< 200 lines per file** | Fits in context window, easy to reason about |
+| **Types/interfaces at boundaries** | Clear contracts between modules |
+| **No circular dependencies** | Each file can be worked on in isolation |
+| **Explicit exports** | Know exactly what a module provides |
+| **Colocate related code** | Feature folder > scattered files |
+
+**Parallel agent benefit:**
+- Agent A works on `auth/` module
+- Agent B works on `billing/` module
+- No conflicts because contracts are defined upfront
+- Each agent only needs to load its module + shared types
+
+**Contract-first development:**
+```typescript
+// 1. Define the contract (types.ts)
+export interface CreateUserInput { email: string; name: string }
+export interface CreateUserOutput { id: string; createdAt: Date }
+
+// 2. Implement against contract ([name].ts)
+export async function createUser(input: CreateUserInput): Promise<CreateUserOutput> {
+  // Implementation here
+}
+```
+
+**Why contracts matter for AI:**
+- Clear inputs/outputs = less guessing
+- TypeScript catches mismatches
+- Other modules can be built against contracts before implementation exists
+
+---
+
 ### SaaS Defaults
 
 **For SaaS MVPs, always consider:**
