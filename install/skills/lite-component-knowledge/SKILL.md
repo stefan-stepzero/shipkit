@@ -389,6 +389,40 @@ Claude:
 
 **Remember**: One file per component. Replace, don't append. Staleness detection keeps knowledge fresh.
 
+---
+
+## Context Files This Skill Reads
+
+**Optional:**
+- `.shipkit-lite/specs/active/[feature].md` - Feature context for component being documented
+- `.shipkit-lite/.queues/components-to-document.md` - Queue of components needing documentation
+
+**Source Files:**
+- `src/components/**/*.tsx` - Component source files to document
+
+---
+
+## Context Files This Skill Writes
+
+**Creates/Updates:**
+- `.shipkit-lite/implementations/components/[Name].md` - Per-component documentation
+  - **Write Strategy:** REPLACE (one source of truth per component)
+- `.shipkit-lite/implementations/index.md` - Auto-generated TOC with staleness status
+  - **Write Strategy:** REGENERATE (always reflects current state)
+
+---
+
+<!-- SECTION:success-criteria -->
+## Success Criteria
+
+Component Knowledge is complete when:
+- [ ] Component source file has been read and analyzed
+- [ ] Purpose, props, patterns, and decisions extracted
+- [ ] Documentation written to `implementations/components/[Name].md`
+- [ ] Index file regenerated at `implementations/index.md`
+- [ ] Staleness status is accurate (doc timestamp vs source timestamp)
+<!-- /SECTION:success-criteria -->
+
 <!-- SECTION:after-completion -->
 ## After Completion
 

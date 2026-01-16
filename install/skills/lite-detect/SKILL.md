@@ -223,6 +223,27 @@ This folder is:
 
 **Remember**: This skill runs automatically. Users never invoke it directly. It's the invisible bridge between creation skills and documentation/verification skills.
 
+---
+
+## Prerequisites
+
+**None - system skill.**
+
+This skill is auto-triggered by the router hook after parent skills complete. Users never invoke it directly.
+
+---
+
+<!-- SECTION:success-criteria -->
+## Success Criteria
+
+Detection is complete when:
+- [ ] Parent skill's `.last-skill` file read successfully
+- [ ] Appropriate detection mode executed based on trigger mapping
+- [ ] Relevant artifacts scanned (specs, plans, source files)
+- [ ] Queue file created in `.shipkit-lite/.queues/` (if items detected)
+- [ ] Exit code returned (0 = success, 1 = error, 2 = invalid mode)
+<!-- /SECTION:success-criteria -->
+
 <!-- SECTION:after-completion -->
 ## After Completion
 

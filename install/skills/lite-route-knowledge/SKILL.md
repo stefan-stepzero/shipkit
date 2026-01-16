@@ -331,15 +331,68 @@ for each route doc in implementations/routes/:
 
 ---
 
-## Integration with Other Skills
+## When This Skill Integrates with Others
 
-**Before**:
-- `/lite-implement` - Creates routes (may queue for documentation)
-- `/lite-post-implement-check` - May add to `.queues/routes-to-document.md`
+### Before This Skill
 
-**After**:
-- `/lite-quality-confidence` - Verify documentation exists
-- `/lite-component-knowledge` - Document components used by routes
+**lite-implement** - Creates routes
+- **When**: Implementation has created new routes
+- **Why**: New routes need documentation
+- **Trigger**: User asks "document route" or queue has pending items
+
+**lite-post-implement-check** - Detects changes after implementation
+- **When**: Implementation complete, changes detected
+- **Why**: Adds routes to documentation queue
+- **Trigger**: Creates `.queues/routes-to-document.md` with pending routes
+
+### After This Skill
+
+**lite-quality-confidence** - Verifies implementation quality
+- **When**: Route documented, ready for quality check
+- **Why**: Confirms documentation exists and is fresh
+- **Trigger**: Quality audit checks for route documentation
+
+**lite-component-knowledge** - Documents components
+- **When**: Route uses components that need documentation
+- **Why**: Routes and components are often documented together
+- **Trigger**: User wants complete implementation documentation
+
+---
+
+## Context Files This Skill Reads
+
+**Optional:**
+- `.shipkit-lite/specs/active/[feature].md` - Feature context for route
+- `.shipkit-lite/stack.md` - Framework patterns (Next.js App Router, etc.)
+- `.shipkit-lite/.queues/routes-to-document.md` - Queue of routes needing documentation
+
+**Source Files:**
+- `app/**/page.tsx` - Next.js page routes
+- `app/**/route.ts` - Next.js API routes
+- `src/api/**/*.ts` - API route handlers
+
+---
+
+## Context Files This Skill Writes
+
+**Creates/Updates:**
+- `.shipkit-lite/implementations/routes/[slug].md` - Per-route documentation
+  - **Write Strategy:** REPLACE (one source of truth per route)
+- `.shipkit-lite/implementations/index.md` - Auto-generated TOC with staleness status
+  - **Write Strategy:** REGENERATE (always reflects current state)
+
+---
+
+<!-- SECTION:success-criteria -->
+## Success Criteria
+
+Route Knowledge is complete when:
+- [ ] Route source file has been read and analyzed
+- [ ] Data strategy, auth, and dependencies extracted
+- [ ] Documentation written to `implementations/routes/[slug].md`
+- [ ] Index file regenerated at `implementations/index.md`
+- [ ] Staleness status is accurate (doc timestamp vs source timestamp)
+<!-- /SECTION:success-criteria -->
 
 ---
 

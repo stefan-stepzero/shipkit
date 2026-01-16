@@ -271,6 +271,72 @@ Read `references/[service]-patterns.md` and extract:
 
 **Remember**: This skill prevents the most common and dangerous integration mistakes. It's not exhaustive, but it catches 80% of issues with minimal overhead.
 
+---
+
+## When This Skill Integrates with Others
+
+### Before This Skill
+
+**lite-spec** - Creates feature specification
+- **When**: Spec mentions external services (Stripe, Supabase, etc.)
+- **Why**: Spec triggers detection of services needing integration docs
+- **Trigger**: `/lite-detect --mode=services` creates queue after spec
+
+**lite-project-context** - Scans and documents tech stack
+- **When**: Stack includes external services
+- **Why**: Validates services are documented before fetching patterns
+- **Trigger**: Stack check in Step 2 references `stack.md`
+
+### After This Skill
+
+**lite-implement** - Implements features
+- **When**: Integration patterns loaded and ready
+- **Why**: Implementation uses fetched patterns for secure integration
+- **Trigger**: User proceeds to implement after reviewing patterns
+
+**lite-quality-confidence** - Verifies implementation quality
+- **When**: Integration implemented, needs security review
+- **Why**: Uses cached patterns to verify implementation follows best practices
+- **Trigger**: Post-implementation security audit
+
+---
+
+## Context Files This Skill Reads
+
+**Required:**
+- `.shipkit-lite/stack.md` - Verifies service is in approved tech stack
+
+**Optional:**
+- `.shipkit-lite/.queues/fetch-integration-docs.md` - Queue of services needing docs
+- `.shipkit-lite/architecture.md` - Architecture decisions affecting integration
+- `references/[service]-patterns.md` - Cached integration patterns (if fresh)
+
+---
+
+## Context Files This Skill Writes
+
+**Creates/Updates:**
+- `references/[service]-patterns.md` - Cached integration patterns per service
+  - **Write Strategy:** REPLACE (refreshed when >7 days old)
+
+**Queue Processing:**
+- `.shipkit-lite/.queues/fetch-integration-docs.md` - Updates Pending/Completed sections
+  - **Write Strategy:** UPDATE (move items between sections)
+
+---
+
+<!-- SECTION:success-criteria -->
+## Success Criteria
+
+Integration Docs is complete when:
+- [ ] Service identified and verified in stack.md
+- [ ] Documentation freshness checked (<7 days = use cached)
+- [ ] Fresh patterns fetched via WebFetch (if needed)
+- [ ] Patterns saved to `references/[service]-patterns.md`
+- [ ] Red flags and best practices extracted for user's integration type
+- [ ] Queue item moved from Pending to Completed (if queue-driven)
+<!-- /SECTION:success-criteria -->
+
 <!-- SECTION:after-completion -->
 ## After Completion
 

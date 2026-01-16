@@ -217,6 +217,40 @@ User asks about component → Load component docs (~1000 tokens)
 
 ---
 
+## When This Skill Integrates with Others
+
+### Relationship: Orchestrator
+
+This skill is the **central router** that connects all other skills.
+
+**Loads at Session Start:**
+- Auto-loaded via `lite-session-start.py` hook
+- First skill loaded in every session
+- Provides routing tables and context loading strategy
+
+**Routes TO All Skills:**
+
+| Category | Skills Routed To |
+|----------|------------------|
+| Vision/Discovery | `lite-why-project`, `lite-product-discovery` |
+| Context/Status | `lite-project-status`, `lite-project-context`, `lite-work-memory` |
+| Spec/Planning | `lite-spec`, `lite-plan`, `lite-prototyping`, `lite-prototype-to-spec` |
+| Knowledge | `lite-architecture-memory`, `lite-data-contracts`, `lite-component-knowledge`, `lite-route-knowledge`, `lite-integration-docs` |
+| Quality | `lite-ux-audit`, `lite-quality-confidence`, `lite-user-instructions`, `lite-communications` |
+
+**Does NOT Route:**
+- Natural capabilities (implement, debug, test, refactor) - Claude handles directly
+- System skills (`lite-detect`) - triggered by hooks, not user requests
+
+**Context Flow:**
+1. Master loads lightweight context at session start (~400-500 tokens)
+2. User request arrives
+3. Master routes to appropriate skill
+4. Target skill loads its specific context
+5. Execution happens in target skill
+
+---
+
 <!-- SECTION:after-completion -->
 ## After Completion
 

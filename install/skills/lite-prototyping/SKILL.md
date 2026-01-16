@@ -468,6 +468,20 @@ Specifically:
 
 **Remember:** Prototype is disposable. Value is in learning, not code. Iterate fast, extract insights, delete after shipping.
 
+---
+
+<!-- SECTION:success-criteria -->
+## Success Criteria
+
+Prototyping is complete when:
+- [ ] User's UI/UX question clearly defined
+- [ ] Single-file HTML prototype created in `.shipkit-mockups/[name]/`
+- [ ] User has viewed prototype in browser
+- [ ] At least one iteration cycle completed with user feedback
+- [ ] Key learnings documented in `iterations.md`
+- [ ] Next step decided: new variant, extract to spec, or move to implementation
+<!-- /SECTION:success-criteria -->
+
 <!-- SECTION:after-completion -->
 ## After Completion
 
