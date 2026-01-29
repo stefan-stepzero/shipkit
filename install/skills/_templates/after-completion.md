@@ -2,9 +2,9 @@
 
 **Guardrails Check:** Before moving to next task, verify:
 
-1. **Persistence** - Has important context been saved to `.shipkit-lite/`?
+1. **Persistence** - Has important context been saved to `.shipkit/`?
 2. **Prerequisites** - Does the next action need a spec or plan first?
-3. **Session length** - Long session? Consider `/lite-work-memory` for continuity.
+3. **Session length** - Long session? Consider `/shipkit-work-memory` for continuity.
 
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 

@@ -68,12 +68,8 @@ def show_logo(edition="default"):
     """)
     print(f"{Colors.RESET}")
 
-    if edition == "lite":
-        print(f"{Colors.DIM}         Lightweight Product Development Framework{Colors.RESET}")
-        print(f"{Colors.DIM}              7 Skills • 3 Agents • Fast Iteration{Colors.RESET}")
-    else:
-        print(f"{Colors.DIM}         Complete Product Development Framework{Colors.RESET}")
-        print(f"{Colors.DIM}              24 Skills • 6 Agents • Constitution-Driven{Colors.RESET}")
+    print(f"{Colors.DIM}         Solo Dev Product Development Framework{Colors.RESET}")
+    print(f"{Colors.DIM}              18 Skills • 6 Agents • Fast Iteration{Colors.RESET}")
     print()
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -100,12 +96,12 @@ def load_manifest(repo_root, profile):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def prompt_for_profile():
-    """Return lite profile (now the only edition)"""
+    """Return shipkit profile (now the only edition)"""
     print()
-    print(f"  {Colors.BOLD}Edition:{Colors.RESET} Shipkit Light")
-    print(f"  {Colors.DIM}28 skills • 6 agents • Streamlined workflow{Colors.RESET}")
+    print(f"  {Colors.BOLD}Edition:{Colors.RESET} Shipkit")
+    print(f"  {Colors.DIM}18 skills • 6 agents • Streamlined workflow{Colors.RESET}")
     print()
-    return "lite"
+    return "shipkit"
 
 def prompt_for_language():
     """Prompt user to select scripting language"""
@@ -206,24 +202,18 @@ def install_shared_core(repo_root, target_dir, language, edition):
     hooks_dest = target_dir / ".claude" / "hooks"
     hooks_dest.mkdir(parents=True, exist_ok=True)
 
-    if edition == "lite":
-        # Install lite-specific hooks
-        shutil.copy2(hooks_src / "lite-session-start.py", hooks_dest / "session-start.py")
-        shutil.copy2(hooks_src / "lite-suggest-next-skill.py", hooks_dest / "suggest-next-skill.py")
-        print_success("Hooks installed (lite edition)")
-    else:
-        # Install full Shipkit hooks
-        shutil.copy2(hooks_src / "session-start.py", hooks_dest / "session-start.py")
-        shutil.copy2(hooks_src / "suggest-next-skill.py", hooks_dest / "suggest-next-skill.py")
-        print_success("Hooks installed (full edition)")
+    # Install shipkit hooks
+    shutil.copy2(hooks_src / "shipkit-session-start.py", hooks_dest / "session-start.py")
+    shutil.copy2(hooks_src / "shipkit-after-skill-router.py", hooks_dest / "after-skill-router.py")
+    print_success("Hooks installed")
 
     # Scripts (language-specific)
     print_info(f"Installing {language} scripts...")
     scripts_src = shared_dir / "scripts" / language
     if language == "bash":
-        scripts_dest = target_dir / ".shipkit-lite" / "scripts" / "bash"
+        scripts_dest = target_dir / ".shipkit" / "scripts" / "bash"
     else:
-        scripts_dest = target_dir / ".shipkit-lite" / "scripts"
+        scripts_dest = target_dir / ".shipkit" / "scripts"
     scripts_dest.mkdir(parents=True, exist_ok=True)
     shutil.copytree(scripts_src, scripts_dest, dirs_exist_ok=True)
     print_success(f"{language.capitalize()} scripts installed")
@@ -371,8 +361,8 @@ def delete_unused_language(target_dir, language):
         for script in hooks_dir.rglob(f"*{delete_ext}"):
             script.unlink()
 
-    # Delete from .shipkit-lite/skills
-    shipkit_skills_dir = target_dir / ".shipkit-lite" / "skills"
+    # Delete from .shipkit/skills
+    shipkit_skills_dir = target_dir / ".shipkit" / "skills"
     if shipkit_skills_dir.exists():
         for script in shipkit_skills_dir.rglob(f"*{delete_ext}"):
             script.unlink()
@@ -402,45 +392,121 @@ def make_scripts_executable(target_dir, language):
 # MCP CONFIGURATION
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def install_mcp_config(repo_root, target_dir):
-    """Install MCP server configuration (Context7)"""
+def prompt_for_mcps(manifest):
+    """Prompt user to select which MCP servers to install"""
+    mcps = manifest.get("mcps", {}).get("recommended", [])
+
+    if not mcps:
+        return []
+
+    print()
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.BOLD}MCP Servers (Model Context Protocol){Colors.RESET}")
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print()
+    print(f"  {Colors.DIM}MCPs extend Claude with external tools and APIs.{Colors.RESET}")
+    print(f"  {Colors.DIM}Token cost shown = context used when MCP is active.{Colors.RESET}")
+    print()
+
+    # Track selections (all selected by default)
+    selected = [True] * len(mcps)
+
+    while True:
+        # Display options
+        for i, mcp in enumerate(mcps):
+            marker = f"{Colors.GREEN}✓{Colors.RESET}" if selected[i] else " "
+            name = mcp["name"]
+            purpose = mcp["purpose"]
+            tokens = mcp.get("tokens", "")
+            prereq = f" {Colors.YELLOW}(requires: {mcp['prereq']}){Colors.RESET}" if mcp.get("prereq") else ""
+
+            print(f"  [{i+1}] {marker} {Colors.CYAN}{name:16}{Colors.RESET} - {purpose} {Colors.DIM}({tokens}){Colors.RESET}{prereq}")
+
+        print()
+        print(f"  {Colors.DIM}Enter numbers to toggle, or:{Colors.RESET}")
+        print(f"  {Colors.DIM}  [a] Select all  [n] Select none  [Enter] Continue{Colors.RESET}")
+        print()
+
+        choice = input(f"  {Colors.BOLD}Selection:{Colors.RESET} ").strip().lower()
+
+        if choice == "":
+            break
+        elif choice == "a":
+            selected = [True] * len(mcps)
+        elif choice == "n":
+            selected = [False] * len(mcps)
+        else:
+            # Parse numbers
+            try:
+                nums = [int(x.strip()) for x in choice.replace(",", " ").split()]
+                for num in nums:
+                    if 1 <= num <= len(mcps):
+                        selected[num-1] = not selected[num-1]
+            except ValueError:
+                print_warning("Invalid input. Enter numbers, 'a', 'n', or press Enter.")
+
+        # Clear and redraw
+        print()
+
+    # Return selected MCPs
+    return [mcp for i, mcp in enumerate(mcps) if selected[i]]
+
+def install_mcp_config(target_dir, selected_mcps):
+    """Install MCP server configuration for selected MCPs"""
+    if not selected_mcps:
+        print_info("No MCP servers selected, skipping .mcp.json")
+        return
+
     mcp_config_path = target_dir / ".mcp.json"
 
     # Check if .mcp.json already exists
     if mcp_config_path.exists():
         print_warning(f".mcp.json already exists at {target_dir}")
-        print_info("Skipping MCP configuration (keeping existing)")
-        return
+        if not confirm("Overwrite with new MCP configuration?", default=False):
+            print_info("Keeping existing .mcp.json")
+            return
 
     try:
-        # Generate platform-specific MCP configuration
-        # Windows requires 'cmd /c' wrapper to execute npx
-        if platform.system() == "Windows":
-            mcp_config = {
-                "mcpServers": {
-                    "context7": {
-                        "command": "cmd",
-                        "args": ["/c", "npx", "-y", "@upstash/context7-mcp@latest"]
-                    }
+        mcp_servers = {}
+        prereqs = []
+
+        for mcp in selected_mcps:
+            name = mcp["name"]
+            command = mcp["command"]
+            args = mcp["args"]
+
+            # Windows requires 'cmd /c' wrapper for npx
+            if platform.system() == "Windows" and command == "npx":
+                mcp_servers[name] = {
+                    "command": "cmd",
+                    "args": ["/c", "npx"] + args
                 }
-            }
-        else:
-            mcp_config = {
-                "mcpServers": {
-                    "context7": {
-                        "command": "npx",
-                        "args": ["-y", "@upstash/context7-mcp@latest"]
-                    }
+            else:
+                mcp_servers[name] = {
+                    "command": command,
+                    "args": args
                 }
-            }
+
+            # Track prerequisites
+            if mcp.get("prereq"):
+                prereqs.append((name, mcp["prereq"]))
+
+        mcp_config = {"mcpServers": mcp_servers}
 
         # Write the configuration
         with open(mcp_config_path, 'w', encoding='utf-8') as f:
             json.dump(mcp_config, f, indent=2)
             f.write('\n')
 
-        print_success("MCP configuration installed (.mcp.json)")
-        print_info("Context7 server configured (use 'use context7' in prompts)")
+        print_success(f"MCP configuration installed ({len(selected_mcps)} servers)")
+
+        # Show prerequisites if any
+        if prereqs:
+            print()
+            print_warning("Some MCPs require setup before use:")
+            for name, prereq in prereqs:
+                print(f"    {Colors.CYAN}{name}{Colors.RESET}: {Colors.YELLOW}{prereq}{Colors.RESET}")
+
     except Exception as e:
         print_error(f"Failed to install MCP config: {e}")
 
@@ -459,11 +525,8 @@ def open_html_docs(repo_root, edition):
         print_warning(f"Documentation files not found in {html_dir}")
         return
 
-    # Choose appropriate overview based on edition
-    if edition == "lite":
-        overview_file = html_dir / "shipkit-lite-overview.html"
-    else:
-        overview_file = html_dir / "system-overview.html"
+    # Choose appropriate overview
+    overview_file = html_dir / "shipkit-overview.html"
 
     if not overview_file.exists():
         print_warning(f"Overview not found: {overview_file}")
@@ -503,7 +566,7 @@ def show_completion(target_dir, manifest, language):
     print()
     print_success(f"{skill_count} skill definitions (.claude/skills/)")
     print_success(f"{agent_count} agent personas (.claude/agents/)")
-    print_success(f"Shared scripts (.shipkit-lite/scripts/)")
+    print_success(f"Shared scripts (.shipkit/scripts/)")
     print_success("Session hooks (.claude/hooks/)")
     print_success(f"Settings ({edition} edition) (.claude/settings.json)")
     print_success(f"Project instructions ({edition}) (CLAUDE.md)")
@@ -519,26 +582,13 @@ def show_completion(target_dir, manifest, language):
     print(f"  {Colors.CYAN}1.{Colors.RESET} Start Claude Code in {Colors.CYAN}{target_dir}{Colors.RESET}")
     print()
 
-    if edition == "lite":
-        print(f"  {Colors.CYAN}2.{Colors.RESET} Quick start workflow:")
-        print()
-        print(f"     {Colors.GREEN}/lite-project-context{Colors.RESET} → {Colors.GREEN}/lite-spec{Colors.RESET}")
-        print(f"     → {Colors.GREEN}/lite-plan{Colors.RESET} → {Colors.GREEN}/lite-implement{Colors.RESET}")
-    else:
-        print(f"  {Colors.CYAN}2.{Colors.RESET} Choose your workflow:")
-        print()
-        print(f"     {Colors.DIM}Full product development (Greenfield):{Colors.RESET}")
-        print(f"     {Colors.GREEN}/prod-strategic-thinking{Colors.RESET} → {Colors.GREEN}/prod-constitution-builder{Colors.RESET}")
-        print(f"     → {Colors.GREEN}/prod-personas{Colors.RESET} → {Colors.GREEN}/prod-user-stories{Colors.RESET}")
-        print()
-        print(f"     {Colors.DIM}Quick POC (Fast validation):{Colors.RESET}")
-        print(f"     {Colors.GREEN}/prod-constitution-builder{Colors.RESET} {Colors.DIM}(choose POC){Colors.RESET} → {Colors.GREEN}/dev-specify{Colors.RESET}")
+    print(f"  {Colors.CYAN}2.{Colors.RESET} Quick start workflow:")
+    print()
+    print(f"     {Colors.GREEN}/shipkit-project-context{Colors.RESET} → {Colors.GREEN}/shipkit-spec{Colors.RESET}")
+    print(f"     → {Colors.GREEN}/shipkit-plan{Colors.RESET} → implement")
 
     print()
-    if edition == "lite":
-        print(f"  {Colors.CYAN}3.{Colors.RESET} Type {Colors.GREEN}/lite-project-status{Colors.RESET} to see current state")
-    else:
-        print(f"  {Colors.CYAN}3.{Colors.RESET} Type {Colors.GREEN}/shipkit-status{Colors.RESET} to see current state")
+    print(f"  {Colors.CYAN}3.{Colors.RESET} Type {Colors.GREEN}/shipkit-project-status{Colors.RESET} to see current state")
     print()
     print(f"  {Colors.DIM}Happy shipping! 🚀{Colors.RESET}")
     print()
@@ -550,7 +600,7 @@ def show_completion(target_dir, manifest, language):
 def main():
     """Main installation process"""
     parser = argparse.ArgumentParser(description="Shipkit Installer")
-    parser.add_argument("--profile", choices=["lite"], default="lite", help="Edition profile (lite only)")
+    parser.add_argument("--profile", choices=["shipkit"], default="shipkit", help="Edition profile")
     parser.add_argument("--language", choices=["bash", "python"], help="Scripting language (bash or python)")
     parser.add_argument("--target", help="Target directory (default: current directory)")
     parser.add_argument("-y", "--yes", action="store_true", help="Skip confirmations")
@@ -619,7 +669,10 @@ def main():
     install_agents(repo_root, target_dir, manifest)
     delete_unused_language(target_dir, language)
     make_scripts_executable(target_dir, language)
-    install_mcp_config(repo_root, target_dir)
+
+    # Prompt for MCP selection and install
+    selected_mcps = prompt_for_mcps(manifest)
+    install_mcp_config(target_dir, selected_mcps)
 
     # Show completion
     show_completion(target_dir, manifest, language)

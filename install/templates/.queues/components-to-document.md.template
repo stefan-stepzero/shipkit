@@ -14,16 +14,16 @@
 
 ## Completed
 
-<!-- Items move here after /lite-component-knowledge documents components -->
+<!-- Items move here after /shipkit-component-knowledge documents components -->
 
 ---
 
 **Usage:**
 1. Detection skill creates this file after implementation completes
 2. Scans for new/modified components in src/components, src/app, etc.
-3. `/lite-component-knowledge` reads this queue
+3. `/shipkit-component-knowledge` reads this queue
 4. Skill documents component contracts (props, events, usage)
-5. Creates reference in `.shipkit-lite/references/components/`
+5. Creates reference in `.shipkit/references/components/`
 6. Marks items complete in this queue
 
 **Example:**

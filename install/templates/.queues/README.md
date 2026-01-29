@@ -2,12 +2,12 @@
 
 **Purpose:** These templates define the format for queue files created by detection skills.
 
-**Location in user projects:** `.shipkit-lite/.queues/`
+**Location in user projects:** `.shipkit/.queues/`
 
 **What are queue files?**
 - Ephemeral markdown files that signal work needs to be done
 - Created automatically by milestone detection skills
-- Consumed by preventative skills (lite-integration-docs, lite-data-contracts, etc.)
+- Consumed by preventative skills (shipkit-integration-docs, shipkit-data-contracts, etc.)
 - Deleted or archived after work is complete
 
 **Queue file lifecycle:**

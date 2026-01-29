@@ -13,15 +13,15 @@
 
 ## Completed
 
-<!-- Items move here after /lite-integration-docs fetches current patterns -->
+<!-- Items move here after /shipkit-integration-docs fetches current patterns -->
 
 ---
 
 **Usage:**
 1. Detection skill creates this file when spec/plan mentions external services
-2. `/lite-integration-docs` reads this queue
+2. `/shipkit-integration-docs` reads this queue
 3. Skill fetches current patterns from official docs
-4. Creates reference material in `.shipkit-lite/references/integrations/`
+4. Creates reference material in `.shipkit/references/integrations/`
 5. Marks items complete in this queue
 
 **Example:**

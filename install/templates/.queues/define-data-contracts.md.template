@@ -14,15 +14,15 @@
 
 ## Completed
 
-<!-- Items move here after /lite-data-contracts validates contracts -->
+<!-- Items move here after /shipkit-data-contracts validates contracts -->
 
 ---
 
 **Usage:**
 1. Detection skill creates this file when plan defines new data structures
-2. `/lite-data-contracts` reads this queue
+2. `/shipkit-data-contracts` reads this queue
 3. Skill validates data shapes across database → backend → frontend
-4. Creates contract documentation in `.shipkit-lite/references/contracts/`
+4. Creates contract documentation in `.shipkit/references/contracts/`
 5. Marks items complete in this queue
 
 **Example:**

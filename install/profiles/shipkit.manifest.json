@@ -1,0 +1,70 @@
+{
+  "edition": "shipkit",
+  "description": "Shipkit for POCs, side projects, and rapid iteration",
+
+  "settingsFile": "shipkit.settings.json",
+  "claudeMdFile": "shipkit.md",
+
+  "mcps": {
+    "recommended": [
+      {
+        "name": "context7",
+        "command": "npx",
+        "args": ["-y", "@upstash/context7-mcp@latest"],
+        "purpose": "Documentation lookup for libraries",
+        "tokens": "~5k"
+      },
+      {
+        "name": "playwright",
+        "command": "npx",
+        "args": ["@playwright/mcp@latest"],
+        "purpose": "E2E testing, cross-browser automation",
+        "tokens": "~13.7k",
+        "prereq": "npx playwright install"
+      },
+      {
+        "name": "chrome-devtools",
+        "command": "npx",
+        "args": ["chrome-devtools-mcp@latest"],
+        "purpose": "Performance debugging, network analysis",
+        "tokens": "~19k"
+      }
+    ]
+  },
+
+  "skills": {
+    "definitions": [
+      "shipkit-master",
+      "shipkit-project-status",
+      "shipkit-project-context",
+      "shipkit-product-discovery",
+      "shipkit-spec",
+      "shipkit-prototyping",
+      "shipkit-prototype-to-spec",
+      "shipkit-architecture-memory",
+      "shipkit-ux-audit",
+      "shipkit-data-contracts",
+      "shipkit-plan",
+      "shipkit-user-instructions",
+      "shipkit-integration-docs",
+      "shipkit-work-memory",
+      "shipkit-communications",
+      "shipkit-why-project",
+      "shipkit-codebase-index",
+      "shipkit-teach"
+    ],
+    "system": [
+      "shipkit-detect"
+    ],
+    "workspace": []
+  },
+
+  "agents": [
+    "shipkit-product-owner-agent",
+    "shipkit-ux-designer-agent",
+    "shipkit-architect-agent",
+    "shipkit-implementer-agent",
+    "shipkit-reviewer-agent",
+    "shipkit-researcher-agent"
+  ]
+}

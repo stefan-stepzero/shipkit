@@ -14,16 +14,16 @@
 
 ## Verified Correct
 
-<!-- Items move here after /lite-integration-docs verifies patterns match current best practices -->
+<!-- Items move here after /shipkit-integration-docs verifies patterns match current best practices -->
 
 ---
 
 **Usage:**
 1. Detection skill creates this file after code analysis finds service integrations
 2. Scans codebase for imports/usage of Lemon Squeezy, Supabase, OpenAI, Resend, Prisma, etc.
-3. `/lite-integration-docs` reads this queue
+3. `/shipkit-integration-docs` reads this queue
 4. Skill compares current code against latest official patterns
-5. Creates/updates reference in `.shipkit-lite/references/integrations/`
+5. Creates/updates reference in `.shipkit/references/integrations/`
 6. Marks items verified when patterns match current docs
 
 **Example:**

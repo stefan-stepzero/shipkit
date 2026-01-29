@@ -14,16 +14,16 @@
 
 ## Completed
 
-<!-- Items move here after /lite-ux-audit checks UX best practices -->
+<!-- Items move here after /shipkit-ux-audit checks UX best practices -->
 
 ---
 
 **Usage:**
 1. Detection skill creates this file when implementation reaches threshold (e.g., 3+ interactive components)
-2. OR triggered pre-ship by lite-pre-ship-check
-3. `/lite-ux-audit` reads this queue
+2. OR triggered pre-ship by shipkit-pre-ship-check
+3. `/shipkit-ux-audit` reads this queue
 4. Skill audits for missing UX patterns (loading states, errors, accessibility, feedback)
-5. Creates checklist in `.shipkit-lite/references/ux/ux-checklist.md`
+5. Creates checklist in `.shipkit/references/ux/ux-checklist.md`
 6. Marks items complete in this queue
 
 **Example:**

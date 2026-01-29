@@ -7,10 +7,10 @@
 CLAUDE.md
 
 # Shipkit Lite - Scripts only (ignore - framework infrastructure)
-.shipkit-lite/scripts/
+.shipkit/scripts/
 
 # IMPORTANT: DO NOT IGNORE YOUR WORK PRODUCTS!
-# ✅ .shipkit-lite/ contains YOUR context files (commit these!)
+# ✅ .shipkit/ contains YOUR context files (commit these!)
 #
 # Files like specs/, plans/, architecture.md, stack.md, implementations.md
 # represent your product discovery, specs, plans, and decisions.

@@ -2,9 +2,9 @@
 # Add these entries to your project's .gitignore
 
 # Shipkit Lite - Queue files (ephemeral, auto-generated)
-.shipkit-lite/.queues/
+.shipkit/.queues/
 
 # Shipkit Lite - Optional: Work in progress folders
 # Uncomment if you use WIP folders for draft specs/plans
-# .shipkit-lite/specs/wip/
-# .shipkit-lite/plans/wip/
+# .shipkit/specs/wip/
+# .shipkit/plans/wip/
