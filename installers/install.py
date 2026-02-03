@@ -440,6 +440,7 @@ def install_shared_core(repo_root, target_dir, language, edition):
     # Install shipkit hooks
     shutil.copy2(hooks_src / "shipkit-session-start.py", hooks_dest / "session-start.py")
     shutil.copy2(hooks_src / "shipkit-after-skill-router.py", hooks_dest / "after-skill-router.py")
+    shutil.copy2(hooks_src / "shipkit-track-skill-usage.py", hooks_dest / "shipkit-track-skill-usage.py")
     print_success("Hooks installed")
 
     # Scripts (language-specific)
@@ -615,6 +616,17 @@ def generate_settings(manifest, language, selected_skills):
                         {
                             "type": "command",
                             "command": "python -X utf8 .claude/hooks/session-start.py"
+                        }
+                    ]
+                }
+            ],
+            "PostToolUse": [
+                {
+                    "matcher": "Skill",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/shipkit-track-skill-usage.py"
                         }
                     ]
                 }

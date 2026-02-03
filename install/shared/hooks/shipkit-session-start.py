@@ -443,10 +443,52 @@ def main():
             print("📁 Codebase index exists but couldn't be read. Run `/shipkit-codebase-index` to regenerate.")
             print()
 
+    # ─────────────────────────────────────────────────────────────────
+    # Skill Usage Summary (if tracking data exists)
+    # ─────────────────────────────────────────────────────────────────
+
+    usage_file = shipkit_dir / 'skill-usage.json'
+    if usage_file.exists():
+        try:
+            usage_data = json.loads(usage_file.read_text(encoding='utf-8'))
+            skills = usage_data.get('skills', {})
+
+            if skills:
+                # Find stale skills (not used in 14+ days)
+                stale_skills = []
+                now = datetime.now()
+
+                for skill_name, data in skills.items():
+                    last_used_str = data.get('lastUsed', '')
+                    if last_used_str:
+                        try:
+                            last_used = datetime.fromisoformat(last_used_str)
+                            days_ago = (now - last_used).days
+                            if days_ago >= 14:
+                                stale_skills.append((skill_name, days_ago, data.get('count', 0)))
+                        except ValueError:
+                            pass
+
+                # Show summary if there are stale skills
+                if stale_skills:
+                    stale_skills.sort(key=lambda x: x[1], reverse=True)  # Most stale first
+                    print("# 📊 Skill Usage")
+                    print()
+                    print(f"**Stale skills** (not used in 14+ days):")
+                    for skill, days, count in stale_skills[:5]:  # Top 5 most stale
+                        print(f"  • `/{skill}`: {days}d ago (used {count}x)")
+                    print()
+                    print("*Consider if these skills are still needed or if you've been missing opportunities to use them.*")
+                    print()
+                    print("---")
+                    print()
+        except Exception:
+            pass  # Silent fail on parse errors
+
     return 0
 
 
 if __name__ == '__main__':
     sys.exit(main())
 
-# Shipkit v1.1.0
+# Shipkit v1.2.0

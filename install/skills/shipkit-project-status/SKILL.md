@@ -148,6 +148,37 @@ fi
 
 ---
 
+### Step 5.5: Analyze Skill Usage
+
+**Read skill usage tracking data**:
+
+```bash
+# Check if tracking file exists
+if [ -f ".shipkit/skill-usage.json" ]; then
+  cat .shipkit/skill-usage.json
+fi
+```
+
+**Parse JSON to extract**:
+1. Total invocations count
+2. Top 5 most-used skills (by count)
+3. Skills never used (0 invocations)
+4. Stale skills (not used in 14+ days)
+5. Skills that might help current state
+
+**Cross-reference with project state**:
+- If active specs exist but `/shipkit-plan` not used recently → Suggest it
+- If implementation in progress but `/shipkit-verify` never used → Suggest it
+- If approaching release but `/shipkit-preflight` stale → Suggest it
+
+**Skill categories for analysis**:
+- **Discovery**: shipkit-product-discovery, shipkit-why-project, shipkit-project-context
+- **Planning**: shipkit-spec, shipkit-plan, shipkit-prototyping
+- **Implementation**: shipkit-architecture-memory, shipkit-data-contracts, shipkit-integration-docs
+- **Quality**: shipkit-verify, shipkit-preflight, shipkit-ux-audit
+
+---
+
 ### Step 6: Generate Status Report
 
 **Write health summary to `.shipkit/status.md`** AND display in terminal:
@@ -205,6 +236,28 @@ WORKFLOW STATUS
 
 ════════════════════════════════════════════════════
 
+SKILL USAGE INSIGHTS
+
+📊 Total: 47 skill invocations tracked
+
+Most Used:
+  • /shipkit-spec (12x)
+  • /shipkit-plan (8x)
+  • /shipkit-project-context (6x)
+
+Never Used:
+  • /shipkit-ux-audit
+  • /shipkit-data-contracts
+
+⚠ Stale (14+ days):
+  • /shipkit-verify (21d ago, used 2x)
+  • /shipkit-preflight (18d ago, used 1x)
+
+💡 You have active specs → consider /shipkit-plan
+💡 Implementation phase → /shipkit-verify would help
+
+════════════════════════════════════════════════════
+
 SUGGESTED NEXT ACTIONS
 
 Priority 1: Run /shipkit-project-context (stack is stale)
@@ -246,6 +299,25 @@ ELSE IF user tasks all unchecked:
 
 ELSE:
   → "Project is healthy! Continue development."
+```
+
+**Skill usage recommendations** (additive, shown in SKILL USAGE section):
+
+```
+IF active specs exist AND /shipkit-plan not used in 7+ days:
+  → "💡 You have active specs → consider /shipkit-plan"
+
+IF implementation in progress AND /shipkit-verify never used:
+  → "💡 Implementation phase → /shipkit-verify would help"
+
+IF plans completed AND /shipkit-preflight stale (14+ days):
+  → "💡 Approaching release? → /shipkit-preflight for final checks"
+
+IF quality skills never used (verify, preflight, ux-audit):
+  → "💡 Quality skills unused → consider adding quality checks"
+
+IF discovery skills stale AND no recent specs:
+  → "💡 No recent discovery → /shipkit-product-discovery for new features"
 ```
 
 ---
@@ -350,6 +422,7 @@ Copy and track:
 - `.shipkit/user-tasks/active.md` (if exists)
 - `.shipkit/schema.md` (if exists)
 - `.shipkit/types.md` (if exists)
+- `.shipkit/skill-usage.json` (if exists, for usage analytics)
 
 **Also checks**:
 - `package.json` (for stack freshness comparison)
@@ -408,6 +481,7 @@ Status check is complete when:
 - [ ] Documented items counted
 - [ ] Gaps detected and listed
 - [ ] Workflow status checked
+- [ ] Skill usage analyzed (if tracking data exists)
 - [ ] Prioritized next action suggested
 - [ ] Status report written to `.shipkit/status.md` (OVERWRITE previous)
 - [ ] Terminal summary displayed (same content as file)
@@ -441,6 +515,7 @@ Status check is complete when:
 - Suggested skills are prioritized by impact
 - Don't ignore stale stack warnings (can cause confusion)
 - Document large files before they become unmaintainable
+- Review skill usage insights to identify workflow gaps (e.g., never using quality checks)
 
 **When to upgrade to full /shipkit-project-status**:
 - Need team collaboration metrics

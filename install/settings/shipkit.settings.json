@@ -140,6 +140,17 @@
         ]
       }
     ],
+    "PostToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/shipkit-track-skill-usage.py"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
