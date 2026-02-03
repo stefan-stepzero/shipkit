@@ -221,7 +221,7 @@
         /* Skill Groups */
         .skill-groups {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
         }
 
@@ -250,21 +250,30 @@
         }
 
         .skill-list li {
-            padding: 6px 0;
+            padding: 8px 0;
             display: flex;
-            align-items: baseline;
-            gap: 8px;
+            flex-direction: column;
+            gap: 4px;
             font-size: 0.95em;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .skill-list li:last-child {
+            border-bottom: none;
         }
 
         .skill-list .name {
             font-family: 'Courier New', monospace;
             color: #7c3aed;
             font-weight: 600;
+            font-size: 0.9em;
         }
 
         .skill-list .desc {
             color: #64748b;
+            font-size: 0.85em;
+            line-height: 1.4;
+            padding-left: 4px;
         }
 
         /* Principles */
@@ -627,72 +636,72 @@
 
         <!-- ALL SKILLS TAB -->
         <div id="skills" class="tab-content">
-            <h2 class="section-header">All 23 Skills by Category</h2>
+            <h2 class="section-header">All 24 Skills by Category</h2>
 
             <div class="skill-groups">
                 <div class="skill-group">
                     <h3>🎯 Vision & Discovery</h3>
                     <ul class="skill-list">
-                        <li><span class="name">/shipkit-why-project</span> <span class="desc">— Strategic vision</span></li>
-                        <li><span class="name">/shipkit-project-context</span> <span class="desc">— Scan stack</span></li>
-                        <li><span class="name">/shipkit-codebase-index</span> <span class="desc">— Navigation index</span></li>
-                        <li><span class="name">/shipkit-claude-md</span> <span class="desc">— Update CLAUDE.md</span></li>
-                        <li><span class="name">/shipkit-product-discovery</span> <span class="desc">— Personas & journeys</span></li>
-                        <li><span class="name">/shipkit-project-status</span> <span class="desc">— Health check</span></li>
-                        <li><span class="name">/shipkit-get-skills</span> <span class="desc">— Find & install skills</span></li>
-                        <li><span class="name">/shipkit-get-mcps</span> <span class="desc">— Find & install MCPs</span></li>
+                        <li><span class="name">/shipkit-why-project</span> <span class="desc">— Define project vision, strategic direction, and goals. Captures the "why" before building.</span></li>
+                        <li><span class="name">/shipkit-project-context</span> <span class="desc">— Auto-scan codebase to detect tech stack, frameworks, and patterns. Creates stack.md.</span></li>
+                        <li><span class="name">/shipkit-codebase-index</span> <span class="desc">— Generate navigation index for faster file discovery. Creates codebase-index.json.</span></li>
+                        <li><span class="name">/shipkit-claude-md</span> <span class="desc">— Append learnings, preferences, or project patterns to CLAUDE.md for persistence.</span></li>
+                        <li><span class="name">/shipkit-product-discovery</span> <span class="desc">— Define user personas, journeys, and stories. Captures who you're building for.</span></li>
+                        <li><span class="name">/shipkit-project-status</span> <span class="desc">— Health check: scans specs, plans, progress to show what's done and pending.</span></li>
+                        <li><span class="name">/shipkit-get-skills</span> <span class="desc">— Search and install skills from skills.sh marketplace. Extend Claude capabilities.</span></li>
+                        <li><span class="name">/shipkit-get-mcps</span> <span class="desc">— Search and install MCP servers to add new tools and integrations.</span></li>
                     </ul>
                 </div>
 
                 <div class="skill-group">
                     <h3>📋 Spec & Planning</h3>
                     <ul class="skill-list">
-                        <li><span class="name">/shipkit-spec</span> <span class="desc">— Feature specs</span></li>
-                        <li><span class="name">/shipkit-plan</span> <span class="desc">— Implementation plan</span></li>
-                        <li><span class="name">/shipkit-prototyping</span> <span class="desc">— UI mockups</span></li>
-                        <li><span class="name">/shipkit-prototype-to-spec</span> <span class="desc">— Extract learnings</span></li>
+                        <li><span class="name">/shipkit-spec</span> <span class="desc">— Create Given/When/Then specifications with acceptance criteria. Defines what to build.</span></li>
+                        <li><span class="name">/shipkit-plan</span> <span class="desc">— Generate implementation plan from spec. Breaks features into ordered, actionable steps.</span></li>
+                        <li><span class="name">/shipkit-prototyping</span> <span class="desc">— Create quick HTML/CSS mockups to visualize UI before writing real code.</span></li>
+                        <li><span class="name">/shipkit-prototype-to-spec</span> <span class="desc">— Extract UI patterns and learnings from prototype into formal specification.</span></li>
                     </ul>
                 </div>
 
                 <div class="skill-group">
                     <h3>🧠 Knowledge & Memory</h3>
                     <ul class="skill-list">
-                        <li><span class="name">/shipkit-architecture-memory</span> <span class="desc">— Decisions log</span></li>
-                        <li><span class="name">/shipkit-data-contracts</span> <span class="desc">— Type definitions</span></li>
-                        <li><span class="name">/shipkit-integration-docs</span> <span class="desc">— External APIs</span></li>
+                        <li><span class="name">/shipkit-architecture-memory</span> <span class="desc">— Log architectural decisions with rationale. Creates searchable decision history.</span></li>
+                        <li><span class="name">/shipkit-data-contracts</span> <span class="desc">— Validate data shapes across API boundaries. Check type alignment between layers.</span></li>
+                        <li><span class="name">/shipkit-integration-docs</span> <span class="desc">— Fetch current API patterns for external services (Stripe, Supabase, etc).</span></li>
                     </ul>
                 </div>
 
                 <div class="skill-group">
                     <h3>✅ Quality & Comms</h3>
                     <ul class="skill-list">
-                        <li><span class="name">/shipkit-verify</span> <span class="desc">— Review work (12 dimensions)</span></li>
-                        <li><span class="name">/shipkit-preflight</span> <span class="desc">— Production readiness audit</span></li>
-                        <li><span class="name">/shipkit-ux-audit</span> <span class="desc">— UX patterns</span></li>
-                        <li><span class="name">/shipkit-user-instructions</span> <span class="desc">— Manual tasks</span></li>
-                        <li><span class="name">/shipkit-work-memory</span> <span class="desc">— Progress + resume state</span></li>
-                        <li><span class="name">/shipkit-communications</span> <span class="desc">— HTML reports</span></li>
+                        <li><span class="name">/shipkit-verify</span> <span class="desc">— Review changes across 12 quality dimensions. Reports issues by priority before commit.</span></li>
+                        <li><span class="name">/shipkit-preflight</span> <span class="desc">— Production readiness audit: security, performance, edge cases, deployment checklist.</span></li>
+                        <li><span class="name">/shipkit-ux-audit</span> <span class="desc">— Audit UI for missing UX patterns: loading states, errors, empty states, accessibility.</span></li>
+                        <li><span class="name">/shipkit-user-instructions</span> <span class="desc">— Track manual tasks user must complete outside Claude (env vars, DNS, accounts).</span></li>
+                        <li><span class="name">/shipkit-work-memory</span> <span class="desc">— Log session progress and save resume state. Enables seamless session handoffs.</span></li>
+                        <li><span class="name">/shipkit-communications</span> <span class="desc">— Generate visual HTML reports from shipkit content for presentations and sharing.</span></li>
                     </ul>
                 </div>
 
                 <div class="skill-group">
                     <h3>⚙️ System</h3>
                     <ul class="skill-list">
-                        <li><span class="name">/shipkit-master</span> <span class="desc">— Orchestrator</span></li>
-                        <li><span class="name">/shipkit-detect</span> <span class="desc">— Auto-triggered</span></li>
-                        <li><span class="name">/shipkit-update</span> <span class="desc">— Install/update Shipkit</span></li>
+                        <li><span class="name">/shipkit-master</span> <span class="desc">— Session orchestrator: loads context at start, routes requests to appropriate skills.</span></li>
+                        <li><span class="name">/shipkit-detect</span> <span class="desc">— Auto-triggered scanner that creates work queues after skill completion. Not user-invocable.</span></li>
+                        <li><span class="name">/shipkit-update</span> <span class="desc">— Install or update Shipkit from GitHub. Archives existing install, merges user content.</span></li>
                     </ul>
                 </div>
 
                 <div class="skill-group">
                     <h3>🎭 Agent Personas</h3>
                     <ul class="skill-list">
-                        <li><span class="name">shipkit-product-owner</span> <span class="desc">— Vision</span></li>
-                        <li><span class="name">shipkit-ux-designer</span> <span class="desc">— UI/UX</span></li>
-                        <li><span class="name">shipkit-architect</span> <span class="desc">— Tech decisions</span></li>
-                        <li><span class="name">shipkit-implementer</span> <span class="desc">— Coding</span></li>
-                        <li><span class="name">shipkit-reviewer</span> <span class="desc">— Quality</span></li>
-                        <li><span class="name">shipkit-researcher</span> <span class="desc">— Research</span></li>
+                        <li><span class="name">shipkit-product-owner</span> <span class="desc">— Vision & priorities agent for product decisions and trade-offs.</span></li>
+                        <li><span class="name">shipkit-ux-designer</span> <span class="desc">— UI/UX patterns agent for user experience and interface design.</span></li>
+                        <li><span class="name">shipkit-architect</span> <span class="desc">— Technical decisions agent for system design and architecture choices.</span></li>
+                        <li><span class="name">shipkit-implementer</span> <span class="desc">— Implementation agent optimized for writing production code.</span></li>
+                        <li><span class="name">shipkit-reviewer</span> <span class="desc">— Code quality agent for reviews, security checks, and best practices.</span></li>
+                        <li><span class="name">shipkit-researcher</span> <span class="desc">— Research agent for investigating options, APIs, and technical solutions.</span></li>
                     </ul>
                 </div>
             </div>
@@ -831,7 +840,7 @@
         </div>
 
         <footer>
-            <p>Shipkit • 23 Skills • 6 Agents • 7 Principles</p>
+            <p>Shipkit • 24 Skills • 6 Agents • 7 Principles</p>
             <p style="margin-top: 10px;">Production-ready MVPs for SaaS applications</p>
         </footer>
     </div>
@@ -849,3 +858,4 @@
     </script>
 </body>
 </html>
+<!-- Shipkit v1.2.0 -->
