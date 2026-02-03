@@ -156,7 +156,7 @@ def print_skills(skills, settings_info):
     if not skills:
         print(f"  {Colors.YELLOW}No Shipkit skills installed.{Colors.RESET}")
         print()
-        print(f"  {Colors.DIM}Install with: python path/to/sg-shipkit/installers/install.py{Colors.RESET}")
+        print(f"  {Colors.DIM}Install with: python path/to/shipkit/installers/install.py{Colors.RESET}")
         print()
         return
 

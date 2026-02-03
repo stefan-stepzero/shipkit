@@ -3,7 +3,7 @@
 ## At a Glance
 
 - **Status:** In Progress
-- **GitHub:** https://github.com/user/sg-shipkit
+- **GitHub:** https://github.com/user/shipkit
 - **Icon:** Boxes
 - **Color:** text-blue-400
 

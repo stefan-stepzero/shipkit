@@ -303,7 +303,7 @@ Examples:
         print()
         if keep_context:
             print(f"  {Colors.DIM}Your context files in .shipkit/ were preserved.{Colors.RESET}")
-            print(f"  {Colors.DIM}To reinstall: python path/to/sg-shipkit/installers/install.py{Colors.RESET}")
+            print(f"  {Colors.DIM}To reinstall: python path/to/shipkit/installers/install.py{Colors.RESET}")
     else:
         print(f"  {Colors.YELLOW}⚠ Uninstallation completed with some errors{Colors.RESET}")
 

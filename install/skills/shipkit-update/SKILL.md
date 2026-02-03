@@ -4,7 +4,7 @@ description: Install or update Shipkit from GitHub. Detects existing installatio
 user_invocable: true
 arguments:
   - name: repo
-    description: GitHub repo (default: stefan-stepzero/sg-shipkit or configured repo)
+    description: GitHub repo (default: stefan-stepzero/shipkit or configured repo)
     required: false
 ---
 
@@ -157,7 +157,7 @@ Upgrading to: v1.1.0
 ### Step 3: Fetch Fresh from GitHub
 
 **Source repository:**
-- Default: `https://github.com/stefan-stepzero/sg-shipkit` (or user-configured)
+- Default: `https://github.com/stefan-stepzero/shipkit` (or user-configured)
 - Branch: `main`
 
 **Fetch install manifest:**
@@ -467,7 +467,7 @@ Ready to use. Review merged files, archive has originals.
 
 **Default repository** (can be overridden):
 ```
-SHIPKIT_REPO=https://github.com/stefan-stepzero/sg-shipkit
+SHIPKIT_REPO=https://github.com/stefan-stepzero/shipkit
 ```
 
 **Override via argument:**

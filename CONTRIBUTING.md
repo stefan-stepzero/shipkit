@@ -111,7 +111,7 @@ Before submitting:
 2. Test installation in a scratch project:
    ```bash
    mkdir test-project && cd test-project
-   python ../sg-shipkit/installers/install.py
+   python ../shipkit/installers/install.py
    ```
 3. Make changes to skills/agents
 4. Re-run installer to test

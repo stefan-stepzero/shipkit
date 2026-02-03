@@ -28,7 +28,7 @@ Shipkit is a collection of **Claude Code skills** that help you build products f
 
 ```bash
 cd your-project
-python path/to/sg-shipkit/installers/install.py
+python path/to/shipkit/installers/install.py
 ```
 
 The installer will:
@@ -231,4 +231,4 @@ Captures what you did and what's next for session continuity.
 
 - **In Claude Code:** `/help` shows available commands
 - **Project status:** `/shipkit-project-status` shows gaps
-- **Issues:** [GitHub Issues](https://github.com/user/sg-shipkit/issues)
+- **Issues:** [GitHub Issues](https://github.com/user/shipkit/issues)

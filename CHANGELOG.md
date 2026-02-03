@@ -8,12 +8,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+*No unreleased changes*
+
+---
+
+## [1.1.0] - 2026-02-03
+
 ### Added
+- `shipkit-update` — Install or update Shipkit from GitHub with intelligent merge
 - `shipkit-get-skills` — Discover and install community Claude Code skills
 - `shipkit-get-mcps` — Discover and install MCP servers
 - `shipkit-claude-md` — Manage and update CLAUDE.md with learnings
 - `shipkit-verify` — Quality verification across 12 dimensions
+- `shipkit-preflight` — Production readiness audit
 - `shipkit-codebase-index` — Semantic codebase indexing for navigation
+- Version watermarking on all installed files (`<!-- Shipkit v1.1.0 -->`)
+- `install/VERSION` file for version tracking
+- Archive-based update system (never deletes, always preserves)
 
 ### Removed
 - `shipkit-component-knowledge` — Replaced by natural capability (documentation)
@@ -24,7 +35,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Renamed all `lite-*` files to `shipkit-*` for consistency
-- Updated skill count from 28 to 22 (removed redundant skills)
+- Updated skill count to 24 skills
+- CLAUDE.md now uses BEGIN/END markers for Shipkit sections
+- Settings.json includes `_shipkit` version key
 - Clarified that implementation, debugging, testing are natural capabilities
 
 ### Fixed

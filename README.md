@@ -76,14 +76,14 @@ All skills use the `shipkit-` prefix for clarity.
 **Option 1: Ask Claude (Recommended)**
 
 In any project with Claude Code, just ask:
-> "Install Shipkit from https://github.com/stefan-stepzero/sg-shipkit"
+> "Use /shipkit-update to install Shipkit from https://github.com/stefan-stepzero/shipkit"
 
-Claude will fetch and run the `shipkit-update` skill to bootstrap the installation.
+Claude will fetch and run the skill to bootstrap the installation.
 
 **Option 2: Python Installer**
 ```bash
 cd your-project
-curl -O https://raw.githubusercontent.com/stefan-stepzero/sg-shipkit/main/installers/install.py
+curl -O https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/installers/install.py
 python install.py
 ```
 
@@ -113,7 +113,9 @@ your-project/
 ### Basic Workflow
 
 ```
-/shipkit-project-context   → Scan and understand codebase
+/shipkit-why-project       → Define vision & goals (new projects)
+    ↓
+/shipkit-project-context   → Scan codebase, detect stack
     ↓
 /shipkit-spec              → Create feature specification
     ↓
@@ -121,7 +123,9 @@ your-project/
     ↓
 (implement)                → Build the feature (natural capability)
     ↓
-/shipkit-verify            → Verify quality
+/shipkit-verify            → Verify quality before commit
+    ↓
+/shipkit-work-memory       → Checkpoint progress for next session
 ```
 
 ---
@@ -157,6 +161,8 @@ Skills naturally flow from one to another:
     → /shipkit-spec → Creates feature spec
     → /shipkit-plan → Generates implementation plan
     → (implement) → Builds the feature
+    → /shipkit-verify → Checks quality
+    → /shipkit-work-memory → Saves progress
 ```
 
 ---
@@ -164,7 +170,7 @@ Skills naturally flow from one to another:
 ## Repository Structure
 
 ```
-sg-shipkit/
+shipkit/
 ├── installers/
 │   ├── install.py                # Python installer (cross-platform)
 │   ├── uninstall.py              # Uninstaller
@@ -259,7 +265,7 @@ Use the `shipkit-update` skill:
 
 Or re-run the installer:
 ```bash
-curl -O https://raw.githubusercontent.com/stefan-stepzero/sg-shipkit/main/installers/install.py
+curl -O https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/installers/install.py
 python install.py -y
 ```
 
@@ -275,6 +281,6 @@ MIT License
 
 **Ready to ship faster?**
 
-Ask Claude: *"Install Shipkit from https://github.com/stefan-stepzero/sg-shipkit"*
+Ask Claude: *"Use /shipkit-update to install Shipkit from https://github.com/stefan-stepzero/shipkit"*
 
 **Streamlined product development, guided by AI.**
