@@ -1,0 +1,29 @@
+{
+  "edition": "minimal",
+  "description": "Minimal Shipkit - Core workflow only (5 skills)",
+
+  "settingsFile": "shipkit.settings.json",
+  "claudeMdFile": "shipkit.md",
+
+  "mcps": {
+    "recommended": []
+  },
+
+  "skills": {
+    "mandatory": [
+      "shipkit-master"
+    ],
+    "optional": {
+      "Core Workflow": [
+        {"name": "shipkit-project-context", "desc": "Scan codebase, detect stack"},
+        {"name": "shipkit-project-status", "desc": "Check project health & gaps"}
+      ],
+      "Spec & Planning": [
+        {"name": "shipkit-spec", "desc": "Create feature specifications"},
+        {"name": "shipkit-plan", "desc": "Plan implementation steps"}
+      ]
+    }
+  },
+
+  "agents": []
+}

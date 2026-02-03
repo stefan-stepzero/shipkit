@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Scan for recently modified files after implementation.
-Creates queues for shipkit-component-knowledge and shipkit-route-knowledge.
+Creates queues for component and route documentation.
 """
 
 import os
@@ -97,7 +97,7 @@ def create_queue(detected):
 
         content += """## Completed
 
-<!-- Items move here after /shipkit-component-knowledge documents them -->
+<!-- Items move here after documentation is complete -->
 """
         queue_path.write_text(content)
         created_queues.append(queue_path)
@@ -121,7 +121,7 @@ def create_queue(detected):
 
         content += """## Completed
 
-<!-- Items move here after /shipkit-route-knowledge documents them -->
+<!-- Items move here after documentation is complete -->
 """
         queue_path.write_text(content)
         created_queues.append(queue_path)

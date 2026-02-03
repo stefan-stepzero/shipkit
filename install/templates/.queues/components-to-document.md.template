@@ -14,17 +14,16 @@
 
 ## Completed
 
-<!-- Items move here after /shipkit-component-knowledge documents components -->
+<!-- Items move here after documentation is complete -->
 
 ---
 
 **Usage:**
 1. Detection skill creates this file after implementation completes
 2. Scans for new/modified components in src/components, src/app, etc.
-3. `/shipkit-component-knowledge` reads this queue
-4. Skill documents component contracts (props, events, usage)
-5. Creates reference in `.shipkit/references/components/`
-6. Marks items complete in this queue
+3. Documentation is a natural capability - document as needed
+4. Creates reference in `.shipkit/references/components/`
+5. Mark items complete in this queue when documented
 
 **Example:**
 

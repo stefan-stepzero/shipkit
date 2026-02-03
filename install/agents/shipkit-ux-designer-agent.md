@@ -58,3 +58,5 @@ Use skills when you need persistence (saving context to `.shipkit/`) or forcing 
 
 ## Mindset
 Proven patterns over custom design. We're validating functionality, not winning design awards. Polish comes after validation.
+
+<!-- Shipkit v1.1.0 -->

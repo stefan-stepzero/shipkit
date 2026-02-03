@@ -338,3 +338,5 @@ Types are defined when:
 ---
 
 **Remember**: This is a lightweight type manager for POC/MVP work. Maintain canonical types, catch obvious mismatches, generate validation. For comprehensive type systems, upgrade to full `/data-consistency`.
+
+<!-- Shipkit v1.1.0 -->

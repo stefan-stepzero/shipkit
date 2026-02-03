@@ -497,3 +497,5 @@ Spec is complete when:
 ---
 
 **Remember**: This is a lightweight spec for POC/MVP work. Get enough clarity to build correctly, but don't over-specify. Ship, learn, iterate.
+
+<!-- Shipkit v1.1.0 -->

@@ -540,3 +540,5 @@ Claude:
 ---
 
 **Remember**: This skill is about making ShipKit Lite content beautiful and shareable. Always read actual content, never generate placeholders. Archive old reports to preserve history.
+
+<!-- Shipkit v1.1.0 -->

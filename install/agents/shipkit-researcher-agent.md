@@ -109,3 +109,5 @@ Use skills when you need persistence (saving context to `.shipkit/`). For resear
 
 ## Mindset
 Get accurate information fast. Official docs are the source of truth. When docs are unclear, find working examples. Save research to avoid re-doing it.
+
+<!-- Shipkit v1.1.0 -->

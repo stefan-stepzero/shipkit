@@ -24,7 +24,7 @@ description: "Use when needing current API patterns for external services. Trigg
 - User: "Is my Supabase auth secure?"
 
 **During**:
-- `implement (no skill needed)` - Real-time integration guidance
+- Implementation (natural capability) - Real-time integration guidance
 - Code review - Security audit of service integrations
 
 ---
@@ -289,12 +289,12 @@ Read `references/[service]-patterns.md` and extract:
 
 ### After This Skill
 
-**shipkit-implement** - Implements features
+**Implementation** (natural capability)
 - **When**: Integration patterns loaded and ready
 - **Why**: Implementation uses fetched patterns for secure integration
 - **Trigger**: User proceeds to implement after reviewing patterns
 
-**shipkit-quality-confidence** - Verifies implementation quality
+**shipkit-verify** - Verifies implementation quality
 - **When**: Integration implemented, needs security review
 - **Why**: Uses cached patterns to verify implementation follows best practices
 - **Trigger**: Post-implementation security audit
@@ -350,3 +350,5 @@ Integration Docs is complete when:
 
 **Suggest skill when:** User needs to make decisions, create persistence, or check project status.
 <!-- /SECTION:after-completion -->
+
+<!-- Shipkit v1.1.0 -->

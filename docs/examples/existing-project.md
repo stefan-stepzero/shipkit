@@ -1,0 +1,346 @@
+# Example: Adding Shipkit to an Existing Project
+
+A walkthrough of integrating Shipkit into a project that already has code.
+
+---
+
+## Scenario
+
+You have an existing Next.js e-commerce app. You want to use Shipkit to:
+- Document what exists
+- Add new features systematically
+- Capture architecture decisions going forward
+
+---
+
+## Step 1: Install Shipkit
+
+```bash
+cd your-existing-project
+python ../sg-shipkit/installers/install.py
+```
+
+The installer detects you have existing code and adjusts accordingly.
+
+---
+
+## Step 2: Scan Your Codebase
+
+```
+/shipkit-project-context
+```
+
+**What it does:**
+- Scans your project structure
+- Detects tech stack (Next.js, database, etc.)
+- Identifies key directories and patterns
+
+**Creates:** `.shipkit/stack.md`
+
+```markdown
+# Tech Stack
+
+**Detected:** 2026-02-03
+
+## Framework
+- Next.js 14 (App Router)
+- TypeScript
+
+## Database
+- Supabase (PostgreSQL)
+- Prisma ORM
+
+## Styling
+- Tailwind CSS
+- shadcn/ui components
+
+## Deployment
+- Vercel
+
+## Key Directories
+- `src/app/` - Pages and routes
+- `src/components/` - UI components
+- `src/lib/` - Utilities
+- `prisma/schema.prisma` - Database schema
+```
+
+---
+
+## Step 3: Index Your Codebase (Optional)
+
+For larger codebases:
+
+```
+/shipkit-codebase-index
+```
+
+**Creates:** `.shipkit/codebase-index.json`
+
+Maps concepts to files so Claude can navigate without globbing everything:
+
+```json
+{
+  "concepts": {
+    "authentication": ["src/app/auth/", "src/lib/auth.ts"],
+    "products": ["src/app/products/", "src/components/ProductCard.tsx"],
+    "checkout": ["src/app/checkout/", "src/lib/stripe.ts"]
+  },
+  "entryPoints": {
+    "main": "src/app/page.tsx",
+    "api": "src/app/api/"
+  }
+}
+```
+
+---
+
+## Step 4: Document What Exists
+
+### Capture the "Why"
+
+```
+/shipkit-why-project
+```
+
+Even for existing projects, documenting the vision helps:
+
+```markdown
+# E-Commerce App - Why
+
+## Problem
+Small artisan sellers need a simple way to sell online without
+marketplace fees.
+
+## Solution
+Direct-to-consumer storefront with Stripe payments.
+
+## Current State
+- Product listing works
+- Basic checkout works
+- Missing: user accounts, order history
+
+## Constraints
+- Must maintain backward compatibility
+- Solo maintainer
+```
+
+### Document Existing Architecture
+
+```
+/shipkit-architecture-memory
+```
+
+Capture decisions that were already made:
+
+```markdown
+## Existing Architecture (documented 2026-02-03)
+
+### Database Schema
+**Decision:** Products have embedded variants (JSONB), not separate table
+
+**Rationale:** Simpler queries, variants always shown with product
+
+---
+
+### Authentication
+**Decision:** Using Supabase Auth with email/password only
+
+**Rationale:** Quick to set up, can add OAuth later
+
+---
+
+### State Management
+**Decision:** No global state library, use React Query for server state
+
+**Rationale:** Most state is server-derived, no complex client state yet
+```
+
+---
+
+## Step 5: Check Project Status
+
+```
+/shipkit-project-status
+```
+
+**Shows:**
+- What context files exist
+- What's missing
+- Suggested next steps
+
+**Example output:**
+
+```markdown
+## Project Status
+
+### Context Files
+✅ stack.md - Tech stack documented
+✅ why.md - Vision documented
+✅ architecture.md - 3 decisions logged
+
+### Missing
+⚠️ No specs in specs/active/
+⚠️ No codebase index
+
+### Suggested Actions
+1. Create spec for next feature: `/shipkit-spec`
+2. Index codebase for navigation: `/shipkit-codebase-index`
+```
+
+---
+
+## Step 6: Add a New Feature
+
+Now use the standard workflow for new features:
+
+### Spec It
+
+```
+/shipkit-spec "Add user accounts with order history"
+```
+
+**Creates:** `.shipkit/specs/active/user-accounts.md`
+
+The spec references existing architecture:
+
+```markdown
+# User Accounts with Order History
+
+## Overview
+Users can create accounts, log in, and view past orders.
+
+## Context
+- Auth: Supabase Auth already configured (see architecture.md)
+- Database: Supabase PostgreSQL
+
+## User Flow
+1. User clicks "Sign Up"
+2. Enters email/password
+3. Verifies email
+4. Can view order history in /account
+
+## Acceptance Criteria
+Given a logged-in user
+When they visit /account
+Then they see their past orders
+
+## Technical Approach
+- Extend existing Supabase Auth setup
+- Add orders table linked to auth.users
+- Create /account route with order list
+```
+
+### Plan It
+
+```
+/shipkit-plan
+```
+
+### Build It
+
+```
+Implement the user accounts feature following the plan.
+```
+
+### Verify It
+
+```
+/shipkit-verify
+```
+
+---
+
+## Ongoing Workflow
+
+For existing projects, the typical pattern is:
+
+```
+/shipkit-project-status    →  See what needs attention
+        ↓
+/shipkit-spec              →  Spec the next feature
+        ↓
+/shipkit-plan              →  Plan implementation
+        ↓
+(implement)                →  Build it
+        ↓
+/shipkit-verify            →  Verify quality
+        ↓
+/shipkit-architecture-memory  →  Log any new decisions
+```
+
+---
+
+## Tips for Existing Projects
+
+### 1. Don't Document Everything at Once
+
+Start with:
+- `why.md` — Takes 15 minutes, provides foundation
+- `stack.md` — Auto-generated by `/shipkit-project-context`
+
+Add architecture decisions as you encounter them.
+
+### 2. Spec New Features, Not Bug Fixes
+
+Use specs for new functionality. Bug fixes don't need specs — just fix them.
+
+### 3. Grow the Index Incrementally
+
+Don't try to index everything. Add concepts to `codebase-index.json` as you work in different areas.
+
+### 4. Capture Decisions Going Forward
+
+You don't need to document every past decision. Capture new ones as you make them.
+
+### 5. Keep Context Lean
+
+If `.shipkit/` files get too long, archive old content. Keep active context under ~2000 tokens total.
+
+---
+
+## Before vs After
+
+### Before Shipkit
+
+```
+your-project/
+├── src/
+├── package.json
+└── README.md
+```
+
+Every session:
+- "What's this project about?"
+- "What decisions have we made?"
+- "What's the current state?"
+
+### After Shipkit
+
+```
+your-project/
+├── CLAUDE.md              # Quick reference
+├── .shipkit/
+│   ├── why.md             # Vision
+│   ├── stack.md           # Tech stack
+│   ├── architecture.md    # Decisions
+│   ├── specs/active/      # Current work
+│   └── progress.md        # Session continuity
+├── src/
+├── package.json
+└── README.md
+```
+
+Every session:
+- Claude reads context automatically
+- Decisions persist
+- Work continues where you left off
+
+---
+
+## Key Takeaways
+
+1. **Start small** — `why.md` + `stack.md` is enough to begin
+2. **Document forward** — Don't retroactively document everything
+3. **Use specs for features** — Bug fixes don't need specs
+4. **Index large codebases** — Helps Claude navigate without loading everything
+5. **Grow context organically** — Add as you work, don't front-load

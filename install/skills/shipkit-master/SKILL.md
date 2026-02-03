@@ -115,8 +115,10 @@ This skill provides:
 | "Show status", "Project health", "What's missing?" | `/shipkit-project-status` | All .shipkit/ (glob scan) |
 | "Scan project", "Generate stack", "What's my tech stack?" | `/shipkit-project-context` | package.json, .env.example |
 | "Index codebase", "Map project", "Create index", "Update index" | `/shipkit-codebase-index` | None (generates from git) |
-| "Log progress", "Session summary", "What did we do?" | `/shipkit-work-memory` | .shipkit/progress.md |
+| "Log progress", "Session summary", "What did we do?", "Checkpoint", "Save state", "End session" | `/shipkit-work-memory` | .shipkit/progress.md |
 | "Help", "What skills exist?", "What can you do?" | List all shipkit skills | None |
+| "Find skills", "Get skills", "Is there a skill for?", "Install skill" | `/shipkit-get-skills` | None |
+| "Find MCPs", "Get MCPs", "Is there an MCP for?", "Install MCP" | `/shipkit-get-mcps` | .mcp.json |
 
 ### Specification & Planning
 
@@ -134,12 +136,14 @@ This skill provides:
 | "Log this decision", "Architecture choice", "Why did we choose X?" | `/shipkit-architecture-memory` | .shipkit/architecture.md |
 | "Define data shapes", "Type definitions", "Data contracts" | `/shipkit-data-contracts` | .shipkit/types.md |
 | "Fetch integration docs", "API patterns", "Service integration" | `/shipkit-integration-docs` | .shipkit/stack.md |
-| "Remember this", "Save this", "Teach", "Add to CLAUDE.md" | `/shipkit-teach` | CLAUDE.md |
+| "Remember this", "Save this", "Update CLAUDE.md", "Add to CLAUDE.md" | `/shipkit-claude-md` | CLAUDE.md |
 
 ### Quality & Communication
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
+| "Verify", "Check my work", "Ready to commit?", "Review changes" | `/shipkit-verify` | Git diff, specs, architecture |
+| "Preflight", "Production ready", "Ready to ship?", "Go live", "Launch check" | `/shipkit-preflight` | stack.md, why.md, architecture.md |
 | "Audit UX", "Check UX patterns", "UX gaps" | `/shipkit-ux-audit` | implementations/ |
 | "Create task", "Track TODO", "User tasks" | `/shipkit-user-instructions` | user-tasks/active.md |
 | "Visualize", "HTML report", "Visual communication" | `/shipkit-communications` | Relevant files based on request |
@@ -233,8 +237,8 @@ This skill is the **central router** that connects all other skills.
 | Vision/Discovery | `shipkit-why-project`, `shipkit-product-discovery` |
 | Context/Status | `shipkit-project-status`, `shipkit-project-context`, `shipkit-work-memory` |
 | Spec/Planning | `shipkit-spec`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec` |
-| Knowledge | `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`, `shipkit-teach` |
-| Quality | `shipkit-ux-audit`, `shipkit-quality-confidence`, `shipkit-user-instructions`, `shipkit-communications` |
+| Knowledge | `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`, `shipkit-claude-md` |
+| Quality | `shipkit-verify`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications` |
 
 **Does NOT Route:**
 - Natural capabilities (implement, debug, test, refactor) - Claude handles directly
@@ -284,3 +288,5 @@ This skill is the **central router** that connects all other skills.
 ---
 
 **Remember:** This skill is the traffic controller. It routes efficiently, loads lazily, and makes skills discoverable. Every session starts here.
+
+<!-- Shipkit v1.1.0 -->

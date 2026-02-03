@@ -1,3 +1,4 @@
+<!-- BEGIN Shipkit v1.1.0 -->
 # Shipkit
 
 Solo dev framework for shipping MVPs. AI-assisted, fast iteration, production-ready core paths.
@@ -60,16 +61,46 @@ If `.shipkit/codebase-index.json` exists:
 
 ## Skills Reference
 
+### Vision & Discovery
 | When... | Use |
 |---------|-----|
-| Starting a project | `/shipkit-project-context` |
-| Defining what to build | `/shipkit-why-project` → `/shipkit-spec` |
-| Planning implementation | `/shipkit-plan` |
-| Made an architecture decision | `/shipkit-architecture-memory` |
-| Ending a session | `/shipkit-work-memory` |
-| Need project health check | `/shipkit-project-status` |
+| Define project vision | `/shipkit-why-project` |
+| Create personas & journeys | `/shipkit-product-discovery` |
+| Scan codebase, detect stack | `/shipkit-project-context` |
+| Check project health | `/shipkit-project-status` |
 | Index codebase for navigation | `/shipkit-codebase-index` |
-| Persist a learning for future sessions | `/shipkit-teach` |
+
+### Spec & Planning
+| When... | Use |
+|---------|-----|
+| Create feature specification | `/shipkit-spec` |
+| Plan implementation steps | `/shipkit-plan` |
+| Quick UI mockup | `/shipkit-prototyping` |
+| Extract prototype learnings | `/shipkit-prototype-to-spec` |
+
+### Knowledge & Memory
+| When... | Use |
+|---------|-----|
+| Log architecture decision | `/shipkit-architecture-memory` |
+| Define data shapes & types | `/shipkit-data-contracts` |
+| Fetch external API patterns | `/shipkit-integration-docs` |
+| Update CLAUDE.md with learnings | `/shipkit-claude-md` |
+| End session / checkpoint | `/shipkit-work-memory` |
+
+### Quality & Communication
+| When... | Use |
+|---------|-----|
+| Verify work before commit | `/shipkit-verify` |
+| Production readiness audit | `/shipkit-preflight` |
+| Audit UX patterns | `/shipkit-ux-audit` |
+| Track manual tasks for user | `/shipkit-user-instructions` |
+| Create visual HTML report | `/shipkit-communications` |
+
+### Ecosystem
+| When... | Use |
+|---------|-----|
+| Find and install community skills | `/shipkit-get-skills` |
+| Find and install MCP servers | `/shipkit-get-mcps` |
 
 **No skill needed for:** implementing, debugging, testing, refactoring, documenting code.
 
@@ -94,3 +125,5 @@ If `.shipkit/codebase-index.json` exists:
 <!-- Mistakes corrected and project-specific knowledge. Claude checks this to avoid repeating errors. -->
 
 *(None yet — learnings will be added as the project evolves)*
+
+<!-- END Shipkit v1.1.0 -->

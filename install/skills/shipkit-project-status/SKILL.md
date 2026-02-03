@@ -469,3 +469,5 @@ Status check is complete when:
 ---
 
 **Remember**: This is an orientation tool. Run it when you need to know "where am I?" and "what should I do next?". It's designed to be fast, informative, and actionable.
+
+<!-- Shipkit v1.1.0 -->

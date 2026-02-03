@@ -254,3 +254,5 @@ Product Discovery Document is complete when:
 ---
 
 **Remember**: This file is your single source of truth for user understanding. Update it as you learn more about users. Product discovery is iterative; refine as insights emerge.
+
+<!-- Shipkit v1.1.0 -->

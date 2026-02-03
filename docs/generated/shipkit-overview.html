@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShipKit Lite - Quick Reference</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Courier New', monospace;
+            line-height: 1.5;
+            color: #1e293b;
+            background: #f8fafc;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        header h1 {
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #1e293b;
+            padding: 0 20px;
+            gap: 5px;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            color: #94a3b8;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 1em;
+            font-weight: 500;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .tab.active {
+            color: white;
+            border-bottom-color: #10b981;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Cheat Sheet Styles */
+        .cheat-sheet {
+            display: grid;
+            gap: 20px;
+        }
+
+        .cheat-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .cheat-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .cheat-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cheat-table th {
+            text-align: left;
+            padding: 10px;
+            background: #e2e8f0;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cheat-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .cheat-table tr:hover {
+            background: #f1f5f9;
+        }
+
+        .cheat-table .trigger {
+            color: #475569;
+            font-size: 0.95em;
+        }
+
+        .cheat-table .skill {
+            font-family: 'Courier New', monospace;
+            background: #1e293b;
+            color: #10b981;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .cheat-table .creates {
+            color: #64748b;
+            font-size: 0.9em;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Quick Reference Card */
+        .quick-ref {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .quick-ref h2 {
+            color: #92400e;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-ref-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .quick-ref-item .icon {
+            font-size: 1.5em;
+            width: 40px;
+            text-align: center;
+        }
+
+        .quick-ref-item .text {
+            flex: 1;
+        }
+
+        .quick-ref-item .when {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .quick-ref-item .skill-name {
+            font-family: 'Courier New', monospace;
+            color: #7c3aed;
+            font-size: 0.9em;
+        }
+
+        /* Skill Groups */
+        .skill-groups {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .skill-group {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .skill-group:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+        }
+
+        .skill-group h3 {
+            color: #667eea;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .skill-list {
+            list-style: none;
+        }
+
+        .skill-list li {
+            padding: 6px 0;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            font-size: 0.95em;
+        }
+
+        .skill-list .name {
+            font-family: 'Courier New', monospace;
+            color: #7c3aed;
+            font-weight: 600;
+        }
+
+        .skill-list .desc {
+            color: #64748b;
+        }
+
+        /* Principles */
+        .principles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .principle {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border-top: 4px solid #10b981;
+        }
+
+        .principle h3 {
+            color: #059669;
+            margin-bottom: 10px;
+        }
+
+        .principle p {
+            color: #475569;
+            font-size: 0.95em;
+        }
+
+        /* Natural Capabilities */
+        .natural-caps {
+            background: #ecfdf5;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .natural-caps h3 {
+            color: #059669;
+            margin-bottom: 15px;
+        }
+
+        .natural-caps-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .natural-cap {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            border: 1px solid #a7f3d0;
+        }
+
+        .natural-cap::before {
+            content: "✓ ";
+            color: #10b981;
+        }
+
+        /* Workflow */
+        .workflow-diagram {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .workflow-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .workflow-step {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .workflow-step .step-skill {
+            font-family: 'Courier New', monospace;
+            color: #7c3aed;
+            font-weight: 600;
+        }
+
+        .workflow-step .step-desc {
+            font-size: 0.85em;
+            color: #64748b;
+        }
+
+        .workflow-arrow {
+            color: #667eea;
+            font-size: 1.5em;
+        }
+
+        /* Section headers */
+        .section-header {
+            margin: 30px 0 20px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            color: #1e293b;
+        }
+
+        /* Footer */
+        footer {
+            background: #1e293b;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        footer p {
+            opacity: 0.8;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            header { flex-direction: column; text-align: center; }
+            .tabs { justify-content: center; }
+            .tab { padding: 12px 15px; font-size: 0.9em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ Shipkit</h1>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-number">23</span>
+                    <span class="stat-label">Skills</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">6</span>
+                    <span class="stat-label">Agents</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">7</span>
+                    <span class="stat-label">Principles</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('cheatsheet')">📋 Cheat Sheet</button>
+            <button class="tab" onclick="showTab('skills')">🛠️ All Skills</button>
+            <button class="tab" onclick="showTab('principles')">📐 Principles</button>
+            <button class="tab" onclick="showTab('workflow')">🔄 Workflow</button>
+        </div>
+
+        <!-- CHEAT SHEET TAB -->
+        <div id="cheatsheet" class="tab-content active">
+            <div class="quick-ref">
+                <h2>🎯 Quick Decision Guide</h2>
+                <div class="quick-ref-grid">
+                    <div class="quick-ref-item">
+                        <div class="icon">🚀</div>
+                        <div class="text">
+                            <div class="when">Starting a project?</div>
+                            <div class="skill-name">/shipkit-why-project → /shipkit-project-context</div>
+                        </div>
+                    </div>
+                    <div class="quick-ref-item">
+                        <div class="icon">💡</div>
+                        <div class="text">
+                            <div class="when">Have a feature idea?</div>
+                            <div class="skill-name">/shipkit-spec → /shipkit-plan</div>
+                        </div>
+                    </div>
+                    <div class="quick-ref-item">
+                        <div class="icon">🎨</div>
+                        <div class="text">
+                            <div class="when">Need to see UI first?</div>
+                            <div class="skill-name">/shipkit-prototyping</div>
+                        </div>
+                    </div>
+                    <div class="quick-ref-item">
+                        <div class="icon">📝</div>
+                        <div class="text">
+                            <div class="when">Made a tech decision?</div>
+                            <div class="skill-name">/shipkit-architecture-memory</div>
+                        </div>
+                    </div>
+                    <div class="quick-ref-item">
+                        <div class="icon">🔚</div>
+                        <div class="text">
+                            <div class="when">Ending/checkpointing?</div>
+                            <div class="skill-name">/shipkit-work-memory</div>
+                        </div>
+                    </div>
+                    <div class="quick-ref-item">
+                        <div class="icon">❓</div>
+                        <div class="text">
+                            <div class="when">What's the project status?</div>
+                            <div class="skill-name">/shipkit-project-status</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cheat-sheet">
+                <div class="cheat-section">
+                    <h3>🎯 Vision & Discovery</h3>
+                    <table class="cheat-table">
+                        <tr>
+                            <th style="width:40%">When you want to...</th>
+                            <th style="width:25%">Use</th>
+                            <th style="width:35%">Creates</th>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Define project vision & goals</td>
+                            <td><span class="skill">/shipkit-why-project</span></td>
+                            <td class="creates">why.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Scan codebase, detect stack</td>
+                            <td><span class="skill">/shipkit-project-context</span></td>
+                            <td class="creates">stack.md, schema.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Index codebase for navigation</td>
+                            <td><span class="skill">/shipkit-codebase-index</span></td>
+                            <td class="creates">codebase-index.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Update CLAUDE.md with learnings</td>
+                            <td><span class="skill">/shipkit-claude-md</span></td>
+                            <td class="creates">Appends to CLAUDE.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Define personas, journeys, stories</td>
+                            <td><span class="skill">/shipkit-product-discovery</span></td>
+                            <td class="creates">product-discovery.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Check project health & gaps</td>
+                            <td><span class="skill">/shipkit-project-status</span></td>
+                            <td class="creates">Status report (terminal)</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="cheat-section">
+                    <h3>📋 Specification & Planning</h3>
+                    <table class="cheat-table">
+                        <tr>
+                            <th style="width:40%">When you want to...</th>
+                            <th style="width:25%">Use</th>
+                            <th style="width:35%">Creates</th>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Create Given/When/Then spec</td>
+                            <td><span class="skill">/shipkit-spec</span></td>
+                            <td class="creates">specs/active/[name].md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Plan implementation steps</td>
+                            <td><span class="skill">/shipkit-plan</span></td>
+                            <td class="creates">plans/active/[name]-plan.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Create quick UI mockup</td>
+                            <td><span class="skill">/shipkit-prototyping</span></td>
+                            <td class="creates">.shipkit-mockups/[name]/</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Extract prototype learnings</td>
+                            <td><span class="skill">/shipkit-prototype-to-spec</span></td>
+                            <td class="creates">Appends to spec</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="cheat-section">
+                    <h3>🧠 Knowledge & Memory</h3>
+                    <table class="cheat-table">
+                        <tr>
+                            <th style="width:40%">When you want to...</th>
+                            <th style="width:25%">Use</th>
+                            <th style="width:35%">Creates</th>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Log an architecture decision</td>
+                            <td><span class="skill">/shipkit-architecture-memory</span></td>
+                            <td class="creates">architecture.md (append)</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Define data contracts/types</td>
+                            <td><span class="skill">/shipkit-data-contracts</span></td>
+                            <td class="creates">types.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Fetch integration patterns</td>
+                            <td><span class="skill">/shipkit-integration-docs</span></td>
+                            <td class="creates">integrations/[service].md</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="cheat-section">
+                    <h3>✅ Quality & Communication</h3>
+                    <table class="cheat-table">
+                        <tr>
+                            <th style="width:40%">When you want to...</th>
+                            <th style="width:25%">Use</th>
+                            <th style="width:35%">Creates</th>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Verify work before commit</td>
+                            <td><span class="skill">/shipkit-verify</span></td>
+                            <td class="creates">Report (ephemeral)</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Production readiness audit</td>
+                            <td><span class="skill">/shipkit-preflight</span></td>
+                            <td class="creates">production-readiness.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Audit UX patterns</td>
+                            <td><span class="skill">/shipkit-ux-audit</span></td>
+                            <td class="creates">ux-decisions.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Track manual tasks for user</td>
+                            <td><span class="skill">/shipkit-user-instructions</span></td>
+                            <td class="creates">user-tasks/active.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Log progress + save resume state</td>
+                            <td><span class="skill">/shipkit-work-memory</span></td>
+                            <td class="creates">progress.md (resume + log)</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Create visual HTML report</td>
+                            <td><span class="skill">/shipkit-communications</span></td>
+                            <td class="creates">.shipkit-comms/latest.html</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="natural-caps">
+                <h3>🚫 Don't Need a Skill (Just Do It)</h3>
+                <div class="natural-caps-grid">
+                    <span class="natural-cap">Implement features</span>
+                    <span class="natural-cap">Debug errors</span>
+                    <span class="natural-cap">Write tests</span>
+                    <span class="natural-cap">Refactor code</span>
+                    <span class="natural-cap">Add comments</span>
+                    <span class="natural-cap">Fix bugs</span>
+                    <span class="natural-cap">Code review</span>
+                    <span class="natural-cap">Git operations</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALL SKILLS TAB -->
+        <div id="skills" class="tab-content">
+            <h2 class="section-header">All 23 Skills by Category</h2>
+
+            <div class="skill-groups">
+                <div class="skill-group">
+                    <h3>🎯 Vision & Discovery</h3>
+                    <ul class="skill-list">
+                        <li><span class="name">/shipkit-why-project</span> <span class="desc">— Strategic vision</span></li>
+                        <li><span class="name">/shipkit-project-context</span> <span class="desc">— Scan stack</span></li>
+                        <li><span class="name">/shipkit-codebase-index</span> <span class="desc">— Navigation index</span></li>
+                        <li><span class="name">/shipkit-claude-md</span> <span class="desc">— Update CLAUDE.md</span></li>
+                        <li><span class="name">/shipkit-product-discovery</span> <span class="desc">— Personas & journeys</span></li>
+                        <li><span class="name">/shipkit-project-status</span> <span class="desc">— Health check</span></li>
+                        <li><span class="name">/shipkit-get-skills</span> <span class="desc">— Find & install skills</span></li>
+                        <li><span class="name">/shipkit-get-mcps</span> <span class="desc">— Find & install MCPs</span></li>
+                    </ul>
+                </div>
+
+                <div class="skill-group">
+                    <h3>📋 Spec & Planning</h3>
+                    <ul class="skill-list">
+                        <li><span class="name">/shipkit-spec</span> <span class="desc">— Feature specs</span></li>
+                        <li><span class="name">/shipkit-plan</span> <span class="desc">— Implementation plan</span></li>
+                        <li><span class="name">/shipkit-prototyping</span> <span class="desc">— UI mockups</span></li>
+                        <li><span class="name">/shipkit-prototype-to-spec</span> <span class="desc">— Extract learnings</span></li>
+                    </ul>
+                </div>
+
+                <div class="skill-group">
+                    <h3>🧠 Knowledge & Memory</h3>
+                    <ul class="skill-list">
+                        <li><span class="name">/shipkit-architecture-memory</span> <span class="desc">— Decisions log</span></li>
+                        <li><span class="name">/shipkit-data-contracts</span> <span class="desc">— Type definitions</span></li>
+                        <li><span class="name">/shipkit-integration-docs</span> <span class="desc">— External APIs</span></li>
+                    </ul>
+                </div>
+
+                <div class="skill-group">
+                    <h3>✅ Quality & Comms</h3>
+                    <ul class="skill-list">
+                        <li><span class="name">/shipkit-verify</span> <span class="desc">— Review work (12 dimensions)</span></li>
+                        <li><span class="name">/shipkit-preflight</span> <span class="desc">— Production readiness audit</span></li>
+                        <li><span class="name">/shipkit-ux-audit</span> <span class="desc">— UX patterns</span></li>
+                        <li><span class="name">/shipkit-user-instructions</span> <span class="desc">— Manual tasks</span></li>
+                        <li><span class="name">/shipkit-work-memory</span> <span class="desc">— Progress + resume state</span></li>
+                        <li><span class="name">/shipkit-communications</span> <span class="desc">— HTML reports</span></li>
+                    </ul>
+                </div>
+
+                <div class="skill-group">
+                    <h3>⚙️ System</h3>
+                    <ul class="skill-list">
+                        <li><span class="name">/shipkit-master</span> <span class="desc">— Orchestrator</span></li>
+                        <li><span class="name">/shipkit-detect</span> <span class="desc">— Auto-triggered</span></li>
+                    </ul>
+                </div>
+
+                <div class="skill-group">
+                    <h3>🎭 Agent Personas</h3>
+                    <ul class="skill-list">
+                        <li><span class="name">shipkit-product-owner</span> <span class="desc">— Vision</span></li>
+                        <li><span class="name">shipkit-ux-designer</span> <span class="desc">— UI/UX</span></li>
+                        <li><span class="name">shipkit-architect</span> <span class="desc">— Tech decisions</span></li>
+                        <li><span class="name">shipkit-implementer</span> <span class="desc">— Coding</span></li>
+                        <li><span class="name">shipkit-reviewer</span> <span class="desc">— Quality</span></li>
+                        <li><span class="name">shipkit-researcher</span> <span class="desc">— Research</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRINCIPLES TAB -->
+        <div id="principles" class="tab-content">
+            <h2 class="section-header">The 7 Shipkit Principles</h2>
+
+            <div class="principles">
+                <div class="principle">
+                    <h3>1. MVP ≠ Low Quality</h3>
+                    <p>Core paths bulletproof. Everything else minimal. Auth, payments, security are non-negotiable. Edge cases can wait.</p>
+                </div>
+                <div class="principle">
+                    <h3>2. Context Over Defaults</h3>
+                    <p>Check .shipkit/ before assuming. why.md says "MVP in 2 weeks"? Keep it simple. Don't apply "best practices" blindly.</p>
+                </div>
+                <div class="principle">
+                    <h3>3. Solo Dev Patterns</h3>
+                    <p>Skip team ceremony. No PRs, no code reviews, no abstraction "for future developers". Self-documenting code, minimal overhead.</p>
+                </div>
+                <div class="principle">
+                    <h3>4. AI-First Code</h3>
+                    <p>The next developer is also Claude. One concept per file. Explicit imports. "Why" comments. Flat structures. No magic.</p>
+                </div>
+                <div class="principle">
+                    <h3>5. Modular by Default</h3>
+                    <p>&lt;200 lines per file. Types at boundaries. No circular deps. Feature folders. Enables parallel AI agents.</p>
+                </div>
+                <div class="principle">
+                    <h3>6. SaaS Defaults</h3>
+                    <p>User ID on every table. Supabase RLS. Lemon Squeezy webhooks. Basic analytics from day 1. Multi-tenancy baked in.</p>
+                </div>
+                <div class="principle">
+                    <h3>7. Shipping > Perfecting</h3>
+                    <p>Launch with known limitations. Document them in progress.md. Real feedback beats hypothetical requirements.</p>
+                </div>
+            </div>
+
+            <div class="natural-caps" style="margin-top: 30px; background: #fef3c7;">
+                <h3 style="color: #92400e;">💡 The Skill Value Test</h3>
+                <p style="font-size: 1.1em; color: #78350f;">A skill is valuable if it: <strong>forces human decisions</strong> OR <strong>creates persistence Claude lacks</strong>.</p>
+                <p style="color: #92400e; margin-top: 10px;">If Claude can do it well without instruction (debug, implement, test) → just do it, no skill needed.</p>
+            </div>
+        </div>
+
+        <!-- WORKFLOW TAB -->
+        <div id="workflow" class="tab-content">
+            <h2 class="section-header">Typical Development Flow</h2>
+
+            <div class="workflow-diagram">
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-skill">/shipkit-why-project</div>
+                        <div class="step-desc">Define vision</div>
+                    </div>
+                    <span class="workflow-arrow">→</span>
+                    <div class="workflow-step">
+                        <div class="step-skill">/shipkit-project-context</div>
+                        <div class="step-desc">Scan stack</div>
+                    </div>
+                    <span class="workflow-arrow">→</span>
+                    <div class="workflow-step">
+                        <div class="step-skill">/shipkit-spec</div>
+                        <div class="step-desc">Define feature</div>
+                    </div>
+                    <span class="workflow-arrow">→</span>
+                    <div class="workflow-step">
+                        <div class="step-skill">/shipkit-plan</div>
+                        <div class="step-desc">Plan impl</div>
+                    </div>
+                    <span class="workflow-arrow">→</span>
+                    <div class="workflow-step" style="border-color: #10b981;">
+                        <div class="step-skill" style="color: #059669;">Just Code</div>
+                        <div class="step-desc">Implement it</div>
+                    </div>
+                    <span class="workflow-arrow">→</span>
+                    <div class="workflow-step">
+                        <div class="step-skill">/shipkit-work-memory</div>
+                        <div class="step-desc">Log progress</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-header" style="margin-top: 40px;">File Structure</h2>
+            <div style="background: #1e293b; color: #e2e8f0; padding: 25px; border-radius: 12px; font-family: 'Courier New', monospace; font-size: 0.95em; line-height: 1.8;">
+<pre>.shipkit/
+├── why.md                 # Project vision
+├── stack.md               # Tech stack (auto-scanned)
+├── architecture.md        # Decisions log
+├── types.md               # Type definitions
+├── progress.md            # Session history
+├── specs/
+│   ├── active/            # Current specs
+│   └── implemented/       # Completed specs
+├── plans/
+│   ├── active/            # Current plans
+│   └── implemented/       # Completed plans
+├── implementations/
+│   ├── components/        # Component docs
+│   └── routes/            # Route docs
+├── integrations/          # External service patterns
+├── user-tasks/
+│   └── active.md          # Manual tasks
+└── .queues/               # Auto-generated work queues</pre>
+            </div>
+
+            <h2 class="section-header" style="margin-top: 40px;">Default Tech Stack</h2>
+            <div class="skill-groups" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <div class="skill-group" style="text-align: center;">
+                    <h3 style="justify-content: center;">Framework</h3>
+                    <p style="font-size: 1.2em; color: #1e293b;">Next.js (App Router)</p>
+                </div>
+                <div class="skill-group" style="text-align: center;">
+                    <h3 style="justify-content: center;">Hosting</h3>
+                    <p style="font-size: 1.2em; color: #1e293b;">Vercel</p>
+                </div>
+                <div class="skill-group" style="text-align: center;">
+                    <h3 style="justify-content: center;">Database</h3>
+                    <p style="font-size: 1.2em; color: #1e293b;">Supabase</p>
+                </div>
+                <div class="skill-group" style="text-align: center;">
+                    <h3 style="justify-content: center;">Payments</h3>
+                    <p style="font-size: 1.2em; color: #1e293b;">Lemon Squeezy</p>
+                </div>
+                <div class="skill-group" style="text-align: center;">
+                    <h3 style="justify-content: center;">Email</h3>
+                    <p style="font-size: 1.2em; color: #1e293b;">Resend</p>
+                </div>
+                <div class="skill-group" style="text-align: center;">
+                    <h3 style="justify-content: center;">Styling</h3>
+                    <p style="font-size: 1.2em; color: #1e293b;">Tailwind + shadcn</p>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Shipkit • 23 Skills • 6 Agents • 7 Principles</p>
+            <p style="margin-top: 10px;">Production-ready MVPs for SaaS applications</p>
+        </footer>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

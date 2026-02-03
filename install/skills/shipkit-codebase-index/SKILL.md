@@ -220,3 +220,5 @@ I'll use this index to navigate faster.
 - [ ] Core files identified
 - [ ] User confirmed skip list (if any)
 - [ ] Index saved
+
+<!-- Shipkit v1.1.0 -->

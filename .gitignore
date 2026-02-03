@@ -36,9 +36,21 @@ venv/
 # Project instructions (generated per developer/project)
 CLAUDE.md
 
-# Development reference materials (not for distribution)
-claude-code-best-practices/
-claude-working-documents/
+# Internal development documents (not for distribution)
+dev/
 
-# Exported packages (keep script, ignore ZIPs)
-exported/*.zip
+# Internal development materials (not for public distribution)
+docs/development/
+
+# Archived/deprecated code (historical, not for distribution)
+archive/
+
+# Internal development scripts (root level only)
+/scripts/
+
+# Old test files
+tests/archive/
+
+# Deprecated folders (superseded by docs/generated/ and scripts/)
+exported/
+help/

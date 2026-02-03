@@ -1,74 +1,72 @@
-# Shipkit Light - Streamlined Product Development Framework
+# Shipkit - Streamlined Product Development Framework
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**28 lite skills** organized for streamlined workflow:
-- **Core Workflow** (4) - Orchestration and status
+**23 skills** organized for streamlined workflow:
+- **Core Workflow** (5) - Orchestration, status, and context management
 - **Discovery & Planning** (6) - Product discovery and specification
-- **Implementation** (7) - Building and documentation
-- **Quality** (6) - Testing and user documentation
-- **System** (5) - Auto-triggered validation skills
+- **Implementation** (3) - Architecture, contracts, and integrations
+- **Quality & Documentation** (6) - Testing, UX, and documentation
+- **Ecosystem** (2) - Get skills and MCPs
+- **System** (1) - Auto-triggered detection
 
 Plus **6 agent personas** that specialize behaviors for different workflow stages.
 
-> **Note:** This repo now exclusively supports Shipkit Light. The full Shipkit framework has been archived to `archive/base-shipkit/`.
+> **Note:** This repo now exclusively supports Shipkit. The full Shipkit framework has been archived to `archive/base-shipkit/`.
 
 ---
 
 ## What's Inside
 
-### Lite Skills (28 total)
+### Skills (23 total)
 
-All skills use the `lite-` prefix for clarity.
+All skills use the `shipkit-` prefix for clarity.
 
-**Core Workflow (4 skills):**
-- `lite-shipkit-master` - Meta skill for workflow orchestration
-- `lite-project-status` - Health check and gap analysis
-- `lite-project-context` - Codebase scanning, stack detection
-- `lite-whats-next` - Workflow routing and next steps
+**Core Workflow (5 skills):**
+- `shipkit-master` - Meta skill for workflow orchestration
+- `shipkit-project-status` - Health check and gap analysis
+- `shipkit-project-context` - Codebase scanning, stack detection
+- `shipkit-codebase-index` - Semantic codebase indexing
+- `shipkit-claude-md` - CLAUDE.md management
 
 **Discovery & Planning (6 skills):**
-- `lite-product-discovery` - Personas, journeys, user stories
-- `lite-why-project` - Strategic vision definition
-- `lite-spec` - Feature specification
-- `lite-plan` - Implementation planning
-- `lite-prototyping` - Rapid UI mockups
-- `lite-prototype-to-spec` - Extract learnings from prototypes
+- `shipkit-product-discovery` - Personas, journeys, user stories
+- `shipkit-why-project` - Strategic vision definition
+- `shipkit-spec` - Feature specification
+- `shipkit-plan` - Implementation planning
+- `shipkit-prototyping` - Rapid UI mockups
+- `shipkit-prototype-to-spec` - Extract learnings from prototypes
 
-**Implementation (7 skills):**
-- `lite-implement` - Feature building
-- `lite-architecture-memory` - Decision logging
-- `lite-data-contracts` - Type definitions (Zod patterns)
-- `lite-component-knowledge` - Component documentation
-- `lite-route-knowledge` - Route documentation
-- `lite-integration-docs` - Integration patterns
-- `lite-debug-systematically` - Debugging methodology
+**Implementation (3 skills):**
+- `shipkit-architecture-memory` - Decision logging
+- `shipkit-data-contracts` - Type definitions (Zod patterns)
+- `shipkit-integration-docs` - Integration patterns
 
 **Quality & Documentation (6 skills):**
-- `lite-ux-audit` - UX analysis and patterns
-- `lite-quality-confidence` - QA and acceptance criteria
-- `lite-document-artifact` - Documentation templates
-- `lite-user-instructions` - User-facing documentation
-- `lite-communications` - Communication and formatting
-- `lite-work-memory` - Session memory and context
+- `shipkit-ux-audit` - UX analysis and patterns
+- `shipkit-verify` - QA and acceptance criteria
+- `shipkit-preflight` - Production readiness audit
+- `shipkit-user-instructions` - User-facing documentation
+- `shipkit-communications` - Communication and formatting
+- `shipkit-work-memory` - Session memory and context
 
-**System Skills (5 skills, auto-triggered):**
-- `lite-milestone-detector` - Feature completion detection
-- `lite-post-spec-check` - Post-spec validation
-- `lite-post-plan-check` - Post-plan validation
-- `lite-post-implement-check` - Post-implement validation
-- `lite-pre-ship-check` - Pre-release validation
+**Ecosystem (2 skills):**
+- `shipkit-get-skills` - Discover and install Claude Code skills
+- `shipkit-get-mcps` - Discover and install MCP servers
+
+**System Skills (1 skill, auto-triggered):**
+- `shipkit-detect` - Pattern detection and queue creation
 
 ### Agent Personas (6)
 
 | Agent | Used For |
 |-------|----------|
-| `lite-product-owner-agent` | Product/vision focus |
-| `lite-ux-designer-agent` | UX/design perspective |
-| `lite-architect-agent` | Technical architecture |
-| `lite-implementer-agent` | Implementation focus |
-| `lite-reviewer-agent` | Code review/quality |
-| `lite-researcher-agent` | Research/discovery |
+| `shipkit-product-owner-agent` | Product/vision focus |
+| `shipkit-ux-designer-agent` | UX/design perspective |
+| `shipkit-architect-agent` | Technical architecture |
+| `shipkit-implementer-agent` | Implementation focus |
+| `shipkit-reviewer-agent` | Code review/quality |
+| `shipkit-researcher-agent` | Research/discovery |
 
 ---
 
@@ -83,10 +81,10 @@ python ../sg-shipkit/installers/install.py
 ```
 
 The installer will:
-- Install all 28 lite skills
+- Install all 22 skills
 - Set up 6 agent personas
 - Configure session hooks
-- Create `.shipkit-lite/` workspace
+- Create `.shipkit/` workspace
 
 ### After Installation
 
@@ -96,11 +94,10 @@ your-project/
 ├── CLAUDE.md                    # Workflow guide
 ├── .claude/
 │   ├── settings.json            # Permissions + hooks
-│   ├── skills/                  # 28 lite skill definitions
+│   ├── skills/                  # 22 skill definitions
 │   ├── agents/                  # 6 agent personas
 │   └── hooks/                   # Session hooks
-└── .shipkit-lite/               # Your workspace
-    ├── scripts/                 # Shared utilities
+└── .shipkit/                    # Your workspace
     ├── specs/                   # Feature specifications
     ├── plans/                   # Implementation plans
     └── [context files...]       # Stack, architecture, etc.
@@ -109,15 +106,15 @@ your-project/
 ### Basic Workflow
 
 ```
-/lite-project-context   → Scan and understand codebase
+/shipkit-project-context   → Scan and understand codebase
     ↓
-/lite-spec              → Create feature specification
+/shipkit-spec              → Create feature specification
     ↓
-/lite-plan              → Generate implementation plan
+/shipkit-plan              → Generate implementation plan
     ↓
-/lite-implement         → Build the feature
+(implement)                → Build the feature (natural capability)
     ↓
-/lite-quality-confidence → Verify quality
+/shipkit-verify            → Verify quality
 ```
 
 ---
@@ -128,14 +125,14 @@ your-project/
 
 When Claude Code starts:
 1. Runs session-start hook
-2. Loads `lite-shipkit-master` into context
+2. Loads `shipkit-master` into context
 3. Skills become the primary workflow method
 
-### 2. Context Lives in `.shipkit-lite/`
+### 2. Context Lives in `.shipkit/`
 
 Your project context is stored in:
 ```
-.shipkit-lite/
+.shipkit/
 ├── specs/               # Feature specifications
 ├── plans/               # Implementation plans
 ├── architecture.md      # Architecture decisions
@@ -149,13 +146,11 @@ Your project context is stored in:
 Skills naturally flow from one to another:
 
 ```
-/lite-project-context → Detects your stack
-    → /lite-spec → Creates feature spec
-    → /lite-plan → Generates implementation plan
-    → /lite-implement → Builds the feature
+/shipkit-project-context → Detects your stack
+    → /shipkit-spec → Creates feature spec
+    → /shipkit-plan → Generates implementation plan
+    → (implement) → Builds the feature
 ```
-
-After each skill, `/lite-whats-next` suggests the logical next step.
 
 ---
 
@@ -168,14 +163,14 @@ sg-shipkit/
 │   └── README.md                 # Installer documentation
 │
 ├── install/                      # Everything that gets installed
-│   ├── skills/                   # 28 lite-* skill definitions
-│   ├── agents/                   # 6 lite-*-agent personas
+│   ├── skills/                   # 22 shipkit-* skill definitions
+│   ├── agents/                   # 6 shipkit-*-agent personas
 │   ├── profiles/
-│   │   └── lite.manifest.json    # Skill manifest
+│   │   └── shipkit.manifest.json # Skill manifest
 │   ├── settings/
-│   │   └── lite.settings.json    # Permissions + hooks
+│   │   └── shipkit.settings.json # Permissions + hooks
 │   ├── claude-md/
-│   │   └── lite.md               # CLAUDE.md template
+│   │   └── shipkit.md            # CLAUDE.md template
 │   ├── shared/
 │   │   ├── hooks/                # Session hooks
 │   │   └── scripts/              # Shared utilities
@@ -194,26 +189,26 @@ sg-shipkit/
 ## Key Features
 
 ### Streamlined Workflow
-- 28 focused skills (vs 37+ in full framework)
-- All skills use `lite-` prefix for clarity
-- Context stored in single `.shipkit-lite/` folder
+- 22 focused skills
+- All skills use `shipkit-` prefix for clarity
+- Context stored in single `.shipkit/` folder
 - No complex workspace structure
 
 ### Specification-Driven
-- Features start with `/lite-spec`
+- Features start with `/shipkit-spec`
 - Plans reference specs
 - Implementation follows plans
 - Quality checks verify alignment
 
 ### Session Persistence
-- `/lite-work-memory` maintains context
-- `/lite-project-context` detects your stack
+- `/shipkit-work-memory` maintains context
+- `/shipkit-project-context` detects your stack
 - Context files persist between sessions
 
-### Automatic Validation
-- System skills trigger automatically
-- Post-spec, post-plan, post-implement checks
-- Pre-ship validation before release
+### Natural Capabilities
+Implementation, debugging, testing, refactoring, and code documentation are **natural Claude capabilities** that don't need skills. Skills focus on:
+- Human decisions that must be explicit
+- Persistence that survives sessions
 
 ---
 
@@ -221,27 +216,27 @@ sg-shipkit/
 
 ### New Feature
 ```bash
-/lite-spec "Add user authentication"
-/lite-plan
-/lite-implement
-/lite-quality-confidence
+/shipkit-spec "Add user authentication"
+/shipkit-plan
+# implement the feature
+/shipkit-verify
 ```
 
 ### Explore Codebase
 ```bash
-/lite-project-context
-/lite-project-status
+/shipkit-project-context
+/shipkit-project-status
 ```
 
-### Debug Issue
+### Document Architecture
 ```bash
-/lite-debug-systematically
+/shipkit-architecture-memory
 ```
 
-### Document Component
+### Get External Resources
 ```bash
-/lite-component-knowledge "UserProfile"
-/lite-user-instructions
+/shipkit-get-skills     # Find Claude Code skills
+/shipkit-get-mcps       # Find MCP servers
 ```
 
 ---
@@ -255,7 +250,7 @@ cd your-project
 python ../sg-shipkit/installers/install.py -y
 ```
 
-This preserves your `.shipkit-lite/` context files while updating skill definitions.
+This preserves your `.shipkit/` context files while updating skill definitions.
 
 ---
 

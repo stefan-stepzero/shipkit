@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 install.py - Shipkit Installer (Python)
-Manifest-based installer supporting multiple editions and languages
+Manifest-based installer with customizable skill/agent selection
 """
 
 import os
@@ -69,7 +69,7 @@ def show_logo(edition="default"):
     print(f"{Colors.RESET}")
 
     print(f"{Colors.DIM}         Solo Dev Product Development Framework{Colors.RESET}")
-    print(f"{Colors.DIM}              18 Skills • 6 Agents • Fast Iteration{Colors.RESET}")
+    print(f"{Colors.DIM}              Customizable Skills • Agents • Fast Iteration{Colors.RESET}")
     print()
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -96,12 +96,25 @@ def load_manifest(repo_root, profile):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def prompt_for_profile():
-    """Return shipkit profile (now the only edition)"""
+    """Prompt user to select a profile"""
     print()
-    print(f"  {Colors.BOLD}Edition:{Colors.RESET} Shipkit")
-    print(f"  {Colors.DIM}18 skills • 6 agents • Streamlined workflow{Colors.RESET}")
+    print(f"  {Colors.BOLD}Select Profile:{Colors.RESET}")
     print()
-    return "shipkit"
+    print(f"  {Colors.CYAN}[1]{Colors.RESET} Full        - All 23 skills + 6 agents (recommended)")
+    print(f"  {Colors.CYAN}[2]{Colors.RESET} Discovery   - Vision & planning skills (11 skills)")
+    print(f"  {Colors.CYAN}[3]{Colors.RESET} Minimal     - Core workflow only (5 skills)")
+    print()
+
+    while True:
+        choice = input(f"  {Colors.BOLD}Select profile [1-3]:{Colors.RESET} ").strip()
+        if choice == "1" or choice == "":
+            return "shipkit"
+        elif choice == "2":
+            return "discovery"
+        elif choice == "3":
+            return "minimal"
+        else:
+            print_warning("Invalid choice. Please enter 1, 2, or 3.")
 
 def prompt_for_language():
     """Prompt user to select scripting language"""
@@ -144,6 +157,228 @@ def confirm(prompt, default=True):
         return default
 
     return response in ['y', 'yes']
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SKILL SELECTION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def prompt_for_skills(manifest):
+    """Prompt user to select which skills to install"""
+    mandatory = manifest["skills"]["mandatory"]
+    optional = manifest["skills"]["optional"]
+
+    print()
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.BOLD}Skill Selection{Colors.RESET}")
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print()
+    print(f"  {Colors.DIM}Mandatory skills (always installed):{Colors.RESET}")
+    for skill in mandatory:
+        print(f"    {Colors.GREEN}✓{Colors.RESET} {skill}")
+    print()
+
+    # Flatten optional skills for selection
+    all_optional = []
+    category_indices = {}  # Track which indices belong to which category
+
+    for category, skills in optional.items():
+        start_idx = len(all_optional)
+        for skill in skills:
+            all_optional.append({"category": category, **skill})
+        category_indices[category] = (start_idx, len(all_optional))
+
+    # All selected by default
+    selected = [True] * len(all_optional)
+
+    while True:
+        # Display by category
+        idx = 0
+        for category, skills in optional.items():
+            print(f"  {Colors.BOLD}{category}:{Colors.RESET}")
+            for skill in skills:
+                marker = f"{Colors.GREEN}✓{Colors.RESET}" if selected[idx] else " "
+                print(f"    [{idx+1:2}] {marker} {Colors.CYAN}{skill['name']:30}{Colors.RESET} {Colors.DIM}{skill['desc']}{Colors.RESET}")
+                idx += 1
+            print()
+
+        print(f"  {Colors.DIM}Commands:{Colors.RESET}")
+        print(f"  {Colors.DIM}  [numbers]  Toggle individual skills (e.g., 1 3 5){Colors.RESET}")
+        print(f"  {Colors.DIM}  [a]        Select all{Colors.RESET}")
+        print(f"  {Colors.DIM}  [n]        Select none (minimal install){Colors.RESET}")
+        print(f"  {Colors.DIM}  [c:name]   Toggle category (e.g., c:Vision){Colors.RESET}")
+        print(f"  {Colors.DIM}  [Enter]    Continue with selection{Colors.RESET}")
+        print()
+
+        choice = input(f"  {Colors.BOLD}Selection:{Colors.RESET} ").strip().lower()
+
+        if choice == "":
+            break
+        elif choice == "a":
+            selected = [True] * len(all_optional)
+        elif choice == "n":
+            selected = [False] * len(all_optional)
+        elif choice.startswith("c:"):
+            # Toggle category
+            cat_search = choice[2:].strip().lower()
+            for category, (start, end) in category_indices.items():
+                if cat_search in category.lower():
+                    # Toggle all in this category
+                    current_state = all(selected[start:end])
+                    for i in range(start, end):
+                        selected[i] = not current_state
+                    break
+        else:
+            # Parse numbers
+            try:
+                nums = [int(x.strip()) for x in choice.replace(",", " ").split()]
+                for num in nums:
+                    if 1 <= num <= len(all_optional):
+                        selected[num-1] = not selected[num-1]
+            except ValueError:
+                print_warning("Invalid input.")
+
+        # Clear and redraw
+        print()
+
+    # Build final skill list
+    selected_skills = list(mandatory)  # Start with mandatory
+    for i, skill in enumerate(all_optional):
+        if selected[i]:
+            selected_skills.append(skill["name"])
+
+    return selected_skills
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AGENT SELECTION
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def prompt_for_agents(manifest):
+    """Prompt user to select which agents to install"""
+    agents = manifest.get("agents", [])
+
+    if not agents:
+        return []
+
+    print()
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.BOLD}Agent Selection{Colors.RESET}")
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print()
+    print(f"  {Colors.DIM}Agents are specialized personas for different tasks.{Colors.RESET}")
+    print(f"  {Colors.DIM}They're optional but helpful for focused work.{Colors.RESET}")
+    print()
+
+    # All selected by default
+    selected = [True] * len(agents)
+
+    while True:
+        for i, agent in enumerate(agents):
+            marker = f"{Colors.GREEN}✓{Colors.RESET}" if selected[i] else " "
+            print(f"  [{i+1}] {marker} {Colors.CYAN}{agent['name']:32}{Colors.RESET} {Colors.DIM}{agent['desc']}{Colors.RESET}")
+
+        print()
+        print(f"  {Colors.DIM}Enter numbers to toggle, or:{Colors.RESET}")
+        print(f"  {Colors.DIM}  [a] Select all  [n] Select none  [Enter] Continue{Colors.RESET}")
+        print()
+
+        choice = input(f"  {Colors.BOLD}Selection:{Colors.RESET} ").strip().lower()
+
+        if choice == "":
+            break
+        elif choice == "a":
+            selected = [True] * len(agents)
+        elif choice == "n":
+            selected = [False] * len(agents)
+        else:
+            try:
+                nums = [int(x.strip()) for x in choice.replace(",", " ").split()]
+                for num in nums:
+                    if 1 <= num <= len(agents):
+                        selected[num-1] = not selected[num-1]
+            except ValueError:
+                print_warning("Invalid input.")
+
+        print()
+
+    return [agent["name"] for i, agent in enumerate(agents) if selected[i]]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CLAUDE.MD HANDLING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def prompt_for_claude_md_action(target_dir):
+    """Prompt user for how to handle existing CLAUDE.md"""
+    claude_md_path = target_dir / "CLAUDE.md"
+
+    if not claude_md_path.exists():
+        return "install"  # No existing file, just install
+
+    print()
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.BOLD}CLAUDE.md Already Exists{Colors.RESET}")
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print()
+    print(f"  {Colors.DIM}Found existing CLAUDE.md at {target_dir}{Colors.RESET}")
+    print()
+    print(f"  {Colors.CYAN}[1]{Colors.RESET} Skip       - Keep your existing CLAUDE.md unchanged")
+    print(f"  {Colors.CYAN}[2]{Colors.RESET} Overwrite  - Replace with Shipkit template")
+    print(f"  {Colors.CYAN}[3]{Colors.RESET} Merge      - Append Shipkit sections to existing file")
+    print()
+
+    while True:
+        choice = input(f"  {Colors.BOLD}Select action [1-3]:{Colors.RESET} ").strip()
+        if choice == "1":
+            return "skip"
+        elif choice == "2":
+            return "overwrite"
+        elif choice == "3":
+            return "merge"
+        else:
+            print_warning("Invalid choice. Please enter 1, 2, or 3.")
+
+def merge_claude_md(existing_path, template_path):
+    """Merge Shipkit template into existing CLAUDE.md"""
+    with open(existing_path, 'r', encoding='utf-8') as f:
+        existing_content = f.read()
+
+    with open(template_path, 'r', encoding='utf-8') as f:
+        template_content = f.read()
+
+    # Check if already merged
+    if "## Skills Reference" in existing_content and "/shipkit-" in existing_content:
+        return existing_content  # Already has Shipkit content
+
+    # Find sections to append from template
+    sections_to_add = []
+
+    # Extract key sections from template
+    template_sections = [
+        ("## Context Files", "## Codebase Navigation"),
+        ("## Codebase Navigation", "## Skills Reference"),
+        ("## Skills Reference", "## Meta-Behavior"),
+    ]
+
+    for start_marker, end_marker in template_sections:
+        if start_marker in template_content:
+            start_idx = template_content.find(start_marker)
+            if end_marker and end_marker in template_content:
+                end_idx = template_content.find(end_marker)
+                section = template_content[start_idx:end_idx].strip()
+            else:
+                section = template_content[start_idx:].strip()
+
+            # Only add if not already present
+            if start_marker not in existing_content:
+                sections_to_add.append(section)
+
+    # Append sections
+    merged = existing_content.rstrip()
+    if sections_to_add:
+        merged += "\n\n---\n\n# Shipkit Integration\n\n"
+        merged += "\n\n".join(sections_to_add)
+        merged += "\n"
+
+    return merged
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # VALIDATION
@@ -220,107 +455,266 @@ def install_shared_core(repo_root, target_dir, language, edition):
 
     # Git files
     print_info("Installing git configuration files...")
-    # Only install .gitignore (no longer need .gitattributes - hooks are Python now)
     filename = ".gitignore"
     src = shared_dir / filename
     dest = target_dir / filename
-    if not dest.exists():  # Don't overwrite existing
+    if not dest.exists():
         shutil.copy2(src, dest)
         print_success(f"{filename} installed")
     else:
         print_warning(f"{filename} already exists, skipping")
 
-def install_edition_files(repo_root, target_dir, manifest, language):
+def install_edition_files(repo_root, target_dir, manifest, language, selected_skills, claude_md_action):
     """Install edition-specific settings and CLAUDE.md"""
     print()
     print(f"  {Colors.BOLD}Installing edition-specific files{Colors.RESET}")
     print()
 
-    # Settings
-    settings_file = manifest["settingsFile"]
-    settings_src = repo_root / "install" / "settings" / settings_file
+    # Settings - generate dynamically based on selected skills
     settings_dest = target_dir / ".claude" / "settings.json"
     settings_dest.parent.mkdir(parents=True, exist_ok=True)
 
     if not settings_dest.exists():
-        shutil.copy2(settings_src, settings_dest)
-        print_success(f"Settings installed: {settings_file}")
+        settings = generate_settings(manifest, language, selected_skills)
+        with open(settings_dest, 'w', encoding='utf-8') as f:
+            json.dump(settings, f, indent=2)
+        print_success(f"Settings installed with {len(selected_skills)} skill permissions")
     else:
         print_warning("settings.json exists, preserving your custom config")
+        # Still update skill permissions
+        if confirm("Update skill permissions in existing settings?", default=True):
+            update_skill_permissions(settings_dest, selected_skills)
+            print_success("Skill permissions updated")
 
     # CLAUDE.md
     claude_md_file = manifest["claudeMdFile"]
     claude_md_src = repo_root / "install" / "claude-md" / claude_md_file
     claude_md_dest = target_dir / "CLAUDE.md"
 
-    if not claude_md_dest.exists():
+    if claude_md_action == "install":
         shutil.copy2(claude_md_src, claude_md_dest)
-        print_success(f"CLAUDE.md installed: {claude_md_file}")
-    else:
-        print_warning("CLAUDE.md exists, skipping")
+        print_success(f"CLAUDE.md installed")
+    elif claude_md_action == "skip":
+        print_info("CLAUDE.md skipped (keeping existing)")
+    elif claude_md_action == "overwrite":
+        shutil.copy2(claude_md_src, claude_md_dest)
+        print_success("CLAUDE.md overwritten with Shipkit template")
+    elif claude_md_action == "merge":
+        merged_content = merge_claude_md(claude_md_dest, claude_md_src)
+        with open(claude_md_dest, 'w', encoding='utf-8') as f:
+            f.write(merged_content)
+        print_success("CLAUDE.md merged with Shipkit sections")
 
-    # Update settings.json with edition and language metadata
-    if settings_dest.exists():
-        try:
-            with open(settings_dest, 'r') as f:
-                settings = json.load(f)
+def generate_settings(manifest, language, selected_skills):
+    """Generate settings.json with only selected skill permissions"""
+    # Base settings template
+    settings = {
+        "permissions": {
+            "allow": [
+                "Read",
+                "Read(.env.example)",
+                "Read(**/.env.example)",
+                "Read(.env.*.example)",
+                "Read(**/.env.*.example)",
 
-            settings["shipkit"] = {
-                "edition": manifest["edition"],
-                "language": language
-            }
+                "Write(src/**)",
+                "Write(app/**)",
+                "Write(components/**)",
+                "Write(lib/**)",
+                "Write(utils/**)",
+                "Write(tests/**)",
+                "Write(__tests__/**)",
+                "Write(*.ts)",
+                "Write(*.tsx)",
+                "Write(*.js)",
+                "Write(*.jsx)",
+                "Write(*.py)",
+                "Write(*.json)",
+                "Write(*.md)",
+                "Write(*.yaml)",
+                "Write(*.yml)",
+                "Write(*.toml)",
+                "Write(*.html)",
+                "Write(*.css)",
+                "Write(*.scss)",
+                "Write(*.sass)",
+                "Write(*.sh)",
+                "Write(*.sql)",
+                "Write(*.xml)",
+                "Write(*.txt)",
+                "Write(package.json)",
+                "Write(pyproject.toml)",
+                "Write(requirements.txt)",
 
-            with open(settings_dest, 'w') as f:
-                json.dump(settings, f, indent=2)
+                "Bash(git:*)",
+                "Bash(python:*)",
+                "Bash(pip:*)",
+                "Bash(poetry:*)",
+                "Bash(pytest:*)",
+                "Bash(black:*)",
+                "Bash(ruff:*)",
+                "Bash(mypy:*)",
+                "Bash(uvicorn:*)",
+                "Bash(node:*)",
+                "Bash(npm:*)",
+                "Bash(npx:*)",
+                "Bash(pnpm:*)",
+                "Bash(yarn:*)",
+                "Bash(tsc:*)",
+                "Bash(eslint:*)",
+                "Bash(prettier:*)",
+                "Bash(vercel:*)",
+                "Bash(docker:*)",
+                "Bash(docker-compose:*)",
+                "Bash(ls:*)",
+                "Bash(cat:*)",
+                "Bash(grep:*)",
+                "Bash(find:*)",
+                "Bash(wc:*)",
+                "Bash(chmod:*)",
+                "Bash(pwd:*)",
+                "Bash(cd:*)",
+                "Bash(echo:*)",
+                "Bash(mkdir:*)",
+                "Bash(touch:*)",
+                "Bash(mv:*)",
+                "Bash(cp:*)",
+                "Bash(rm:*)",
+                "Bash(curl:*)",
+                "Bash(wget:*)",
+                "Bash(sed:*)",
+                "Bash(awk:*)",
+                "Bash(sort:*)",
+                "Bash(uniq:*)",
+                "Bash(diff:*)",
+                "Bash(tree:*)",
 
-            print_success(f"Added shipkit metadata (edition: {manifest['edition']}, language: {language})")
-        except Exception as e:
-            print_warning(f"Could not update settings metadata: {e}")
+                "WebFetch(domain:github.com)",
+                "WebFetch(domain:raw.githubusercontent.com)",
+                "WebFetch(domain:docs.anthropic.com)",
+                "WebFetch(domain:nextjs.org)",
+                "WebFetch(domain:python.org)",
+                "WebFetch(domain:fastapi.tiangolo.com)",
+                "WebFetch(domain:pypi.org)",
+                "WebFetch(domain:npmjs.com)",
+                "WebFetch(domain:stackoverflow.com)",
+                "WebFetch(domain:developer.mozilla.org)",
+            ],
+            "deny": [
+                "Bash(sudo:*)",
+                "Bash(su:*)",
+                "Bash(ssh:*)"
+            ]
+        },
+        "defaultMode": "acceptEdits",
+        "hooks": {
+            "SessionStart": [
+                {
+                    "matcher": "startup|resume|clear|compact",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "python -X utf8 .claude/hooks/session-start.py"
+                        }
+                    ]
+                }
+            ],
+            "Stop": [
+                {
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/shipkit-after-skill-router.py"
+                        }
+                    ]
+                }
+            ]
+        },
+        "skills": {
+            "description": "Skill configuration and defaults",
+            "autoLoadConstitutions": False
+        },
+        "workspace": {
+            "description": "Workspace paths and conventions",
+            "contextPath": ".shipkit",
+            "specsPath": ".shipkit/specs",
+            "plansPath": ".shipkit/plans"
+        },
+        "shipkit": {
+            "edition": manifest["edition"],
+            "language": language,
+            "installedSkills": selected_skills
+        }
+    }
 
-def install_skills(repo_root, target_dir, manifest):
-    """Install skill definitions from manifest"""
+    # Add skill permissions for selected skills only
+    for skill in selected_skills:
+        settings["permissions"]["allow"].append(f"Skill({skill})")
+
+    return settings
+
+def update_skill_permissions(settings_path, selected_skills):
+    """Update skill permissions in existing settings.json"""
+    with open(settings_path, 'r', encoding='utf-8') as f:
+        settings = json.load(f)
+
+    # Remove existing Skill() permissions
+    allow_list = settings.get("permissions", {}).get("allow", [])
+    allow_list = [p for p in allow_list if not p.startswith("Skill(")]
+
+    # Add new skill permissions
+    for skill in selected_skills:
+        allow_list.append(f"Skill({skill})")
+
+    settings["permissions"]["allow"] = allow_list
+
+    # Update installed skills list
+    if "shipkit" not in settings:
+        settings["shipkit"] = {}
+    settings["shipkit"]["installedSkills"] = selected_skills
+
+    with open(settings_path, 'w', encoding='utf-8') as f:
+        json.dump(settings, f, indent=2)
+
+def install_skills(repo_root, target_dir, selected_skills):
+    """Install selected skill definitions"""
     print()
     print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
     print(f"  {Colors.BOLD}Installing skills{Colors.RESET}")
     print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
     print()
 
-    # Combine user-invocable and system skills
-    skills_definitions = manifest["skills"]["definitions"]
-    skills_system = manifest["skills"].get("system", [])
-    all_skills = skills_definitions + skills_system
+    print_info(f"Installing {len(selected_skills)} skill definitions...")
 
-    # Install skill definitions (.claude/skills/)
-    print_info(f"Installing {len(all_skills)} skill definitions...")
-    for skill_name in all_skills:
+    installed = 0
+    for skill_name in selected_skills:
         skill_src = repo_root / "install" / "skills" / skill_name
         skill_dest = target_dir / ".claude" / "skills" / skill_name
 
         if skill_src.exists():
             skill_dest.parent.mkdir(parents=True, exist_ok=True)
             shutil.copytree(skill_src, skill_dest, dirs_exist_ok=True)
+            installed += 1
         else:
             print_warning(f"Skill not found: {skill_name}")
 
-    print_success(f"Installed {len(all_skills)} skill definitions")
+    print_success(f"Installed {installed} skill definitions")
 
-def install_agents(repo_root, target_dir, manifest):
-    """Install agent personas from manifest"""
+def install_agents(repo_root, target_dir, selected_agents):
+    """Install selected agent personas"""
     print()
     print(f"  {Colors.BOLD}Installing agent personas{Colors.RESET}")
     print()
 
-    agents = manifest.get("agents", [])
-
-    if not agents:
-        print_info("No agents specified in manifest (lite edition)")
+    if not selected_agents:
+        print_info("No agents selected")
         return
 
     agents_dir = target_dir / ".claude" / "agents"
     agents_dir.mkdir(parents=True, exist_ok=True)
 
     count = 0
-    for agent_name in agents:
+    for agent_name in selected_agents:
         agent_file = f"{agent_name}.md"
         agent_src = repo_root / "install" / "agents" / agent_file
         agent_dest = agents_dir / agent_file
@@ -339,7 +733,6 @@ def delete_unused_language(target_dir, language):
     print(f"  {Colors.BOLD}Cleaning up unused language files{Colors.RESET}")
     print()
 
-    # Determine which extension to delete
     if language == "python":
         delete_ext = ".sh"
         keep_lang = "Python"
@@ -372,18 +765,16 @@ def delete_unused_language(target_dir, language):
 def make_scripts_executable(target_dir, language):
     """Make scripts executable (Unix-like systems)"""
     if platform.system() == "Windows":
-        return  # Not needed on Windows
+        return
 
     print()
     print_info("Making scripts executable...")
 
     if language == "bash":
-        # Make .sh files executable
         for script in target_dir.rglob("*.sh"):
             script.chmod(0o755)
         print_success("Bash scripts are now executable")
     else:
-        # Make .py files executable
         for script in target_dir.rglob("*.py"):
             script.chmod(0o755)
         print_success("Python scripts are now executable")
@@ -408,11 +799,9 @@ def prompt_for_mcps(manifest):
     print(f"  {Colors.DIM}Token cost shown = context used when MCP is active.{Colors.RESET}")
     print()
 
-    # Track selections (all selected by default)
     selected = [True] * len(mcps)
 
     while True:
-        # Display options
         for i, mcp in enumerate(mcps):
             marker = f"{Colors.GREEN}✓{Colors.RESET}" if selected[i] else " "
             name = mcp["name"]
@@ -436,7 +825,6 @@ def prompt_for_mcps(manifest):
         elif choice == "n":
             selected = [False] * len(mcps)
         else:
-            # Parse numbers
             try:
                 nums = [int(x.strip()) for x in choice.replace(",", " ").split()]
                 for num in nums:
@@ -445,10 +833,8 @@ def prompt_for_mcps(manifest):
             except ValueError:
                 print_warning("Invalid input. Enter numbers, 'a', 'n', or press Enter.")
 
-        # Clear and redraw
         print()
 
-    # Return selected MCPs
     return [mcp for i, mcp in enumerate(mcps) if selected[i]]
 
 def install_mcp_config(target_dir, selected_mcps):
@@ -459,7 +845,6 @@ def install_mcp_config(target_dir, selected_mcps):
 
     mcp_config_path = target_dir / ".mcp.json"
 
-    # Check if .mcp.json already exists
     if mcp_config_path.exists():
         print_warning(f".mcp.json already exists at {target_dir}")
         if not confirm("Overwrite with new MCP configuration?", default=False):
@@ -475,7 +860,6 @@ def install_mcp_config(target_dir, selected_mcps):
             command = mcp["command"]
             args = mcp["args"]
 
-            # Windows requires 'cmd /c' wrapper for npx
             if platform.system() == "Windows" and command == "npx":
                 mcp_servers[name] = {
                     "command": "cmd",
@@ -487,20 +871,17 @@ def install_mcp_config(target_dir, selected_mcps):
                     "args": args
                 }
 
-            # Track prerequisites
             if mcp.get("prereq"):
                 prereqs.append((name, mcp["prereq"]))
 
         mcp_config = {"mcpServers": mcp_servers}
 
-        # Write the configuration
         with open(mcp_config_path, 'w', encoding='utf-8') as f:
             json.dump(mcp_config, f, indent=2)
             f.write('\n')
 
         print_success(f"MCP configuration installed ({len(selected_mcps)} servers)")
 
-        # Show prerequisites if any
         if prereqs:
             print()
             print_warning("Some MCPs require setup before use:")
@@ -517,15 +898,13 @@ def install_mcp_config(target_dir, selected_mcps):
 def open_html_docs(repo_root, edition):
     """Open appropriate HTML overview based on edition"""
     import webbrowser
-    import platform
 
-    html_dir = repo_root / "help"
+    html_dir = repo_root / "docs" / "generated"
 
     if not html_dir.exists():
         print_warning(f"Documentation files not found in {html_dir}")
         return
 
-    # Choose appropriate overview
     overview_file = html_dir / "shipkit-overview.html"
 
     if not overview_file.exists():
@@ -538,18 +917,12 @@ def open_html_docs(repo_root, edition):
 
     try:
         webbrowser.open(f"file://{overview_file}")
-        overview_name = overview_file.name
-        print_success(f"Opened {overview_name}")
+        print_success(f"Opened {overview_file.name}")
     except Exception as e:
-        overview_name = overview_file.name
-        print_warning(f"Could not open {overview_name}: {e}")
+        print_warning(f"Could not open {overview_file.name}: {e}")
 
-def show_completion(target_dir, manifest, language):
+def show_completion(target_dir, selected_skills, selected_agents, language):
     """Show completion message"""
-    edition = manifest["edition"]
-    skill_count = len(manifest["skills"]["definitions"]) + len(manifest["skills"].get("system", []))
-    agent_count = len(manifest.get("agents", []))
-
     print()
     print()
     print(f"{Colors.BRIGHT_GREEN}")
@@ -564,14 +937,13 @@ def show_completion(target_dir, manifest, language):
 
     print(f"  {Colors.BOLD}What was installed:{Colors.RESET}")
     print()
-    print_success(f"{skill_count} skill definitions (.claude/skills/)")
-    print_success(f"{agent_count} agent personas (.claude/agents/)")
+    print_success(f"{len(selected_skills)} skill definitions (.claude/skills/)")
+    print_success(f"{len(selected_agents)} agent personas (.claude/agents/)")
     print_success(f"Shared scripts (.shipkit/scripts/)")
     print_success("Session hooks (.claude/hooks/)")
-    print_success(f"Settings ({edition} edition) (.claude/settings.json)")
-    print_success(f"Project instructions ({edition}) (CLAUDE.md)")
+    print_success(f"Settings (.claude/settings.json)")
+    print_success(f"Project instructions (CLAUDE.md)")
     print_success("Git configuration (.gitignore)")
-    print_success("MCP configuration - Context7 (.mcp.json)")
 
     print()
     print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
@@ -600,31 +972,31 @@ def show_completion(target_dir, manifest, language):
 def main():
     """Main installation process"""
     parser = argparse.ArgumentParser(description="Shipkit Installer")
-    parser.add_argument("--profile", choices=["shipkit"], default="shipkit", help="Edition profile")
-    parser.add_argument("--language", choices=["bash", "python"], help="Scripting language (bash or python)")
-    parser.add_argument("--target", help="Target directory (default: current directory)")
+    parser.add_argument("--profile", choices=["shipkit", "minimal", "discovery"], default="shipkit",
+                        help="Edition profile: shipkit (full), minimal (core only), discovery (planning focused)")
+    parser.add_argument("--language", choices=["bash", "python"], help="Scripting language")
+    parser.add_argument("--target", help="Target directory")
+    parser.add_argument("--all-skills", action="store_true", help="Install all skills without prompting")
+    parser.add_argument("--all-agents", action="store_true", help="Install all agents without prompting")
+    parser.add_argument("--no-agents", action="store_true", help="Skip agent installation")
+    parser.add_argument("--claude-md", choices=["skip", "overwrite", "merge"], help="CLAUDE.md handling")
     parser.add_argument("-y", "--yes", action="store_true", help="Skip confirmations")
 
     args = parser.parse_args()
 
-    # Determine profile and language (from args or interactive)
-    if args.profile:
-        profile = args.profile
-    else:
-        profile = prompt_for_profile()
+    # Profile
+    profile = args.profile or prompt_for_profile()
 
-    if args.language:
-        language = args.language
-    else:
-        language = prompt_for_language()
+    # Language
+    language = args.language or prompt_for_language()
 
-    # Target directory (from args or interactive)
+    # Target directory
     if args.target:
         target_dir = Path(args.target).resolve()
     else:
         target_dir = prompt_for_target_directory()
 
-    # Repo root (where this script lives)
+    # Repo root
     script_dir = Path(__file__).parent
     repo_root = script_dir.parent
 
@@ -641,22 +1013,48 @@ def main():
     print_success(f"Manifest loaded: {manifest['description']}")
     print()
 
+    # Skill selection
+    if args.all_skills:
+        # Get all skills
+        selected_skills = list(manifest["skills"]["mandatory"])
+        for category, skills in manifest["skills"]["optional"].items():
+            for skill in skills:
+                selected_skills.append(skill["name"])
+    else:
+        selected_skills = prompt_for_skills(manifest)
+
+    # Agent selection
+    if args.no_agents:
+        selected_agents = []
+    elif args.all_agents:
+        selected_agents = [a["name"] for a in manifest.get("agents", [])]
+    else:
+        selected_agents = prompt_for_agents(manifest)
+
+    # CLAUDE.md handling
+    if args.claude_md:
+        claude_md_action = args.claude_md
+    else:
+        claude_md_action = prompt_for_claude_md_action(target_dir)
+
     # Confirm installation
     if not args.yes:
+        print()
         print(f"  {Colors.BOLD}Installation Summary:{Colors.RESET}")
         print()
-        print(f"  Edition:  {Colors.CYAN}{profile}{Colors.RESET}")
-        print(f"  Language: {Colors.CYAN}{language}{Colors.RESET}")
-        print(f"  Target:   {Colors.CYAN}{target_dir}{Colors.RESET}")
-        print(f"  Skills:   {Colors.CYAN}{len(manifest['skills']['definitions'])}{Colors.RESET}")
-        print(f"  Agents:   {Colors.CYAN}{len(manifest.get('agents', []))}{Colors.RESET}")
+        print(f"  Edition:   {Colors.CYAN}{profile}{Colors.RESET}")
+        print(f"  Language:  {Colors.CYAN}{language}{Colors.RESET}")
+        print(f"  Target:    {Colors.CYAN}{target_dir}{Colors.RESET}")
+        print(f"  Skills:    {Colors.CYAN}{len(selected_skills)}{Colors.RESET}")
+        print(f"  Agents:    {Colors.CYAN}{len(selected_agents)}{Colors.RESET}")
+        print(f"  CLAUDE.md: {Colors.CYAN}{claude_md_action}{Colors.RESET}")
         print()
 
         if not confirm(f"Install Shipkit to {target_dir}?"):
             print_info("Installation cancelled.")
             sys.exit(0)
 
-    # Create target directory if needed
+    # Create target directory
     target_dir.mkdir(parents=True, exist_ok=True)
 
     # Perform installation
@@ -664,20 +1062,20 @@ def main():
     print_info("Installing Shipkit framework...")
 
     install_shared_core(repo_root, target_dir, language, manifest["edition"])
-    install_edition_files(repo_root, target_dir, manifest, language)
-    install_skills(repo_root, target_dir, manifest)
-    install_agents(repo_root, target_dir, manifest)
+    install_edition_files(repo_root, target_dir, manifest, language, selected_skills, claude_md_action)
+    install_skills(repo_root, target_dir, selected_skills)
+    install_agents(repo_root, target_dir, selected_agents)
     delete_unused_language(target_dir, language)
     make_scripts_executable(target_dir, language)
 
-    # Prompt for MCP selection and install
+    # MCP selection
     selected_mcps = prompt_for_mcps(manifest)
     install_mcp_config(target_dir, selected_mcps)
 
     # Show completion
-    show_completion(target_dir, manifest, language)
+    show_completion(target_dir, selected_skills, selected_agents, language)
 
-    # Open HTML documentation
+    # Open docs
     open_html_docs(repo_root, manifest["edition"])
 
 if __name__ == "__main__":

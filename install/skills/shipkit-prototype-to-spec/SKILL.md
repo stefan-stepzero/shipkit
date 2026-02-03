@@ -294,7 +294,7 @@ Copy and track:
 - **Why**: Plan can reference specific patterns from prototype
 - **Trigger**: User ready to plan implementation
 
-**shipkit-implement** - Implements features using validated patterns
+**Implementation** (natural capability)
 - **When**: Implementation starts after planning
 - **Why**: Spec's UI/UX section guides implementation decisions
 - **Trigger**: Development phase begins
@@ -396,3 +396,5 @@ Extraction successful when:
 ---
 
 **Remember:** Prototypes are disposable, but learnings are permanent. Extract before deleting.
+
+<!-- Shipkit v1.1.0 -->

@@ -33,38 +33,51 @@
   },
 
   "skills": {
-    "definitions": [
+    "mandatory": [
       "shipkit-master",
-      "shipkit-project-status",
-      "shipkit-project-context",
-      "shipkit-product-discovery",
-      "shipkit-spec",
-      "shipkit-prototyping",
-      "shipkit-prototype-to-spec",
-      "shipkit-architecture-memory",
-      "shipkit-ux-audit",
-      "shipkit-data-contracts",
-      "shipkit-plan",
-      "shipkit-user-instructions",
-      "shipkit-integration-docs",
-      "shipkit-work-memory",
-      "shipkit-communications",
-      "shipkit-why-project",
-      "shipkit-codebase-index",
-      "shipkit-teach"
-    ],
-    "system": [
       "shipkit-detect"
     ],
-    "workspace": []
+    "optional": {
+      "Vision & Discovery": [
+        {"name": "shipkit-why-project", "desc": "Define project vision & goals"},
+        {"name": "shipkit-product-discovery", "desc": "Create personas & user journeys"},
+        {"name": "shipkit-project-context", "desc": "Scan codebase, detect stack"},
+        {"name": "shipkit-project-status", "desc": "Check project health & gaps"},
+        {"name": "shipkit-codebase-index", "desc": "Index codebase for navigation"}
+      ],
+      "Spec & Planning": [
+        {"name": "shipkit-spec", "desc": "Create feature specifications"},
+        {"name": "shipkit-plan", "desc": "Plan implementation steps"},
+        {"name": "shipkit-prototyping", "desc": "Create quick UI mockups"},
+        {"name": "shipkit-prototype-to-spec", "desc": "Extract prototype learnings"}
+      ],
+      "Knowledge & Memory": [
+        {"name": "shipkit-architecture-memory", "desc": "Log architecture decisions"},
+        {"name": "shipkit-data-contracts", "desc": "Define data shapes & types"},
+        {"name": "shipkit-integration-docs", "desc": "Fetch external API patterns"},
+        {"name": "shipkit-claude-md", "desc": "Update CLAUDE.md with learnings"},
+        {"name": "shipkit-work-memory", "desc": "Log progress & session state"}
+      ],
+      "Quality & Communication": [
+        {"name": "shipkit-verify", "desc": "Review work (12 quality dimensions)"},
+        {"name": "shipkit-preflight", "desc": "Production readiness audit"},
+        {"name": "shipkit-ux-audit", "desc": "Audit UX patterns"},
+        {"name": "shipkit-user-instructions", "desc": "Track manual tasks for user"},
+        {"name": "shipkit-communications", "desc": "Create visual HTML reports"}
+      ],
+      "Ecosystem": [
+        {"name": "shipkit-get-skills", "desc": "Find & install community skills"},
+        {"name": "shipkit-get-mcps", "desc": "Find & install MCP servers"}
+      ]
+    }
   },
 
   "agents": [
-    "shipkit-product-owner-agent",
-    "shipkit-ux-designer-agent",
-    "shipkit-architect-agent",
-    "shipkit-implementer-agent",
-    "shipkit-reviewer-agent",
-    "shipkit-researcher-agent"
+    {"name": "shipkit-product-owner-agent", "desc": "Vision & requirements"},
+    {"name": "shipkit-ux-designer-agent", "desc": "UI/UX design"},
+    {"name": "shipkit-architect-agent", "desc": "Technical decisions"},
+    {"name": "shipkit-implementer-agent", "desc": "Code implementation"},
+    {"name": "shipkit-reviewer-agent", "desc": "Code review & quality"},
+    {"name": "shipkit-researcher-agent", "desc": "Research & analysis"}
   ]
 }

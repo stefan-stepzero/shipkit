@@ -160,3 +160,5 @@ Use skills when you need persistence (saving context to `.shipkit/`) or forcing 
 
 ## Mindset
 Good enough to ship, learn, and iterate. Perfect is the enemy of launched. Block on security and broken functionality, suggest improvements for everything else.
+
+<!-- Shipkit v1.1.0 -->

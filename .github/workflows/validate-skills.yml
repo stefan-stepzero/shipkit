@@ -1,0 +1,108 @@
+name: Validate Skills
+
+on:
+  push:
+    branches: [main, dev]
+    paths:
+      - 'install/skills/**'
+      - 'install/profiles/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'install/skills/**'
+      - 'install/profiles/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate skill structure
+        run: |
+          echo "Validating skill structure..."
+
+          # Check all skills have SKILL.md
+          for dir in install/skills/shipkit-*/; do
+            if [ ! -f "${dir}SKILL.md" ]; then
+              echo "ERROR: Missing SKILL.md in $dir"
+              exit 1
+            fi
+          done
+
+          echo "All skills have SKILL.md"
+
+      - name: Validate skill metadata
+        run: |
+          echo "Validating skill metadata..."
+
+          for skill in install/skills/shipkit-*/SKILL.md; do
+            # Check for required frontmatter
+            if ! head -1 "$skill" | grep -q "^---"; then
+              echo "ERROR: Missing frontmatter in $skill"
+              exit 1
+            fi
+
+            # Check for name field
+            if ! grep -q "^name:" "$skill"; then
+              echo "ERROR: Missing 'name:' in $skill"
+              exit 1
+            fi
+
+            # Check for description field
+            if ! grep -q "^description:" "$skill"; then
+              echo "ERROR: Missing 'description:' in $skill"
+              exit 1
+            fi
+          done
+
+          echo "All skills have valid metadata"
+
+      - name: Validate manifest
+        run: |
+          echo "Validating manifest..."
+
+          # Check manifest is valid JSON
+          python -c "import json; json.load(open('install/profiles/shipkit.manifest.json'))"
+
+          echo "Manifest is valid JSON"
+
+      - name: Check skill-manifest sync
+        run: |
+          echo "Checking skill-manifest sync..."
+
+          # Get skills from filesystem
+          fs_skills=$(ls -d install/skills/shipkit-*/ | xargs -n1 basename | sort)
+
+          # Get skills from manifest (mandatory + all optional)
+          manifest_skills=$(python3 -c "
+          import json
+          m = json.load(open('install/profiles/shipkit.manifest.json'))
+          skills = m['skills']['mandatory'][:]
+          for cat in m['skills']['optional'].values():
+              skills.extend([s['name'] for s in cat])
+          print('\n'.join(sorted(skills)))
+          ")
+
+          # Compare
+          echo "Filesystem skills:"
+          echo "$fs_skills"
+          echo ""
+          echo "Manifest skills:"
+          echo "$manifest_skills"
+
+          # Check for skills in filesystem but not manifest
+          for skill in $fs_skills; do
+            if ! echo "$manifest_skills" | grep -q "^${skill}$"; then
+              echo "WARNING: $skill exists but not in manifest"
+            fi
+          done
+
+          echo "Sync check complete"

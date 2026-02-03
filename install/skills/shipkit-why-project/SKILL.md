@@ -241,3 +241,5 @@ Vision is defined when:
 **Remember**: This is strategic context, not requirements. Keep it high-level. Answer "why" not "how". Think vision, not spec.
 
 **Detailed guidance**: See `references/` folder for common scenarios, tips, and examples.
+
+<!-- Shipkit v1.1.0 -->

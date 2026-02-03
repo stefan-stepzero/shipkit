@@ -1,4 +1,6 @@
 {
+  "_shipkit": "v1.1.0",
+
   "permissions": {
     "allow": [
       "Read",
@@ -108,7 +110,11 @@
       "Skill(shipkit-why-project)",
       "Skill(shipkit-detect)",
       "Skill(shipkit-codebase-index)",
-      "Skill(shipkit-teach)"
+      "Skill(shipkit-claude-md)",
+      "Skill(shipkit-get-skills)",
+      "Skill(shipkit-get-mcps)",
+      "Skill(shipkit-verify)",
+      "Skill(shipkit-preflight)"
     ],
 
     "deny": [

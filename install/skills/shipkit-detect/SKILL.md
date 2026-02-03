@@ -37,8 +37,8 @@ Follow-up skill can process queue
 |------|-----------------|---------------|---------------|-----------|
 | `services` | shipkit-spec | Spec for external services (Stripe, Supabase, etc.) | `fetch-integration-docs.md` | shipkit-integration-docs |
 | `contracts` | shipkit-plan | Plan for data structures (types, interfaces, schemas) | `define-data-contracts.md` | shipkit-data-contracts |
-| `changes` | shipkit-implement | Recently modified components/routes | `components-to-document.md`, `routes-to-document.md` | shipkit-component-knowledge, shipkit-route-knowledge |
-| `ux-gaps` | shipkit-quality-confidence | Interactive components needing UX review | `ux-audit-needed.md` | shipkit-ux-audit |
+| `changes` | (after implementation) | Recently modified components/routes | `components-to-document.md`, `routes-to-document.md` | (documentation - natural capability) |
+| `ux-gaps` | shipkit-verify | Interactive components needing UX review | `ux-audit-needed.md` | shipkit-ux-audit |
 
 ---
 
@@ -257,3 +257,5 @@ Detection is complete when:
 
 **Suggest skill when:** User needs to make decisions, create persistence, or check project status.
 <!-- /SECTION:after-completion -->
+
+<!-- Shipkit v1.1.0 -->
