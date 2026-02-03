@@ -114,7 +114,8 @@
       "Skill(shipkit-get-skills)",
       "Skill(shipkit-get-mcps)",
       "Skill(shipkit-verify)",
-      "Skill(shipkit-preflight)"
+      "Skill(shipkit-preflight)",
+      "Skill(shipkit-update)"
     ],
 
     "deny": [

@@ -119,6 +119,7 @@ This skill provides:
 | "Help", "What skills exist?", "What can you do?" | List all shipkit skills | None |
 | "Find skills", "Get skills", "Is there a skill for?", "Install skill" | `/shipkit-get-skills` | None |
 | "Find MCPs", "Get MCPs", "Is there an MCP for?", "Install MCP" | `/shipkit-get-mcps` | .mcp.json |
+| "Install Shipkit", "Update Shipkit", "Upgrade Shipkit", "Reinstall Shipkit" | `/shipkit-update` | None |
 
 ### Specification & Planning
 

@@ -102,6 +102,11 @@ If `.shipkit/codebase-index.json` exists:
 | Find and install community skills | `/shipkit-get-skills` |
 | Find and install MCP servers | `/shipkit-get-mcps` |
 
+### System
+| When... | Use |
+|---------|-----|
+| Install or update Shipkit | `/shipkit-update` |
+
 **No skill needed for:** implementing, debugging, testing, refactoring, documenting code.
 
 ---

@@ -68,6 +68,9 @@
       "Ecosystem": [
         {"name": "shipkit-get-skills", "desc": "Find & install community skills"},
         {"name": "shipkit-get-mcps", "desc": "Find & install MCP servers"}
+      ],
+      "System": [
+        {"name": "shipkit-update", "desc": "Install or update Shipkit from GitHub"}
       ]
     }
   },
