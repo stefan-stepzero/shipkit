@@ -146,4 +146,4 @@ Use skills when you need persistence (saving context to `.shipkit/`) or forcing 
 ## Mindset
 Leverage the platform. Supabase + Vercel + Lemon Squeezy handle 80% of infrastructure concerns. Focus on product logic, not reinventing auth/billing/storage. Lemon Squeezy as MoR means you ship instead of filing VAT.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

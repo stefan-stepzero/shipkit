@@ -190,4 +190,4 @@ Use skills when you need persistence (saving context to `.shipkit/`). For implem
 ## Mindset
 Working code beats perfect code. Get the feature running, show it to users, iterate based on feedback. Polish comes later.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

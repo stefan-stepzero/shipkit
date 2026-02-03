@@ -1,9 +1,8 @@
 ---
 name: shipkit-get-mcps
 description: Discover and install MCP servers for enhanced Claude capabilities
-invoke: user
-model: haiku
-tools:
+argument-hint: "<search query>"
+allowed-tools:
   - Bash
   - Read
   - Write
@@ -333,4 +332,4 @@ This skill operates independently. It helps users extend Claude's capabilities.
 - [ ] Restart reminder always shown
 - [ ] Prerequisites flagged when known
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

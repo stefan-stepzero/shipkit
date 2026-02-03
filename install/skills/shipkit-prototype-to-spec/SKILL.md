@@ -397,4 +397,4 @@ Extraction successful when:
 
 **Remember:** Prototypes are disposable, but learnings are permanent. Extract before deleting.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

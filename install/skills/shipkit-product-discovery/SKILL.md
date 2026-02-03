@@ -1,6 +1,7 @@
 ---
 name: shipkit-product-discovery
 description: "Use when defining users, personas, or user journeys. Triggers: 'who are users', 'create personas', 'user research', 'user stories'."
+argument-hint: "[persona or journey]"
 ---
 
 # shipkit-product-discovery - Lightweight Product Discovery
@@ -53,11 +54,39 @@ description: "Use when defining users, personas, or user journeys. Triggers: 'wh
 
 ### Step 1: Gather Context About Users and Goals
 
-**Ask user 3 clarifying questions**:
+**Use AskUserQuestion tool to gather requirements:**
 
-1. **Who are your primary users?** (1-3 types)
-2. **What are they trying to accomplish?** (job/pain point, current workflow)
-3. **What's your biggest assumption about their needs?** (becomes testable hypothesis)
+**Question 1 - Discovery Focus:**
+```
+header: "Focus"
+question: "What aspect of product discovery do you need?"
+options:
+  - label: "Full Discovery (Recommended)"
+    description: "Personas + journeys + user stories"
+  - label: "Personas Only"
+    description: "Define who your users are"
+  - label: "User Journeys"
+    description: "Map how users accomplish goals"
+  - label: "User Stories"
+    description: "Generate feature requirements"
+```
+
+**Question 2 - User Type:** (if not provided in argument)
+```
+header: "Users"
+question: "Who are your primary users?"
+options:
+  - label: "Consumers (B2C)"
+    description: "End users, general public"
+  - label: "Businesses (B2B)"
+    description: "Companies, teams, professionals"
+  - label: "Internal Users"
+    description: "Your team, employees, admins"
+  - label: "Developers"
+    description: "API consumers, integrators"
+```
+
+**If user selects "Other"**: Follow up with clarifying questions about their specific user types and goals.
 
 ---
 
@@ -255,4 +284,4 @@ Product Discovery Document is complete when:
 
 **Remember**: This file is your single source of truth for user understanding. Update it as you learn more about users. Product discovery is iterative; refine as insights emerge.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

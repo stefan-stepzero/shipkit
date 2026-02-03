@@ -102,19 +102,16 @@ Detected Shipkit installation:
 
 **Create archive folder:**
 ```
-.shipkit-archive-{YYYYMMDD-HHMMSS}/
-├── context/                     # From .shipkit/ or .shipkit-lite/
-│   ├── why.md
-│   ├── stack.md
-│   ├── architecture.md
-│   ├── specs/
-│   └── plans/
-├── skills/                      # All shipkit-* and lite-* skills
-├── agents/                      # All shipkit-* and lite-* agents
-├── hooks/                       # All shipkit-* and lite-* hooks
-├── CLAUDE.md.backup             # Full backup of root CLAUDE.md
-├── settings.json.backup         # Full backup of settings
-└── MANIFEST.md                  # What was archived + versions
+.shipkit-archive/
+└── {YYYYMMDD-HHMMSS}/
+    ├── context/                     # From .shipkit/ or .shipkit-lite/
+    │   └── [entire .shipkit/ contents]
+    ├── skills/                      # All shipkit-* and lite-* skills
+    ├── agents/                      # All shipkit-* and lite-* agents
+    ├── hooks/                       # All shipkit-* and lite-* hooks
+    ├── CLAUDE.md.backup             # Full backup of root CLAUDE.md
+    ├── settings.json.backup         # Full backup of settings
+    └── MANIFEST.md                  # What was archived + versions
 ```
 
 **MANIFEST.md format:**
@@ -130,11 +127,10 @@ Upgrading to: v1.1.0
 - 2 hooks
 - settings.json entries
 
-## Archived User Content
-- .shipkit/why.md (user content)
-- .shipkit/architecture.md (user content)
-- .shipkit/specs/auth-flow.md (user content)
-- .shipkit/stack.md (auto-generated, can recreate)
+## Archived Context (entire .shipkit/ folder)
+All files preserved in context/ subfolder.
+
+## Other Backups
 - CLAUDE.md (full backup)
 - settings.json (full backup)
 
@@ -174,12 +170,14 @@ GET {repo}/raw/main/install/profiles/shipkit.manifest.json
 4. **Settings template** - Fetch `install/settings/shipkit.settings.json`
 5. **Templates** - Fetch from `install/templates/`
 6. **CLAUDE.md template** - Fetch `install/claude-md/shipkit.md`
+7. **HTML Overview** - Fetch `docs/generated/shipkit-overview.html` (skill reference)
 
 **Install framework files directly:**
 - Skills → `.claude/skills/shipkit-*/`
 - Agents → `.claude/agents/`
 - Hooks → `.claude/hooks/`
 - Templates → `.shipkit/templates/`
+- HTML Overview → `.shipkit/shipkit-overview.html` (open in browser for reference)
 
 ---
 
@@ -309,29 +307,50 @@ Consider updating these references manually.
 
 ### Step 7: Migrate User Content
 
-**For `.shipkit/` context files:**
+**Principle: Migrate everything EXCEPT known framework/transient files.**
 
-**User content (migrate automatically):**
+This approach is future-proof — new user content files automatically migrate without needing to update this list.
+
+**DON'T migrate (framework - install fresh):**
 ```
-├── why.md              # Vision document
-├── architecture.md     # Architecture decisions
-├── specs/*.md          # Feature specifications
-├── plans/*.md          # Implementation plans
-├── progress.md         # Session history
-└── codebase-index.json # Navigation index
+├── templates/          # Framework templates from install
+└── queues/             # Transient task queues, start empty
 ```
 
-**Framework content (don't migrate, use fresh):**
+**DON'T migrate (auto-generated - suggest regenerating):**
 ```
-├── templates/          # Fresh from install
-├── queues/             # Transient, start fresh
-└── stack.md            # Auto-generated, recreate with /shipkit-project-context
+├── stack.md            # Auto-generated from codebase
+├── schema.md           # Auto-generated from migrations
+└── env-requirements.md # Auto-generated from .env files
 ```
+
+**MIGRATE: Everything else in `.shipkit/`**
+
+This includes (but is not limited to):
+- `why.md` - Vision document
+- `architecture.md` - Architecture decisions
+- `specs/**` - Feature specifications (active and implemented)
+- `plans/**` - Implementation plans
+- `progress.md` - Session history
+- `archives/**` - Progress archives
+- `codebase-index.json` - Navigation index
+- `product-discovery.md` - User personas and journeys
+- `types.md` - Data contracts
+- `implementations.md` - Component/route documentation
+- `user-tasks/**` - User task lists
+- `production-readiness.md` - Audit reports
+- `audits/**` - Audit history
+- `ux-decisions.md` - UX decision log
+- `communications/**` - Generated HTML reports
+- `status.md` - Health snapshots
+- Any other user-created files
 
 **Migration process:**
-1. Copy user content files from archive to new `.shipkit/`
-2. Validate they're not corrupted
-3. Report what was migrated
+1. List all files in archived `.shipkit/` context folder
+2. Exclude: `templates/`, `queues/`, `stack.md`, `schema.md`, `env-requirements.md`
+3. Copy everything else to new `.shipkit/`
+4. Report what was migrated
+5. Note that auto-generated files should be regenerated
 
 ---
 
@@ -339,7 +358,7 @@ Consider updating these references manually.
 
 **Fresh install (no previous):**
 ```
-✓ Shipkit v1.1.0 installed
+✓ Shipkit v1.2.0 installed
 
 Installed:
 - 24 skills → .claude/skills/shipkit-*/
@@ -347,6 +366,9 @@ Installed:
 - 2 hooks → .claude/hooks/
 - Settings created
 - CLAUDE.md created with Shipkit section
+- HTML Overview → .shipkit/shipkit-overview.html
+
+💡 Open .shipkit/shipkit-overview.html in your browser for a skill reference guide
 
 Next: Run /shipkit-project-context to scan your codebase
 ```
@@ -355,7 +377,7 @@ Next: Run /shipkit-project-context to scan your codebase
 ```
 ✓ Shipkit updated v1.0.0 → v1.1.0
 
-Archived to: .shipkit-archive-20240115-143000/
+Archived to: .shipkit-archive/20240115-143000/
 - Full backup preserved (see MANIFEST.md)
 
 Installed fresh:
@@ -369,6 +391,13 @@ Migrated user content:
 - why.md ✓
 - architecture.md ✓
 - specs/ (3 files) ✓
+- product-discovery.md ✓
+- types.md ✓
+- [... all other user files ...]
+
+Not migrated (auto-generated):
+- stack.md, schema.md, env-requirements.md
+  ℹ️  Run /shipkit-project-context to regenerate from current codebase
 
 ⚠ settings.local.json has stale refs (see above)
 
@@ -385,7 +414,7 @@ Ready to use. Review merged files, archive has originals.
 | No write permission | "Cannot write to project. Check permissions." |
 | Invalid JSON in settings | "settings.json has syntax errors. Fix manually or restore from archive." |
 | Version same as installed | "Already at v1.1.0. Force reinstall? [y/n]" |
-| Archive folder exists | Append timestamp with seconds to make unique |
+| Archive subfolder exists | Append seconds to timestamp to make unique |
 
 ---
 
@@ -417,10 +446,11 @@ Ready to use. Review merged files, archive has originals.
 ## Context Files This Skill Writes
 
 **Archive (creates):**
-- `.shipkit-archive-{timestamp}/` - Full archive folder
-- `.shipkit-archive-{timestamp}/MANIFEST.md` - What was archived
-- `.shipkit-archive-{timestamp}/CLAUDE.md.backup` - Original CLAUDE.md
-- `.shipkit-archive-{timestamp}/settings.json.backup` - Original settings
+- `.shipkit-archive/{timestamp}/` - Full archive folder
+- `.shipkit-archive/{timestamp}/MANIFEST.md` - What was archived
+- `.shipkit-archive/{timestamp}/context/` - Entire .shipkit/ contents
+- `.shipkit-archive/{timestamp}/CLAUDE.md.backup` - Original CLAUDE.md
+- `.shipkit-archive/{timestamp}/settings.json.backup` - Original settings
 
 **Install (creates/overwrites):**
 - `.shipkit/` - Context folder structure
@@ -444,7 +474,7 @@ Ready to use. Review merged files, archive has originals.
 ```
 {repo}/
 ├── install/
-│   ├── VERSION                          # e.g., "1.1.0"
+│   ├── VERSION                          # e.g., "1.2.0"
 │   ├── profiles/
 │   │   └── shipkit.manifest.json        # What to install
 │   ├── skills/
@@ -459,6 +489,9 @@ Ready to use. Review merged files, archive has originals.
 │   │   └── *.md                         # Template files
 │   └── claude-md/
 │       └── shipkit.md                   # CLAUDE.md template
+├── docs/
+│   └── generated/
+│       └── shipkit-overview.html        # Skill reference (browser viewable)
 ```
 
 ---
@@ -504,7 +537,7 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 **Post-update checklist:**
 
 1. **Review merged files** — Check CLAUDE.md and settings.json look correct
-2. **Check archive** — Originals in `.shipkit-archive-{timestamp}/` if needed
+2. **Check archive** — Originals in `.shipkit-archive/{timestamp}/` if needed
 3. **Run context scan** — `/shipkit-project-context` if stack.md wasn't migrated
 4. **Test a skill** — Try `/shipkit-project-status` to verify installation works
 
@@ -547,4 +580,4 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 
 Claude uses intelligence to merge, not rigid find-replace rules. The archive is the safety net — if the merge isn't perfect, the original is always available.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

@@ -1,6 +1,11 @@
 ---
 name: shipkit-ux-audit
 description: "Use when auditing implemented UI for missing UX patterns. Triggers: 'audit UX', 'check UX', 'missing patterns', 'UX gaps'."
+argument-hint: "<component or area>"
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
 ---
 
 # shipkit-ux-audit - Lightweight UX Guidance
@@ -476,4 +481,4 @@ Guidance is complete when:
 
 **Remember**: Good UX is invisible. Users shouldn't think about the interface - it should just work. When in doubt, choose the pattern that requires the least cognitive load and follows existing conventions.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

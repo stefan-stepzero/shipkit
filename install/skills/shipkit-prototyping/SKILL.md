@@ -1,6 +1,7 @@
 ---
 name: shipkit-prototyping
 description: "Use when user wants to quickly mockup UI before implementing. Triggers: 'prototype', 'mockup', 'quick UI', 'sketch this'."
+argument-hint: "<component or feature>"
 ---
 
 # shipkit-prototyping - Rapid UI Prototyping
@@ -496,4 +497,4 @@ Prototyping is complete when:
 **Suggest skill when:** User needs to make decisions, create persistence, or check project status.
 <!-- /SECTION:after-completion -->
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

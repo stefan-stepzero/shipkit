@@ -1,6 +1,7 @@
 ---
 name: shipkit-work-memory
 description: "Log session progress and save resume state. Infers from conversation and git. Triggers: 'log progress', 'session summary', 'checkpoint', 'save progress', 'end session'."
+argument-hint: "[checkpoint name]"
 ---
 
 # shipkit-work-memory - Session Progress & Resume State
@@ -349,4 +350,4 @@ Any development work:
 - [ ] User only needed to confirm
 <!-- /SECTION:success-criteria -->
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

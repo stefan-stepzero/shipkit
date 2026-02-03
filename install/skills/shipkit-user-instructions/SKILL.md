@@ -465,4 +465,4 @@ Task tracking is complete when:
 
 **Remember**: This skill exists because chat history scrolls away. Tasks don't. Capture them, track them, complete them.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

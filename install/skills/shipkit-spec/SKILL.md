@@ -1,6 +1,7 @@
 ---
 name: shipkit-spec
 description: "Use when user describes a feature to build. Triggers: 'spec this', 'create specification', 'define requirements', 'I want to build'."
+argument-hint: "<feature name or description>"
 ---
 
 # shipkit-spec - Lightweight Feature Specification
@@ -47,20 +48,37 @@ description: "Use when user describes a feature to build. Triggers: 'spec this',
 
 ### Step 1: Understand the Feature
 
-**Before generating anything**, ask user 2-3 clarifying questions:
+**Before generating anything**, use AskUserQuestion tool to gather requirements:
 
-1. **What feature are you specifying?**
-   - Get clear feature name
-   - Understand core purpose
+**Question 1 - Feature Type:**
+```
+header: "Type"
+question: "What type of feature are you specifying?"
+options:
+  - label: "User-facing UI"
+    description: "Forms, dashboards, navigation, visual components"
+  - label: "API/Backend"
+    description: "Endpoints, services, data processing"
+  - label: "Integration"
+    description: "Third-party services, webhooks, external APIs"
+  - label: "Infrastructure"
+    description: "Auth, caching, database changes"
+```
 
-2. **What's the core user goal?**
-   - What problem does this solve?
-   - Who benefits?
+**Question 2 - Complexity:**
+```
+header: "Scope"
+question: "How complex is this feature?"
+options:
+  - label: "Simple (Recommended)"
+    description: "Single component/endpoint, minimal state"
+  - label: "Medium"
+    description: "Multiple components, some state management"
+  - label: "Complex"
+    description: "Cross-cutting concerns, significant architecture"
+```
 
-3. **Any specific edge cases to consider?**
-   - Beyond standard ones (we'll add those automatically)
-   - Domain-specific scenarios
-   - Known problem areas
+**If user selects "Other"**: Follow up with clarifying questions about their specific needs.
 
 **Why ask first**: Avoid generating wrong spec based on assumptions.
 
@@ -498,4 +516,4 @@ Spec is complete when:
 
 **Remember**: This is a lightweight spec for POC/MVP work. Get enough clarity to build correctly, but don't over-specify. Ship, learn, iterate.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

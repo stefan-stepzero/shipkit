@@ -80,10 +80,10 @@ A skill is **redundant** if Claude does it well without instruction (debugging, 
 ## 3. Framework Development Approach
 
 ### Technical Approach
-- **Skill format:** Follow Claude Code skill spec exactly — check `claude-code-best-practices/` before assuming syntax
+- **Skill format:** Follow Claude Code skill spec exactly — check GitHub repo before assuming syntax
 - **File structure:** All skills in `install/skills/`, agents in `install/agents/`
 - **Naming:** All skills use `shipkit-` prefix
-- **Integration:** 7-file system (manifest, hooks, routing, etc.) — see `BUILDING-LITE-SKILLS.md`
+- **Integration:** 7-file system (manifest, hooks, routing, etc.) — see `docs/development/SHIPKIT-7-FILE-INTEGRATION.md`
 
 ### Quality Trade-offs
 - **Correctness over speed:** Verify against Claude Code docs before implementing
@@ -100,26 +100,45 @@ A skill is **redundant** if Claude does it well without instruction (debugging, 
 
 ### Before Implementing ANY Feature
 
-1. **Check official Claude Code docs:** `https://docs.anthropic.com/claude/docs/claude-code`
-2. **Check local best practices:** `docs/development/`
-3. **Primary reference:** `docs/development/REFERENCES-BEST-PRACTICES.md` — read this FIRST
-4. Verify skills syntax matches current spec
-5. Ensure agent persona format is correct
-6. Validate hook patterns are supported
+**Primary sources of truth (in order):**
+
+1. **Claude Code GitHub repo** — `https://github.com/anthropics/claude-code`
+   - `CHANGELOG.md` — Latest features, tools, and breaking changes
+   - Issues — Real-world usage patterns and edge cases
+   - Source code — Actual tool definitions and behavior
+2. **Official Claude Code docs** — `https://code.claude.com/docs`
+3. **Local best practices** — `docs/development/`
+
+**Why GitHub first?** Claude Code evolves rapidly. The CHANGELOG and source code are always current. Third-party articles and even official docs can lag behind. When researching a feature (like Tasks, subagents, hooks), check the repo first.
+
+**Example workflow for understanding a new feature:**
+```
+1. Search CHANGELOG.md for feature introduction
+2. Search GitHub Issues for usage patterns and gotchas
+3. Check official docs for conceptual overview
+4. Test in a real Claude Code environment
+```
 
 **When uncertain about Claude Code features:**
-- Don't guess or assume
-- Check the documentation
+- Don't guess or assume from training data
+- Check the GitHub repo CHANGELOG first
+- Verify with official docs
 - Test in a real Claude Code environment
 - Ask the user if documentation is unclear
 
-### When Creating or Editing Lite Skills
+### When Creating or Editing Skills
 
 **Required reading:**
 - `docs/development/SHIPKIT-7-FILE-INTEGRATION.md` — 7-file integration system
 - `docs/development/SKILL-QUALITY-AND-PATTERNS.md` — Quality standards
 
 Production-ready = Integration (7 files) + Quality. DO NOT skip quality standards.
+
+**When adding a new skill, update:**
+1. `install/profiles/shipkit.manifest.json` — Add skill entry
+2. `README.md` — Update skill count and list
+3. `docs/generated/shipkit-overview.html` — Update skill count and add to list
+4. `install/claude-md/shipkit.md` — Add to skill reference table if user-invocable
 
 ---
 
@@ -185,6 +204,28 @@ Bash IS appropriate for git, tests, builds, system operations.
 
 **Don't use for:** Scratch notes, single-session todos, user-facing docs, code files, product artifacts (those go in `.shipkit/`)
 
+### Using Claude Code's Task System
+
+For complex multi-step framework development (migrations, multi-file refactors, release prep), use Claude Code's native Task tools:
+
+- **TaskCreate** — Create tasks with subject, description, activeForm (spinner text)
+- **TaskUpdate** — Update status, set dependencies with `addBlockedBy`
+- **TaskList** — View all tasks with status
+- **TaskGet** — Get full task details
+
+Tasks persist across context compaction and can be shared across sessions with `CLAUDE_CODE_TASK_LIST_ID` env var.
+
+### Release Checklist
+
+Before publishing changes to GitHub:
+
+1. **Update .gitignore** — Ensure internal files are excluded
+2. **Remove deprecated files** — `git rm --cached` for files that should no longer be tracked
+3. **Update skill counts** — README.md, HTML help, manifest
+4. **Update repo URLs** — Check skills reference correct GitHub repo
+5. **Verify no secrets** — Search for API keys, tokens, credentials
+6. **Test installation** — Run installer in a fresh project
+
 ---
 
 ## Appendix: Active Components
@@ -217,8 +258,12 @@ Location: `install/agents/`
 - `install/shared/hooks/shipkit-session-start.py` — Session initialization
 - `install/shared/hooks/shipkit-after-skill-router.py` — Auto-detection routing
 
-### Reference Materials
+### Reference Materials (Local Only - Gitignored)
 - `docs/development/REFERENCES-BEST-PRACTICES.md` — PRIMARY REFERENCE
 - `docs/development/SKILL-QUALITY-AND-PATTERNS.md` — Quality standards
 - `docs/development/SHIPKIT-7-FILE-INTEGRATION.md` — Integration system
 - `docs/development/SHIPKIT-DESIGN-PHILOSOPHY.md` — Design philosophy
+- `docs/development/obra-repo/` — Reference patterns from obra
+- `docs/development/speckit/` — Reference patterns from speckit
+
+**Note:** These files are gitignored and only available locally for framework development. They are not distributed with the public repo.

@@ -1,10 +1,13 @@
-# Example .gitignore for projects using Shipkit Lite
+# Example .gitignore for projects using Shipkit
 # Add these entries to your project's .gitignore
 
-# Shipkit Lite - Queue files (ephemeral, auto-generated)
+# Shipkit - Queue files (ephemeral, auto-generated)
 .shipkit/.queues/
 
-# Shipkit Lite - Optional: Work in progress folders
+# Shipkit - Update archives (local backups during /shipkit-update)
+.shipkit-archive/
+
+# Shipkit - Optional: Work in progress folders
 # Uncomment if you use WIP folders for draft specs/plans
 # .shipkit/specs/wip/
 # .shipkit/plans/wip/

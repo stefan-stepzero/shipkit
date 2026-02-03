@@ -1,6 +1,12 @@
 ---
 name: shipkit-detect
 description: Unified detection skill that scans artifacts after skill completion and creates work queues for follow-up skills. System skill - auto-triggered by router hook, not user-invocable.
+model: haiku
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Write
 ---
 
 # shipkit-detect - Automatic Detection & Queue Creation
@@ -258,4 +264,4 @@ Detection is complete when:
 **Suggest skill when:** User needs to make decisions, create persistence, or check project status.
 <!-- /SECTION:after-completion -->
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

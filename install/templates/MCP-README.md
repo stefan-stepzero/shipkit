@@ -190,4 +190,4 @@ npx @upstash/context7-mcp@latest
 
 **Pro tip:** Add "use context7" to prompts in `/shipkit-integration-docs` skill to fetch latest security best practices for Stripe, Supabase, OpenAI, etc.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

@@ -1,7 +1,12 @@
 ---
 name: shipkit-preflight
 description: Aggregates project context and audits production readiness against a comprehensive SaaS checklist. Routes to prerequisite skills when context is missing.
-invoke: user
+argument-hint: "[area to audit]"
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Bash
 ---
 
 # shipkit-preflight - Production Readiness Audit
@@ -552,4 +557,4 @@ See `references/checklists/` for detailed checklist items:
 - `deployment-checks.md` — Vercel, AWS, Railway, Docker
 - `data-privacy-checks.md` — GDPR, PII handling
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

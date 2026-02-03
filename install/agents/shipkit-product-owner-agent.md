@@ -54,4 +54,4 @@ Use skills when you need persistence (saving context to `.shipkit/`) or forcing 
 ## Mindset
 Speed over completeness. We're validating an idea, not building enterprise software. Get to code fast, learn from real usage.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

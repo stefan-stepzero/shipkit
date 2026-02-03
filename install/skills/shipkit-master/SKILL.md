@@ -290,4 +290,4 @@ This skill is the **central router** that connects all other skills.
 
 **Remember:** This skill is the traffic controller. It routes efficiently, loads lazily, and makes skills discoverable. Every session starts here.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

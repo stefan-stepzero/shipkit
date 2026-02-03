@@ -12,6 +12,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.2.0] - 2026-02-03
+
+### Added
+- `argument-hint` frontmatter for 13 user-invocable skills (shows in slash command menu)
+- `allowed-tools` restrictions for 8 read-only/focused skills
+- `context: fork` for `shipkit-verify` and `shipkit-codebase-index` (context isolation)
+- AskUserQuestion structured guidance in `shipkit-spec`, `shipkit-plan`, `shipkit-product-discovery`
+- `scripts/update-version.py` — Automate version updates across all files
+
+### Changed
+- Model optimization: `haiku` only for bulk scanning (`shipkit-detect`, `shipkit-codebase-index`)
+- Removed `haiku` from `shipkit-claude-md`, `shipkit-get-skills`, `shipkit-get-mcps` (inherit best model)
+- Removed `sonnet` from `shipkit-verify`, `shipkit-preflight` (inherit best model)
+- Skills now leverage Claude Code frontmatter features for better UX and performance
+
+### Technical
+- Integrated Claude Code features: `argument-hint`, `allowed-tools`, `context: fork`
+- Skills documentation now includes AskUserQuestion patterns for structured user input
+- Version watermarking updated to v1.2.0 across 35 files
+
+---
+
 ## [1.1.0] - 2026-02-03
 
 ### Added

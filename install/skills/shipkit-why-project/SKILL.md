@@ -1,6 +1,7 @@
 ---
 name: shipkit-why-project
 description: "Use when defining project vision and strategic direction. Triggers: 'why this project', 'define vision', 'project goals', 'what are we building'."
+argument-hint: "[project name]"
 ---
 
 # shipkit-why-project - Project Vision & Strategy
@@ -242,4 +243,4 @@ Vision is defined when:
 
 **Detailed guidance**: See `references/` folder for common scenarios, tips, and examples.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

@@ -1,6 +1,14 @@
 ---
 name: shipkit-codebase-index
 description: "Generate project index for faster codebase navigation. Triggers: 'index codebase', 'create index', 'map project'."
+context: fork
+model: haiku
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Bash
+  - Write
 ---
 
 # shipkit-codebase-index - Codebase Navigation Index
@@ -221,4 +229,4 @@ I'll use this index to navigate faster.
 - [ ] User confirmed skip list (if any)
 - [ ] Index saved
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

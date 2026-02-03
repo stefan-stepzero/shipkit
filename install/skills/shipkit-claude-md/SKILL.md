@@ -1,9 +1,7 @@
 ---
 name: shipkit-claude-md
 description: Update CLAUDE.md with learnings, preferences, or project context. Use when user says "update claude.md", "add to claude.md", or wants to persist something.
-invoke: user
-model: haiku
-tools:
+allowed-tools:
   - Read
   - Write
   - Glob
@@ -276,4 +274,4 @@ Claude reads CLAUDE.md, finds the line, removes it, confirms.
 - [ ] User confirmed what was added and where
 <!-- /SECTION:success-criteria -->
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

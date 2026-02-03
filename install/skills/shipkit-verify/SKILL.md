@@ -1,11 +1,12 @@
 ---
 name: shipkit-verify
 description: Review recent changes across 12 quality dimensions — report issues by priority. Use after a chunk of work, before commit, or when asked to check work.
-invoke: user
-model: sonnet
-tools:
+argument-hint: "[scope or feature]"
+context: fork
+allowed-tools:
   - Read
   - Glob
+  - Grep
   - Bash
 ---
 
@@ -271,4 +272,4 @@ No follow-up skill automatically triggered.
 - [ ] Report only — no unsolicited fixes
 <!-- /SECTION:success-criteria -->
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

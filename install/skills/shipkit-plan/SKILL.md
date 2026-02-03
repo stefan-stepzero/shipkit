@@ -1,6 +1,7 @@
 ---
 name: shipkit-plan
 description: "Use when a spec exists and user wants implementation steps. Triggers: 'how to implement', 'create plan', 'plan this', 'what are the steps'."
+argument-hint: "[spec name]"
 ---
 
 # shipkit-plan - Lightweight Implementation Planning
@@ -44,11 +45,35 @@ description: "Use when a spec exists and user wants implementation steps. Trigge
 
 ### Step 1: Confirm Scope
 
-**Before generating anything**, ask user 2-3 questions:
+**First, scan available specs:**
+```bash
+ls .shipkit/specs/active/*.md 2>/dev/null || echo "No specs found"
+```
 
-1. **Which spec are you planning?** (List available specs from `.shipkit/specs/active/`)
-2. **Implementation approach?** ("What's your preferred approach?" if multiple options exist)
-3. **Complexity level?** ("Quick POC plan or detailed plan?")
+**Then use AskUserQuestion tool:**
+
+**Question 1 - Spec Selection:** (if multiple specs exist)
+```
+header: "Spec"
+question: "Which spec are you planning?"
+options:
+  - (dynamically list spec files found)
+```
+
+**Question 2 - Plan Detail:**
+```
+header: "Detail"
+question: "What level of planning do you need?"
+options:
+  - label: "Quick POC (Recommended)"
+    description: "Minimal steps, get something working fast"
+  - label: "Standard"
+    description: "Balanced detail, covers major concerns"
+  - label: "Detailed"
+    description: "Comprehensive plan with alternatives"
+```
+
+**If user selects "Other"**: Ask clarifying questions about their specific needs.
 
 ---
 
@@ -330,4 +355,4 @@ Plan is complete when:
 
 **Remember**: This is a POC/MVP plan. Get something working, then refine. Don't spend hours planning what you could learn in minutes of coding.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

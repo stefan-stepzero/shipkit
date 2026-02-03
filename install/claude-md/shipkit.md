@@ -1,4 +1,4 @@
-<!-- BEGIN Shipkit v1.1.0 -->
+<!-- BEGIN Shipkit v1.2.0 -->
 # Shipkit
 
 Solo dev framework for shipping MVPs. AI-assisted, fast iteration, production-ready core paths.
@@ -131,4 +131,4 @@ If `.shipkit/codebase-index.json` exists:
 
 *(None yet — learnings will be added as the project evolves)*
 
-<!-- END Shipkit v1.1.0 -->
+<!-- END Shipkit v1.2.0 -->

@@ -1,6 +1,7 @@
 ---
 name: shipkit-architecture-memory
 description: "Use when making or documenting an architectural decision, technology choice, or design pattern. Triggers: 'log decision', 'why did we choose', 'architecture choice'."
+argument-hint: "<decision to log>"
 ---
 
 # shipkit-architecture-memory - Architectural Decision Logger
@@ -575,4 +576,4 @@ Claude (shipkit-architecture-memory):
 
 **Remember**: This is a decision log, not comprehensive architecture documentation. Log decisions as they're made to maintain context. For detailed architecture docs, use `document manually`.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

@@ -1,6 +1,11 @@
 ---
 name: shipkit-project-status
 description: "Use when user asks about project health or needs orientation. Triggers: 'what's the status', 'project health', 'where are we', 'what's done'."
+allowed-tools:
+  - Read
+  - Glob
+  - Grep
+  - Bash
 ---
 
 # shipkit-project-status - Project Health Dashboard
@@ -470,4 +475,4 @@ Status check is complete when:
 
 **Remember**: This is an orientation tool. Run it when you need to know "where am I?" and "what should I do next?". It's designed to be fast, informative, and actionable.
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->

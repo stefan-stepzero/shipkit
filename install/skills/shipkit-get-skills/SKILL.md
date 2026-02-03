@@ -1,9 +1,8 @@
 ---
 name: shipkit-get-skills
 description: Discover and install skills from the open agent skills ecosystem (skills.sh)
-invoke: user
-model: haiku
-tools:
+argument-hint: "<search query>"
+allowed-tools:
   - Bash
   - Read
 ---
@@ -277,4 +276,4 @@ This skill operates independently. It helps users extend their skill set.
 - [ ] Fallback works when npx unavailable
 - [ ] Namespace warnings are informative but non-blocking
 
-<!-- Shipkit v1.1.0 -->
+<!-- Shipkit v1.2.0 -->
