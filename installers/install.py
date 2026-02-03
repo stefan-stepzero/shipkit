@@ -895,31 +895,41 @@ def install_mcp_config(target_dir, selected_mcps):
 # COMPLETION
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def open_html_docs(repo_root, edition):
-    """Open appropriate HTML overview based on edition"""
-    import webbrowser
-
+def install_html_docs(repo_root, target_dir):
+    """Copy HTML overview to target project for easy reference"""
     html_dir = repo_root / "docs" / "generated"
-
-    if not html_dir.exists():
-        print_warning(f"Documentation files not found in {html_dir}")
-        return
-
     overview_file = html_dir / "shipkit-overview.html"
 
     if not overview_file.exists():
-        print_warning(f"Overview not found: {overview_file}")
-        return
+        return None
 
-    print()
-    print(f"  {Colors.BRIGHT_CYAN}📖 Opening documentation...{Colors.RESET}")
-    print()
+    # Copy to .shipkit/ for easy access
+    dest_file = target_dir / ".shipkit" / "shipkit-overview.html"
+    dest_file.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(overview_file, dest_file)
+    return dest_file
 
-    try:
-        webbrowser.open(f"file://{overview_file}")
-        print_success(f"Opened {overview_file.name}")
-    except Exception as e:
-        print_warning(f"Could not open {overview_file.name}: {e}")
+def open_html_docs(repo_root, target_dir, edition):
+    """Copy HTML overview to project and open in browser"""
+    import webbrowser
+
+    # First, copy to target project
+    installed_file = install_html_docs(repo_root, target_dir)
+
+    if installed_file and installed_file.exists():
+        print()
+        print(f"  {Colors.BRIGHT_CYAN}📖 Opening documentation...{Colors.RESET}")
+        print()
+        print_success(f"HTML overview installed to .shipkit/shipkit-overview.html")
+
+        try:
+            webbrowser.open(f"file://{installed_file}")
+            print_success(f"Opened in browser")
+        except Exception as e:
+            print_warning(f"Could not open in browser: {e}")
+            print_info(f"Open manually: {installed_file}")
+    else:
+        print_warning("HTML overview not found in source")
 
 def show_completion(target_dir, selected_skills, selected_agents, language):
     """Show completion message"""
@@ -944,6 +954,7 @@ def show_completion(target_dir, selected_skills, selected_agents, language):
     print_success(f"Settings (.claude/settings.json)")
     print_success(f"Project instructions (CLAUDE.md)")
     print_success("Git configuration (.gitignore)")
+    print_success("HTML skill reference (.shipkit/shipkit-overview.html)")
 
     print()
     print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
@@ -1075,8 +1086,8 @@ def main():
     # Show completion
     show_completion(target_dir, selected_skills, selected_agents, language)
 
-    # Open docs
-    open_html_docs(repo_root, manifest["edition"])
+    # Install and open docs
+    open_html_docs(repo_root, target_dir, manifest["edition"])
 
 if __name__ == "__main__":
     try:
