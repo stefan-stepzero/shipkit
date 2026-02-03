@@ -2,23 +2,21 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**23 skills** organized for streamlined workflow:
+**24 skills** organized for streamlined workflow:
 - **Core Workflow** (5) - Orchestration, status, and context management
 - **Discovery & Planning** (6) - Product discovery and specification
 - **Implementation** (3) - Architecture, contracts, and integrations
 - **Quality & Documentation** (6) - Testing, UX, and documentation
 - **Ecosystem** (2) - Get skills and MCPs
-- **System** (1) - Auto-triggered detection
+- **System** (2) - Auto-triggered detection and updates
 
 Plus **6 agent personas** that specialize behaviors for different workflow stages.
-
-> **Note:** This repo now exclusively supports Shipkit. The full Shipkit framework has been archived to `archive/base-shipkit/`.
 
 ---
 
 ## What's Inside
 
-### Skills (23 total)
+### Skills (24 total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -54,8 +52,9 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-get-skills` - Discover and install Claude Code skills
 - `shipkit-get-mcps` - Discover and install MCP servers
 
-**System Skills (1 skill, auto-triggered):**
-- `shipkit-detect` - Pattern detection and queue creation
+**System Skills (2 skills):**
+- `shipkit-detect` - Pattern detection and queue creation (auto-triggered)
+- `shipkit-update` - Install or update Shipkit from GitHub
 
 ### Agent Personas (6)
 
@@ -74,14 +73,22 @@ All skills use the `shipkit-` prefix for clarity.
 
 ### Installation
 
-**Python (All Platforms - Recommended):**
+**Option 1: Ask Claude (Recommended)**
+
+In any project with Claude Code, just ask:
+> "Install Shipkit from https://github.com/stefan-stepzero/sg-shipkit"
+
+Claude will fetch and run the `shipkit-update` skill to bootstrap the installation.
+
+**Option 2: Python Installer**
 ```bash
 cd your-project
-python ../sg-shipkit/installers/install.py
+curl -O https://raw.githubusercontent.com/stefan-stepzero/sg-shipkit/main/installers/install.py
+python install.py
 ```
 
 The installer will:
-- Install all 22 skills
+- Install all 24 skills
 - Set up 6 agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
@@ -94,7 +101,7 @@ your-project/
 ├── CLAUDE.md                    # Workflow guide
 ├── .claude/
 │   ├── settings.json            # Permissions + hooks
-│   ├── skills/                  # 22 skill definitions
+│   ├── skills/                  # 24 skill definitions
 │   ├── agents/                  # 6 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
@@ -160,10 +167,11 @@ Skills naturally flow from one to another:
 sg-shipkit/
 ├── installers/
 │   ├── install.py                # Python installer (cross-platform)
+│   ├── uninstall.py              # Uninstaller
 │   └── README.md                 # Installer documentation
 │
 ├── install/                      # Everything that gets installed
-│   ├── skills/                   # 22 shipkit-* skill definitions
+│   ├── skills/                   # 24 shipkit-* skill definitions
 │   ├── agents/                   # 6 shipkit-*-agent personas
 │   ├── profiles/
 │   │   └── shipkit.manifest.json # Skill manifest
@@ -176,11 +184,12 @@ sg-shipkit/
 │   │   └── scripts/              # Shared utilities
 │   └── templates/                # Queue templates
 │
-├── archive/
-│   └── base-shipkit/             # Archived full framework
+├── docs/                         # Documentation
+│   ├── getting-started.md
+│   ├── architecture.md
+│   ├── skill-reference.md
+│   └── creating-skills.md
 │
-├── claude-code-best-practices/   # Reference documentation
-├── CLAUDE.md                     # Development guide (this repo)
 └── README.md                     # This file
 ```
 
@@ -189,7 +198,7 @@ sg-shipkit/
 ## Key Features
 
 ### Streamlined Workflow
-- 22 focused skills
+- 24 focused skills
 - All skills use `shipkit-` prefix for clarity
 - Context stored in single `.shipkit/` folder
 - No complex workspace structure
@@ -243,22 +252,18 @@ Implementation, debugging, testing, refactoring, and code documentation are **na
 
 ## Updating
 
-Re-run the installer to get the latest skills:
-
+Use the `shipkit-update` skill:
 ```bash
-cd your-project
-python ../sg-shipkit/installers/install.py -y
+/shipkit-update
+```
+
+Or re-run the installer:
+```bash
+curl -O https://raw.githubusercontent.com/stefan-stepzero/sg-shipkit/main/installers/install.py
+python install.py -y
 ```
 
 This preserves your `.shipkit/` context files while updating skill definitions.
-
----
-
-## Archived: Full Shipkit
-
-The full Shipkit framework (dev-*, prod-* skills) has been archived to `archive/base-shipkit/`.
-
-If you need the full framework, see `archive/base-shipkit/README.md` for restoration instructions.
 
 ---
 
@@ -270,9 +275,6 @@ MIT License
 
 **Ready to ship faster?**
 
-```bash
-cd your-next-project
-python ../sg-shipkit/installers/install.py
-```
+Ask Claude: *"Install Shipkit from https://github.com/stefan-stepzero/sg-shipkit"*
 
 **Streamlined product development, guided by AI.**
