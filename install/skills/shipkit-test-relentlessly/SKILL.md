@@ -1,7 +1,7 @@
 ---
 name: shipkit-test-relentlessly
 description: Run tests relentlessly until all pass. Use for TDD, fixing test failures, ensuring green builds.
-argument-hint: "[task description]"
+argument-hint: "[task] [--max N] [--cmd \"command\"]"
 triggers:
   - test relentlessly
   - keep testing until green
@@ -53,6 +53,28 @@ The user invokes this skill and walks away. Come back to either success or a cle
 - Fixing multiple test failures after refactor
 - Ensuring all tests pass before commit
 - Implementing feature to match test spec
+
+---
+
+## Arguments
+
+```
+/shipkit-test-relentlessly [task] [--max N] [--cmd "command"]
+```
+
+| Argument | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `task` | No | "Fix all failing tests" | Description of what to implement/fix |
+| `--max N` | No | 10 | Maximum iterations before giving up |
+| `--cmd "..."` | No | Auto-detected | Explicit test command to use |
+
+**Examples:**
+```
+/shipkit-test-relentlessly
+/shipkit-test-relentlessly implement UserService
+/shipkit-test-relentlessly --max 15 TDD the auth module
+/shipkit-test-relentlessly --cmd "npm test -- --watch=false"
+```
 
 ---
 

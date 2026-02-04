@@ -1,7 +1,7 @@
 ---
 name: shipkit-build-relentlessly
 description: Build/compile relentlessly until success. Use for migrations, setup, major refactors.
-argument-hint: "[task description]"
+argument-hint: "[task] [--max N] [--cmd \"command\"]"
 triggers:
   - build relentlessly
   - keep building until it compiles
@@ -52,6 +52,28 @@ The user invokes this skill and walks away. Come back to either success or a cle
 - Major dependency upgrades (breaking changes)
 - Initial project setup (getting first build working)
 - Large refactors with compilation fallout
+
+---
+
+## Arguments
+
+```
+/shipkit-build-relentlessly [task] [--max N] [--cmd "command"]
+```
+
+| Argument | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `task` | No | "Fix all build errors" | Description of what to fix |
+| `--max N` | No | 10 | Maximum iterations before giving up |
+| `--cmd "..."` | No | Auto-detected | Explicit build command to use |
+
+**Examples:**
+```
+/shipkit-build-relentlessly
+/shipkit-build-relentlessly migrate to TypeScript
+/shipkit-build-relentlessly --max 20 fix all type errors
+/shipkit-build-relentlessly --cmd "npm run build" --max 5
+```
 
 ---
 

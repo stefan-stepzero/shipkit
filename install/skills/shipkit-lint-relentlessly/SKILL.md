@@ -1,7 +1,7 @@
 ---
 name: shipkit-lint-relentlessly
 description: Fix lint/format errors relentlessly until clean. Use for code cleanup, PR prep, style fixes.
-argument-hint: "[scope or task]"
+argument-hint: "[task] [--max N] [--cmd \"command\"]"
 triggers:
   - lint relentlessly
   - fix all lint errors
@@ -54,6 +54,28 @@ The user invokes this skill and walks away. Come back to either success or a cle
 - Preparing code for PR review
 - Fixing all ESLint/Prettier/etc. violations
 - Enforcing code style consistency
+
+---
+
+## Arguments
+
+```
+/shipkit-lint-relentlessly [task] [--max N] [--cmd "command"]
+```
+
+| Argument | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `task` | No | "Fix all lint errors" | Description/scope of what to fix |
+| `--max N` | No | 10 | Maximum iterations before giving up |
+| `--cmd "..."` | No | Auto-detected | Explicit lint command to use |
+
+**Examples:**
+```
+/shipkit-lint-relentlessly
+/shipkit-lint-relentlessly fix src/components only
+/shipkit-lint-relentlessly --max 5 quick cleanup
+/shipkit-lint-relentlessly --cmd "npm run lint"
+```
 
 ---
 
