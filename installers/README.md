@@ -27,14 +27,32 @@ Works on:
 
 **Command Line Usage:**
 ```bash
-# Interactive mode
+# Interactive mode (requires local repo)
 python install.py
 
-# Install to specific directory
-python install.py /path/to/project
+# Download from GitHub and install (no local repo needed)
+python install.py --from-github --target /path/to/project
 
-# Non-interactive mode
-python install.py /path/to/project -y
+# Install to specific directory
+python install.py --target /path/to/project
+
+# Non-interactive mode (all defaults)
+python install.py -y --all-skills --all-agents --no-mcps --target /path/to/project
+
+# Custom profile and language
+python install.py --profile minimal --language python --target /path/to/project
+```
+
+**GitHub Installation (no local clone needed):**
+```bash
+# Download and install from main branch
+python install.py --from-github --target /path/to/project
+
+# Use a specific branch
+python install.py --from-github --branch develop --target /path/to/project
+
+# Use a different repo (for forks)
+python install.py --from-github --repo myuser/shipkit --target /path/to/project
 ```
 
 **Check if Python is installed:**

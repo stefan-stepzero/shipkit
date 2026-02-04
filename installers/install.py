@@ -2,6 +2,12 @@
 """
 install.py - Shipkit Installer (Python)
 Manifest-based installer with customizable skill/agent selection
+
+Usage:
+    python install.py                      # Interactive install from local repo
+    python install.py --from-github        # Download and install from GitHub
+    python install.py -y --all-skills      # Non-interactive install
+    python -X utf8 install.py              # Windows: force UTF-8 encoding
 """
 
 import os
@@ -10,12 +16,46 @@ import json
 import shutil
 import argparse
 import platform
+import tempfile
+import zipfile
+import io
 from pathlib import Path
-import subprocess
+from urllib.request import urlopen
+from urllib.error import URLError
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# COLORS & STYLING
+# WINDOWS ENCODING FIX
 # ═══════════════════════════════════════════════════════════════════════════════
+
+def setup_encoding():
+    """Setup UTF-8 encoding on Windows"""
+    if platform.system() == "Windows":
+        # Try to set console to UTF-8
+        try:
+            import subprocess
+            subprocess.run(["chcp", "65001"], capture_output=True, shell=True)
+        except Exception:
+            pass
+        # Set stdout/stderr encoding
+        if hasattr(sys.stdout, 'reconfigure'):
+            try:
+                sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+                sys.stderr.reconfigure(encoding='utf-8', errors='replace')
+            except Exception:
+                pass
+
+setup_encoding()
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# COLORS & STYLING (with ASCII fallbacks for Windows)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def supports_unicode():
+    """Check if terminal supports Unicode"""
+    if platform.system() == "Windows":
+        # Check if running in Windows Terminal or modern console
+        return os.environ.get("WT_SESSION") or os.environ.get("TERM_PROGRAM")
+    return True
 
 class Colors:
     """ANSI color codes"""
@@ -31,20 +71,35 @@ class Colors:
     BRIGHT_CYAN = '\033[1;36m'
     BRIGHT_MAGENTA = '\033[1;35m'
 
+class Symbols:
+    """Unicode symbols with ASCII fallbacks"""
+    if supports_unicode():
+        CHECK = '✓'
+        CROSS = '✗'
+        WARN = '⚠'
+        ARROW = '→'
+        BULLET = '•'
+    else:
+        CHECK = '+'
+        CROSS = 'x'
+        WARN = '!'
+        ARROW = '->'
+        BULLET = '*'
+
 def print_success(msg):
-    print(f"  {Colors.GREEN}✓{Colors.RESET} {msg}")
+    print(f"  {Colors.GREEN}{Symbols.CHECK}{Colors.RESET} {msg}")
 
 def print_info(msg):
-    print(f"  {Colors.CYAN}→{Colors.RESET} {msg}")
+    print(f"  {Colors.CYAN}{Symbols.ARROW}{Colors.RESET} {msg}")
 
 def print_warning(msg):
-    print(f"  {Colors.YELLOW}⚠{Colors.RESET} {msg}")
+    print(f"  {Colors.YELLOW}{Symbols.WARN}{Colors.RESET} {msg}")
 
 def print_error(msg):
-    print(f"  {Colors.RED}✗{Colors.RESET} {msg}")
+    print(f"  {Colors.RED}{Symbols.CROSS}{Colors.RESET} {msg}")
 
 def print_bullet(msg):
-    print(f"  {Colors.DIM}•{Colors.RESET} {msg}")
+    print(f"  {Colors.DIM}{Symbols.BULLET}{Colors.RESET} {msg}")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # LOGO
@@ -381,6 +436,63 @@ def merge_claude_md(existing_path, template_path):
     return merged
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# GITHUB DOWNLOAD
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def download_from_github(repo, branch):
+    """Download and extract Shipkit from GitHub, return temp directory path"""
+    print()
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print(f"  {Colors.BOLD}Downloading from GitHub{Colors.RESET}")
+    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
+    print()
+
+    zip_url = f"https://github.com/{repo}/archive/refs/heads/{branch}.zip"
+    print_info(f"Downloading from: {repo} ({branch} branch)")
+    print_info(f"URL: {zip_url}")
+
+    try:
+        # Download the zip file
+        print_info("Fetching archive...")
+        with urlopen(zip_url, timeout=60) as response:
+            zip_data = response.read()
+        print_success(f"Downloaded {len(zip_data) / 1024:.1f} KB")
+
+        # Create temp directory
+        temp_dir = Path(tempfile.mkdtemp(prefix="shipkit_"))
+        print_info(f"Extracting to: {temp_dir}")
+
+        # Extract zip
+        with zipfile.ZipFile(io.BytesIO(zip_data)) as zf:
+            zf.extractall(temp_dir)
+
+        # Find the extracted folder (usually repo-branch format)
+        extracted_dirs = [d for d in temp_dir.iterdir() if d.is_dir()]
+        if not extracted_dirs:
+            print_error("No directory found in archive")
+            return None
+
+        repo_root = extracted_dirs[0]
+        print_success(f"Extracted to: {repo_root.name}")
+
+        return repo_root
+
+    except URLError as e:
+        print_error(f"Failed to download: {e}")
+        print()
+        print_info("Check that:")
+        print_bullet(f"Repository exists: github.com/{repo}")
+        print_bullet(f"Branch exists: {branch}")
+        print_bullet("You have internet access")
+        return None
+    except zipfile.BadZipFile:
+        print_error("Downloaded file is not a valid zip archive")
+        return None
+    except Exception as e:
+        print_error(f"Download failed: {e}")
+        return None
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # VALIDATION
 # ═══════════════════════════════════════════════════════════════════════════════
 
@@ -441,6 +553,7 @@ def install_shared_core(repo_root, target_dir, language, edition):
     shutil.copy2(hooks_src / "shipkit-session-start.py", hooks_dest / "session-start.py")
     shutil.copy2(hooks_src / "shipkit-after-skill-router.py", hooks_dest / "after-skill-router.py")
     shutil.copy2(hooks_src / "shipkit-track-skill-usage.py", hooks_dest / "shipkit-track-skill-usage.py")
+    shutil.copy2(hooks_src / "shipkit-relentless-stop-hook.py", hooks_dest / "shipkit-relentless-stop-hook.py")
     print_success("Hooks installed")
 
     # Scripts (language-specific)
@@ -465,7 +578,7 @@ def install_shared_core(repo_root, target_dir, language, edition):
     else:
         print_warning(f"{filename} already exists, skipping")
 
-def install_edition_files(repo_root, target_dir, manifest, language, selected_skills, claude_md_action):
+def install_edition_files(repo_root, target_dir, manifest, language, selected_skills, claude_md_action, skip_prompts=False):
     """Install edition-specific settings and CLAUDE.md"""
     print()
     print(f"  {Colors.BOLD}Installing edition-specific files{Colors.RESET}")
@@ -482,8 +595,8 @@ def install_edition_files(repo_root, target_dir, manifest, language, selected_sk
         print_success(f"Settings installed with {len(selected_skills)} skill permissions")
     else:
         print_warning("settings.json exists, preserving your custom config")
-        # Still update skill permissions
-        if confirm("Update skill permissions in existing settings?", default=True):
+        # Still update skill permissions (auto-yes if skip_prompts)
+        if skip_prompts or confirm("Update skill permissions in existing settings?", default=True):
             update_skill_permissions(settings_dest, selected_skills)
             print_success("Skill permissions updated")
 
@@ -501,10 +614,16 @@ def install_edition_files(repo_root, target_dir, manifest, language, selected_sk
         shutil.copy2(claude_md_src, claude_md_dest)
         print_success("CLAUDE.md overwritten with Shipkit template")
     elif claude_md_action == "merge":
-        merged_content = merge_claude_md(claude_md_dest, claude_md_src)
-        with open(claude_md_dest, 'w', encoding='utf-8') as f:
-            f.write(merged_content)
-        print_success("CLAUDE.md merged with Shipkit sections")
+        # Fix: Check if file exists before attempting merge
+        if not claude_md_dest.exists():
+            # No existing file to merge with, just install
+            shutil.copy2(claude_md_src, claude_md_dest)
+            print_success("CLAUDE.md installed (no existing file to merge)")
+        else:
+            merged_content = merge_claude_md(claude_md_dest, claude_md_src)
+            with open(claude_md_dest, 'w', encoding='utf-8') as f:
+                f.write(merged_content)
+            print_success("CLAUDE.md merged with Shipkit sections")
 
 def generate_settings(manifest, language, selected_skills):
     """Generate settings.json with only selected skill permissions"""
@@ -637,6 +756,15 @@ def generate_settings(manifest, language, selected_skills):
                         {
                             "type": "command",
                             "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/shipkit-after-skill-router.py"
+                        }
+                    ]
+                },
+                {
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/shipkit-relentless-stop-hook.py",
+                            "timeout": 180
                         }
                     ]
                 }
@@ -995,6 +1123,12 @@ def show_completion(target_dir, selected_skills, selected_agents, language):
 def main():
     """Main installation process"""
     parser = argparse.ArgumentParser(description="Shipkit Installer")
+    parser.add_argument("--from-github", action="store_true",
+                        help="Download and install from GitHub (no local repo needed)")
+    parser.add_argument("--repo", default="stefan-stepzero/shipkit",
+                        help="GitHub repo to install from (default: stefan-stepzero/shipkit)")
+    parser.add_argument("--branch", default="main",
+                        help="Git branch to install from (default: main)")
     parser.add_argument("--profile", choices=["shipkit", "minimal", "discovery"], default="shipkit",
                         help="Edition profile: shipkit (full), minimal (core only), discovery (planning focused)")
     parser.add_argument("--language", choices=["bash", "python"], help="Scripting language")
@@ -1002,10 +1136,30 @@ def main():
     parser.add_argument("--all-skills", action="store_true", help="Install all skills without prompting")
     parser.add_argument("--all-agents", action="store_true", help="Install all agents without prompting")
     parser.add_argument("--no-agents", action="store_true", help="Skip agent installation")
+    parser.add_argument("--all-mcps", action="store_true", help="Install all MCP servers without prompting")
+    parser.add_argument("--no-mcps", action="store_true", help="Skip MCP server installation")
     parser.add_argument("--claude-md", choices=["skip", "overwrite", "merge"], help="CLAUDE.md handling")
-    parser.add_argument("-y", "--yes", action="store_true", help="Skip confirmations")
+    parser.add_argument("-y", "--yes", action="store_true", help="Skip all confirmations (non-interactive mode)")
 
     args = parser.parse_args()
+
+    # Show logo early
+    show_logo(args.profile or "shipkit")
+
+    # Determine repo root (local or GitHub download)
+    temp_dir_to_cleanup = None
+
+    if args.from_github:
+        # Download from GitHub
+        repo_root = download_from_github(args.repo, args.branch)
+        if repo_root is None:
+            print_error("Could not download from GitHub. Aborting.")
+            sys.exit(1)
+        temp_dir_to_cleanup = repo_root.parent  # The temp directory containing the extracted repo
+    else:
+        # Use local repo
+        script_dir = Path(__file__).parent
+        repo_root = script_dir.parent
 
     # Profile
     profile = args.profile or prompt_for_profile()
@@ -1018,13 +1172,6 @@ def main():
         target_dir = Path(args.target).resolve()
     else:
         target_dir = prompt_for_target_directory()
-
-    # Repo root
-    script_dir = Path(__file__).parent
-    repo_root = script_dir.parent
-
-    # Show logo
-    show_logo(profile)
 
     # Verify source files
     if not verify_source_files(repo_root):
@@ -1085,14 +1232,23 @@ def main():
     print_info("Installing Shipkit framework...")
 
     install_shared_core(repo_root, target_dir, language, manifest["edition"])
-    install_edition_files(repo_root, target_dir, manifest, language, selected_skills, claude_md_action)
+    install_edition_files(repo_root, target_dir, manifest, language, selected_skills, claude_md_action, skip_prompts=args.yes)
     install_skills(repo_root, target_dir, selected_skills)
     install_agents(repo_root, target_dir, selected_agents)
     delete_unused_language(target_dir, language)
     make_scripts_executable(target_dir, language)
 
-    # MCP selection
-    selected_mcps = prompt_for_mcps(manifest)
+    # MCP selection (respect --no-mcps and --all-mcps flags)
+    if args.no_mcps:
+        selected_mcps = []
+    elif args.all_mcps:
+        selected_mcps = manifest.get("mcps", {}).get("recommended", [])
+    elif args.yes:
+        # Non-interactive mode: skip MCP selection (default to none)
+        selected_mcps = []
+        print_info("MCP selection skipped (non-interactive mode)")
+    else:
+        selected_mcps = prompt_for_mcps(manifest)
     install_mcp_config(target_dir, selected_mcps)
 
     # Show completion
@@ -1100,6 +1256,14 @@ def main():
 
     # Install and open docs
     open_html_docs(repo_root, target_dir, manifest["edition"])
+
+    # Cleanup temp directory if we downloaded from GitHub
+    if temp_dir_to_cleanup:
+        try:
+            shutil.rmtree(temp_dir_to_cleanup)
+            print_info("Cleaned up temporary download files")
+        except Exception:
+            pass  # Best effort cleanup
 
 if __name__ == "__main__":
     try:

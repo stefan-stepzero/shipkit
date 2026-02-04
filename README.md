@@ -90,7 +90,13 @@ Claude will fetch and run the skill to bootstrap the installation.
 ```bash
 cd your-project
 curl -O https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/installers/install.py
-python install.py
+python install.py --from-github
+```
+
+Or with a local clone:
+```bash
+git clone https://github.com/stefan-stepzero/shipkit.git
+python shipkit/installers/install.py --target .
 ```
 
 The installer will:
