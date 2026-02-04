@@ -37,5 +37,3 @@ Each template below shows the format for a specific queue type:
 4. **routes-to-document.md.template** - Routes/APIs needing documentation
 5. **ux-audit-needed.md.template** - Components needing UX audit
 6. **integrations-used.md.template** - Service integrations detected in code
-
-<!-- Shipkit v1.2.0 -->

@@ -480,5 +480,3 @@ Guidance is complete when:
 ---
 
 **Remember**: Good UX is invisible. Users shouldn't think about the interface - it should just work. When in doubt, choose the pattern that requires the least cognitive load and follows existing conventions.
-
-<!-- Shipkit v1.2.0 -->

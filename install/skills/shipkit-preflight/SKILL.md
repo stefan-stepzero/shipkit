@@ -617,5 +617,3 @@ See `references/checklists/` for detailed checklist items:
 - `database-checks.md` — Supabase, Postgres, etc.
 - `deployment-checks.md` — Vercel, AWS, Railway, Docker
 - `data-privacy-checks.md` — GDPR, PII handling
-
-<!-- Shipkit v1.2.0 -->

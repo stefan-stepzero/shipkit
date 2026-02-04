@@ -575,5 +575,3 @@ Claude (shipkit-architecture-memory):
 ---
 
 **Remember**: This is a decision log, not comprehensive architecture documentation. Log decisions as they're made to maintain context. For detailed architecture docs, use `document manually`.
-
-<!-- Shipkit v1.2.0 -->

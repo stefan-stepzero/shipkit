@@ -273,5 +273,3 @@ Claude reads CLAUDE.md, finds the line, removes it, confirms.
 - [ ] Learning appended to correct section
 - [ ] User confirmed what was added and where
 <!-- /SECTION:success-criteria -->
-
-<!-- Shipkit v1.2.0 -->

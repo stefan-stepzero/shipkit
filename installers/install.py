@@ -567,6 +567,13 @@ def install_shared_core(repo_root, target_dir, language, edition):
     shutil.copytree(scripts_src, scripts_dest, dirs_exist_ok=True)
     print_success(f"{language.capitalize()} scripts installed")
 
+    # Copy VERSION file (single source of truth for installed version)
+    version_src = repo_root / "VERSION"
+    version_dest = target_dir / ".shipkit" / "VERSION"
+    version_dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(version_src, version_dest)
+    print_success("Version file installed")
+
     # Git files
     print_info("Installing git configuration files...")
     filename = ".gitignore"

@@ -354,5 +354,3 @@ Plan is complete when:
 ---
 
 **Remember**: This is a POC/MVP plan. Get something working, then refine. Don't spend hours planning what you could learn in minutes of coding.
-
-<!-- Shipkit v1.2.0 -->

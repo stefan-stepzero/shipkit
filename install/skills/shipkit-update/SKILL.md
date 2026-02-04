@@ -358,7 +358,7 @@ This includes (but is not limited to):
 
 **Fresh install (no previous):**
 ```
-✓ Shipkit v1.2.0 installed
+✓ Shipkit installed
 
 Installed:
 - 24 skills → .claude/skills/shipkit-*/
@@ -579,5 +579,3 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 **Archive first, merge with judgment, user reviews result.**
 
 Claude uses intelligence to merge, not rigid find-replace rules. The archive is the safety net — if the merge isn't perfect, the original is always available.
-
-<!-- Shipkit v1.2.0 -->

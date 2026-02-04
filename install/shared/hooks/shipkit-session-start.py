@@ -14,9 +14,15 @@ import urllib.request
 from pathlib import Path
 from datetime import datetime, timedelta
 
-# Version is also in VERSION file at repo root
-SHIPKIT_VERSION = "1.2.0"
 GITHUB_VERSION_URL = "https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/VERSION"
+
+
+def get_installed_version() -> str:
+    """Read installed Shipkit version from .shipkit/VERSION."""
+    version_file = Path(".shipkit/VERSION")
+    if version_file.exists():
+        return version_file.read_text(encoding='utf-8').strip()
+    return "unknown"
 
 
 def get_file_age_days(file_path: Path) -> float:
@@ -234,6 +240,11 @@ def check_for_updates(project_root: Path) -> str | None:
     Returns: Message string if update available, None otherwise.
     """
     check_file = project_root / '.shipkit' / '.update-check'
+    installed_version = get_installed_version()
+
+    # Can't check for updates if we don't know current version
+    if installed_version == "unknown":
+        return None
 
     # Rate limit: skip network check if checked within last 24 hours
     if check_file.exists():
@@ -244,8 +255,8 @@ def check_for_updates(project_root: Path) -> str | None:
                 lines = check_file.read_text(encoding='utf-8').strip().split('\n')
                 if len(lines) >= 2:
                     cached_remote = lines[1]
-                    if parse_version(cached_remote) > parse_version(SHIPKIT_VERSION):
-                        return f"⚡ Shipkit {cached_remote} available (you have {SHIPKIT_VERSION}). Run `/shipkit-update`"
+                    if parse_version(cached_remote) > parse_version(installed_version):
+                        return f"⚡ Shipkit {cached_remote} available (you have {installed_version}). Run `/shipkit-update`"
             except Exception:
                 pass
             return None
@@ -271,8 +282,8 @@ def check_for_updates(project_root: Path) -> str | None:
             pass  # Cache write failure is non-fatal
 
         # Compare versions
-        if parse_version(remote_version) > parse_version(SHIPKIT_VERSION):
-            return f"⚡ Shipkit {remote_version} available (you have {SHIPKIT_VERSION}). Run `/shipkit-update`"
+        if parse_version(remote_version) > parse_version(installed_version):
+            return f"⚡ Shipkit {remote_version} available (you have {installed_version}). Run `/shipkit-update`"
 
     except Exception:
         # Network timeout, DNS failure, GitHub down, etc. - fail silently
@@ -584,5 +595,3 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
-
-# Shipkit v1.2.0

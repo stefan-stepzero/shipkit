@@ -342,5 +342,3 @@ This skill operates independently. It helps users extend Claude's capabilities.
 - [ ] Installation handles platform differences
 - [ ] Restart reminder always shown
 - [ ] Prerequisites flagged when known
-
-<!-- Shipkit v1.2.0 -->

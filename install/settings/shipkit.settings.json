@@ -1,6 +1,4 @@
 {
-  "_shipkit": "v1.2.0",
-
   "permissions": {
     "allow": [
       "Read",

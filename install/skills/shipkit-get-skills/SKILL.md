@@ -337,5 +337,3 @@ This skill operates independently. It helps users extend their skill set.
 - [ ] Installation is one confirmation away
 - [ ] Fallback works when npx unavailable
 - [ ] Namespace warnings are informative but non-blocking
-
-<!-- Shipkit v1.2.0 -->

@@ -308,5 +308,3 @@ No follow-up skill automatically triggered.
 - [ ] Findings are specific and actionable
 - [ ] Report only — no unsolicited fixes
 <!-- /SECTION:success-criteria -->
-
-<!-- Shipkit v1.2.0 -->

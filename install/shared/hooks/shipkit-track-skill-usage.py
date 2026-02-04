@@ -99,5 +99,3 @@ def create_empty_tracking():
 
 if __name__ == '__main__':
     sys.exit(main())
-
-# Shipkit v1.2.0

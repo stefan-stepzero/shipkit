@@ -349,5 +349,3 @@ Any development work:
 - [ ] Session entry appended
 - [ ] User only needed to confirm
 <!-- /SECTION:success-criteria -->
-
-<!-- Shipkit v1.2.0 -->

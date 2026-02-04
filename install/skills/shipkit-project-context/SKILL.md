@@ -307,5 +307,3 @@ Context generation is complete when:
 ---
 
 **Remember**: This skill is about **smart context generation with aggressive caching**. Scan once, read many times. Only rescan when source files actually change.
-
-<!-- Shipkit v1.2.0 -->

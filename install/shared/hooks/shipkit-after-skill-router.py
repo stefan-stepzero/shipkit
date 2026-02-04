@@ -89,5 +89,3 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
-
-# Shipkit v1.1.0

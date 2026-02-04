@@ -496,5 +496,3 @@ Prototyping is complete when:
 
 **Suggest skill when:** User needs to make decisions, create persistence, or check project status.
 <!-- /SECTION:after-completion -->
-
-<!-- Shipkit v1.2.0 -->
