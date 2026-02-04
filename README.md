@@ -79,24 +79,28 @@ All skills use the `shipkit-` prefix for clarity.
 
 ### Installation
 
-**Option 1: Ask Claude (Recommended)**
+**Option 1: Ask Claude (for updates)**
 
-In any project with Claude Code, just ask:
-> "Use /shipkit-update to install Shipkit from https://github.com/stefan-stepzero/shipkit"
+If Shipkit is already installed, ask Claude:
+> "Use /shipkit-update to update Shipkit"
 
-Claude will fetch and run the skill to bootstrap the installation.
+For first-time installs, use Option 2.
 
 **Option 2: Python Installer**
 ```bash
+# Interactive (prompts for options)
 cd your-project
 curl -O https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/installers/install.py
 python install.py --from-github
+
+# Non-interactive (uses sensible defaults: python, current dir, all skills/agents)
+python install.py --from-github -y
 ```
 
 Or with a local clone:
 ```bash
 git clone https://github.com/stefan-stepzero/shipkit.git
-python shipkit/installers/install.py --target .
+python shipkit/installers/install.py --target . -y
 ```
 
 The installer will:

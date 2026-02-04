@@ -1139,9 +1139,21 @@ def main():
     parser.add_argument("--all-mcps", action="store_true", help="Install all MCP servers without prompting")
     parser.add_argument("--no-mcps", action="store_true", help="Skip MCP server installation")
     parser.add_argument("--claude-md", choices=["skip", "overwrite", "merge"], help="CLAUDE.md handling")
-    parser.add_argument("-y", "--yes", action="store_true", help="Skip all confirmations (non-interactive mode)")
+    parser.add_argument("-y", "--yes", action="store_true",
+                        help="Non-interactive mode: use sensible defaults (python, current dir, all skills/agents)")
 
     args = parser.parse_args()
+
+    # Apply sensible defaults for non-interactive mode
+    if args.yes:
+        if not args.language:
+            args.language = "python"
+        if not args.target:
+            args.target = "."
+        args.all_skills = True
+        args.all_agents = True
+        if not args.claude_md:
+            args.claude_md = "merge"
 
     # Show logo early
     show_logo(args.profile or "shipkit")
