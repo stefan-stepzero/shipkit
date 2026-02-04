@@ -745,7 +745,7 @@ def generate_settings(manifest, language, selected_skills):
                     "hooks": [
                         {
                             "type": "command",
-                            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/shipkit-track-skill-usage.py"
+                            "command": "python -X utf8 .claude/hooks/shipkit-track-skill-usage.py"
                         }
                     ]
                 }
@@ -755,7 +755,7 @@ def generate_settings(manifest, language, selected_skills):
                     "hooks": [
                         {
                             "type": "command",
-                            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/shipkit-after-skill-router.py"
+                            "command": "python -X utf8 .claude/hooks/after-skill-router.py"
                         }
                     ]
                 },
@@ -763,7 +763,7 @@ def generate_settings(manifest, language, selected_skills):
                     "hooks": [
                         {
                             "type": "command",
-                            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/shipkit-relentless-stop-hook.py",
+                            "command": "python -X utf8 .claude/hooks/shipkit-relentless-stop-hook.py",
                             "timeout": 180
                         }
                     ]
