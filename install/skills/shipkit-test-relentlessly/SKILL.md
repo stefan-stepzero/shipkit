@@ -1,7 +1,7 @@
 ---
 name: shipkit-test-relentlessly
 description: Run tests relentlessly until all pass. Use for TDD, fixing test failures, ensuring green builds.
-argument-hint: "[task] [--max N] [--cmd \"command\"]"
+argument-hint: "[task] [--max N]"
 triggers:
   - test relentlessly
   - keep testing until green
@@ -59,63 +59,60 @@ The user invokes this skill and walks away. Come back to either success or a cle
 ## Arguments
 
 ```
-/shipkit-test-relentlessly [task] [--max N] [--cmd "command"]
+/shipkit-test-relentlessly [task] [--max N]
 ```
 
 | Argument | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `task` | No | "Fix all failing tests" | Description of what to implement/fix |
 | `--max N` | No | 10 | Maximum iterations before giving up |
-| `--cmd "..."` | No | Auto-detected | Explicit test command to use |
 
 **Examples:**
 ```
 /shipkit-test-relentlessly
 /shipkit-test-relentlessly implement UserService
 /shipkit-test-relentlessly --max 15 TDD the auth module
-/shipkit-test-relentlessly --cmd "npm test -- --watch=false"
 ```
 
 ---
 
 ## How It Works
 
-1. **You create a state file** that activates the Stop hook
+1. **You create a state file** with a `completion_promise`
 2. **You work on making tests pass**
-3. **When you try to stop**, the Stop hook:
-   - Runs the test command
-   - If tests fail → blocks stop, shows failures, increments iteration
-   - If tests pass → allows stop, cleans up state file
-4. **Loop continues** until tests green or max iterations reached
+3. **You run the test command** to check progress
+4. **If promise met:** Delete state file and stop
+5. **If not met:** End response → Hook blocks → You continue
 
-**You don't manage the loop** - the Stop hook handles iteration.
+**You decide when the promise is met** - the hook just manages iteration.
 
 ---
 
 ## CRITICAL: Loop Mechanism
 
-**READ THIS CAREFULLY - the loop works differently than you might expect:**
+**The loop works differently than you might expect:**
 
-1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-state.local.md`. Without this file, the Stop hook won't activate and you'll just stop after one attempt.
+1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-state.local.md`. Without this file, the Stop hook won't activate.
 
-2. **DO NOT implement your own loop** - No `while` loops, no "let me try again", no manual iteration. The Stop hook handles ALL iteration automatically.
+2. **YOU check if the promise is met** - Run the test command, check if all tests pass. The hook does NOT run commands.
 
-3. **"Trying to stop" IS the loop** - After fixing some tests, simply finish your response normally. The Stop hook will:
-   - Run the test command
-   - If tests fail → You'll receive the failures and continue (this is iteration)
-   - If tests pass → Session ends successfully
+3. **When promise is met:** Delete the state file, then finish your response. The hook will allow you to stop.
 
-4. **When blocked, you'll see** a message like:
+4. **When NOT met:** Just finish your response. The hook will:
+   - Increment the iteration counter
+   - Block your stop
+   - Feed your task and completion_promise back to you
+
+5. **When blocked, you'll see:**
    ```
-   Relentless mode: Test check FAILED (iteration 3/10)
-   [test failures here]
-   Continuing...
+   Relentless Mode: Test - Iteration 3/10
+
+   Completion Promise: All tests pass with no failures
+
+   Your Task: [your task from the state file body]
    ```
-   This means: read the failures, fix them, then try to finish again.
 
-5. **Work in batches** - Fix a few failing tests per iteration, then let the hook check. Don't try to fix everything at once.
-
-**The pattern is:** Create state file → Fix some tests → Finish response → Hook checks → (repeat if needed)
+**The pattern is:** Create state file → Fix tests → Run tests → Promise met? Delete file & stop : End response → Hook blocks → Repeat
 
 ---
 
@@ -125,13 +122,12 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 **Extract from user input:**
 1. `--max N` → Use N as `max_iterations` (default: 10)
-2. `--cmd "..."` → Use as `success_command` (skip auto-detection)
-3. Everything else → Use as task description
+2. Everything else → Use as task description
 
 **Example parsing:**
 - Input: `--max 15 TDD auth module` → max=15, task="TDD auth module"
-- Input: `--cmd "pytest -v"` → cmd="pytest -v", max=10, task=default
 - Input: `implement UserService` → max=10, task="implement UserService"
+- Input: (empty) → max=10, task="Fix all failing tests"
 
 ### Step 1: Detect Test Framework (Autonomous)
 
@@ -166,8 +162,7 @@ The user invokes this skill and walks away. Come back to either success or a cle
 skill: test-relentlessly
 iteration: 1
 max_iterations: [from --max or 10]
-success_command: "[from --cmd or auto-detected]"
-success_pattern: "passed|0 failures|0 failed|OK|All tests passed"
+completion_promise: "All tests pass with no failures"
 enabled: true
 ---
 
@@ -180,32 +175,31 @@ enabled: true
 | `skill` | Identifies which relentless skill is running |
 | `iteration` | Current iteration (auto-incremented by hook) |
 | `max_iterations` | From `--max N` or default 10 |
-| `success_command` | From `--cmd` or auto-detected |
-| `success_pattern` | Regex to match in output for success |
+| `completion_promise` | Semantic description of what success looks like |
 | `enabled` | Set to `false` to pause without deleting file |
 
-**Body:** Task description shown when hook blocks (helps Claude remember the goal)
+**Body:** Your task - this is fed back to you when the hook blocks.
 
-**⚠️ VERIFY:** Confirm the state file was created before proceeding. If it doesn't exist, the loop won't work.
+**⚠️ VERIFY:** Confirm the state file was created before proceeding.
 
 ### Step 3: Begin Working
 
-Start making tests pass:
+**The loop works like this:**
+1. Run the test command to see current failures
+2. Implement or fix code to make tests pass
+3. Run tests again to check progress
+4. **If all tests pass:** Delete `.shipkit/relentless-state.local.md` and finish
+5. **If tests fail:** End your response normally → hook blocks → you continue
 
-1. Run test command to see current failures
-2. Analyze test output - which tests fail and why
-3. Implement or fix code to make tests pass
-4. **End your response normally** (this triggers the Stop hook to check)
+**YOU are responsible for:**
+- Running the test command to check status
+- Deciding if the completion_promise is met
+- Deleting the state file when successful
 
-**DO NOT:**
-- Say "let me run tests again" and loop manually
-- Ask the user if you should continue
-- Implement any kind of retry logic yourself
-
-**The Stop hook automatically:**
-- Runs the test command when you finish responding
-- If tests fail → blocks exit, shows failures, you continue in next turn
-- If tests pass → allows exit, session completes
+**The hook only:**
+- Increments the iteration counter
+- Blocks your stop and reminds you of the task
+- Enforces max_iterations limit
 
 ### Step 4: Completion
 

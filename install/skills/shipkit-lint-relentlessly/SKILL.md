@@ -1,7 +1,7 @@
 ---
 name: shipkit-lint-relentlessly
 description: Fix lint/format errors relentlessly until clean. Use for code cleanup, PR prep, style fixes.
-argument-hint: "[task] [--max N] [--cmd \"command\"]"
+argument-hint: "[task] [--max N]"
 triggers:
   - lint relentlessly
   - fix all lint errors
@@ -60,63 +60,60 @@ The user invokes this skill and walks away. Come back to either success or a cle
 ## Arguments
 
 ```
-/shipkit-lint-relentlessly [task] [--max N] [--cmd "command"]
+/shipkit-lint-relentlessly [task] [--max N]
 ```
 
 | Argument | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `task` | No | "Fix all lint errors" | Description/scope of what to fix |
 | `--max N` | No | 10 | Maximum iterations before giving up |
-| `--cmd "..."` | No | Auto-detected | Explicit lint command to use |
 
 **Examples:**
 ```
 /shipkit-lint-relentlessly
 /shipkit-lint-relentlessly fix src/components only
 /shipkit-lint-relentlessly --max 5 quick cleanup
-/shipkit-lint-relentlessly --cmd "npm run lint"
 ```
 
 ---
 
 ## How It Works
 
-1. **You create a state file** that activates the Stop hook
+1. **You create a state file** with a `completion_promise`
 2. **You work on fixing lint errors**
-3. **When you try to stop**, the Stop hook:
-   - Runs the lint command
-   - If lint fails → blocks stop, shows violations, increments iteration
-   - If lint passes → allows stop, cleans up state file
-4. **Loop continues** until lint clean or max iterations reached
+3. **You run the lint command** to check progress
+4. **If promise met:** Delete state file and stop
+5. **If not met:** End response → Hook blocks → You continue
 
-**You don't manage the loop** - the Stop hook handles iteration.
+**You decide when the promise is met** - the hook just manages iteration.
 
 ---
 
 ## CRITICAL: Loop Mechanism
 
-**READ THIS CAREFULLY - the loop works differently than you might expect:**
+**The loop works differently than you might expect:**
 
-1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-state.local.md`. Without this file, the Stop hook won't activate and you'll just stop after one attempt.
+1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-state.local.md`. Without this file, the Stop hook won't activate.
 
-2. **DO NOT implement your own loop** - No `while` loops, no "let me try again", no manual iteration. The Stop hook handles ALL iteration automatically.
+2. **YOU check if the promise is met** - Run the lint command, check if it passes. The hook does NOT run commands.
 
-3. **"Trying to stop" IS the loop** - After fixing some errors, simply finish your response normally. The Stop hook will:
-   - Run the lint command
-   - If lint fails → You'll receive the violations and continue (this is iteration)
-   - If lint passes → Session ends successfully
+3. **When promise is met:** Delete the state file, then finish your response. The hook will allow you to stop.
 
-4. **When blocked, you'll see** a message like:
+4. **When NOT met:** Just finish your response. The hook will:
+   - Increment the iteration counter
+   - Block your stop
+   - Feed your task and completion_promise back to you
+
+5. **When blocked, you'll see:**
    ```
-   Relentless mode: Lint check FAILED (iteration 3/10)
-   [lint violations here]
-   Continuing...
+   Relentless Mode: Lint - Iteration 3/10
+
+   Completion Promise: Lint passes with no errors or warnings
+
+   Your Task: [your task from the state file body]
    ```
-   This means: read the violations, fix them, then try to finish again.
 
-5. **Work in batches** - Fix a reasonable number of violations per iteration (10-20), then let the hook check. Don't try to fix everything at once.
-
-**The pattern is:** Create state file → Fix some violations → Finish response → Hook checks → (repeat if needed)
+**The pattern is:** Create state file → Fix violations → Run lint → Promise met? Delete file & stop : End response → Hook blocks → Repeat
 
 ---
 
@@ -126,13 +123,12 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 **Extract from user input:**
 1. `--max N` → Use N as `max_iterations` (default: 10)
-2. `--cmd "..."` → Use as `success_command` (skip auto-detection)
-3. Everything else → Use as task description
+2. Everything else → Use as task description
 
 **Example parsing:**
 - Input: `--max 5 quick cleanup` → max=5, task="quick cleanup"
-- Input: `--cmd "npm run lint"` → cmd="npm run lint", max=10, task=default
 - Input: `fix src/components` → max=10, task="fix src/components"
+- Input: (empty) → max=10, task="Fix all linting and formatting errors"
 
 ### Step 1: Detect Linter (Autonomous)
 
@@ -166,8 +162,7 @@ The user invokes this skill and walks away. Come back to either success or a cle
 skill: lint-relentlessly
 iteration: 1
 max_iterations: [from --max or 10]
-success_command: "[from --cmd or auto-detected]"
-success_pattern: "0 errors|no issues|0 problems|0 warnings"
+completion_promise: "Lint passes with no errors or warnings"
 enabled: true
 ---
 
@@ -180,18 +175,16 @@ enabled: true
 | `skill` | Identifies which relentless skill is running |
 | `iteration` | Current iteration (auto-incremented by hook) |
 | `max_iterations` | From `--max N` or default 10 |
-| `success_command` | From `--cmd` or auto-detected |
-| `success_pattern` | Regex to match in output for success |
+| `completion_promise` | Semantic description of what success looks like |
 | `enabled` | Set to `false` to pause without deleting file |
 
-**Body:** Task description shown when hook blocks (helps Claude remember the goal)
+**Body:** Your task - this is fed back to you when the hook blocks.
 
-**⚠️ VERIFY:** Confirm the state file was created before proceeding. If it doesn't exist, the loop won't work.
+**⚠️ VERIFY:** Confirm the state file was created before proceeding.
 
 ### Step 3: Begin Working
 
-Start fixing lint errors:
-
+**The loop works like this:**
 1. Run lint command to see current violations
 2. **Try auto-fix first** if available:
    - `npm run lint -- --fix`
@@ -199,17 +192,19 @@ Start fixing lint errors:
    - `ruff check . --fix`
    - `npx prettier --write .`
 3. Manually fix remaining issues that auto-fix can't handle
-4. **End your response normally** (this triggers the Stop hook to check)
+4. Run lint again to check progress
+5. **If lint passes:** Delete `.shipkit/relentless-state.local.md` and finish
+6. **If lint fails:** End your response normally → hook blocks → you continue
 
-**DO NOT:**
-- Say "let me run lint again" and loop manually
-- Ask the user if you should continue
-- Implement any kind of retry logic yourself
+**YOU are responsible for:**
+- Running the lint command to check status
+- Deciding if the completion_promise is met
+- Deleting the state file when successful
 
-**The Stop hook automatically:**
-- Runs the lint command when you finish responding
-- If violations remain → blocks exit, shows them, you continue in next turn
-- If lint clean → allows exit, session completes
+**The hook only:**
+- Increments the iteration counter
+- Blocks your stop and reminds you of the task
+- Enforces max_iterations limit
 
 ### Step 4: Completion
 
