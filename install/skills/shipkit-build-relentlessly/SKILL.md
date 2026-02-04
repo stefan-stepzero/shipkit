@@ -91,6 +91,33 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 ---
 
+## CRITICAL: Loop Mechanism
+
+**READ THIS CAREFULLY - the loop works differently than you might expect:**
+
+1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-state.local.md`. Without this file, the Stop hook won't activate and you'll just stop after one attempt.
+
+2. **DO NOT implement your own loop** - No `while` loops, no "let me try again", no manual iteration. The Stop hook handles ALL iteration automatically.
+
+3. **"Trying to stop" IS the loop** - After fixing some errors, simply finish your response normally. The Stop hook will:
+   - Run the build command
+   - If it fails → You'll receive the errors and continue (this is iteration)
+   - If it passes → Session ends successfully
+
+4. **When blocked, you'll see** a message like:
+   ```
+   Relentless mode: Build check FAILED (iteration 3/10)
+   [error output here]
+   Continuing...
+   ```
+   This means: read the errors, fix them, then try to finish again.
+
+5. **Work in batches** - Fix a reasonable number of errors per iteration (5-15), then let the hook check. Don't try to fix everything at once.
+
+**The pattern is:** Create state file → Fix some errors → Finish response → Hook checks → (repeat if needed)
+
+---
+
 ## Process
 
 ### Step 0: Parse Arguments
@@ -149,6 +176,8 @@ success_pattern: ""
 - `success_command`: From `--cmd` argument, or auto-detected in Step 1
 - `success_pattern`: Empty (just check exit code 0)
 
+**⚠️ VERIFY:** Confirm the state file was created before proceeding. If it doesn't exist, the loop won't work.
+
 ### Step 3: Begin Working
 
 Start fixing build errors:
@@ -156,12 +185,17 @@ Start fixing build errors:
 1. Run the build command to see current errors
 2. Analyze error output
 3. Fix errors systematically (file by file or error type by type)
-4. When you think you're done, attempt to conclude
+4. **End your response normally** (this triggers the Stop hook to check)
 
-**The Stop hook will:**
-- Run the build command
-- If errors remain → show them and continue
-- If build passes → allow completion
+**DO NOT:**
+- Say "let me try building again" and loop manually
+- Ask the user if you should continue
+- Implement any kind of retry logic yourself
+
+**The Stop hook automatically:**
+- Runs the build command when you finish responding
+- If errors remain → blocks exit, shows errors, you continue in next turn
+- If build passes → allows exit, session completes
 
 ### Step 4: Completion
 

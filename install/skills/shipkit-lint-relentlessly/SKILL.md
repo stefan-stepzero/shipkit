@@ -93,6 +93,33 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 ---
 
+## CRITICAL: Loop Mechanism
+
+**READ THIS CAREFULLY - the loop works differently than you might expect:**
+
+1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-state.local.md`. Without this file, the Stop hook won't activate and you'll just stop after one attempt.
+
+2. **DO NOT implement your own loop** - No `while` loops, no "let me try again", no manual iteration. The Stop hook handles ALL iteration automatically.
+
+3. **"Trying to stop" IS the loop** - After fixing some errors, simply finish your response normally. The Stop hook will:
+   - Run the lint command
+   - If lint fails → You'll receive the violations and continue (this is iteration)
+   - If lint passes → Session ends successfully
+
+4. **When blocked, you'll see** a message like:
+   ```
+   Relentless mode: Lint check FAILED (iteration 3/10)
+   [lint violations here]
+   Continuing...
+   ```
+   This means: read the violations, fix them, then try to finish again.
+
+5. **Work in batches** - Fix a reasonable number of violations per iteration (10-20), then let the hook check. Don't try to fix everything at once.
+
+**The pattern is:** Create state file → Fix some violations → Finish response → Hook checks → (repeat if needed)
+
+---
+
 ## Process
 
 ### Step 0: Parse Arguments
@@ -153,6 +180,8 @@ failure_pattern: "error|warning|problem"
 - `success_pattern`: Regex to detect clean output
 - `failure_pattern`: Regex to detect violations (informational)
 
+**⚠️ VERIFY:** Confirm the state file was created before proceeding. If it doesn't exist, the loop won't work.
+
 ### Step 3: Begin Working
 
 Start fixing lint errors:
@@ -164,12 +193,17 @@ Start fixing lint errors:
    - `ruff check . --fix`
    - `npx prettier --write .`
 3. Manually fix remaining issues that auto-fix can't handle
-4. When you think you're done, attempt to conclude
+4. **End your response normally** (this triggers the Stop hook to check)
 
-**The Stop hook will:**
-- Run the lint command (check mode, not fix)
-- If violations remain → show them and continue
-- If lint clean → allow completion
+**DO NOT:**
+- Say "let me run lint again" and loop manually
+- Ask the user if you should continue
+- Implement any kind of retry logic yourself
+
+**The Stop hook automatically:**
+- Runs the lint command when you finish responding
+- If violations remain → blocks exit, shows them, you continue in next turn
+- If lint clean → allows exit, session completes
 
 ### Step 4: Completion
 

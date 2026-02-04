@@ -92,6 +92,33 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 ---
 
+## CRITICAL: Loop Mechanism
+
+**READ THIS CAREFULLY - the loop works differently than you might expect:**
+
+1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-state.local.md`. Without this file, the Stop hook won't activate and you'll just stop after one attempt.
+
+2. **DO NOT implement your own loop** - No `while` loops, no "let me try again", no manual iteration. The Stop hook handles ALL iteration automatically.
+
+3. **"Trying to stop" IS the loop** - After fixing some tests, simply finish your response normally. The Stop hook will:
+   - Run the test command
+   - If tests fail → You'll receive the failures and continue (this is iteration)
+   - If tests pass → Session ends successfully
+
+4. **When blocked, you'll see** a message like:
+   ```
+   Relentless mode: Test check FAILED (iteration 3/10)
+   [test failures here]
+   Continuing...
+   ```
+   This means: read the failures, fix them, then try to finish again.
+
+5. **Work in batches** - Fix a few failing tests per iteration, then let the hook check. Don't try to fix everything at once.
+
+**The pattern is:** Create state file → Fix some tests → Finish response → Hook checks → (repeat if needed)
+
+---
+
 ## Process
 
 ### Step 0: Parse Arguments
@@ -153,6 +180,8 @@ failure_pattern: "FAIL|failed|error|Error|FAILED"
 - `success_pattern`: Regex to detect success in output
 - `failure_pattern`: Regex to detect failures (informational)
 
+**⚠️ VERIFY:** Confirm the state file was created before proceeding. If it doesn't exist, the loop won't work.
+
 ### Step 3: Begin Working
 
 Start making tests pass:
@@ -160,12 +189,17 @@ Start making tests pass:
 1. Run test command to see current failures
 2. Analyze test output - which tests fail and why
 3. Implement or fix code to make tests pass
-4. When you think you're done, attempt to conclude
+4. **End your response normally** (this triggers the Stop hook to check)
 
-**The Stop hook will:**
-- Run the test command
-- If tests fail → show failures and continue
-- If tests pass → allow completion
+**DO NOT:**
+- Say "let me run tests again" and loop manually
+- Ask the user if you should continue
+- Implement any kind of retry logic yourself
+
+**The Stop hook automatically:**
+- Runs the test command when you finish responding
+- If tests fail → blocks exit, shows failures, you continue in next turn
+- If tests pass → allows exit, session completes
 
 ### Step 4: Completion
 
