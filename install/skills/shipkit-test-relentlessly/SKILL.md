@@ -168,17 +168,23 @@ iteration: 1
 max_iterations: [from --max or 10]
 success_command: "[from --cmd or auto-detected]"
 success_pattern: "passed|0 failures|0 failed|OK|All tests passed"
-failure_pattern: "FAIL|failed|error|Error|FAILED"
+enabled: true
 ---
 
 [User's task description or "Fix all failing tests"]
 ```
 
-**Parameters:**
-- `max_iterations`: Default 10, user can override
-- `success_command`: The test command to run
-- `success_pattern`: Regex to detect success in output
-- `failure_pattern`: Regex to detect failures (informational)
+**State file fields:**
+| Field | Purpose |
+|-------|---------|
+| `skill` | Identifies which relentless skill is running |
+| `iteration` | Current iteration (auto-incremented by hook) |
+| `max_iterations` | From `--max N` or default 10 |
+| `success_command` | From `--cmd` or auto-detected |
+| `success_pattern` | Regex to match in output for success |
+| `enabled` | Set to `false` to pause without deleting file |
+
+**Body:** Task description shown when hook blocks (helps Claude remember the goal)
 
 **⚠️ VERIFY:** Confirm the state file was created before proceeding. If it doesn't exist, the loop won't work.
 

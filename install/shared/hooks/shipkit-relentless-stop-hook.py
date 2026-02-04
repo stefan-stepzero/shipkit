@@ -43,6 +43,12 @@ def main():
         # Can't parse state, allow stop
         sys.exit(0)
 
+    # Check if explicitly disabled
+    enabled = state.get("enabled", True)
+    if enabled is False or str(enabled).lower() == "false":
+        # Disabled - allow stop without cleanup (user can re-enable)
+        sys.exit(0)
+
     # Check iteration limit
     iteration = state.get("iteration", 1)
     max_iterations = state.get("max_iterations", 10)
