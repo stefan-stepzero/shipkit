@@ -24,6 +24,8 @@ Batch verification — Claude reviews your work across quality dimensions and re
 - `/verify <feature>` — focus on specific area
 - "Check my work", "Am I ready to commit?"
 
+**For deeper review:** If user asks for "deep check", "thorough review", or "really scrutinize this" → see [Deeper Review Option](#deeper-review-option) below.
+
 ---
 
 ## Process
@@ -205,6 +207,8 @@ Context: Auth feature implementation
 ---
 
 2 critical | 2 should fix | 2 minor
+
+💡 For deeper review: /code-review (4 agents) or /pr-review-toolkit:review-pr (6 agents)
 ```
 
 ---
@@ -247,6 +251,37 @@ None. This is a read-only reporting tool.
 
 ---
 
+## Deeper Review Options
+
+This skill provides a **fast single-pass review** — good for daily use.
+
+For **thorough multi-agent review**, two plugins are available:
+
+| Plugin | Agents | Best For |
+|--------|--------|----------|
+| `code-review` | 4 parallel | Standard deep review |
+| `pr-review-toolkit` | 6 parallel | Maximum scrutiny |
+
+```bash
+# Install (once)
+/plugin install code-review@claude-code-plugins
+/plugin install pr-review-toolkit@claude-code-plugins
+
+# Use
+/code-review                      # 4-agent review
+/pr-review-toolkit:review-pr      # 6-agent deep analysis
+```
+
+**When to use deeper review:**
+- Before merging to main
+- Complex changes touching multiple systems
+- Security-sensitive code
+- When fast verify flags concerns worth investigating further
+
+**Trade-off:** 4-6x token cost, slower, but catches more subtle issues.
+
+---
+
 <!-- SECTION:after-completion -->
 ## After Completion
 
@@ -255,6 +290,8 @@ Report is delivered. User decides next steps:
 - Defer should-fix items
 - Ignore minor suggestions
 - Proceed with commit
+
+**Want deeper scrutiny?** Use `/code-review` (4 agents) or `/pr-review-toolkit:review-pr` (6 agents) — requires plugins.
 
 No follow-up skill automatically triggered.
 <!-- /SECTION:after-completion -->

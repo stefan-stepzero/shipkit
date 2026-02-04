@@ -58,6 +58,11 @@
         {"name": "shipkit-claude-md", "desc": "Update CLAUDE.md with learnings"},
         {"name": "shipkit-work-memory", "desc": "Log progress & session state"}
       ],
+      "Execution": [
+        {"name": "shipkit-build-relentlessly", "desc": "Build until compiles"},
+        {"name": "shipkit-test-relentlessly", "desc": "Test until green"},
+        {"name": "shipkit-lint-relentlessly", "desc": "Lint until clean"}
+      ],
       "Quality & Communication": [
         {"name": "shipkit-verify", "desc": "Review work (12 quality dimensions)"},
         {"name": "shipkit-preflight", "desc": "Production readiness audit"},

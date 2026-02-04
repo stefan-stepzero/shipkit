@@ -129,6 +129,8 @@ options:
 - [ ] ALL 6 edge case categories applied
 - [ ] Must Have / Should Have / Won't Have prioritization
 - [ ] Technical notes include database/API changes
+- [ ] Test strategy identifies affected call flows
+- [ ] Key test cases mapped from scenarios
 - [ ] Next steps suggest appropriate skills
 
 **See `references/tips-and-examples.md` for quality checklist**
@@ -141,20 +143,22 @@ options:
 
 **Output to user**:
 ```
-✅ Specification created
+Specification created
 
-📁 Location: .shipkit/specs/active/[feature-name].md
+Location: .shipkit/specs/active/[feature-name].md
 
-📋 Summary:
-  • [X] core scenarios
-  • [Y] edge cases identified
-  • [Z] acceptance criteria
+Summary:
+  - [X] core scenarios
+  - [Y] edge cases identified
+  - [Z] acceptance criteria
+  - [N] key test cases mapped
 
-🎯 Completeness:
-  • User story: ✓
-  • Given/When/Then: ✓
-  • Edge cases: ✓ (all 6 categories)
-  • Acceptance criteria: ✓
+Completeness:
+  - User story: done
+  - Given/When/Then: done
+  - Edge cases: done (all 6 categories)
+  - Acceptance criteria: done
+  - Test strategy: done (call flows, coverage, mocking)
 
 ```
 
@@ -166,6 +170,8 @@ Copy and track:
 - [ ] Asked 2-3 clarifying questions
 - [ ] Created spec with Given/When/Then scenarios
 - [ ] Applied all 6 edge case categories
+- [ ] Defined test strategy (call flows, coverage, mocking)
+- [ ] Mapped key test cases from scenarios
 - [ ] Saved to `.shipkit/specs/active/[name].md`
 
 ---
@@ -322,6 +328,48 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 
 ---
 
+## Test Strategy
+
+**Call flows affected:**
+- [Flow 1: e.g., User → API → Database → Response]
+- [Flow 2: e.g., Webhook → Queue → Processor → Notification]
+- [Flow 3: e.g., UI Component → State → API → Cache]
+
+**Coverage approach:**
+
+| Layer | Test Type | What to Test |
+|-------|-----------|--------------|
+| Business logic | Unit | [Services, utilities, validators] |
+| API endpoints | Integration | [Request/response, auth, errors] |
+| UI components | Component | [Rendering, interactions, states] |
+| Critical paths | E2E | [Only key user journeys - be specific] |
+
+**Mocking strategy:**
+- **Mock:** [External services, payment providers, email, third-party APIs]
+- **Test doubles:** [Database - use test container or in-memory]
+- **Real:** [Internal services that are fast and deterministic]
+
+**Key test cases** (derived from Given/When/Then scenarios):
+
+| Scenario | Test Type | Test Name |
+|----------|-----------|-----------|
+| [Happy path from Scenario 1] | Integration | `should [expected behavior] when [action]` |
+| [Error case from Edge Cases] | Unit | `should handle [error condition]` |
+| [Permission check] | Integration | `should deny access when [unauthorized]` |
+
+**Coverage expectations:**
+- [ ] All Given/When/Then scenarios have corresponding tests
+- [ ] All edge cases have negative tests
+- [ ] Error paths tested (not just happy path)
+- [ ] [Specific coverage target if required, e.g., "80% line coverage on new code"]
+
+**Notes:**
+- [Any testing constraints or considerations]
+- [Existing test patterns to follow in codebase]
+- [Test data setup requirements]
+
+---
+
 ## Next Steps
 
 **After spec approval:**
@@ -343,20 +391,21 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 ## What Makes This "Lite"
 
 **Included**:
-- ✅ Given/When/Then scenarios (clear, actionable)
-- ✅ Comprehensive edge case checklist (6 categories)
-- ✅ Acceptance criteria with prioritization
-- ✅ Technical notes for context
-- ✅ Moves to implemented/ folder when done
+- Given/When/Then scenarios (clear, actionable)
+- Comprehensive edge case checklist (6 categories)
+- Acceptance criteria with prioritization
+- Technical notes for context
+- Test strategy (call flows, coverage, key test cases)
+- Moves to implemented/ folder when done
 
 **Not included** (vs full /dev-specify):
-- ❌ Formal Cucumber/Gherkin syntax
-- ❌ Automated test generation
-- ❌ BDD framework integration
-- ❌ Extensive examples library
-- ❌ Multi-stakeholder review workflow
+- Formal Cucumber/Gherkin syntax
+- Automated test generation
+- BDD framework integration
+- Extensive examples library
+- Multi-stakeholder review workflow
 
-**Philosophy**: Clear enough to implement correctly, concise enough to read quickly.
+**Philosophy**: Clear enough to implement correctly, concise enough to read quickly. Test strategy enables relentless execution.
 
 ---
 
@@ -478,6 +527,8 @@ Spec is complete when:
 - [ ] All 6 edge case categories applied and checked
 - [ ] Acceptance criteria prioritized (Must/Should/Won't)
 - [ ] Technical notes include DB/API changes
+- [ ] Test strategy identifies call flows and coverage approach
+- [ ] Key test cases mapped from Given/When/Then scenarios
 - [ ] File saved to `.shipkit/specs/active/`
 <!-- /SECTION:success-criteria -->
 ---

@@ -38,10 +38,15 @@ allowed-tools:
 - "I need browser automation"
 - "Find MCPs", "Search MCPs"
 - "Add an MCP for Supabase"
+- "What MCPs are available?"
+- "Show me popular MCPs"
+- "Recommend an MCP"
 
 **Auto-suggest when:**
 - User struggles with a task that an MCP could help with
 - User asks about external service integration
+
+**For catalog questions:** Load `references/popular-mcps.md` and present options.
 
 ---
 
@@ -79,9 +84,15 @@ User: /get-mcps supabase
 
 ---
 
-### Step 2: Search for MCPs
+### Step 2: Find MCPs
 
-**Search these sources in order:**
+**First, check the curated catalog:**
+→ Read `references/popular-mcps.md` for common MCPs (databases, browsers, dev tools, etc.)
+
+**If user asks "what's available" or wants to browse:**
+→ Present options from the catalog grouped by category
+
+**If not in catalog, search these sources:**
 
 1. **MCP Registry** (official)
    ```

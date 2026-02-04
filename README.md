@@ -2,10 +2,11 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**24 skills** organized for streamlined workflow:
+**27 skills** organized for streamlined workflow:
 - **Core Workflow** (5) - Orchestration, status, and context management
 - **Discovery & Planning** (6) - Product discovery and specification
 - **Implementation** (3) - Architecture, contracts, and integrations
+- **Execution** (3) - Relentless build, test, lint until success
 - **Quality & Documentation** (6) - Testing, UX, and documentation
 - **Ecosystem** (2) - Get skills and MCPs
 - **System** (2) - Auto-triggered detection and updates
@@ -16,7 +17,7 @@ Plus **6 agent personas** that specialize behaviors for different workflow stage
 
 ## What's Inside
 
-### Skills (24 total)
+### Skills (27 total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -39,6 +40,11 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-architecture-memory` - Decision logging
 - `shipkit-data-contracts` - Type definitions (Zod patterns)
 - `shipkit-integration-docs` - Integration patterns
+
+**Execution (3 skills):**
+- `shipkit-build-relentlessly` - Build until compiles
+- `shipkit-test-relentlessly` - Test until green
+- `shipkit-lint-relentlessly` - Lint until clean
 
 **Quality & Documentation (6 skills):**
 - `shipkit-ux-audit` - UX analysis and patterns
@@ -88,7 +94,7 @@ python install.py
 ```
 
 The installer will:
-- Install all 24 skills
+- Install all 27 skills
 - Set up 6 agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace

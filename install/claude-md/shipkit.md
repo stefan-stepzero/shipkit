@@ -87,6 +87,13 @@ If `.shipkit/codebase-index.json` exists:
 | Update CLAUDE.md with learnings | `/shipkit-claude-md` |
 | End session / checkpoint | `/shipkit-work-memory` |
 
+### Execution
+| When... | Use |
+|---------|-----|
+| Build/compile until success | `/shipkit-build-relentlessly` |
+| Test until all pass | `/shipkit-test-relentlessly` |
+| Lint until clean | `/shipkit-lint-relentlessly` |
+
 ### Quality & Communication
 | When... | Use |
 |---------|-----|

@@ -239,13 +239,15 @@ Location: `install/skills/`
 
 **Implementation:** `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`
 
+**Execution:** `shipkit-build-relentlessly`, `shipkit-test-relentlessly`, `shipkit-lint-relentlessly`
+
 **Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
 
 **Ecosystem:** `shipkit-get-skills`, `shipkit-get-mcps`
 
 **System:** `shipkit-detect` (auto-triggered), `shipkit-update`
 
-**Total:** 24 skills
+**Total:** 27 skills
 
 ### Agents
 Location: `install/agents/`
@@ -257,6 +259,7 @@ Location: `install/agents/`
 - `install/claude-md/shipkit.md` — Project instructions (installed into user projects)
 - `install/shared/hooks/shipkit-session-start.py` — Session initialization
 - `install/shared/hooks/shipkit-after-skill-router.py` — Auto-detection routing
+- `install/shared/hooks/shipkit-relentless-stop-hook.py` — Relentless execution loop
 
 ### Reference Materials (Local Only - Gitignored)
 - `docs/development/REFERENCES-BEST-PRACTICES.md` — PRIMARY REFERENCE

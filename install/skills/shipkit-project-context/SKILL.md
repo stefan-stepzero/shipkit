@@ -84,6 +84,7 @@ description: "Use when starting a new project or refreshing tech stack context. 
 - Environment variables: Parse .env.example
 - Database schema: Extract from migrations or schema files
 - Metrics: Count dependencies, migrations, env vars
+- **Available CLIs**: Check for installed dev CLIs (see CLI Detection below)
 
 ---
 
@@ -95,7 +96,21 @@ description: "Use when starting a new project or refreshing tech stack context. 
 
 **Template**: See `references/templates.md` for complete stack.md template
 
-Contains: Framework, Database, Styling, Key Dependencies, Project Structure, Total Dependencies
+Contains: Framework, Database, Styling, Key Dependencies, Project Structure, Total Dependencies, **Available CLIs**
+
+**CLI Section** (add at end of stack.md):
+```markdown
+## Available CLIs
+
+| CLI | Status | Use For |
+|-----|--------|---------|
+| supabase | ✅ / ❌ | `db diff`, `db push`, `db reset`, `functions deploy` |
+| stripe | ✅ / ❌ | `listen` (webhooks), `trigger`, `logs tail` |
+| vercel | ✅ / ❌ | `deploy`, `env pull`, `dev` |
+| gh | ✅ / ❌ | `pr create`, `issue`, `api` |
+
+**Recommended**: [List CLIs to install based on detected services]
+```
 
 #### File 2: `.shipkit/env-requirements.md`
 
@@ -122,7 +137,8 @@ Contains: Tables with Columns/Indexes/Relationships, Relationships Diagram, Migr
 Copy and track:
 - [ ] Scanned package.json and project structure
 - [ ] Identified tech stack and dependencies
-- [ ] Created `.shipkit/stack.md`
+- [ ] Checked for available CLIs (supabase, stripe, vercel, gh, etc.)
+- [ ] Created `.shipkit/stack.md` (includes CLI availability)
 
 ---
 
@@ -227,6 +243,42 @@ All context files are **completely replaced** on each scan. No history is preser
 
 ---
 
+## CLI Detection
+
+**Purpose**: Detect installed dev CLIs so Claude knows to use them for speed.
+
+### Check Commands
+
+| CLI | Windows | Unix/Mac | When to Check |
+|-----|---------|----------|---------------|
+| `supabase` | `where supabase` | `which supabase` | Supabase in deps |
+| `stripe` | `where stripe` | `which stripe` | Stripe/payments in deps |
+| `vercel` | `where vercel` | `which vercel` | Next.js or Vercel detected |
+| `gh` | `where gh` | `which gh` | Always (GitHub is universal) |
+| `railway` | `where railway` | `which railway` | Railway config detected |
+| `wrangler` | `where wrangler` | `which wrangler` | Cloudflare/R2 in deps |
+| `prisma` | `npx prisma -v` | `npx prisma -v` | Prisma in deps |
+| `docker` | `where docker` | `which docker` | Dockerfile exists |
+
+### Recommendation Logic
+
+Based on detected services, suggest missing CLIs:
+
+| Detected Service | Missing CLI | Suggest |
+|-----------------|-------------|---------|
+| `@supabase/supabase-js` | supabase | `npm i -g supabase` |
+| `stripe` or `@stripe/stripe-js` | stripe | `npm i -g stripe` (or brew) |
+| Next.js + no vercel | vercel | `npm i -g vercel` |
+| Cloudflare R2/Workers | wrangler | `npm i -g wrangler` |
+
+### Why CLIs Matter
+
+Claude already knows these CLI commands from training. The value is **awareness**:
+- ✅ Installed → Claude uses CLI for speed (e.g., `supabase db diff` vs writing migration manually)
+- ❌ Missing → Claude suggests installation, uses SDK fallback
+
+---
+
 <!-- SECTION:after-completion -->
 ## After Completion
 
@@ -246,10 +298,11 @@ All context files are **completely replaced** on each scan. No history is preser
 
 Context generation is complete when:
 - [ ] `.shipkit/stack.md` exists with framework, database, styling, dependencies
+- [ ] `.shipkit/stack.md` includes Available CLIs section
 - [ ] `.shipkit/env-requirements.md` exists with all env vars from .env.example
 - [ ] `.shipkit/schema.md` exists with tables, columns, relationships (if migrations found)
 - [ ] Modification times are current (fresher than source files)
-- [ ] User can see summary of what was detected
+- [ ] User can see summary of what was detected (including CLI availability)
 <!-- /SECTION:success-criteria -->
 ---
 

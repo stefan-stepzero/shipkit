@@ -115,7 +115,10 @@
       "Skill(shipkit-get-mcps)",
       "Skill(shipkit-verify)",
       "Skill(shipkit-preflight)",
-      "Skill(shipkit-update)"
+      "Skill(shipkit-update)",
+      "Skill(shipkit-build-relentlessly)",
+      "Skill(shipkit-test-relentlessly)",
+      "Skill(shipkit-lint-relentlessly)"
     ],
 
     "deny": [
@@ -157,6 +160,15 @@
           {
             "type": "command",
             "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/shipkit-after-skill-router.py"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/shipkit-relentless-stop-hook.py",
+            "timeout": 180
           }
         ]
       }

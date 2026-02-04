@@ -1,17 +1,30 @@
 ---
 name: shipkit-get-skills
-description: Discover and install skills from the open agent skills ecosystem (skills.sh)
+description: Discover and install skills and plugins from the Claude Code ecosystem
 argument-hint: "<search query>"
 allowed-tools:
   - Bash
   - Read
 ---
 
-# shipkit-get-skills - Skill Discovery & Installation
+# shipkit-get-skills - Skill & Plugin Discovery
 
-**Purpose**: Discover and install skills from the open agent skills ecosystem via conversational interface.
+**Purpose**: Discover and install skills and plugins via conversational interface.
 
 **Core value**: Discovery through conversation, not CLI memorization.
+
+---
+
+## Two Distribution Channels
+
+| Source | Best For | Install Command |
+|--------|----------|-----------------|
+| **Official Plugins** | Git workflow, PR review, security, UI design | `/plugin install X@claude-code-plugins` |
+| **skills.sh** | Domain-specific skills (testing, docs, APIs) | `npx skills add owner/repo` |
+
+**When user asks "what's available":**
+- For plugins → Read `references/official-plugins.md`
+- For skills → Read `references/community-skills.md`
 
 ---
 
@@ -35,10 +48,17 @@ allowed-tools:
 - "I need help with commit messages"
 - "Get skills", "Search skills"
 - "Install a skill for API docs"
+- "What plugins are available?"
+- "Show me official plugins"
+- "Install the frontend-design plugin"
 
 **Auto-suggest when:**
 - User struggles with a task that likely has a community skill
 - User asks "is there a better way to do X?"
+
+**For catalog questions:**
+- Plugins → Load `references/official-plugins.md`
+- Community skills → Load `references/community-skills.md`
 
 ---
 
@@ -56,27 +76,56 @@ allowed-tools:
 
 ## Process
 
-### Step 1: Understand Intent
+### Step 1: Understand Intent & Choose Source
 
-When user mentions a need:
+When user mentions a need, determine if it's a plugin or skill need:
 
+| Need | Source |
+|------|--------|
+| Git commits, PRs, code review | Official plugins |
+| Frontend/UI work | Official plugins (`frontend-design`) |
+| Security concerns | Official plugins (`security-guidance`) |
+| Custom hooks | Official plugins (`hookify`) |
+| Domain-specific (testing, docs, APIs) | skills.sh |
+
+**If user asks "what's available" or wants to browse:**
+→ Read `references/official-plugins.md` and present the catalog
+
+**If user has a specific need:**
 ```
 User: I'm struggling with writing good commit messages
 
-Claude: I can search for skills that help with commit messages.
-        Want me to look?
-```
+Claude: The official `commit-commands` plugin handles this well.
+        Install with: /plugin install commit-commands@claude-code-plugins
 
-If user invokes directly with query:
-```
-User: /get-skills commit messages
-
-→ Skip to Step 2
+        Or I can search skills.sh for alternatives. Want me to look?
 ```
 
 ---
 
-### Step 2: Search for Skills
+### Step 1b: Install Official Plugin
+
+If user wants an official plugin:
+
+```bash
+/plugin install <plugin-name>@claude-code-plugins
+```
+
+**Examples:**
+```bash
+/plugin install frontend-design@claude-code-plugins
+/plugin install security-guidance@claude-code-plugins
+/plugin install commit-commands@claude-code-plugins
+```
+
+If marketplace not added:
+```bash
+/plugin marketplace add anthropics/claude-code
+```
+
+---
+
+### Step 2: Search skills.sh (for non-plugin needs)
 
 **Run:**
 ```bash
@@ -193,14 +242,27 @@ Try:
 | `/get-skills` | Interactive discovery prompt |
 | `/get-skills <query>` | Search by keyword |
 | `/get-skills list` | Show installed skills |
+| `/get-skills plugins` | Show official plugin catalog |
 | `/get-skills update` | Update all installed skills |
 
 ---
 
 ## CLI Mapping
 
-| Skill Action | CLI Command |
-|--------------|-------------|
+### Official Plugins
+
+| Action | Command |
+|--------|---------|
+| Browse catalog | Read `references/official-plugins.md` |
+| Install plugin | `/plugin install <name>@claude-code-plugins` |
+| List installed | `/plugin` |
+| Enable/disable | `/plugin enable/disable <name>` |
+| Add marketplace | `/plugin marketplace add anthropics/claude-code` |
+
+### skills.sh
+
+| Action | Command |
+|--------|---------|
 | Search | `npx skills find <query>` |
 | Install | `npx skills add <owner/repo>` |
 | List installed | `npx skills list` |

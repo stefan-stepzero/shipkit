@@ -9,8 +9,14 @@ Provides actionable summary of where the project is and what to do next.
 import sys
 import os
 import json
+import re
+import urllib.request
 from pathlib import Path
 from datetime import datetime, timedelta
+
+# Version is also in VERSION file at repo root
+SHIPKIT_VERSION = "1.2.0"
+GITHUB_VERSION_URL = "https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/VERSION"
 
 
 def get_file_age_days(file_path: Path) -> float:
@@ -197,6 +203,84 @@ def count_active_items(project_root: Path) -> dict:
     return counts
 
 
+def parse_version(version_str: str) -> tuple:
+    """
+    Parse version string to comparable tuple.
+
+    Handles: "1.2", "1.2.0", "1.2.3"
+    Returns: (1, 2, 0) tuple padded to 3 parts
+    Invalid input returns (0, 0, 0)
+    """
+    try:
+        parts = version_str.strip().split('.')
+        nums = [int(p) for p in parts[:3]]
+        while len(nums) < 3:
+            nums.append(0)
+        return tuple(nums)
+    except (ValueError, AttributeError):
+        return (0, 0, 0)
+
+
+def check_for_updates(project_root: Path) -> str | None:
+    """
+    Check if newer Shipkit version is available on GitHub.
+
+    Behavior:
+    - Checks at most once per day (rate limited via .update-check file mtime)
+    - 3 second timeout to avoid blocking session start
+    - Fails silently on any error (network, parse, permission)
+    - Compares semantic versions (major.minor.patch)
+
+    Returns: Message string if update available, None otherwise.
+    """
+    check_file = project_root / '.shipkit' / '.update-check'
+
+    # Rate limit: skip network check if checked within last 24 hours
+    if check_file.exists():
+        age_days = get_file_age_days(check_file)
+        if age_days >= 0 and age_days < 1:
+            # Already checked recently - but still show cached message if update exists
+            try:
+                lines = check_file.read_text(encoding='utf-8').strip().split('\n')
+                if len(lines) >= 2:
+                    cached_remote = lines[1]
+                    if parse_version(cached_remote) > parse_version(SHIPKIT_VERSION):
+                        return f"⚡ Shipkit {cached_remote} available (you have {SHIPKIT_VERSION}). Run `/shipkit-update`"
+            except Exception:
+                pass
+            return None
+
+    # Perform network check
+    try:
+        request = urllib.request.Request(
+            GITHUB_VERSION_URL,
+            headers={'User-Agent': 'Shipkit-UpdateCheck/1.0'}
+        )
+        with urllib.request.urlopen(request, timeout=3) as response:
+            remote_version = response.read().decode('utf-8').strip()
+
+        # Validate format (digits and dots only, 2-3 parts)
+        if not re.match(r'^\d+\.\d+(\.\d+)?$', remote_version):
+            return None
+
+        # Cache result: line 1 = timestamp, line 2 = version
+        try:
+            check_file.parent.mkdir(parents=True, exist_ok=True)
+            check_file.write_text(f"{datetime.now().isoformat()}\n{remote_version}")
+        except Exception:
+            pass  # Cache write failure is non-fatal
+
+        # Compare versions
+        if parse_version(remote_version) > parse_version(SHIPKIT_VERSION):
+            return f"⚡ Shipkit {remote_version} available (you have {SHIPKIT_VERSION}). Run `/shipkit-update`"
+
+    except Exception:
+        # Network timeout, DNS failure, GitHub down, etc. - fail silently
+        pass
+
+    return None
+
+
 def get_smart_recommendation(project_root: Path, counts: dict, has_stack: bool) -> str:
     """Generate smart recommendation based on project state."""
 
@@ -260,11 +344,21 @@ def main():
     shipkit_dir = project_root / '.shipkit'
 
     # ═══════════════════════════════════════════════════════════════
+    # UPDATE CHECK (once per day, 3s timeout, silent on failure)
+    # ═══════════════════════════════════════════════════════════════
+
+    update_msg = check_for_updates(project_root)
+
+    # ═══════════════════════════════════════════════════════════════
     # SESSION START SUMMARY
     # ═══════════════════════════════════════════════════════════════
 
     print("# 🚀 Session Start")
     print()
+
+    if update_msg:
+        print(update_msg)
+        print()
 
     # Check if .shipkit exists at all
     if not shipkit_dir.exists():

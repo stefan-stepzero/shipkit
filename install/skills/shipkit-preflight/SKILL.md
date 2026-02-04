@@ -26,6 +26,11 @@ allowed-tools:
 - "Is this ready for users?"
 - "Launch checklist"
 
+**For thorough mode** (deep code review per partition):
+- "Thorough preflight", "Deep preflight"
+- "Really scrutinize before launch"
+- → See [Thorough Mode](#thorough-mode-deep-code-review) section
+
 **Workflow position**:
 - After features are implemented
 - Before deploying to production
@@ -331,6 +336,8 @@ Possible questions (only if not already documented):
 📁 Full report: .shipkit/production-readiness.md
 
 Ready to review blockers? I can help fix them.
+
+💡 For deep code review: "thorough preflight" (requires pr-review-toolkit plugin)
 ```
 
 **Output to user (Incremental Audit):**
@@ -544,6 +551,60 @@ Ready to fix the remaining blockers?
 - [ ] Report saved to `.shipkit/production-readiness.md`
 - [ ] Clear delta summary for incremental audits
 <!-- /SECTION:success-criteria -->
+
+---
+
+## Thorough Mode (Deep Code Review)
+
+The standard preflight is a **checklist-based audit** — fast, broad coverage.
+
+For **maximum scrutiny**, use the `pr-review-toolkit` plugin to deep-review the entire codebase:
+
+### Process
+
+1. **Partition codebase into MECE chunks** using codebase-index concepts:
+   ```
+   Read .shipkit/codebase-index.json
+
+   Example partitions:
+   - auth (src/auth/**, src/middleware/auth*)
+   - api (src/api/**)
+   - database (src/db/**, src/models/**)
+   - ui (src/components/**, src/pages/**)
+   - config (src/config/**, *.config.*)
+   ```
+
+2. **Run pr-review-toolkit on each partition** with project context:
+   ```
+   For each partition:
+   - Provide: partition files + codebase-index summary + architecture.md
+   - Run: /pr-review-toolkit:review-pr
+   - Collect: findings
+   ```
+
+3. **Aggregate findings** into preflight report by category
+
+### When to Use
+
+- Pre-launch of critical product
+- After major refactor
+- Security audit
+- When standard preflight flags multiple concerns
+
+### Trade-off
+
+| Mode | Coverage | Depth | Cost |
+|------|----------|-------|------|
+| Standard | Entire project | Checklist scan | ~1 call |
+| Thorough | Entire project | Deep per-partition | ~6 calls × N partitions |
+
+### Installation
+
+```bash
+/plugin install pr-review-toolkit@claude-code-plugins
+```
+
+Then ask: "Run thorough preflight with deep code review"
 
 ---
 
