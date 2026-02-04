@@ -95,6 +95,18 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 ## Process
 
+### Step 0: Parse Arguments
+
+**Extract from user input:**
+1. `--max N` → Use N as `max_iterations` (default: 10)
+2. `--cmd "..."` → Use as `success_command` (skip auto-detection)
+3. Everything else → Use as task description
+
+**Example parsing:**
+- Input: `--max 5 quick cleanup` → max=5, task="quick cleanup"
+- Input: `--cmd "npm run lint"` → cmd="npm run lint", max=10, task=default
+- Input: `fix src/components` → max=10, task="fix src/components"
+
 ### Step 1: Detect Linter (Autonomous)
 
 **Auto-detect lint command - DO NOT ask user:**
@@ -126,8 +138,8 @@ The user invokes this skill and walks away. Come back to either success or a cle
 ---
 skill: lint-relentlessly
 iteration: 1
-max_iterations: 10
-success_command: "[detected or provided lint command]"
+max_iterations: [from --max or 10]
+success_command: "[from --cmd or auto-detected]"
 success_pattern: "0 errors|no issues|0 problems|0 warnings"
 failure_pattern: "error|warning|problem"
 ---

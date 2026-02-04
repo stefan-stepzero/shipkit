@@ -94,6 +94,18 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 ## Process
 
+### Step 0: Parse Arguments
+
+**Extract from user input:**
+1. `--max N` → Use N as `max_iterations` (default: 10)
+2. `--cmd "..."` → Use as `success_command` (skip auto-detection)
+3. Everything else → Use as task description
+
+**Example parsing:**
+- Input: `--max 15 TDD auth module` → max=15, task="TDD auth module"
+- Input: `--cmd "pytest -v"` → cmd="pytest -v", max=10, task=default
+- Input: `implement UserService` → max=10, task="implement UserService"
+
 ### Step 1: Detect Test Framework (Autonomous)
 
 **Auto-detect test command - DO NOT ask user:**
@@ -126,8 +138,8 @@ The user invokes this skill and walks away. Come back to either success or a cle
 ---
 skill: test-relentlessly
 iteration: 1
-max_iterations: 10
-success_command: "[detected or provided test command]"
+max_iterations: [from --max or 10]
+success_command: "[from --cmd or auto-detected]"
 success_pattern: "passed|0 failures|0 failed|OK|All tests passed"
 failure_pattern: "FAIL|failed|error|Error|FAILED"
 ---

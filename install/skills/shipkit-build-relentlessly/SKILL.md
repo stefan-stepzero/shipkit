@@ -93,6 +93,18 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 ## Process
 
+### Step 0: Parse Arguments
+
+**Extract from user input:**
+1. `--max N` → Use N as `max_iterations` (default: 10)
+2. `--cmd "..."` → Use as `success_command` (skip auto-detection)
+3. Everything else → Use as task description
+
+**Example parsing:**
+- Input: `--max 20 fix type errors` → max=20, task="fix type errors"
+- Input: `--cmd "npm run build"` → cmd="npm run build", max=10, task=default
+- Input: `migrate to TS` → max=10, task="migrate to TS"
+
 ### Step 1: Detect Build System (Autonomous)
 
 **Auto-detect build command - DO NOT ask user:**
@@ -124,17 +136,17 @@ The user invokes this skill and walks away. Come back to either success or a cle
 ---
 skill: build-relentlessly
 iteration: 1
-max_iterations: 10
-success_command: "[detected or provided build command]"
+max_iterations: [from --max or 10]
+success_command: "[from --cmd or auto-detected]"
 success_pattern: ""
 ---
 
-[User's task description or "Fix all build/compilation errors"]
+[parsed task description or "Fix all build/compilation errors"]
 ```
 
-**Parameters:**
-- `max_iterations`: Default 10, user can override
-- `success_command`: The build command to run
+**Use parsed values from Step 0:**
+- `max_iterations`: From `--max N` argument, or default 10
+- `success_command`: From `--cmd` argument, or auto-detected in Step 1
 - `success_pattern`: Empty (just check exit code 0)
 
 ### Step 3: Begin Working
