@@ -258,7 +258,7 @@ EOF
         echo -e "${DIM}              7 Skills • Streamlined Workflows${NC}"
     else
         echo -e "${DIM}         Complete Product Development Framework${NC}"
-        echo -e "${DIM}              24 Skills • 6 Agents • Constitution-Driven${NC}"
+        echo -e "${DIM}              29 Skills • 7 Agents • Constitution-Driven${NC}"
     fi
     echo ""
 }

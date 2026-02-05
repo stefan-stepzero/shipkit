@@ -214,7 +214,7 @@ function Show-Logo {
         Write-Host "              7 Skills • Streamlined Workflows" -ForegroundColor DarkGray
     } else {
         Write-Host "         Complete Product Development Framework" -ForegroundColor DarkGray
-        Write-Host "              24 Skills • 6 Agents • Constitution-Driven" -ForegroundColor DarkGray
+        Write-Host "              29 Skills • 7 Agents • Constitution-Driven" -ForegroundColor DarkGray
     }
     Write-Host ""
 }

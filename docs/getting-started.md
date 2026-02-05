@@ -48,7 +48,7 @@ your-project/
 ├── .claude/
 │   ├── settings.json            # Permissions + hooks
 │   ├── skills/                  # 23 skill definitions
-│   ├── agents/                  # 6 agent personas
+│   ├── agents/                  # 7 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace (grows as you work)
 ```
@@ -160,10 +160,11 @@ All project context lives here:
 
 ### Agent Personas
 
-Shipkit includes 6 specialized agents:
+Shipkit includes 7 specialized agents:
 
 | Agent | Use For |
 |-------|---------|
+| `shipkit-project-manager-agent` | Coordination, status, context |
 | `shipkit-product-owner-agent` | Vision, requirements, priorities |
 | `shipkit-ux-designer-agent` | UI/UX patterns, prototyping |
 | `shipkit-architect-agent` | Technical decisions, stack choices |

@@ -11,7 +11,7 @@ A focused collection of **Claude Code skills** for efficient product development
 - **Ecosystem** (2) - Get skills and MCPs
 - **System** (2) - Auto-triggered detection and updates
 
-Plus **6 agent personas** that specialize behaviors for different workflow stages.
+Plus **7 agent personas** that specialize behaviors for different workflow stages.
 
 ---
 
@@ -64,10 +64,11 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-detect` - Pattern detection and queue creation (auto-triggered)
 - `shipkit-update` - Install or update Shipkit from GitHub
 
-### Agent Personas (6)
+### Agent Personas (7)
 
 | Agent | Used For |
 |-------|----------|
+| `shipkit-project-manager-agent` | Coordination & context |
 | `shipkit-product-owner-agent` | Product/vision focus |
 | `shipkit-ux-designer-agent` | UX/design perspective |
 | `shipkit-architect-agent` | Technical architecture |
@@ -107,7 +108,7 @@ python shipkit/installers/install.py --target . -y
 
 The installer will:
 - Install all 29 skills
-- Set up 6 agent personas
+- Set up 7 agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
 
@@ -120,7 +121,7 @@ your-project/
 ├── .claude/
 │   ├── settings.json            # Permissions + hooks
 │   ├── skills/                  # 24 skill definitions
-│   ├── agents/                  # 6 agent personas
+│   ├── agents/                  # 7 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
     ├── specs/                   # Feature specifications
@@ -196,7 +197,7 @@ shipkit/
 │
 ├── install/                      # Everything that gets installed
 │   ├── skills/                   # 24 shipkit-* skill definitions
-│   ├── agents/                   # 6 shipkit-*-agent personas
+│   ├── agents/                   # 7 shipkit-*-agent personas
 │   ├── profiles/
 │   │   └── shipkit.manifest.json # Skill manifest
 │   ├── settings/
