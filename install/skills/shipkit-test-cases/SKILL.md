@@ -152,6 +152,137 @@ git diff --name-only HEAD~5..HEAD
 
 ---
 
+### Step 4.5: Enrich with Codebase Selectors (Optional)
+
+**Purpose:** Transform abstract test actions into AI-executable steps by extracting actual selectors, routes, and element identifiers from the codebase.
+
+**When to enrich:**
+- UI/frontend test cases (components, pages)
+- E2E test cases requiring element interaction
+- When codebase uses data-testid, aria-label, or similar patterns
+
+**Skip enrichment for:**
+- Pure API tests (already specific with endpoints/payloads)
+- Unit tests (code-level, not UI)
+- Test cases marked `Human-required`
+
+#### Enrichment Process
+
+**Option A: Inline enrichment (few cases)**
+1. Read the validated source file(s)
+2. Extract element identifiers (see strategy below)
+3. Map abstract actions to concrete selectors
+4. Update test case with Steps table
+
+**Option B: Agent delegation (many cases)**
+```
+Use Task tool with subagent_type=Explore:
+"Enrich test case [ID] by scanning [validated files] for:
+- data-testid attributes
+- aria-label attributes
+- role attributes
+- form field names
+- route definitions
+Return a Steps table mapping actions to selectors."
+```
+
+#### Element Identification Strategy
+
+**Priority order for selectors (best → worst):**
+
+| Priority | Selector Type | Example | Why |
+|----------|--------------|---------|-----|
+| 1 | data-testid | `[data-testid="login-submit"]` | Explicit, stable, test-specific |
+| 2 | aria-label | `[aria-label="Submit login"]` | Accessible, semantic |
+| 3 | role + name | `button[role="button"]:has-text("Sign In")` | Semantic, visible |
+| 4 | placeholder | `input[placeholder="Email"]` | Visible, but can change |
+| 5 | CSS class | `.btn-primary` | Fragile, avoid |
+
+**What to extract from source files:**
+
+| File Type | Extract |
+|-----------|---------|
+| React/Vue components | data-testid, aria-*, role, form names |
+| Route configs | Path patterns, route names |
+| API handlers | Endpoint URLs, methods, params |
+| Form schemas | Field names, validation rules |
+
+#### Enriched Test Case Format
+
+**Before enrichment (abstract):**
+```markdown
+**Action:** User logs in with valid credentials
+**Verify:** User sees dashboard with welcome message
+```
+
+**After enrichment (AI-executable):**
+```markdown
+**Preconditions:**
+- Route: `/login`
+- Auth: logged out
+- Test data: user "test@example.com" exists with password "Test123!"
+
+**Steps:**
+| # | Action | Target | Input | Wait |
+|---|--------|--------|-------|------|
+| 1 | navigate | `/login` | — | page load |
+| 2 | fill | `[data-testid="email-input"]` | "test@example.com" | — |
+| 3 | fill | `[data-testid="password-input"]` | "Test123!" | — |
+| 4 | click | `[data-testid="login-submit"]` | — | network idle |
+| 5 | waitFor | URL | matches `/dashboard` | 5s timeout |
+
+**Verify:**
+| # | Assertion | Target | Expected |
+|---|-----------|--------|----------|
+| 1 | URL | — | `/dashboard` |
+| 2 | visible | `[data-testid="user-greeting"]` | — |
+| 3 | textContent | `[data-testid="user-greeting"]` | contains "Welcome" |
+```
+
+#### Standard Action Vocabulary
+
+| Action | Description | Example |
+|--------|-------------|---------|
+| `navigate` | Go to URL/route | `navigate` → `/login` |
+| `fill` | Type into input | `fill` → `[data-testid="email"]` ← "test@example.com" |
+| `click` | Click element | `click` → `[data-testid="submit"]` |
+| `select` | Choose from dropdown | `select` → `[data-testid="country"]` ← "US" |
+| `check` | Check checkbox | `check` → `[data-testid="terms"]` |
+| `hover` | Hover over element | `hover` → `[data-testid="menu"]` |
+| `waitFor` | Wait for condition | `waitFor` → URL matches `/dashboard` |
+| `press` | Keyboard key | `press` → "Enter" |
+
+#### Standard Assertion Vocabulary
+
+| Assertion | Description | Example |
+|-----------|-------------|---------|
+| `visible` | Element is visible | `visible` → `[data-testid="success"]` |
+| `hidden` | Element not visible | `hidden` → `[data-testid="error"]` |
+| `textContent` | Text matches | `textContent` → `[data-testid="msg"]` = "Success" |
+| `value` | Input value | `value` → `[data-testid="email"]` = "test@example.com" |
+| `URL` | Current URL | `URL` matches `/dashboard` |
+| `count` | Element count | `count` → `[data-testid="item"]` = 3 |
+| `attribute` | Attribute value | `attribute` → `[data-testid="btn"]`.disabled = true |
+
+#### Handling Missing Selectors
+
+When enrichment finds no testid/aria-label:
+
+```markdown
+**Steps:**
+| # | Action | Target | Input | ⚠️ |
+|---|--------|--------|-------|-----|
+| 3 | click | `button:has-text("Submit")` | — | Missing data-testid |
+
+**Selector Gaps:**
+- `src/components/LoginForm.tsx:42` — Submit button lacks data-testid
+- Recommend: `<button data-testid="login-submit">Submit</button>`
+```
+
+This flags technical debt while still providing a workable (if fragile) selector.
+
+---
+
 ### Step 5: Write Files
 
 **File structure:**
@@ -259,9 +390,15 @@ git diff --name-only HEAD~5..HEAD
   • Edge cases: 18 (10 verified, 8 pending)
   • Regression: 3
 
+🔧 Enrichment:
+  • UI cases enriched: 8/10
+  • Selectors extracted: 24
+  • Missing data-testid: 3 (flagged)
+
 ⚠️ Attention needed:
   • 2 stale cases (code changed)
   • 3 files without coverage
+  • 3 elements need data-testid attributes
 
 👉 Next: Run `/test-relentlessly` to execute pending cases
 ```
@@ -439,6 +576,12 @@ Test case generation is complete when:
 - [ ] COVERAGE.md shows gaps
 - [ ] Stale cases flagged
 - [ ] cases/*.md written
+
+**If enrichment performed:**
+- [ ] UI test cases have Steps tables with selectors
+- [ ] Selectors extracted from actual source files
+- [ ] Missing data-testid/aria-labels flagged
+- [ ] Preconditions specified (route, auth state, test data)
 <!-- /SECTION:success-criteria -->
 
 ---
@@ -462,7 +605,7 @@ Test case generation is complete when:
 | AUTH-03 | Expired token refresh | `refresh.ts` | 🆕 pending |
 | AUTH-04 | Logout invalidates session | `logout.ts` | 🆕 pending |
 
-### AUTH-01: Valid Login Returns Token
+### AUTH-01: Valid Login Returns Token (API)
 
 **Validates:** `src/api/auth/login.ts`
 **Type:** Core | AI-verifiable
@@ -485,22 +628,64 @@ POST /api/auth/login with body:
 
 ---
 
-### AUTH-02: Invalid Password Returns Error
+### AUTH-02: Valid Login UI Flow (Enriched)
 
-**Validates:** `src/api/auth/login.ts`
+**Validates:** `src/components/auth/LoginForm.tsx`
 **Type:** Core | AI-verifiable
 
-**Action:**
-POST /api/auth/login with body:
-```json
-{"email": "test@example.com", "password": "wrongpassword"}
-```
+**Preconditions:**
+- Route: `/login`
+- Auth: logged out
+- Test data: user "test@example.com" exists with password "Test123!"
+
+**Steps:**
+| # | Action | Target | Input | Wait |
+|---|--------|--------|-------|------|
+| 1 | navigate | `/login` | — | page load |
+| 2 | fill | `[data-testid="login-email"]` | "test@example.com" | — |
+| 3 | fill | `[data-testid="login-password"]` | "Test123!" | — |
+| 4 | click | `[data-testid="login-submit"]` | — | network idle |
+| 5 | waitFor | URL | matches `/dashboard` | 5s |
 
 **Verify:**
-- Response status: 401
-- Response body contains `error` field
-- Response body does NOT contain `token` field
-- No session created (check session store)
+| # | Assertion | Target | Expected |
+|---|-----------|--------|----------|
+| 1 | URL | — | `/dashboard` |
+| 2 | visible | `[data-testid="user-avatar"]` | — |
+| 3 | textContent | `[data-testid="welcome-message"]` | contains "Welcome" |
+| 4 | hidden | `[data-testid="login-error"]` | — |
+
+**Selectors extracted from:** `src/components/auth/LoginForm.tsx:12-45`
+**Code modified:** 2024-01-15
+**Last verified:** pending
+**Status:** 🆕 pending
+
+---
+
+### AUTH-03: Invalid Password Shows Error (Enriched)
+
+**Validates:** `src/components/auth/LoginForm.tsx`
+**Type:** Core | AI-verifiable
+
+**Preconditions:**
+- Route: `/login`
+- Auth: logged out
+
+**Steps:**
+| # | Action | Target | Input | Wait |
+|---|--------|--------|-------|------|
+| 1 | navigate | `/login` | — | page load |
+| 2 | fill | `[data-testid="login-email"]` | "test@example.com" | — |
+| 3 | fill | `[data-testid="login-password"]` | "wrongpassword" | — |
+| 4 | click | `[data-testid="login-submit"]` | — | network idle |
+
+**Verify:**
+| # | Assertion | Target | Expected |
+|---|-----------|--------|----------|
+| 1 | URL | — | `/login` (no redirect) |
+| 2 | visible | `[data-testid="login-error"]` | — |
+| 3 | textContent | `[data-testid="login-error"]` | contains "Invalid" |
+| 4 | value | `[data-testid="login-password"]` | "" (cleared) |
 
 **Code modified:** 2024-01-15
 **Last verified:** pending
