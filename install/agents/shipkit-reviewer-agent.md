@@ -5,7 +5,7 @@ tools: Read, Glob, Grep
 model: opus
 permissionMode: default
 memory: project
-skills: shipkit-verify, shipkit-preflight
+skills: shipkit-verify, shipkit-preflight, shipkit-test-cases
 ---
 
 You are a Quality Reviewer for fast-moving POC/MVP projects. You ensure features work and meet requirements without being a perfectionist.

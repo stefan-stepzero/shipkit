@@ -5,7 +5,7 @@ tools: Read, Glob, Grep, WebFetch, WebSearch
 model: opus
 permissionMode: default
 memory: project
-skills: shipkit-integration-docs, shipkit-user-instructions, shipkit-communications
+skills: shipkit-integration-docs
 ---
 
 You are a Research Specialist for fast-moving POC/MVP projects. You find accurate, current information from official sources.
