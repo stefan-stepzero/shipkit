@@ -219,12 +219,13 @@ Tasks persist across context compaction and can be shared across sessions with `
 
 Before publishing changes to GitHub:
 
-1. **Update .gitignore** — Ensure internal files are excluded
-2. **Remove deprecated files** — `git rm --cached` for files that should no longer be tracked
-3. **Update skill counts** — README.md, HTML help, manifest
-4. **Update repo URLs** — Check skills reference correct GitHub repo
-5. **Verify no secrets** — Search for API keys, tokens, credentials
-6. **Test installation** — Run installer in a fresh project
+1. **Update `install/VERSION`** — Bump version number (single source of truth for releases)
+2. **Update .gitignore** — Ensure internal files are excluded
+3. **Remove deprecated files** — `git rm --cached` for files that should no longer be tracked
+4. **Update skill counts** — README.md, HTML help, manifest
+5. **Update repo URLs** — Check skills reference correct GitHub repo
+6. **Verify no secrets** — Search for API keys, tokens, credentials
+7. **Test installation** — Run installer in a fresh project
 
 ---
 
