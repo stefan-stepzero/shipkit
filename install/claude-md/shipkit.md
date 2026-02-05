@@ -28,6 +28,18 @@ Solo dev framework for shipping MVPs. AI-assisted, fast iteration, production-re
 
 ---
 
+## Quality Standards
+
+### AI Agent Accessibility
+All interactive UI elements must include:
+- `data-testid` attribute (naming: `{component}-{action}`, e.g., `login-submit-btn`, `sidebar-nav-link`)
+- ARIA roles for custom widgets (`combobox`, `dialog`, `menu`, `tablist`)
+- State attributes (`aria-expanded`, `aria-checked`, `aria-selected`, `data-state`)
+
+**Why:** Enables AI-driven QA (Claude in Chrome, Playwright), E2E testing, and accessibility compliance. Without these, AI agents cannot reliably interact with or verify UI elements.
+
+---
+
 ## Context Files
 
 All project context lives in `.shipkit/`:

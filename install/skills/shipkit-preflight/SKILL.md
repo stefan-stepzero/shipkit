@@ -507,6 +507,15 @@ Ready to fix the remaining blockers?
 - Data retention policy
 - GDPR compliance (if EU users)
 
+### 9. AI Agent Accessibility
+- Interactive elements have `data-testid` attributes
+- Custom widgets have ARIA roles (`combobox`, `dialog`, `menu`, `tablist`)
+- State exposed via attributes (`aria-expanded`, `aria-checked`, `data-state`)
+- Form inputs have associated labels (explicit or `aria-label`)
+- Dynamic content changes announced to screen readers
+
+**Why critical**: Without these, AI-driven QA (Claude in Chrome, Playwright) cannot reliably interact with or verify UI. This blocks automated testing and accessibility compliance.
+
 ---
 
 ## Context Files This Skill Reads

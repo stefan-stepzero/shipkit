@@ -194,6 +194,7 @@ Review changes against these 12 dimensions, emphasizing based on what changed:
 - Broken/incomplete flows
 - Missing confirmation on destructive actions
 - Inconsistent patterns vs rest of app
+- Interactive elements missing `data-testid` or ARIA attributes (blocks AI testing)
 
 ### 9. Maintainability
 - Magic numbers/strings
