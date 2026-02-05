@@ -1,87 +1,115 @@
-# Agent Personas
+# Shipkit Agents (Subagents)
 
-Specialized agent configurations for the shipkit workflow.
+Specialized subagent configurations for the Shipkit workflow. These follow Claude Code's official subagent specification.
+
+## How Subagents Work
+
+Subagents are **not** invoked directly by skills or users. Instead:
+
+1. **Claude auto-delegates** based on the agent's `description` field matching the task
+2. Each subagent runs in its own context with its own system prompt
+3. Subagents can have **preloaded skills** for domain knowledge
+4. Results return to the main conversation when the subagent completes
+
+**Key insight:** The `description` field drives delegation. Write descriptions that clearly state when the agent should be used.
 
 ## Available Agents
 
-| Agent | Role | Used By |
-|-------|------|---------|
-| **Discovery** | Product discovery, strategy, user research | ProdKit skills |
-| **Architect** | Technical planning, specifications | `/specify`, `/plan`, `/tasks` |
-| **Implementer** | TDD-focused coding | `/implement` (subagent mode) |
-| **Reviewer** | Code review, quality gates | `/implement` (review stages) |
-| **Researcher** | Deep research, exploration | `/brainstorming`, research phases |
+| Agent | Role | Delegates When |
+|-------|------|----------------|
+| **shipkit-product-owner** | Vision & requirements | Defining what to build, user research, feature prioritization |
+| **shipkit-ux-designer** | UI/UX design | Designing interfaces, UX reviews, wireframes |
+| **shipkit-architect** | Technical decisions | Planning features, data models, technical choices |
+| **shipkit-implementer** | Code implementation | Building features, fixing bugs, writing tests |
+| **shipkit-reviewer** | Code review & quality | Reviewing code, security checks, validation |
+| **shipkit-researcher** | Research & analysis | Documentation lookup, API research, troubleshooting |
 
-## How They're Used
+## Agent Format
 
-### Skill-Triggered Loading
-
-Each skill specifies which agent persona to load. Look for the "Agent Persona" section at the top of each skill:
+Each agent uses Claude Code's subagent YAML frontmatter:
 
 ```markdown
-## Agent Persona
+---
+name: shipkit-architect
+description: Technical architect for system design... Use when planning features...
+tools: Read, Glob, Grep, Write, Edit, Bash
+model: opus
+permissionMode: default
+memory: project
+skills: shipkit-plan, shipkit-architecture-memory
+---
 
-**Load:** `.claude/agents/architect-agent.md`
-
-Adopt: Systematic thinking, spec completeness focus, documents trade-offs.
+You are a Technical Architect...
 ```
 
-When a skill runs, Claude reads the persona file and adopts that personality.
+### Frontmatter Fields
 
-### In Subagent Mode (`/implement`)
+| Field | Purpose |
+|-------|---------|
+| `name` | Unique identifier |
+| `description` | **Drives auto-delegation** - when Claude sees matching tasks |
+| `tools` | Tools the subagent can access |
+| `model` | Model to use (opus, sonnet, haiku) |
+| `permissionMode` | Permission level (default, acceptEdits, bypassPermissions) |
+| `memory` | Memory scope (user, project, local) |
+| `skills` | Preloaded skills for domain knowledge |
+
+## Skills ↔ Agents Relationship
+
+**One-way relationship:**
+
+- ❌ Skills cannot invoke agents
+- ✅ Agents can have skills preloaded
+
+When an agent has `skills: shipkit-plan`, it gets that skill's knowledge automatically loaded.
+
+## How Delegation Happens
 
 ```
-Controller (you) manages workflow
-        ↓
-Dispatch Implementer Agent for task
-        ↓
-Dispatch Reviewer Agent (spec compliance)
-        ↓
-Dispatch Reviewer Agent (code quality)
-        ↓
-Controller verifies and marks complete
+User: "Plan the authentication feature"
+         ↓
+Claude sees "plan" + "feature" matches architect description
+         ↓
+Auto-delegates to shipkit-architect subagent
+         ↓
+Architect uses its tools + preloaded skills
+         ↓
+Results return to main conversation
 ```
-
-### In Discovery (`/brainstorming`)
-
-```
-Discovery Agent leads conversation
-        ↓
-Researcher Agent for deep dives
-        ↓
-Discovery Agent synthesizes
-```
-
-## Agent Prompt Structure
-
-Each agent file contains:
-- **Role**: What they do
-- **When Used**: Which skills use them
-- **Personality**: How they behave
-- **Approach**: Their methodology
-- **Key Behaviors**: Specific actions
-- **Constraints**: What they don't do
-- **Prompt Template**: How to invoke them
-
-## Customization
-
-You can customize agents in your project by:
-1. Copying to `.claude/agents/`
-2. Modifying for your needs
-3. The local version takes precedence
 
 ## Installation
 
-Agents are installed automatically when you run:
+Agents are installed to `.claude/agents/` when you run `/shipkit-update`:
 
-**PowerShell (Windows):**
-```powershell
-installers\install.ps1
+```
+.claude/
+└── agents/
+    ├── shipkit-product-owner.md
+    ├── shipkit-ux-designer.md
+    ├── shipkit-architect.md
+    ├── shipkit-implementer.md
+    ├── shipkit-reviewer.md
+    └── shipkit-researcher.md
 ```
 
-**Bash (macOS/Linux):**
-```bash
-bash installers/install.sh
-```
+## Customization
 
-They're copied to `.claude/agents/` in your project.
+To customize an agent for your project:
+
+1. Edit the file in `.claude/agents/`
+2. Modify the system prompt (markdown body)
+3. Adjust tools, skills, or model as needed
+4. Local changes take precedence
+
+## Model Selection
+
+All Shipkit agents default to `opus` for highest quality reasoning. Consider using `sonnet` or `haiku` for:
+
+- High-volume, repetitive tasks
+- Simple lookups or searches
+- Cost-sensitive workflows
+
+## Reference
+
+- [Claude Code Subagents Documentation](https://docs.anthropic.com/en/docs/claude-code/sub-agents)
+- [Shipkit Skills](../skills/)
