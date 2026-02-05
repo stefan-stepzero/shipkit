@@ -58,6 +58,49 @@ argument-hint: "<decision to log>"
 
 **If files don't exist**: Continue to questions (will create architecture.md)
 
+### Verification Before Recording
+
+Before recording any decision, verify claims with tool calls:
+
+| Claim | Required Verification |
+|-------|----------------------|
+| "architecture.md exists" | `Read: file_path=".shipkit/architecture.md"` succeeds |
+| "X decisions recorded" | Count `## ` headings in file after reading |
+| "Decision contradicts existing" | `Grep: pattern="keyword"` in architecture.md |
+| "Aligns with stack.md" | `Grep: pattern="technology-name"` in stack.md returns match |
+| "Supersedes entry X" | `Grep: pattern="entry-date"` in architecture.md returns match |
+
+**Pattern Ripple for Decisions:**
+
+When recording "we use X pattern", grep for ALL instances of that pattern and document the scope:
+
+```
+Example: Recording "Use Server Actions for mutations"
+
+1. Grep: pattern="use server|Server Action" glob="**/*.{ts,tsx}"
+2. Count matches: 5 files
+3. Include in decision: "Pattern used in 5 files: [list]"
+4. Future verification can check if new files follow pattern
+```
+
+**Why this matters:** Recording a pattern decision without knowing current usage leads to inconsistent enforcement.
+
+**Verification sequence:**
+
+```
+1. Read architecture.md (verify file readable, count entries)
+2. For new decision involving technology:
+   - Grep: pattern="technology-name" in stack.md
+   - If not found → warn about stack.md inconsistency
+3. For new decision involving pattern:
+   - Grep: pattern="pattern-keyword" glob="**/*.{ts,tsx}"
+   - Document current usage count in decision entry
+4. Check for contradictions with existing decisions
+5. If all verifications pass → proceed to record
+```
+
+**See also:** `shared/references/VERIFICATION-PROTOCOL.md` for standard verification patterns.
+
 ---
 
 ### Step 2: Capture Decision Context
@@ -133,6 +176,7 @@ New: "Use GraphQL for all APIs"
 ## [YYYY-MM-DD] [Decision Title]
 
 **Status**: Current | Superseded | Deprecated
+**Type**: Architectural | Operational
 
 **Decision**: [What was decided - 1 clear sentence]
 
@@ -151,6 +195,15 @@ New: "Use GraphQL for all APIs"
 
 ---
 ```
+
+**Decision Types**:
+
+| Type | Definition | Examples |
+|------|------------|----------|
+| **Architectural** | Tech choice, pattern selection, structural decision | "Use Server Actions", "Use Drizzle ORM", "Feature folders for components" |
+| **Operational** | Runtime behavior, data flow rules, invariants | "Invalidate X when Y changes", "Always validate at boundary", "Cache TTL = 5min" |
+
+**Why type matters**: Architectural decisions affect code structure. Operational decisions affect runtime behavior and must be followed during implementation.
 
 **Status values**:
 - **Current**: Active decision, still applies
@@ -378,11 +431,12 @@ New: "Use Zod for runtime validation"
 
 ## Decision Entry Examples
 
-### Example 1: Simple Pattern Choice
+### Example 1: Simple Pattern Choice (Architectural)
 ```markdown
 ## [2025-01-15] Server Actions for Mutations
 
 **Status**: Current
+**Type**: Architectural
 
 **Decision**: Use Server Actions instead of API routes for all data mutations
 
@@ -438,6 +492,7 @@ New: "Use Zod for runtime validation"
 ## [2025-01-25] Component Composition Over Prop Drilling
 
 **Status**: Current
+**Type**: Architectural
 
 **Decision**: Use component composition pattern instead of prop drilling for deeply nested component trees
 
@@ -453,6 +508,53 @@ New: "Use Zod for runtime validation"
 - Wrapper components handle data fetching
 - Leaf components receive data directly
 - May need to restructure existing deeply nested components
+
+**Supersedes**: None
+```
+
+### Example 4: Operational Rule (Cache Invalidation)
+```markdown
+## [2025-01-28] Cart Invalidation on Product Update
+
+**Status**: Current
+**Type**: Operational
+
+**Decision**: Invalidate all cart queries when any product price or availability changes
+
+**Reason**: Carts display product prices and stock status. Stale data causes checkout failures and user confusion.
+
+**Alternatives considered**:
+- Per-product invalidation: Complex to track which carts contain which products
+- Time-based cache expiry: 5-min delay unacceptable for price changes
+- No caching: Too slow for cart operations
+
+**Implications**:
+- `revalidateTag('cart')` must be called in product update handlers
+- Cart queries use `tags: ['cart', 'products']`
+- Slightly more cache misses but guaranteed consistency
+
+**Supersedes**: None
+```
+
+### Example 5: Operational Rule (Validation Invariant)
+```markdown
+## [2025-01-30] Validate at API Boundary Only
+
+**Status**: Current
+**Type**: Operational
+
+**Decision**: Input validation happens at API route entry points only, not in internal functions
+
+**Reason**: Single validation point prevents inconsistent error handling. Internal functions trust already-validated data.
+
+**Alternatives considered**:
+- Validate everywhere: Redundant, slower, inconsistent error messages
+- Validate at DB layer: Too late, poor error messages
+
+**Implications**:
+- All API routes use zod schemas
+- Internal service functions accept typed parameters without re-validation
+- Never pass raw user input to internal functions
 
 **Supersedes**: None
 ```

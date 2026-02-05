@@ -126,6 +126,7 @@ This skill provides:
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
 | "Spec this feature", "Create specification", "Write requirements" | `/shipkit-spec` | .shipkit/specs/active/ |
+| "Triage feedback", "Process bug reports", "User testing feedback" | `/shipkit-feedback-bug` | .shipkit/specs/active/, codebase-index |
 | "Plan this", "How to implement?", "Create plan" | `/shipkit-plan` | specs/, stack.md, architecture.md |
 | "Prototype", "Mockup", "Rapid prototype", "UI mockup" | `/shipkit-prototyping` | specs/, why.md |
 | "Extract prototype", "Prototype to spec", "Capture UI patterns" | `/shipkit-prototype-to-spec` | .shipkit-mockups/, specs/active/ |
@@ -148,6 +149,15 @@ This skill provides:
 | "Audit UX", "Check UX patterns", "UX gaps" | `/shipkit-ux-audit` | implementations/ |
 | "Create task", "Track TODO", "User tasks" | `/shipkit-user-instructions` | user-tasks/active.md |
 | "Visualize", "HTML report", "Visual communication" | `/shipkit-communications` | Relevant files based on request |
+
+### Execution
+
+| User Says | Route To | Load Context |
+|-----------|----------|--------------|
+| "Test cases", "Generate tests", "What to test", "Test coverage", "Test specification" | `/shipkit-test-cases` | Source files, specs, existing test cases |
+| "Build until", "Compile until success", "Fix build errors" | `/shipkit-build-relentlessly` | Build output |
+| "Test until", "Run tests until green", "Fix test failures" | `/shipkit-test-relentlessly` | Test output, test-cases |
+| "Lint until", "Fix lint errors", "Clean up lint" | `/shipkit-lint-relentlessly` | Lint output |
 
 ---
 
@@ -237,7 +247,7 @@ This skill is the **central router** that connects all other skills.
 |----------|------------------|
 | Vision/Discovery | `shipkit-why-project`, `shipkit-product-discovery` |
 | Context/Status | `shipkit-project-status`, `shipkit-project-context`, `shipkit-work-memory` |
-| Spec/Planning | `shipkit-spec`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec` |
+| Spec/Planning | `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec` |
 | Knowledge | `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`, `shipkit-claude-md` |
 | Quality | `shipkit-verify`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications` |
 
@@ -282,9 +292,9 @@ This skill is the **central router** that connects all other skills.
 ## Reference Documentation
 
 - **File freshness logic** - `references/file-freshness-logic.md`
-- **Session start behavior** - `references/session-start-behavior.md`
-- **Routing patterns** - `references/routing-patterns.md`
-- **Context loading table** - `references/context-loading-table.md`
+  - Freshness thresholds per file type
+  - Staleness detection algorithm
+  - Comparison logic (e.g., stack.md vs package.json)
 
 ---
 

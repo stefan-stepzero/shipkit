@@ -164,8 +164,46 @@ Possible questions (only if not already documented):
 
 **See**: `references/checklists/` for full checklist content.
 
+**USE SUBAGENT FOR PARALLEL CHECKLIST VERIFICATION** - For full audits with multiple categories:
+
+```
+Task tool with subagent_type: "Explore"
+Prompt: "Run production readiness checks on this [stack] codebase.
+
+Check these categories and report Pass/Fail/Warning with file:line evidence:
+
+AUTH & SECURITY:
+- Auth on protected routes (getSession/requireAuth in API routes)
+- Secrets in env vars not code (no hardcoded keys/passwords)
+- Input validation on forms (zod/yup/schema.parse)
+
+ERROR HANDLING:
+- Try/catch on async operations
+- Error boundaries in React apps
+- Consistent API error responses
+
+UX RESILIENCE:
+- Loading states on async operations
+- Empty states handled
+- Form validation with clear errors
+
+For each check: state Pass/Fail, provide file:line evidence, note what's missing."
+```
+
+**Why subagent**: Full audit requires scanning many patterns across entire codebase. Explore agent runs checks in parallel and returns structured findings.
+
+**When to use subagent**:
+- Full audit with 3+ checklist categories
+- Large codebase (50+ source files)
+- Multiple pattern types to scan
+
+**When to scan manually**:
+- Quick verify (re-check failures only)
+- Incremental audit (few files changed)
+- Single category focus
+
 **For FULL AUDIT:**
-- Run all applicable checks
+- Run all applicable checks (via subagent for efficiency)
 - Scan entire codebase for evidence
 - Mark as: ✅ Pass | ⚠️ Warning | ❌ Fail | ⏭️ N/A
 
@@ -191,6 +229,31 @@ Possible questions (only if not already documented):
 **For QUICK VERIFY (no changes):**
 - Only re-check previously failed/warned items
 - Report if issues still exist or now fixed
+
+---
+
+### Step 3.5: Verification Protocol for Each Check
+
+**Critical: Execute tools before marking Pass/Fail.**
+
+Each checklist item describes what to "Scan for" — translate these to actual tool calls:
+
+| Checklist Description | Tool Call | Pass Condition |
+|----------------------|-----------|----------------|
+| "Auth on protected routes" | `Grep: pattern="getSession\|requireAuth" path="src/app/api/**"` | All route files have auth |
+| "Secrets in env vars" | `Grep: pattern="(secret\|key)[:=]['\"]" glob="**/*.{ts,tsx}"` | 0 matches in source |
+| "Try/catch on async" | `Grep: pattern="await " -A=5` then check for try | All awaits wrapped |
+| "Error boundaries" | `Grep: pattern="ErrorBoundary\|error\\.tsx" path="src/app"` | Found in layout/root |
+| "Loading states" | `Grep: pattern="loading\|isLoading\|Skeleton" path="[component]"` | Found in async components |
+| "Input validation" | `Grep: pattern="zod\|yup\|schema\\.parse" path="[form file]"` | Found in form handlers |
+
+**Verification sequence for each check:**
+1. **Execute** the appropriate Glob/Grep/Read
+2. **Read** the output completely
+3. **Classify** as Pass/Fail based on evidence
+4. **Record** evidence in finding (file:line or "0 matches")
+
+**Never mark a check without tool evidence.** If a checklist says "Scan for X" and you didn't actually scan, the check is incomplete.
 
 ---
 

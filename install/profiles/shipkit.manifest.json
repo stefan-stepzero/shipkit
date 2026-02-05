@@ -47,6 +47,7 @@
       ],
       "Spec & Planning": [
         {"name": "shipkit-spec", "desc": "Create feature specifications"},
+        {"name": "shipkit-feedback-bug", "desc": "Process feedback into investigated bug specs"},
         {"name": "shipkit-plan", "desc": "Plan implementation steps"},
         {"name": "shipkit-prototyping", "desc": "Create quick UI mockups"},
         {"name": "shipkit-prototype-to-spec", "desc": "Extract prototype learnings"}
@@ -61,7 +62,8 @@
       "Execution": [
         {"name": "shipkit-build-relentlessly", "desc": "Build until compiles"},
         {"name": "shipkit-test-relentlessly", "desc": "Test until green"},
-        {"name": "shipkit-lint-relentlessly", "desc": "Lint until clean"}
+        {"name": "shipkit-lint-relentlessly", "desc": "Lint until clean"},
+        {"name": "shipkit-test-cases", "desc": "Generate code-anchored test cases"}
       ],
       "Quality & Communication": [
         {"name": "shipkit-verify", "desc": "Review work (12 quality dimensions)"},

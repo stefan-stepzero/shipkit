@@ -407,7 +407,7 @@
             <h1>⚡ Shipkit</h1>
             <div class="stats">
                 <div class="stat">
-                    <span class="stat-number">24</span>
+                    <span class="stat-number">29</span>
                     <span class="stat-label">Skills</span>
                 </div>
                 <div class="stat">
@@ -531,7 +531,12 @@
                         <tr>
                             <td class="trigger">Create Given/When/Then spec</td>
                             <td><span class="skill">/shipkit-spec</span></td>
-                            <td class="creates">specs/active/[name].md</td>
+                            <td class="creates">specs/active/feature-[name].md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Process feedback into investigated bug specs</td>
+                            <td><span class="skill">/shipkit-feedback-bug</span></td>
+                            <td class="creates">specs/active/bug-[name].md</td>
                         </tr>
                         <tr>
                             <td class="trigger">Plan implementation steps</td>
@@ -617,6 +622,37 @@
                         </tr>
                     </table>
                 </div>
+
+                <div class="cheat-section">
+                    <h3>🔄 Execution</h3>
+                    <table class="cheat-table">
+                        <tr>
+                            <th style="width:40%">When you want to...</th>
+                            <th style="width:25%">Use</th>
+                            <th style="width:35%">Creates</th>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Generate test case specs</td>
+                            <td><span class="skill">/shipkit-test-cases</span></td>
+                            <td class="creates">test-cases/*.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Build until compiles</td>
+                            <td><span class="skill">/shipkit-build-relentlessly</span></td>
+                            <td class="creates">Build output</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Test until green</td>
+                            <td><span class="skill">/shipkit-test-relentlessly</span></td>
+                            <td class="creates">Test output</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Lint until clean</td>
+                            <td><span class="skill">/shipkit-lint-relentlessly</span></td>
+                            <td class="creates">Lint output</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
 
             <div class="natural-caps">
@@ -636,7 +672,7 @@
 
         <!-- ALL SKILLS TAB -->
         <div id="skills" class="tab-content">
-            <h2 class="section-header">All 24 Skills by Category</h2>
+            <h2 class="section-header">All 29 Skills by Category</h2>
 
             <div class="skill-groups">
                 <div class="skill-group">
@@ -657,6 +693,7 @@
                     <h3>📋 Spec & Planning</h3>
                     <ul class="skill-list">
                         <li><span class="name">/shipkit-spec</span> <span class="desc">— Create Given/When/Then specifications with acceptance criteria. Defines what to build.</span></li>
+                        <li><span class="name">/shipkit-feedback-bug</span> <span class="desc">— Process feedback into fully investigated bug specs with 5 Whys root cause analysis and blast radius.</span></li>
                         <li><span class="name">/shipkit-plan</span> <span class="desc">— Generate implementation plan from spec. Breaks features into ordered, actionable steps.</span></li>
                         <li><span class="name">/shipkit-prototyping</span> <span class="desc">— Create quick HTML/CSS mockups to visualize UI before writing real code.</span></li>
                         <li><span class="name">/shipkit-prototype-to-spec</span> <span class="desc">— Extract UI patterns and learnings from prototype into formal specification.</span></li>
@@ -669,6 +706,16 @@
                         <li><span class="name">/shipkit-architecture-memory</span> <span class="desc">— Log architectural decisions with rationale. Creates searchable decision history.</span></li>
                         <li><span class="name">/shipkit-data-contracts</span> <span class="desc">— Validate data shapes across API boundaries. Check type alignment between layers.</span></li>
                         <li><span class="name">/shipkit-integration-docs</span> <span class="desc">— Fetch current API patterns for external services (Stripe, Supabase, etc).</span></li>
+                    </ul>
+                </div>
+
+                <div class="skill-group">
+                    <h3>🔄 Execution</h3>
+                    <ul class="skill-list">
+                        <li><span class="name">/shipkit-test-cases</span> <span class="desc">— Generate code-anchored test case specs with staleness detection. Feeds test-relentlessly.</span></li>
+                        <li><span class="name">/shipkit-build-relentlessly</span> <span class="desc">— Build/compile until success. Loops until no errors.</span></li>
+                        <li><span class="name">/shipkit-test-relentlessly</span> <span class="desc">— Run tests until all pass. Uses test-cases for change-aware execution.</span></li>
+                        <li><span class="name">/shipkit-lint-relentlessly</span> <span class="desc">— Lint until clean. Loops until no lint errors.</span></li>
                     </ul>
                 </div>
 
@@ -840,7 +887,7 @@
         </div>
 
         <footer>
-            <p>Shipkit • 24 Skills • 6 Agents • 7 Principles</p>
+            <p>Shipkit • 29 Skills • 6 Agents • 7 Principles</p>
             <p style="margin-top: 10px;">Production-ready MVPs for SaaS applications</p>
         </footer>
     </div>

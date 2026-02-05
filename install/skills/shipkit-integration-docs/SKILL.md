@@ -117,6 +117,53 @@ Should I proceed?
 Loading integration patterns...
 ```
 
+### Verification Requirements
+
+Before claiming any service state, verify with tool calls:
+
+| Claim | Required Verification |
+|-------|----------------------|
+| "Service in stack.md" | `Grep: pattern="service-name" path=".shipkit/stack.md"` returns match |
+| "Patterns file fresh" | `Read: references/[service]-patterns.md`, parse "Last Updated" as ISO 8601 |
+| "7 days since update" | Compare parsed date to current date mathematically |
+| "WebFetch succeeded" | Check response contains expected sections (Red Flags, Best Practices) |
+
+**Verification sequence:**
+
+```
+1. Service lookup:
+   - Grep: pattern="[service-name]" path=".shipkit/stack.md"
+   - If 0 matches → service not in stack, warn user
+   - If matches → proceed with confidence
+
+2. Freshness check:
+   - Read: file_path="references/[service]-patterns.md"
+   - Extract "Last Updated" timestamp
+   - Parse as ISO 8601 (expect YYYY-MM-DDTHH:MM:SSZ)
+   - If unparseable → treat as stale, trigger refresh
+   - Calculate days since: (today - timestamp) / 86400000
+   - If > 7 days → stale, trigger refresh
+
+3. WebFetch validation:
+   - After fetch, verify response contains:
+     - "## Red Flags" section
+     - "## Security Best Practices" section
+     - "## Verification Checklist" section
+   - If missing sections → warn user, suggest manual verification
+```
+
+**Service name matching:**
+- Case-insensitive search
+- If not found, suggest similar names from stack.md
+- Common variations: "lemon squeezy" vs "lemonsqueezy", "supabase-js" vs "supabase"
+
+**Timestamp format requirements:**
+- Expect ISO 8601: `2025-01-15T10:30:00Z`
+- If format varies, attempt flexible parsing
+- If unparseable, log warning and treat as stale
+
+**See also:** `shared/references/VERIFICATION-PROTOCOL.md` for standard verification patterns.
+
 ---
 
 ### Step 3: Fetch or Load Service Documentation

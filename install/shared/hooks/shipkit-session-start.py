@@ -590,6 +590,41 @@ def main():
         except Exception:
             pass  # Silent fail on parse errors
 
+    # ─────────────────────────────────────────────────────────────────
+    # Available Context Files Manifest
+    # ─────────────────────────────────────────────────────────────────
+
+    print("# 📚 Available Context Files")
+    print()
+    print("**Check these BEFORE re-discovering patterns:**")
+    print()
+    print("| File | Status | Read When |")
+    print("|------|--------|-----------|")
+
+    # Check each context file
+    context_files = [
+        ('why.md', 'Before product decisions'),
+        ('stack.md', 'Before implementing (check patterns)'),
+        ('architecture.md', 'Before design decisions'),
+        ('schema.md', 'Before database work'),
+        ('codebase-index.json', 'For navigation'),
+    ]
+
+    for filename, read_when in context_files:
+        file_path = shipkit_dir / filename
+        if file_path.exists():
+            age = get_file_age_days(file_path)
+            status = format_age(age)
+        else:
+            status = "Missing"
+            read_when = f"Create: `/shipkit-project-context`" if filename in ['stack.md', 'schema.md'] else f"Create when needed"
+
+        print(f"| `{filename}` | {status} | {read_when} |")
+
+    print()
+    print("*Read context files before exploring. Patterns are already documented.*")
+    print()
+
     return 0
 
 

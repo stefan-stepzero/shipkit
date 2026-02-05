@@ -527,8 +527,6 @@ Claude:
 
 ## Markdown to HTML Conversion Guide
 
-**Complete conversion reference**: See `references/markdown-conversion.md`
-
 **Quick reference**:
 - Headers: `#` → `<h2>`, `##` → `<h3>`, `###` → `<h4>`
 - Emphasis: `**bold**` → `<strong>`, `*italic*` → `<em>`, `` `code` `` → `<code>`

@@ -115,6 +115,20 @@ find src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.js
 # Files NOT mentioned in implementations.md are gaps
 ```
 
+**Verification before claiming gaps:**
+
+| Gap Claim | Required Verification |
+|-----------|----------------------|
+| "Undocumented file" | Glob confirms file exists + Grep in implementations.md returns 0 |
+| "Stale documentation" | Compare file mtime vs doc mtime (use stat) |
+| "Missing spec" | Glob for `specs/active/*.md` matching feature name returns empty |
+| "Orphan plan" | Plan exists but Grep for implementation references returns 0 |
+
+**Never claim "undocumented" without:**
+1. `Glob`: Confirming the file exists
+2. `Grep`: Searching implementations.md for the filename
+3. If Grep returns 0: File is undocumented (valid gap)
+
 **Gap types to detect**:
 - Large files (>200 LOC) not documented in implementations.md
 - package.json modified more recently than stack.md
@@ -333,10 +347,7 @@ IF discovery skills stale AND no recent specs:
 
 ### Freshness and Gap Detection
 
-**See `references/bash-commands.md` for complete bash commands:**
-- Freshness calculation logic
-- Gap detection patterns (undocumented files, stale stack, workflow gaps)
-- File scanning commands (specs, plans, tasks)
+The bash commands for freshness checking and gap detection are documented inline in Steps 1-5 above.
 
 ---
 
@@ -490,11 +501,11 @@ Status check is complete when:
 
 ## Example Output Scenarios
 
-**See `references/example-outputs.md` for complete status reports:**
-- Scenario 1: Healthy Project
-- Scenario 2: Stale Stack
-- Scenario 3: Workflow Gap
-- Scenario 4: Fresh Project
+See Step 6 above for a complete status report example. The output format adapts to project state:
+- Healthy Project: All green indicators, no suggestions
+- Stale Stack: Warning on stack.md freshness
+- Workflow Gap: Missing specs/plans highlighted
+- Fresh Project: Context files up to date
 
 ---
 

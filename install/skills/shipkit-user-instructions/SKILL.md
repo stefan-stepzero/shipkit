@@ -430,37 +430,4 @@ Task tracking is complete when:
 
 ---
 
-## Reference Documentation
-
-**For detailed guidance and examples:**
-
-- **Common scenarios** - `references/common-scenarios.md`
-  - Missing environment variables
-  - Package installation
-  - User-initiated tasks
-  - Task completion workflow
-  - Checking active tasks
-
-- **Tips for effective tracking** - `references/tips.md`
-  - Be specific in steps
-  - Make verification concrete
-  - Set priority honestly
-  - Keep tasks atomic
-  - Update status regularly
-
-- **Task decision guide** - `references/task-decision-guide.md`
-  - When to create task entries vs. just asking user
-  - Borderline scenarios and edge cases
-  - The "todo vs. respond" rule
-
-- **Error handling** - `references/error-handling.md`
-  - Missing directory structure
-  - Malformed task entries
-  - Verification failures
-  - File permission issues
-  - Duplicate task detection
-  - Vague task specifications
-
----
-
 **Remember**: This skill exists because chat history scrolls away. Tasks don't. Capture them, track them, complete them.

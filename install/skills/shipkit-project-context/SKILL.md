@@ -73,6 +73,37 @@ description: "Use when starting a new project or refreshing tech stack context. 
 
 ### Step 3: Scan Project Files
 
+**USE SUBAGENT FOR COMPREHENSIVE STACK DETECTION** - For first run or full rescan:
+
+```
+Task tool with subagent_type: "Explore"
+Prompt: "Scan this project to detect complete tech stack. Report:
+
+1. FRAMEWORK: Check package.json for next, react, vue, svelte, remix, etc.
+2. DATABASE: Find Supabase, Prisma, Drizzle, MongoDB in deps + find migration files
+3. STYLING: Detect Tailwind, shadcn/ui, Styled Components from deps + config files
+4. AUTH: Check for next-auth, clerk, supabase auth, etc.
+5. WORKING PATTERNS:
+   - Provider hierarchy in layout files
+   - API route structure (app router vs pages)
+   - Import aliases from tsconfig.json
+
+For each: report name, version (if in package.json), config file location, confidence level."
+```
+
+**Why subagent**: Stack detection requires reading package.json, scanning for config files, checking multiple patterns. Explore agent does this efficiently.
+
+**When to use subagent**:
+- First run (no context exists)
+- Full rescan requested
+- Large project with many potential patterns
+
+**When to scan manually**:
+- Quick refresh of single stack item
+- Targeted check (e.g., "is Prisma configured?")
+
+**Fallback** - Manual scanning:
+
 **Use bash commands (grep, find) to extract information.**
 
 **Detailed commands**: See `references/bash-commands.md` for complete scanning commands
@@ -85,6 +116,97 @@ description: "Use when starting a new project or refreshing tech stack context. 
 - Database schema: Extract from migrations or schema files
 - Metrics: Count dependencies, migrations, env vars
 - **Available CLIs**: Check for installed dev CLIs (see CLI Detection below)
+
+### Verification Before Claims
+
+Before claiming any stack item, verify it with tool calls:
+
+| Claim | Required Verification |
+|-------|----------------------|
+| "Uses Next.js" | `Read: package.json` contains `"next":` with version |
+| "Uses Prisma" | `Glob: "**/prisma/schema.prisma"` exists AND readable |
+| "Tailwind configured" | `Glob: "tailwind.config.*"` exists |
+| "CLI available" | `Bash: "cli-name --version"` succeeds (not just `where/which`) |
+
+**Confidence levels for stack entries:**
+
+| Level | Definition | Evidence Required |
+|-------|------------|-------------------|
+| HIGH | Verified in package.json AND config file exists | Both checks pass |
+| MEDIUM | Verified in package.json only | Dependency present, no config found |
+| LOW | Inferred from file patterns only | No package.json entry, just files |
+
+**Report confidence in stack.md output:**
+
+```markdown
+## Tech Stack
+
+| Technology | Version | Confidence | Evidence |
+|------------|---------|------------|----------|
+| Next.js | 14.2.0 | HIGH | package.json + next.config.js |
+| Tailwind | 3.4.0 | HIGH | package.json + tailwind.config.ts |
+| Prisma | 5.10.0 | MEDIUM | package.json only (no schema found) |
+| shadcn/ui | inferred | LOW | components/ui/ folder exists |
+```
+
+**Fallback behavior:**
+- If verification fails, mark as "unverified" rather than guessing
+- If config file missing for a dependency, note it and continue
+- If CLI check fails, mark as "not installed" in Available CLIs
+
+**See also:** `shared/references/VERIFICATION-PROTOCOL.md` for standard verification patterns.
+
+---
+
+### Step 3.5: Detect Working Patterns
+
+**Purpose**: Capture how this codebase works so Claude can follow patterns immediately.
+
+**Detection patterns**: See `references/detection-patterns.md` for complete patterns
+
+| Pattern | How to Detect | Fallback |
+|---------|---------------|----------|
+| Provider nesting | Scan layout.tsx for `<*Provider>` hierarchy | Mark TBD |
+| API route structure | Glob routes + read sample | Describe common pattern |
+| Component conventions | Analyze structure, naming | Note "varies" |
+| Import aliases | Read tsconfig.json paths | Skip if none |
+
+**Why this matters**: Claude has implicit defaults from training. Working Patterns override defaults with project-specific conventions.
+
+**Example output** (added to stack.md):
+
+```markdown
+## Working Patterns
+
+### Provider Hierarchy
+
+1. `QueryClientProvider` (React Query)
+2. `AuthProvider` (Supabase auth)
+3. `ThemeProvider` (next-themes)
+
+### API Patterns
+
+| Pattern | Location | Methods |
+|---------|----------|---------|
+| Auth | `/api/auth/*` | POST |
+| CRUD | `/api/[resource]/*` | GET, POST, PUT, DELETE |
+
+### Component Conventions
+
+| Aspect | Convention |
+|--------|------------|
+| Location | `src/components/` |
+| Structure | Feature folders |
+| Naming | PascalCase |
+
+### Import Aliases
+
+| Alias | Path |
+|-------|------|
+| `@/*` | `./src/*` |
+```
+
+**If detection fails**: Mark section as TBD and note that manual input is needed.
 
 ---
 
@@ -236,9 +358,11 @@ All context files are **completely replaced** on each scan. No history is preser
 ## Detection Patterns
 
 **See `references/detection-patterns.md` for complete patterns:**
+- What's auto-detectable vs needs human input
 - Framework detection (Next.js, React, Vue, Svelte, Remix)
 - Database detection (Supabase, Prisma, Drizzle, MongoDB)
 - Styling detection (Tailwind, shadcn/ui, Styled Components, CSS Modules)
+- Working Patterns detection (provider hierarchy, API patterns, component conventions)
 - Special cases (monorepos, no database, no .env.example)
 
 ---

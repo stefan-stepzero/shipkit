@@ -95,6 +95,7 @@
       "Skill(shipkit-project-context)",
       "Skill(shipkit-product-discovery)",
       "Skill(shipkit-spec)",
+      "Skill(shipkit-feedback-bug)",
       "Skill(shipkit-prototyping)",
       "Skill(shipkit-prototype-to-spec)",
       "Skill(shipkit-architecture-memory)",
@@ -116,7 +117,8 @@
       "Skill(shipkit-update)",
       "Skill(shipkit-build-relentlessly)",
       "Skill(shipkit-test-relentlessly)",
-      "Skill(shipkit-lint-relentlessly)"
+      "Skill(shipkit-lint-relentlessly)",
+      "Skill(shipkit-test-cases)"
     ],
 
     "deny": [

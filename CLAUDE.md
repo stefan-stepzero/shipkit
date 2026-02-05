@@ -235,11 +235,11 @@ Location: `install/skills/`
 
 **Core Workflow:** `shipkit-master`, `shipkit-project-status`, `shipkit-project-context`, `shipkit-codebase-index`, `shipkit-claude-md`
 
-**Discovery & Planning:** `shipkit-product-discovery`, `shipkit-why-project`, `shipkit-spec`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec`
+**Discovery & Planning:** `shipkit-product-discovery`, `shipkit-why-project`, `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec`
 
 **Implementation:** `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`
 
-**Execution:** `shipkit-build-relentlessly`, `shipkit-test-relentlessly`, `shipkit-lint-relentlessly`
+**Execution:** `shipkit-build-relentlessly`, `shipkit-test-relentlessly`, `shipkit-lint-relentlessly`, `shipkit-test-cases`
 
 **Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
 
@@ -247,7 +247,7 @@ Location: `install/skills/`
 
 **System:** `shipkit-detect` (auto-triggered), `shipkit-update`
 
-**Total:** 27 skills
+**Total:** 29 skills
 
 ### Agents
 Location: `install/agents/`

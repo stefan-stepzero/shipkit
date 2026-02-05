@@ -74,6 +74,7 @@ If `.shipkit/codebase-index.json` exists:
 | When... | Use |
 |---------|-----|
 | Create feature specification | `/shipkit-spec` |
+| Process feedback into investigated bug specs | `/shipkit-feedback-bug` |
 | Plan implementation steps | `/shipkit-plan` |
 | Quick UI mockup | `/shipkit-prototyping` |
 | Extract prototype learnings | `/shipkit-prototype-to-spec` |
@@ -93,6 +94,7 @@ If `.shipkit/codebase-index.json` exists:
 | Build/compile until success | `/shipkit-build-relentlessly` |
 | Test until all pass | `/shipkit-test-relentlessly` |
 | Lint until clean | `/shipkit-lint-relentlessly` |
+| Generate test case specs | `/shipkit-test-cases` |
 
 ### Quality & Communication
 | When... | Use |

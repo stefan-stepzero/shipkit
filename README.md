@@ -2,11 +2,11 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**27 skills** organized for streamlined workflow:
+**29 skills** organized for streamlined workflow:
 - **Core Workflow** (5) - Orchestration, status, and context management
-- **Discovery & Planning** (6) - Product discovery and specification
+- **Discovery & Planning** (7) - Product discovery, specification, and bug triage
 - **Implementation** (3) - Architecture, contracts, and integrations
-- **Execution** (3) - Relentless build, test, lint until success
+- **Execution** (4) - Test case generation, relentless build/test/lint
 - **Quality & Documentation** (6) - Testing, UX, and documentation
 - **Ecosystem** (2) - Get skills and MCPs
 - **System** (2) - Auto-triggered detection and updates
@@ -17,7 +17,7 @@ Plus **6 agent personas** that specialize behaviors for different workflow stage
 
 ## What's Inside
 
-### Skills (27 total)
+### Skills (29 total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -28,10 +28,11 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-codebase-index` - Semantic codebase indexing
 - `shipkit-claude-md` - CLAUDE.md management
 
-**Discovery & Planning (6 skills):**
+**Discovery & Planning (7 skills):**
 - `shipkit-product-discovery` - Personas, journeys, user stories
 - `shipkit-why-project` - Strategic vision definition
 - `shipkit-spec` - Feature specification
+- `shipkit-feedback-bug` - Process feedback into investigated bug specs (5 Whys root cause)
 - `shipkit-plan` - Implementation planning
 - `shipkit-prototyping` - Rapid UI mockups
 - `shipkit-prototype-to-spec` - Extract learnings from prototypes
@@ -41,7 +42,8 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-data-contracts` - Type definitions (Zod patterns)
 - `shipkit-integration-docs` - Integration patterns
 
-**Execution (3 skills):**
+**Execution (4 skills):**
+- `shipkit-test-cases` - Generate code-anchored test case specs
 - `shipkit-build-relentlessly` - Build until compiles
 - `shipkit-test-relentlessly` - Test until green
 - `shipkit-lint-relentlessly` - Lint until clean
@@ -104,7 +106,7 @@ python shipkit/installers/install.py --target . -y
 ```
 
 The installer will:
-- Install all 27 skills
+- Install all 29 skills
 - Set up 6 agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace

@@ -53,7 +53,31 @@ python .claude/skills/shipkit-codebase-index/scripts/generate_index.py
 
 ### Step 2: Claude Analyzes and Completes Index
 
-**Read the generated index**, then fill in the empty fields:
+**Read the generated index**, then fill in the empty fields.
+
+**USE SUBAGENT FOR CONCEPT MAPPING** - Launch Explore subagent for efficient parallel scanning:
+
+```
+Task tool with subagent_type: "Explore"
+Prompt: "Scan codebase to build navigation index. Find and report:
+
+1. FRAMEWORK: Check for next.config.*, vite.config.*, nuxt.config.*, etc.
+2. ENTRY POINTS: Find main app entry, layout, API routes directory, database schema
+3. CONCEPTS: Map these concepts to files:
+   - auth: files handling authentication, sessions, login
+   - database: db connections, models, schema
+   - payments: billing, subscriptions, checkout
+   - api: API route handlers
+   - components: reusable UI components
+4. CORE FILES: Files imported by 5+ other files (high fan-in)
+
+For each concept, list the actual file paths found.
+For core files, include import count."
+```
+
+**Why subagent**: Concept mapping requires scanning multiple directories and patterns in parallel. Explore agent is optimized for this and reduces main conversation context.
+
+**Fallback** (if subagent unavailable) - Manual detection:
 
 1. **Detect framework** from `configFiles`:
    - `next.config.js` → Next.js
@@ -77,6 +101,48 @@ python .claude/skills/shipkit-codebase-index/scripts/generate_index.py
 
 5. **Ask user about skip list**:
    - "Any folders I should skip? (legacy, deprecated, etc.)"
+
+### Step 2.5: Verification Requirements
+
+Before claiming any index entry, verify it with tool calls:
+
+| Claim | Required Verification |
+|-------|----------------------|
+| "Config file exists" | `Glob: pattern="next.config.*"` returns match |
+| "Entry point at X" | `Read: file_path="X"` succeeds AND contains valid component/export |
+| "Concept maps to files" | `Grep: pattern="concept-keyword"` returns matches |
+| "Core file (highly imported)" | `Grep: pattern="import.*from.*filename"` returns high count |
+
+**Verification sequence for each entry type:**
+
+```
+Config files:
+  1. Glob: pattern="[config-pattern]"
+  2. If empty → don't include in index
+  3. If found → add to configFiles with verified path
+
+Entry points:
+  1. Glob: pattern="[entry-path]"
+  2. If empty → mark as "unverified" or skip
+  3. If found → Read file, confirm it exports something meaningful
+  4. Add to entryPoints with status: "verified"
+
+Concepts:
+  1. Grep: pattern="[concept-keyword]" glob="**/*.{ts,tsx}"
+  2. List ALL matching files
+  3. If 0 matches → don't add concept
+  4. If matches → add concept with verified file list
+
+Core files:
+  1. Grep: pattern="import.*from.*[filename]" glob="**/*.{ts,tsx}"
+  2. Count imports per file
+  3. Files with >5 imports → core files
+  4. Include import count in index
+```
+
+**Mark unverified entries:** If verification cannot be completed, mark entry as `status: "unverified"` in index rather than guessing.
+
+**See also:** `shared/references/VERIFICATION-PROTOCOL.md` for standard verification patterns.
 
 ### Step 3: Update the Index
 

@@ -112,9 +112,9 @@ options:
 
 **Create spec file using Write tool**:
 
-**Location**: `.shipkit/specs/active/[feature-name].md`
+**Location**: `.shipkit/specs/active/feature-[feature-name].md`
 
-**Use kebab-case for filename**: `recipe-sharing.md`, `user-authentication.md`
+**Use kebab-case for filename**: `feature-recipe-sharing.md`, `feature-user-authentication.md`
 
 **Template structure:** See Spec Template Structure section below
 
@@ -133,13 +133,11 @@ options:
 - [ ] Key test cases mapped from scenarios
 - [ ] Next steps suggest appropriate skills
 
-**See `references/tips-and-examples.md` for quality checklist**
-
 ---
 
 ### Step 5: Save and Suggest Next Step
 
-**Use Write tool to create**: `.shipkit/specs/active/[feature-name].md`
+**Use Write tool to create**: `.shipkit/specs/active/feature-[feature-name].md`
 
 **Output to user**:
 ```
@@ -172,7 +170,7 @@ Copy and track:
 - [ ] Applied all 6 edge case categories
 - [ ] Defined test strategy (call flows, coverage, mocking)
 - [ ] Mapped key test cases from scenarios
-- [ ] Saved to `.shipkit/specs/active/[name].md`
+- [ ] Saved to `.shipkit/specs/active/feature-[name].md`
 
 ---
 
@@ -230,7 +228,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 
 **Apply all 6 edge case categories to EVERY feature.**
 
-**See `references/edge-case-checklist.md` for complete checklist:**
+**Apply all 6 edge case categories:**
 - Loading States (spinners, disable controls, timeout, prevent duplicates)
 - Error States (network, server, validation, permission, not found)
 - Empty/Missing States (no data, no results, deleted items, first-time user)
@@ -461,7 +459,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 **Write Strategy: CREATE (with ARCHIVE on completion)**
 
 **Creates**:
-- `.shipkit/specs/active/[feature-name].md` - New specification
+- `.shipkit/specs/active/feature-[feature-name].md` - New specification
 
 **Update Behavior**:
 - Active specs can be modified during planning/implementation (overwrites previous version)
@@ -469,7 +467,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 - No version history maintained in active/ folder
 
 **Archive Behavior** (when feature complete):
-- Moves: `.shipkit/specs/active/[feature-name].md` → `.shipkit/specs/implemented/[feature-name].md`
+- Moves: `.shipkit/specs/active/feature-[feature-name].md` → `.shipkit/specs/implemented/feature-[feature-name].md`
 - Adds completion metadata (date implemented, who implemented, final notes)
 - Archived specs become read-only historical records
 - Moving specs: Either manual or via `verify manually` when feature ships
@@ -479,8 +477,6 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 - Each feature gets its own independent file (not appending to shared file)
 - History preserved by moving completed specs to implemented/ folder
 - Completion metadata captures final state for audit trail
-
-**See `references/spec-lifecycle.md` for complete lifecycle documentation**
 
 ---
 
@@ -537,31 +533,10 @@ Spec is complete when:
 
 **For detailed patterns and examples:**
 
-- **Edge case checklist** - `references/edge-case-checklist.md`
-  - Complete 6-category checklist
-  - Why each category matters
-  - Application examples
-
 - **Best practices** - `references/best-practices.md`
   - Frontend best practices (state management, user feedback, accessibility, performance, security, forms, navigation)
   - Backend best practices (input validation, auth, error handling, data integrity, security, performance, API design)
-  - How to apply during spec creation
-  - When to waive practices
-
-- **Given/When/Then guide** - `references/gwt-pattern-guide.md`
-  - Pattern structure and tips
-  - Good vs bad examples
-  - Common patterns and anti-patterns
-
-- **Spec lifecycle** - `references/spec-lifecycle.md`
-  - Active vs implemented states
-  - Moving between states
-  - Modification guidelines
-
-- **Tips and examples** - `references/tips-and-examples.md`
-  - Writing tips (actionable, specific)
-  - Common scenarios walkthrough
-  - Real-world examples
+  - Quick checklist for spec review
 
 ---
 

@@ -104,6 +104,16 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 .shipkit/stack.md
 ```
 
+**Verification before claiming patterns:**
+
+| Claim | Required Verification |
+|-------|----------------------|
+| "Similar pattern exists" | `Grep: pattern="[component type]" path="implementations.md"` returns matches |
+| "No existing pattern" | Grep returns 0 matches for component type AND related keywords |
+| "Established UX decision" | `Grep: pattern="[pattern name]" path="architecture.md"` returns match |
+
+**Never claim** "no similar component" without actually grepping implementations.md.
+
 **Auto-detect**:
 - Similar components in implementations.md
 - Established UX patterns in architecture.md
@@ -205,33 +215,28 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 **Quick reference by component type**:
 
 #### For Forms:
-- See `references/common-patterns.md` → Forms Pattern
-- Key: Inline validation, clear errors, submit button states, field focus, progressive disclosure
+- Inline validation, clear errors, submit button states, field focus, progressive disclosure
 
 #### For Modals:
-- See `references/common-patterns.md` → Modal Pattern
-- Key: Escape to close, focus trap, backdrop click, return focus, ARIA labels
+- Escape to close, focus trap, backdrop click, return focus, ARIA labels
 
 #### For Toggles/Switches:
-- See `references/common-patterns.md` → Toggle Pattern
-- Key: Immediate feedback, loading state, undo option, confirmation for destructive
+- Immediate feedback, loading state, undo option, confirmation for destructive
 
 #### For Lists:
-- See `references/common-patterns.md` → List Pattern
-- Key: Empty states, loading skeletons, virtualization, optimistic updates
+- Empty states, loading skeletons, virtualization, optimistic updates
 
 #### For Buttons:
-- See `references/common-patterns.md` → Button Pattern
-- Key: Loading states, disabled states, success feedback, 44px touch target
+- Loading states, disabled states, success feedback, 44px touch target
 
-**Apply relevant UX principles from** `references/ux-principles.md`:
-1. Cognitive Load Reduction
-2. Immediate Feedback
-3. Reversibility
-4. Consistency
-5. Accessibility (WCAG 2.1 AA - always required)
-6. Error Prevention
-7. Mobile-First Design
+**Apply relevant UX principles:**
+1. **Cognitive Load Reduction** - Minimize choices, clear hierarchy, progressive disclosure
+2. **Immediate Feedback** - Respond to every action within 100ms
+3. **Reversibility** - Allow undo for destructive actions
+4. **Consistency** - Match existing patterns in the project
+5. **Accessibility** - WCAG 2.1 AA minimum (always required)
+6. **Error Prevention** - Validate early, confirm destructive actions
+7. **Mobile-First** - Touch targets 44px+, thumb zones, responsive design
 
 ---
 
@@ -405,11 +410,10 @@ Guidance is complete when:
 
 ## Common Scenarios
 
-**See `references/common-scenarios.md` for detailed examples:**
-- Scenario 1: Building New Toggle (reusing existing pattern)
-- Scenario 2: New Pattern, No Existing Reference (file uploader)
-- Scenario 3: Accessibility-Focused Request (ADHD-friendly form)
-- Scenario 4: Checking Existing UI (modal review)
+- **Reusing existing patterns** - Check implementations.md first, reference existing components
+- **Creating new patterns** - Provide guidance, suggest logging to architecture.md
+- **Accessibility-focused requests** - Apply persona adaptations (see below)
+- **Reviewing existing UI** - Audit against pattern checklists above
 
 ---
 
@@ -448,34 +452,16 @@ Guidance is complete when:
 
 **When user specifies a persona, adapt guidance accordingly.**
 
-**See `references/persona-adaptations.md` for detailed adaptations:**
-- ADHD-Friendly (minimize options, auto-save, no timers, success feedback)
-- Elderly Users (large text/targets, high contrast, confirmations, undo)
-- Mobile-First (touch targets, thumb zones, swipe gestures, no hover-only)
-- Low-Bandwidth (minimize media, skeletons, offline support, optimistic updates)
-- Accessibility-First (beyond WCAG AA: keyboard efficiency, excellent screen reader support)
+**Persona adaptations:**
+- **ADHD-Friendly** - Minimize options, auto-save, no timers, clear success feedback
+- **Elderly Users** - Large text/targets, high contrast, confirmations, easy undo
+- **Mobile-First** - Touch targets 44px+, thumb zones, swipe gestures, no hover-only
+- **Low-Bandwidth** - Minimize media, loading skeletons, offline support, optimistic updates
+- **Accessibility-First** - Beyond WCAG AA: keyboard efficiency, excellent screen reader support
 
 **Adapt principles to persona, but maintain accessibility baseline.**
 
 ---
-
-## Reference Documentation
-
-**This skill provides detailed guidance in reference files:**
-
-**UX Patterns & Principles:**
-- `references/ux-principles.md` - 7 core UX principles (Cognitive Load, Immediate Feedback, Reversibility, Consistency, Accessibility, Error Prevention, Mobile-First)
-- `references/common-patterns.md` - UI pattern checklists (Forms, Modals, Toggles, Lists, Buttons)
-
-**Practical Guidance:**
-- `references/common-scenarios.md` - 4 UX guidance scenarios with examples
-- `references/persona-adaptations.md` - 5 persona-specific adaptations (ADHD, Elderly, Mobile-First, Low-Bandwidth, Accessibility-First)
-
-**How to use references:**
-- Main SKILL.md provides the process workflow
-- Reference files provide detailed patterns, principles, and examples
-- Progressive disclosure: Only share relevant sections based on user's component type
-- Keep guidance focused and actionable
 
 ---
 

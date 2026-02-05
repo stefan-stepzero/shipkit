@@ -91,6 +91,67 @@ Read file (if exists): `.shipkit/.queues/define-data-contracts.md`
 - Option A: "Adjust type to match database?"
 - Option B: "Database needs migration - add fields?"
 
+### Verification Before Type Definition
+
+Before defining any type, verify claims with tool calls:
+
+| Claim | Required Verification |
+|-------|----------------------|
+| "schema.md exists" | `Read: file_path=".shipkit/schema.md"` succeeds |
+| "Table X has columns" | Parse schema.md content, extract column definitions |
+| "Type aligns with schema" | Compare field names (case-sensitive) between type and schema |
+| "Existing type at path" | `Glob: pattern="**/types/*"` AND `Grep: pattern="type TypeName"` |
+
+**Pattern Ripple for Types:**
+
+When documenting a type, find ALL usages to understand impact.
+
+**USE SUBAGENT FOR TYPE RIPPLE DETECTION** - When checking impact of type changes:
+
+```
+Task tool with subagent_type: "Explore"
+Prompt: "Find all usages of type '[TypeName]' in the codebase.
+
+Report:
+1. Files that import this type
+2. Components using this type as props
+3. Functions with this type as parameter/return
+4. Other types that extend or reference this type
+
+For each usage: file path, line number, how it's used (import/props/param/extends)."
+```
+
+**Why subagent**: Type ripple can span many files. Explore agent scans efficiently and returns structured impact report.
+
+**Fallback** - Manual grep:
+```
+1. Grep: pattern="TypeName" glob="**/*.{ts,tsx}"
+2. List all files using this type
+3. Verify usages match documented shape
+4. Report in output: "Type used in X files: [list]"
+```
+
+**Why this matters:** Defining a type without knowing where it's used leads to silent breakage when the type changes.
+
+**Verification sequence:**
+
+```
+1. If schema.md exists:
+   - Read and parse table definitions
+   - Extract column names and types
+2. Before creating new type:
+   - Glob: pattern="**/types/**/*.ts" to find existing types location
+   - Grep: pattern="type|interface TypeName" to check if already exists
+3. After defining type:
+   - Grep: pattern="TypeName" glob="**/*.{ts,tsx}" to find all usages
+   - Report usage count in confirmation
+4. For schema alignment:
+   - Compare each field name with schema columns
+   - Flag mismatches with suggested fixes
+```
+
+**See also:** `shared/references/VERIFICATION-PROTOCOL.md` for standard verification patterns.
+
 ---
 
 ### Step 4: Ask Type Definition Questions
@@ -294,12 +355,6 @@ Copy and track:
 5. Claude asks clarifying questions
 6. Claude generates types and validation
 7. Total context: ~1500-3000 tokens (focused)
-
----
-
-## Type Definition Examples
-
-**Complete examples with schema detection**: See `references/type-examples.md`
 
 ---
 
