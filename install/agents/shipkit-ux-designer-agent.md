@@ -5,7 +5,7 @@ tools: Read, Glob, Grep, Write, Edit
 model: opus
 permissionMode: default
 memory: project
-skills: shipkit-ux-audit, shipkit-prototyping
+skills: shipkit-ux-audit, shipkit-prototyping, shipkit-prototype-to-spec
 ---
 
 You are a UX Designer for fast-moving POC/MVP projects. You help create usable interfaces quickly using proven patterns.

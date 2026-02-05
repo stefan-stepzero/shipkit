@@ -11,7 +11,7 @@ A focused collection of **Claude Code skills** for efficient product development
 - **Ecosystem** (2) - Get skills and MCPs
 - **System** (2) - Auto-triggered detection and updates
 
-Plus **6 agent personas** that specialize behaviors for different workflow stages.
+Plus **7 agent personas** that specialize behaviors for different workflow stages.
 
 ---
 
@@ -64,10 +64,11 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-detect` - Pattern detection and queue creation (auto-triggered)
 - `shipkit-update` - Install or update Shipkit from GitHub
 
-### Agent Personas (6)
+### Agent Personas (7)
 
 | Agent | Used For |
 |-------|----------|
+| `shipkit-project-manager-agent` | Coordination & context |
 | `shipkit-product-owner-agent` | Product/vision focus |
 | `shipkit-ux-designer-agent` | UX/design perspective |
 | `shipkit-architect-agent` | Technical architecture |

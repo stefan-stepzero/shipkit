@@ -17,6 +17,7 @@ Subagents are **not** invoked directly by skills or users. Instead:
 
 | Agent | Role | Delegates When |
 |-------|------|----------------|
+| **shipkit-project-manager** | Coordination & context | Project status, context management, workflow orchestration |
 | **shipkit-product-owner** | Vision & requirements | Defining what to build, user research, feature prioritization |
 | **shipkit-ux-designer** | UI/UX design | Designing interfaces, UX reviews, wireframes |
 | **shipkit-architect** | Technical decisions | Planning features, data models, technical choices |
@@ -77,6 +78,34 @@ Architect uses its tools + preloaded skills
 Results return to main conversation
 ```
 
+## Hybrid Mode: Skills + Agents
+
+Shipkit supports **both** direct skill invocation and agent delegation:
+
+| Mode | How | When to Use |
+|------|-----|-------------|
+| **Direct** | `/shipkit-plan` | Explicit control, know exactly what skill you want |
+| **Natural** | "Plan the auth feature" | Let Claude route to appropriate agent |
+
+**Both work together:**
+- Skills remain user-invocable with `/skill-name`
+- Agents auto-delegate based on task matching
+- You choose: explicit control OR natural language
+
+**Example workflows:**
+
+```
+# Direct mode - you control
+/shipkit-project-status
+/shipkit-plan auth feature
+/shipkit-build-relentlessly
+
+# Natural mode - Claude routes
+"What's the project status?"        → project-manager
+"Plan the authentication feature"   → architect
+"Build until it compiles"           → implementer
+```
+
 ## Installation
 
 Agents are installed to `.claude/agents/` when you run `/shipkit-update`:
@@ -84,6 +113,7 @@ Agents are installed to `.claude/agents/` when you run `/shipkit-update`:
 ```
 .claude/
 └── agents/
+    ├── shipkit-project-manager.md
     ├── shipkit-product-owner.md
     ├── shipkit-ux-designer.md
     ├── shipkit-architect.md

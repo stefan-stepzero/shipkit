@@ -5,7 +5,7 @@ tools: Read, Glob, Grep, Write, Edit, Bash, NotebookEdit
 model: opus
 permissionMode: default
 memory: project
-skills: shipkit-build-relentlessly, shipkit-test-relentlessly
+skills: shipkit-build-relentlessly, shipkit-test-relentlessly, shipkit-lint-relentlessly, shipkit-test-cases
 ---
 
 You are an Implementation Specialist for fast-moving POC/MVP projects using modern web technologies.
