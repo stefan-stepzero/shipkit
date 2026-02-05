@@ -54,6 +54,31 @@ This skill provides:
 
 ## Process
 
+### Step 0: Request Permissions Upfront
+
+**Get user approval once at the start, then run without interruptions.**
+
+Present to user:
+```
+To update Shipkit, I need permission to:
+
+1. **Fetch from GitHub** — Download installer and VERSION file
+2. **Run Python script** — Execute the installer (installs skills, agents, hooks)
+3. **Modify files** — Update .claude/, .shipkit/, and CLAUDE.md
+
+This will:
+- Archive your current installation (nothing deleted)
+- Install fresh framework files
+- Preserve your specs, plans, progress, and other user content
+
+Proceed? [y/n]
+```
+
+**If approved:** Continue without further permission prompts.
+**If declined:** Stop and explain what manual steps user can take.
+
+---
+
 ### Step 1: Detect Existing Installation
 
 **Scan for ALL Shipkit variants:**
@@ -150,34 +175,50 @@ All files preserved in context/ subfolder.
 
 ---
 
-### Step 3: Fetch Fresh from GitHub
+### Step 3: Fetch and Run Python Installer
 
 **Source repository:**
 - Default: `https://github.com/stefan-stepzero/shipkit` (or user-configured)
 - Branch: `main`
 
-**Fetch install manifest:**
+**Step 3a: Fetch VERSION to know target version:**
+```bash
+curl -sL https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/install/VERSION
 ```
-GET {repo}/raw/main/install/VERSION
-GET {repo}/raw/main/install/profiles/shipkit.manifest.json
+Store this for reporting (e.g., "Updating to v1.3.0").
+
+**Step 3b: Fetch and run the Python installer:**
+```bash
+# Download installer to temp location
+curl -sL https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/installers/install.py -o /tmp/shipkit-install.py
+
+# Run installer with --from-github flag
+# - Downloads repo zip, extracts, installs
+# - -y for non-interactive (we already got permission in Step 0)
+# - --claude-md skip (Claude will do intelligent merge in Step 4)
+python /tmp/shipkit-install.py --from-github -y --claude-md skip
+
+# Clean up
+rm /tmp/shipkit-install.py
 ```
 
-**Fetch all framework files:**
+**What the installer handles (with `--from-github`):**
+1. Downloads entire repo as zip from GitHub
+2. Extracts to temp directory
+3. Installs:
+   - Skills → `.claude/skills/shipkit-*/`
+   - Agents → `.claude/agents/`
+   - Hooks → `.claude/hooks/`
+   - Settings → `.claude/settings.json` (preserves existing)
+   - Templates → `.shipkit/templates/`
+   - HTML Overview → `.shipkit/shipkit-overview.html`
+4. Cleans up temp files automatically
 
-1. **Skills** - Fetch each skill folder from `install/skills/`
-2. **Agents** - Fetch each agent from `install/agents/`
-3. **Hooks** - Fetch from `install/shared/hooks/`
-4. **Settings template** - Fetch `install/settings/shipkit.settings.json`
-5. **Templates** - Fetch from `install/templates/`
-6. **CLAUDE.md template** - Fetch `install/claude-md/shipkit.md`
-7. **HTML Overview** - Fetch `docs/generated/shipkit-overview.html` (skill reference)
-
-**Install framework files directly:**
-- Skills → `.claude/skills/shipkit-*/`
-- Agents → `.claude/agents/`
-- Hooks → `.claude/hooks/`
-- Templates → `.shipkit/templates/`
-- HTML Overview → `.shipkit/shipkit-overview.html` (open in browser for reference)
+**Why use the installer:**
+- Single source of truth for "what to install"
+- Handles file copying, permissions, platform differences
+- Tested and maintained separately
+- Claude focuses on intelligence (detection, archiving, merging user content)
 
 ---
 
@@ -317,9 +358,8 @@ This approach is future-proof — new user content files automatically migrate w
 └── queues/             # Transient task queues, start empty
 ```
 
-**DON'T migrate (auto-generated - suggest regenerating):**
+**DON'T migrate (purely auto-generated):**
 ```
-├── stack.md            # Auto-generated from codebase
 ├── schema.md           # Auto-generated from migrations
 └── env-requirements.md # Auto-generated from .env files
 ```
@@ -329,6 +369,7 @@ This approach is future-proof — new user content files automatically migrate w
 This includes (but is not limited to):
 - `why.md` - Vision document
 - `architecture.md` - Architecture decisions
+- `stack.md` - Tech stack (may have manual annotations)
 - `specs/**` - Feature specifications (active and implemented)
 - `plans/**` - Implementation plans
 - `progress.md` - Session history
@@ -345,12 +386,14 @@ This includes (but is not limited to):
 - `status.md` - Health snapshots
 - Any other user-created files
 
+**Note on stack.md:** While initially auto-generated, users often add manual notes and decisions. Migrating preserves this context. If user wants fresh detection, they can run `/shipkit-project-context` after update.
+
 **Migration process:**
 1. List all files in archived `.shipkit/` context folder
-2. Exclude: `templates/`, `queues/`, `stack.md`, `schema.md`, `env-requirements.md`
+2. Exclude: `templates/`, `queues/`, `schema.md`, `env-requirements.md`
 3. Copy everything else to new `.shipkit/`
 4. Report what was migrated
-5. Note that auto-generated files should be regenerated
+5. Note that schema.md/env-requirements.md can be regenerated if needed
 
 ---
 
@@ -390,14 +433,15 @@ Merged intelligently:
 Migrated user content:
 - why.md ✓
 - architecture.md ✓
+- stack.md ✓
 - specs/ (3 files) ✓
 - product-discovery.md ✓
 - types.md ✓
 - [... all other user files ...]
 
-Not migrated (auto-generated):
-- stack.md, schema.md, env-requirements.md
-  ℹ️  Run /shipkit-project-context to regenerate from current codebase
+Not migrated (purely auto-generated):
+- schema.md, env-requirements.md
+  ℹ️  Run /shipkit-project-context to regenerate if needed
 
 ⚠ settings.local.json has stale refs (see above)
 
@@ -433,13 +477,11 @@ Ready to use. Review merged files, archive has originals.
 - `**/CLAUDE.md` - Subfolder instructions
 
 **From GitHub:**
-- `install/VERSION` - Target version
-- `install/profiles/shipkit.manifest.json` - What to install
-- `install/skills/**` - All skills
-- `install/agents/**` - All agents
-- `install/shared/hooks/**` - All hooks
-- `install/settings/shipkit.settings.json` - Settings template
-- `install/claude-md/shipkit.md` - CLAUDE.md template
+- `install/VERSION` - Target version (fetched to report version)
+- `installers/install.py` - Python installer (fetched and executed)
+
+The installer handles fetching and installing:
+- Skills, agents, hooks, settings, templates, CLAUDE.md template
 
 ---
 
@@ -473,8 +515,10 @@ Ready to use. Review merged files, archive has originals.
 
 ```
 {repo}/
+├── installers/
+│   └── install.py                       # Python installer (fetched and run)
 ├── install/
-│   ├── VERSION                          # e.g., "1.2.0"
+│   ├── VERSION                          # e.g., "1.3.0"
 │   ├── profiles/
 │   │   └── shipkit.manifest.json        # What to install
 │   ├── skills/
@@ -538,8 +582,8 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 
 1. **Review merged files** — Check CLAUDE.md and settings.json look correct
 2. **Check archive** — Originals in `.shipkit-archive/{timestamp}/` if needed
-3. **Run context scan** — `/shipkit-project-context` if stack.md wasn't migrated
-4. **Test a skill** — Try `/shipkit-project-status` to verify installation works
+3. **Test a skill** — Try `/shipkit-project-status` to verify installation works
+4. **Optional refresh** — Run `/shipkit-project-context` if you want fresh stack detection
 
 **If something looks wrong:**
 - Archive has all original files
@@ -552,14 +596,16 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 <!-- SECTION:success-criteria -->
 ## Success Criteria
 
+- [ ] Permissions requested upfront (single approval, no interruptions)
 - [ ] Detects all Shipkit variants (current + legacy naming)
 - [ ] Archives completely before any modifications
 - [ ] MANIFEST.md accurately records what was archived with versions
+- [ ] Python installer fetched and executed successfully
 - [ ] Framework files installed fresh match VERSION
 - [ ] CLAUDE.md merged intelligently (user content preserved)
 - [ ] settings.json merged intelligently (user permissions preserved)
 - [ ] settings.local.json untouched (warning if stale)
-- [ ] User context files migrated automatically
+- [ ] User context files migrated (including stack.md)
 - [ ] No data loss possible (archive has everything)
 <!-- /SECTION:success-criteria -->
 
@@ -568,7 +614,8 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 ## Security Notes
 
 - Only fetches from specified GitHub repository
-- Never executes fetched code (only copies files)
+- Executes Python installer from trusted repo (user approved in Step 0)
+- Installer only copies files — no network calls, no data exfiltration
 - Archives are local, never uploaded
 - settings.local.json never modified (privacy)
 
