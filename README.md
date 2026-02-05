@@ -108,7 +108,7 @@ python shipkit/installers/install.py --target . -y
 
 The installer will:
 - Install all 29 skills
-- Set up 6 agent personas
+- Set up 7 agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
 
@@ -121,7 +121,7 @@ your-project/
 ├── .claude/
 │   ├── settings.json            # Permissions + hooks
 │   ├── skills/                  # 24 skill definitions
-│   ├── agents/                  # 6 agent personas
+│   ├── agents/                  # 7 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
     ├── specs/                   # Feature specifications
@@ -197,7 +197,7 @@ shipkit/
 │
 ├── install/                      # Everything that gets installed
 │   ├── skills/                   # 24 shipkit-* skill definitions
-│   ├── agents/                   # 6 shipkit-*-agent personas
+│   ├── agents/                   # 7 shipkit-*-agent personas
 │   ├── profiles/
 │   │   └── shipkit.manifest.json # Skill manifest
 │   ├── settings/

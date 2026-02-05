@@ -138,7 +138,7 @@ your-project/
 ├── .claude/
 │   ├── settings.json         # Permissions + hooks
 │   ├── skills/               # 24 skill definitions
-│   ├── agents/               # 6 agent personas
+│   ├── agents/               # 7 agent personas
 │   └── hooks/                # Session enforcement
 └── .shipkit/
     ├── scripts/bash/         # Shared utilities

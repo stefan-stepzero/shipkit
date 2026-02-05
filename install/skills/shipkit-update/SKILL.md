@@ -148,7 +148,7 @@ Upgrading to: v1.1.0
 
 ## Archived Framework Files
 - 15 skills (shipkit-* prefix)
-- 6 agents
+- 7 agents
 - 2 hooks
 - settings.json entries
 
@@ -405,7 +405,7 @@ This includes (but is not limited to):
 
 Installed:
 - 24 skills → .claude/skills/shipkit-*/
-- 6 agents → .claude/agents/
+- 7 agents → .claude/agents/
 - 2 hooks → .claude/hooks/
 - Settings created
 - CLAUDE.md created with Shipkit section
@@ -424,7 +424,7 @@ Archived to: .shipkit-archive/20240115-143000/
 - Full backup preserved (see MANIFEST.md)
 
 Installed fresh:
-- 24 skills, 6 agents, 2 hooks
+- 29 skills, 7 agents, 2 hooks
 
 Merged intelligently:
 - CLAUDE.md: Shipkit section updated, your preferences preserved

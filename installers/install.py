@@ -155,7 +155,7 @@ def prompt_for_profile():
     print()
     print(f"  {Colors.BOLD}Select Profile:{Colors.RESET}")
     print()
-    print(f"  {Colors.CYAN}[1]{Colors.RESET} Full        - All 23 skills + 6 agents (recommended)")
+    print(f"  {Colors.CYAN}[1]{Colors.RESET} Full        - All 29 skills + 7 agents (recommended)")
     print(f"  {Colors.CYAN}[2]{Colors.RESET} Discovery   - Vision & planning skills (11 skills)")
     print(f"  {Colors.CYAN}[3]{Colors.RESET} Minimal     - Core workflow only (5 skills)")
     print()

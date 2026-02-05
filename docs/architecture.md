@@ -62,7 +62,8 @@ Every skill must pass one criterion: does it do something Claude can't do well w
 | Quality | `ux-audit`, `user-instructions` | Verification and user-facing tasks |
 | Communication | `communications` | Visualize project state as HTML |
 
-**6 agent personas:**
+**7 agent personas:**
+- **Project Manager** — Coordination, status tracking, context management
 - **Product Owner** — Pragmatic "smallest thing to learn" thinking
 - **Architect** — Solo Dev MVP Stack expertise (Next.js/Supabase/Vercel)
 - **Implementer** — TDD-lite: test critical paths, manual test UI

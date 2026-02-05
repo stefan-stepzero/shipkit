@@ -73,7 +73,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - Initial Shipkit release
 - 22 skills organized into 6 categories
-- 6 agent personas
+- 7 agent personas
 - Python cross-platform installer
 - Session hooks for workflow enforcement
 - `.shipkit/` workspace structure
