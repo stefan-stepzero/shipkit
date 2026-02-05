@@ -12,6 +12,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.4.0] - 2026-02-05
+
+### Added
+- **New agent: shipkit-project-manager** — Coordination, status tracking, context management
+- Hybrid mode documentation — Use skills directly (`/shipkit-plan`) OR natural language ("plan the auth feature")
+- Agents now have preloaded skills via `skills:` frontmatter field
+
+### Changed
+- **Agent format updated to Claude Code subagent spec** — Proper YAML frontmatter with:
+  - `tools` — Tool access control
+  - `model` — All agents use `opus` for quality
+  - `permissionMode` — `acceptEdits` for doc-writers, `default` for code-writers
+  - `memory: project` — Project-scoped memory
+  - `skills` — Preloaded skill knowledge
+- **Skill reassignments for better role fit:**
+  - `test-cases`: implementer → reviewer (quality planning)
+  - `user-instructions`: researcher → project-manager (task coordination)
+  - `communications`: researcher → project-manager (reporting)
+- Agent count: 6 → 7 (all documentation updated)
+
+### Technical
+- 25/29 skills now covered by agents (4 system skills remain direct-invoke only)
+- Permission optimization: `acceptEdits` for project-manager, product-owner, ux-designer, architect
+- Agents now auto-delegate based on `description` field matching task
+
+---
+
+## [1.3.0] - 2026-02-04
+
+### Added
+- `shipkit-test-cases` — Generate code-anchored test case specifications
+- Test case enrichment stage for AI-executable UI tests
+- AI Agent Accessibility standards to quality checks
+
+### Changed
+- Skill count: 24 → 29
+
+---
+
 ## [1.2.0] - 2026-02-03
 
 ### Added
