@@ -61,13 +61,11 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-communications` - Communication and formatting
 - `shipkit-work-memory` - Session memory and context
 
-**Ecosystem (2 skills):**
-- `shipkit-get-skills` - Discover and install Claude Code skills
-- `shipkit-get-mcps` - Discover and install MCP servers
-
-**System Skills (2 skills):**
+**System Skills (4 skills):**
 - `shipkit-detect` - Pattern detection and queue creation (auto-triggered)
 - `shipkit-update` - Install or update Shipkit from GitHub
+- `shipkit-get-skills` - Discover and install Claude Code skills
+- `shipkit-get-mcps` - Discover and install MCP servers
 
 ### Agent Personas (9)
 

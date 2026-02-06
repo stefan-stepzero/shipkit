@@ -77,13 +77,11 @@
         {"name": "shipkit-communications", "desc": "Create visual HTML reports"},
         {"name": "shipkit-prompt-audit", "desc": "Audit LLM prompt pipeline architecture"}
       ],
-      "Ecosystem": [
-        {"name": "shipkit-get-skills", "desc": "Find & install community skills"},
-        {"name": "shipkit-get-mcps", "desc": "Find & install MCP servers"}
-      ],
       "System": [
         {"name": "shipkit-update", "desc": "Install or update Shipkit from GitHub"},
-        {"name": "shipkit-mission-control", "desc": "Monitor & command multiple instances"}
+        {"name": "shipkit-mission-control", "desc": "Monitor & command multiple instances"},
+        {"name": "shipkit-get-skills", "desc": "Find & install community skills"},
+        {"name": "shipkit-get-mcps", "desc": "Find & install MCP servers"}
       ]
     }
   },

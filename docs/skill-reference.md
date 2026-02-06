@@ -28,9 +28,9 @@ Complete reference for all 23 Shipkit skills.
 | | `shipkit-user-instructions` | User-facing docs |
 | | `shipkit-communications` | Visual reports |
 | | `shipkit-work-memory` | Session continuity |
-| **Ecosystem** | `shipkit-get-skills` | Find Claude Code skills |
-| | `shipkit-get-mcps` | Find MCP servers |
 | **System** | `shipkit-detect` | Auto-triggered detection |
+| | `shipkit-get-skills` | Find Claude Code skills |
+| | `shipkit-get-mcps` | Find MCP servers |
 
 ---
 
@@ -372,7 +372,24 @@ Suggested: Create a spec with /shipkit-spec
 
 ---
 
-## Ecosystem (2 skills)
+## System (3 skills)
+
+### shipkit-detect
+
+**Purpose:** Auto-triggered pattern detection that creates work queues.
+
+**When to use:** Never invoked directly — triggered by hooks after other skills complete.
+
+**Modes:**
+- `services` — Detects external services in specs
+- `contracts` — Detects data structures in plans
+- `changes` — Detects modified files
+- `ux-gaps` — Detects UX review needs
+
+**Reads:** Various based on mode
+**Writes:** `.shipkit/.queues/*.md`
+
+---
 
 ### shipkit-get-skills
 
@@ -399,25 +416,6 @@ Suggested: Create a spec with /shipkit-spec
 
 **Reads:** Nothing
 **Writes:** MCP configuration
-
----
-
-## System (1 skill)
-
-### shipkit-detect
-
-**Purpose:** Auto-triggered pattern detection that creates work queues.
-
-**When to use:** Never invoked directly — triggered by hooks after other skills complete.
-
-**Modes:**
-- `services` — Detects external services in specs
-- `contracts` — Detects data structures in plans
-- `changes` — Detects modified files
-- `ux-gaps` — Detects UX review needs
-
-**Reads:** Various based on mode
-**Writes:** `.shipkit/.queues/*.md`
 
 ---
 

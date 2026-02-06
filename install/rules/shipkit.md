@@ -108,16 +108,12 @@ If `.shipkit/codebase-index.json` exists:
 | Track manual tasks for user | `/shipkit-user-instructions` |
 | Create visual HTML report | `/shipkit-communications` |
 
-### Ecosystem
-| When... | Use |
-|---------|-----|
-| Find and install community skills | `/shipkit-get-skills` |
-| Find and install MCP servers | `/shipkit-get-mcps` |
-
 ### System
 | When... | Use |
 |---------|-----|
 | Install or update Shipkit | `/shipkit-update` |
+| Find and install community skills | `/shipkit-get-skills` |
+| Find and install MCP servers | `/shipkit-get-mcps` |
 
 **No skill needed for:** implementing, debugging, testing, refactoring, documenting code.
 
