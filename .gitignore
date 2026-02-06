@@ -13,8 +13,9 @@ Thumbs.db
 .idea/
 *.code-workspace
 
-# Local Claude Code session files
-.claude/
+# Local Claude Code session files (but track skills for cross-session access)
+.claude/*
+!.claude/skills/
 
 # Node (if you add any tooling)
 node_modules/
