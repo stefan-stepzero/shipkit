@@ -179,6 +179,11 @@ function updateInstance(eventData) {
     if (projectPath) {
         updateCodebaseAnalytics(projectPath, project, skill, timestamp);
     }
+
+    // Store artifacts if present (JSON files from .shipkit/)
+    if (eventData.artifacts && projectPath) {
+        updateCodebaseArtifacts(projectPath, eventData.artifacts);
+    }
 }
 
 /**
@@ -219,6 +224,28 @@ function updateCodebaseAnalytics(projectPath, projectName, skill, timestamp) {
     }
 
     // Persist to disk
+    persistCodebase(codebase);
+}
+
+/**
+ * Store JSON artifacts from .shipkit/ for dashboard rendering
+ */
+function updateCodebaseArtifacts(projectPath, artifacts) {
+    let codebase = codebases.get(projectPath);
+    if (!codebase) return;
+
+    if (!codebase.artifacts) {
+        codebase.artifacts = {};
+    }
+
+    // Merge new artifacts (keyed by filename, e.g. "goals.json")
+    for (const [filename, data] of Object.entries(artifacts)) {
+        codebase.artifacts[filename] = {
+            ...data,
+            _receivedAt: Date.now()
+        };
+    }
+
     persistCodebase(codebase);
 }
 

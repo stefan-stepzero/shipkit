@@ -106,7 +106,7 @@ This skill provides:
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
 | "Define vision", "Why this project?", "Project goals" | `/shipkit-why-project` | .shipkit/why.md |
-| "Set goals", "Objectives", "Priorities", "What to build toward" | `/shipkit-goals` | .shipkit/why.md, goals.md |
+| "Set goals", "Objectives", "Priorities", "What to build toward" | `/shipkit-goals` | .shipkit/why.md, goals.json |
 | "Who are our users?", "Create personas", "User research", "User journey" | `/shipkit-product-discovery` | .shipkit/why.md, stack.md |
 
 ### Context & Status

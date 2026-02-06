@@ -9,7 +9,9 @@ agent: shipkit-product-owner-agent
 
 **Purpose**: Capture structured, trackable project goals that bridge `.shipkit/why.md` vision to concrete specs — with priorities, status, and success criteria.
 
-**What it does**: Asks the user to define objectives, priorities, and success criteria. Generates `.shipkit/goals.md` with structured goals that persist across sessions.
+**What it does**: Asks the user to define objectives, priorities, and success criteria. Generates `.shipkit/goals.json` with structured goals that persist across sessions and feed into mission control.
+
+**Output format**: JSON — readable by Claude, renderable by mission control dashboard, and the single source of truth for project goals.
 
 ---
 
@@ -40,12 +42,10 @@ agent: shipkit-product-owner-agent
 
 ## Process
 
-### Step 0: Check for Existing File (Quick Exit + File Exists Workflow)
-
-**Quick Exit Check**:
+### Step 0: Check for Existing File
 
 ```markdown
-1. Check if `.shipkit/goals.md` exists
+1. Check if `.shipkit/goals.json` exists
 
 2. If exists AND modified < 5 minutes ago:
    - Show user: "Found recent goals (modified X ago)"
@@ -54,43 +54,21 @@ agent: shipkit-product-owner-agent
    - If "regenerate" → Proceed to Step 1
 
 3. If exists AND modified > 5 minutes ago:
-   - Proceed to File Exists Workflow (Step 0b)
+   - Read and display current goals as a formatted summary
+   - Ask: "View/Update/Replace/Cancel?"
 
 4. If doesn't exist:
    - Skip to Step 1 (generate new)
 ```
 
-**File Exists Workflow**:
-
-```markdown
-### Step 0b: File Already Exists
-
-File exists: `.shipkit/goals.md`
-
-**Options:**
-
-1. **View** - Show current goals, then ask what to do
-2. **Update** - Read existing, ask what to change, regenerate
-3. **Replace** - Archive old version, generate completely new
-4. **Cancel** - Exit without changes
-
-**If View:**
-- Display current goals
-- Ask: "Keep these, update, or replace?"
-
 **If Update:**
-- Read existing goals
+- Read existing goals.json
 - Ask: "What should change? (new goals, reprioritize, mark achieved, etc.)"
 - Regenerate incorporating updates
-- Use Write tool to overwrite
 
 **If Replace:**
-- Archive current version
-- Proceed to Step 1 (generate new)
-
-**If Cancel:**
-- Exit, no changes made
-```
+- Archive current: copy to `.shipkit/.archive/goals.YYYY-MM-DD.json`
+- Proceed to Step 1
 
 ---
 
@@ -133,115 +111,89 @@ File exists: `.shipkit/goals.md`
 
 ---
 
-### Step 3: Generate Goals Document
+### Step 3: Generate Goals JSON
 
-**Create file using Write tool**: `.shipkit/goals.md`
+**Create file using Write tool**: `.shipkit/goals.json`
 
----
-
-## Goals Template Structure
-
-**The goals document MUST follow this template**:
-
-```markdown
-# Project Goals
-
-**Last Updated**: [YYYY-MM-DD]
-**Source**: .shipkit/why.md vision
+The output MUST conform to the schema below. This is a strict contract — mission control and other skills depend on this structure.
 
 ---
 
-## Active Goals
+## JSON Schema
 
-### P0 - Must Have (blocks everything else)
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "goals",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "shipkit-goals",
 
-#### [Goal Name]
-- **Objective**: [What we're trying to achieve]
-- **Success Criteria**: [How we know it's done]
-- **Status**: [not-started | in-progress | achieved | deferred]
-- **Linked Specs**: [specs/active/feature-x.md, or "none yet"]
+  "summary": {
+    "total": 5,
+    "byPriority": { "p0": 2, "p1": 2, "p2": 1 },
+    "byStatus": { "not-started": 2, "in-progress": 2, "achieved": 1, "deferred": 0 }
+  },
 
-### P1 - Should Have (important but not blocking)
-
-#### [Goal Name]
-- **Objective**: [What we're trying to achieve]
-- **Success Criteria**: [How we know it's done]
-- **Status**: [not-started | in-progress | achieved | deferred]
-- **Linked Specs**: [specs/active/feature-y.md, or "none yet"]
-
-### P2 - Nice to Have (if time permits)
-
-#### [Goal Name]
-- **Objective**: [What we're trying to achieve]
-- **Success Criteria**: [How we know it's done]
-- **Status**: [not-started | in-progress | achieved | deferred]
-- **Linked Specs**: [none yet]
-
----
-
-## Achieved Goals
-
-*(Move goals here when success criteria are met)*
-
----
-
-## Deferred Goals
-
-*(Move goals here when consciously deprioritized — include reason)*
-
----
-
-## Quality Checklist
-
-**Validate goals meet standards:**
-
-### Clarity
-- [ ] Each goal has a clear, specific objective
-- [ ] Success criteria are measurable or observable
-- [ ] No vague goals ("make it better", "improve performance")
-
-### Alignment
-- [ ] Goals connect to why.md vision
-- [ ] Priority order reflects user's stated priorities
-- [ ] No contradicting goals
-
-### Actionability
-- [ ] Each goal can be broken into specs
-- [ ] Status tracking enables session-to-session continuity
-- [ ] Linked specs show progress toward goals
+  "goals": [
+    {
+      "id": "goal-slug",
+      "name": "Human-readable goal name",
+      "priority": "p0",
+      "status": "in-progress",
+      "objective": "What we're trying to achieve",
+      "successCriteria": [
+        "Measurable criterion 1",
+        "Measurable criterion 2"
+      ],
+      "linkedSpecs": ["specs/active/feature-x.md"],
+      "notes": "Optional context"
+    }
+  ]
+}
 ```
 
+### Field Reference
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `$schema` | string | yes | Always `"shipkit-artifact"` — identifies this as a Shipkit-managed file |
+| `type` | string | yes | Always `"goals"` — artifact type for routing/rendering |
+| `version` | string | yes | Schema version for forward compatibility |
+| `lastUpdated` | string | yes | ISO date of last modification |
+| `source` | string | yes | Skill that created/updated this file |
+| `summary` | object | yes | Aggregated counts for dashboard rendering |
+| `goals` | array | yes | The actual goals |
+| `goals[].id` | string | yes | Slug identifier (kebab-case) |
+| `goals[].name` | string | yes | Display name |
+| `goals[].priority` | enum | yes | `"p0"` \| `"p1"` \| `"p2"` |
+| `goals[].status` | enum | yes | `"not-started"` \| `"in-progress"` \| `"achieved"` \| `"deferred"` |
+| `goals[].objective` | string | yes | What we're trying to achieve |
+| `goals[].successCriteria` | string[] | yes | How we know it's done |
+| `goals[].linkedSpecs` | string[] | no | Paths to related spec files |
+| `goals[].notes` | string | no | Additional context |
+
+### Summary Object
+
+The `summary` field MUST be kept in sync with the `goals` array. It exists so the dashboard can render overview cards without iterating the full array. Recompute it every time the file is written.
+
 ---
 
-### Step 4: Archive Old Version (If Replacing)
+### Step 4: Save and Suggest Next Step
 
-```markdown
-**If user chose "Replace" in Step 0:**
+**Use Write tool to create/overwrite**: `.shipkit/goals.json`
 
-1. Create archive directory: `.shipkit/.archive/`
-
-2. Copy existing file with timestamp:
-   cp .shipkit/goals.md .shipkit/.archive/goals.YYYY-MM-DD.md
-
-3. Write new file (overwrites current)
+**Output to user** (formatted summary, not raw JSON):
 ```
+Goals saved.
 
----
+Location: .shipkit/goals.json
 
-### Step 5: Save and Suggest Next Step
+  P0 (must have): 2 goals
+  P1 (should have): 2 goals
+  P2 (nice to have): 1 goal
 
-**Use Write tool to create/overwrite**: `.shipkit/goals.md`
-
-**Output to user**:
-```
-Goals document created.
-
-Location: .shipkit/goals.md
-
-Summary:
-  - X goals defined (P0: N, P1: N, P2: N)
-  - Success criteria captured for each
-  - Linked to existing specs where applicable
+  Status: 2 not started, 2 in progress, 1 achieved
 
 Next steps:
   1. /shipkit-spec - Create specs for your P0 goals
@@ -250,6 +202,34 @@ Next steps:
 
 Ready to spec your top-priority goal?
 ```
+
+---
+
+## Shipkit Artifact Convention
+
+This skill follows the **Shipkit JSON artifact convention** — a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
+
+**Every JSON artifact MUST include these top-level fields:**
+
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "<artifact-type>",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "<skill-name>",
+  "summary": { ... }
+}
+```
+
+- `$schema` — Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
+- `type` — The artifact type (`"goals"`, `"spec"`, `"plan"`, etc.). Dashboard uses this for rendering.
+- `version` — Schema version. Bump when fields change.
+- `lastUpdated` — When this file was last written.
+- `source` — Which skill wrote this file.
+- `summary` — Aggregated data for dashboard cards. Structure varies by type.
+
+Skills that haven't migrated to JSON yet continue writing markdown. The reporter hook ships both: JSON artifacts get structured dashboard rendering, markdown files fall back to metadata-only (exists, date, size).
 
 ---
 
@@ -287,7 +267,7 @@ Ready to spec your top-priority goal?
 **Write Strategy: OVERWRITE**
 
 **Creates/Updates**:
-- `.shipkit/goals.md` - Structured project goals with priorities and status
+- `.shipkit/goals.json` - Structured project goals (JSON artifact)
 
 **Update Behavior**:
 - File exists → File Exists Workflow (view/update/replace/cancel)
@@ -297,12 +277,7 @@ Ready to spec your top-priority goal?
 - Each write REPLACES entire file contents
 
 **Archive location** (if replacing):
-- `.shipkit/.archive/goals.YYYY-MM-DD.md`
-
-**Why OVERWRITE:**
-- Goals are a single coherent document (not entries)
-- Priority order matters — can't just append
-- Whole-file updates ensure consistency
+- `.shipkit/.archive/goals.YYYY-MM-DD.json`
 
 ---
 
@@ -312,8 +287,9 @@ Ready to spec your top-priority goal?
 - [ ] Each goal has measurable success criteria
 - [ ] Goals connect to why.md vision
 - [ ] Status tracking enables cross-session updates
-- [ ] Quality checklist embedded
-- [ ] File saved to `.shipkit/goals.md`
+- [ ] Output conforms to JSON schema above
+- [ ] Summary field is accurate
+- [ ] File saved to `.shipkit/goals.json`
 - [ ] Old version archived (if replaced)
 
 ---
@@ -326,7 +302,7 @@ Ready to spec your top-priority goal?
 User: "Set goals for this project"
 
 Claude:
-1. Check .shipkit/goals.md (doesn't exist)
+1. Check .shipkit/goals.json (doesn't exist)
 2. Read .shipkit/why.md for vision context
 3. Ask: "What are the 3-5 most important objectives?"
    User: "Launch MVP, get 10 beta users, integrate payments"
@@ -334,8 +310,9 @@ Claude:
    User: "Launch MVP"
 5. Ask: "How will you know the MVP is ready?"
    User: "Core flow works end-to-end, deployed to production"
-6. Generate goals.md with priorities and criteria
-7. Save to .shipkit/goals.md
+6. Generate goals.json with priorities and criteria
+7. Save to .shipkit/goals.json
+8. Show formatted summary to user
 ```
 
 ### Scenario 2: Update Goals (File Exists)
@@ -344,14 +321,15 @@ Claude:
 User: "Update our goals"
 
 Claude:
-1. Check .shipkit/goals.md (exists, modified 2 days ago)
-2. Show: "Goals exist. Options: View/Update/Replace/Cancel"
+1. Check .shipkit/goals.json (exists, modified 2 days ago)
+2. Read and display formatted summary
+3. Ask: "View/Update/Replace/Cancel?"
    User: "Update"
-3. Read existing goals
 4. Ask: "What should change?"
    User: "We achieved the MVP goal, and I want to add onboarding"
-5. Move MVP to Achieved, add onboarding goal
-6. Overwrite .shipkit/goals.md
+5. Read existing JSON, move MVP status to "achieved", add onboarding goal
+6. Recompute summary counts
+7. Overwrite .shipkit/goals.json
 ```
 
 ### Scenario 3: Quick Exit (Recent File)
@@ -360,10 +338,10 @@ Claude:
 User: "Show me our goals"
 
 Claude:
-1. Check .shipkit/goals.md (exists, modified 2 minutes ago)
+1. Check .shipkit/goals.json (exists, modified 2 minutes ago)
 2. Show: "Found recent goals (2 min ago). Use these or regenerate?"
    User: "Use these"
-3. Display current goals, exit
+3. Read JSON, display formatted summary, exit
 ```
 
 ---
