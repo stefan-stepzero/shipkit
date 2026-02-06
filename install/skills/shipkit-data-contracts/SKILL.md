@@ -260,7 +260,7 @@ For each field in type definition:
 
 **Creates if missing**: All three files above (with proper structure)
 
-**Never modifies**: schema.md, stack.md, architecture.md (read-only)
+**Never modifies**: schema.md, stack.json, architecture.md (read-only)
 
 ---
 
@@ -353,7 +353,7 @@ Copy and track:
 
 **Creates if missing**: All three files above (with proper structure)
 
-**Never modifies**: schema.md, stack.md, architecture.md (read-only)
+**Never modifies**: schema.md, stack.json, architecture.md (read-only)
 
 ---
 

@@ -42,7 +42,7 @@ allowed-tools:
 - Project has LLM integrations (API calls to OpenAI, Anthropic, Gemini, etc.)
 
 **Recommended**:
-- `.shipkit/stack.md` — Knows which AI SDKs are in use
+- `.shipkit/stack.json` — Knows which AI SDKs are in use
 - `.shipkit/architecture.md` — Knows pipeline design intent
 
 **If no LLM integrations found**: Report cleanly and exit. Don't fabricate findings.
@@ -272,80 +272,142 @@ Every finding MUST be backed by actual tool output. Follow the same verification
 
 ### Step 4: Generate Report
 
-**Create**: `.shipkit/prompt-audit.md`
+**Create file using Write tool**: `.shipkit/prompt-audit.json`
 
-**Report structure:**
-
-```markdown
-# Prompt Architecture Audit
-
-**Generated**: [date]
-**Scope**: [files/directories audited]
-**Integration Points**: [count] across [providers]
-**Pipelines**: [count single-call] single-stage, [count multi-stage] multi-stage
+The output MUST conform to the schema below. This is a strict contract — mission control and other skills depend on this structure.
 
 ---
 
-## Topology Map
+## JSON Schema
 
-### Pipeline: [name/purpose]
-[Visual representation of stages, data flow, validation points]
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "prompt-audit",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "shipkit-prompt-audit",
 
----
+  "summary": {
+    "totalPromptsAudited": 12,
+    "totalIssuesFound": 8,
+    "bySeverity": { "critical": 2, "shouldFix": 4, "minor": 2 },
+    "integrationPoints": 12,
+    "providers": ["OpenAI", "Anthropic"],
+    "pipelines": { "singleStage": 8, "multiStage": 2 }
+  },
 
-## Summary
+  "prompts": [
+    {
+      "id": "pa-001",
+      "location": "src/ai/generate-summary.ts:42",
+      "provider": "OpenAI",
+      "purpose": "Generate article summary from raw text",
+      "pipelineType": "single",
+      "score": 7,
+      "issues": [
+        {
+          "id": "PA-SCH-001",
+          "dimension": "schema-tightness",
+          "severity": "critical",
+          "title": "Unvalidated JSON output used in database write",
+          "evidence": "JSON.parse on line 58 has no try/catch; result inserted into DB on line 62",
+          "impact": "Malformed LLM response causes runtime crash and data corruption",
+          "fix": "Wrap JSON.parse in try/catch, validate against Zod schema before DB insert",
+          "antiPattern": "parse-and-pray"
+        }
+      ]
+    }
+  ],
 
-| Dimension | Findings | Critical | Should Fix | Minor |
-|-----------|----------|----------|------------|-------|
-| Decomposition | X | X | X | X |
-| Parallelization | X | X | X | X |
-| Schema Tightness | X | X | X | X |
-| Chain Integrity | X | X | X | X |
-| Cache Boundaries | X | X | X | X |
-| Fallback Paths | X | X | X | X |
-| Context Efficiency | X | X | X | X |
-| Constraint Precision | X | X | X | X |
-| Input Safety | X | X | X | X |
-| Reference Integrity | X | X | X | X |
+  "patterns": {
+    "antiPatterns": [
+      {
+        "name": "god-prompt",
+        "instances": 2,
+        "files": ["src/ai/process-all.ts", "src/ai/mega-prompt.ts"],
+        "description": "Single prompt handling multiple unrelated concerns"
+      },
+      {
+        "name": "parse-and-pray",
+        "instances": 3,
+        "files": ["src/ai/generate-summary.ts", "src/ai/classify.ts", "src/ai/extract.ts"],
+        "description": "JSON.parse on LLM output without validation or error handling"
+      }
+    ],
+    "positivePatterns": [
+      {
+        "name": "structured-output",
+        "instances": 4,
+        "description": "Using provider structured output mode with schema"
+      }
+    ]
+  },
 
----
-
-## Critical Findings (fix before shipping)
-
-### [PA-XXX-NNN] [Title]
-- **File**: `path/to/file.ts:line`
-- **Dimension**: [which dimension]
-- **Anti-pattern**: [if matches known anti-pattern]
-- **Evidence**: [tool output that proves this]
-- **Impact**: [what happens if not fixed]
-- **Fix**: [how to resolve]
-
----
-
-## Should Fix
-
-[Same format, lower severity]
-
----
-
-## Minor / Consider
-
-[Same format, suggestions]
-
----
-
-## Anti-Patterns Detected
-
-| Anti-Pattern | Instances | Files |
-|-------------|-----------|-------|
-| God Prompt | X | file1, file2 |
-| Sequential Everything | X | file3 |
-| Parse and Pray | X | file4, file5 |
-
----
-
-X critical | X should fix | X minor
+  "recommendations": [
+    {
+      "priority": "critical",
+      "title": "Add schema validation to all LLM output parsing",
+      "description": "3 integration points parse LLM JSON without validation. Add Zod schemas and wrap in try/catch.",
+      "affectedFiles": ["src/ai/generate-summary.ts", "src/ai/classify.ts", "src/ai/extract.ts"],
+      "effort": "low"
+    },
+    {
+      "priority": "shouldFix",
+      "title": "Decompose god prompts into focused sub-tasks",
+      "description": "2 prompts handle multiple concerns. Break into single-responsibility prompt chains.",
+      "affectedFiles": ["src/ai/process-all.ts", "src/ai/mega-prompt.ts"],
+      "effort": "medium"
+    }
+  ]
+}
 ```
+
+### Field Reference
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `$schema` | string | yes | Always `"shipkit-artifact"` — identifies this as a Shipkit-managed file |
+| `type` | string | yes | Always `"prompt-audit"` — artifact type for routing/rendering |
+| `version` | string | yes | Schema version for forward compatibility |
+| `lastUpdated` | string | yes | ISO date of last modification |
+| `source` | string | yes | Always `"shipkit-prompt-audit"` |
+| `summary` | object | yes | Aggregated counts for dashboard rendering |
+| `summary.totalPromptsAudited` | number | yes | Total LLM integration points scanned |
+| `summary.totalIssuesFound` | number | yes | Total issues across all severities |
+| `summary.bySeverity` | object | yes | Counts by `critical`, `shouldFix`, `minor` |
+| `summary.integrationPoints` | number | yes | Number of LLM call sites discovered |
+| `summary.providers` | string[] | yes | LLM providers detected |
+| `summary.pipelines` | object | yes | Counts by `singleStage`, `multiStage` |
+| `prompts` | array | yes | Per-prompt audit results |
+| `prompts[].id` | string | yes | Unique finding ID (e.g., `"pa-001"`) |
+| `prompts[].location` | string | yes | File path and line number |
+| `prompts[].provider` | string | yes | LLM provider/SDK used |
+| `prompts[].purpose` | string | yes | What this prompt does |
+| `prompts[].pipelineType` | enum | yes | `"single"` \| `"chain"` \| `"parallel"` |
+| `prompts[].score` | number | yes | Quality score 1-10 (10 = no issues) |
+| `prompts[].issues` | array | yes | Issues found for this prompt (empty if clean) |
+| `prompts[].issues[].id` | string | yes | Dimension-prefixed ID (e.g., `"PA-SCH-001"`) |
+| `prompts[].issues[].dimension` | string | yes | Which audit dimension flagged this |
+| `prompts[].issues[].severity` | enum | yes | `"critical"` \| `"shouldFix"` \| `"minor"` |
+| `prompts[].issues[].title` | string | yes | Short description of the issue |
+| `prompts[].issues[].evidence` | string | yes | Tool output that proves this finding |
+| `prompts[].issues[].impact` | string | yes | What happens if not fixed |
+| `prompts[].issues[].fix` | string | yes | How to resolve the issue |
+| `prompts[].issues[].antiPattern` | string | no | Matched anti-pattern name (if applicable) |
+| `patterns` | object | yes | Cross-cutting pattern analysis |
+| `patterns.antiPatterns` | array | yes | Anti-patterns found across prompts |
+| `patterns.positivePatterns` | array | yes | Good patterns observed |
+| `recommendations` | array | yes | Prioritized action items |
+| `recommendations[].priority` | enum | yes | `"critical"` \| `"shouldFix"` \| `"minor"` |
+| `recommendations[].title` | string | yes | Action item title |
+| `recommendations[].description` | string | yes | What to do and why |
+| `recommendations[].affectedFiles` | string[] | yes | Files that need changes |
+| `recommendations[].effort` | enum | yes | `"low"` \| `"medium"` \| `"high"` |
+
+### Summary Object
+
+The `summary` field MUST be kept in sync with the `prompts` array. It exists so the dashboard can render overview cards without iterating the full array. Recompute it every time the file is written.
 
 ---
 
@@ -369,7 +431,7 @@ Top issues:
 2. [Brief description with file reference]
 3. [Brief description with file reference]
 
-Full report: .shipkit/prompt-audit.md
+Full report: .shipkit/prompt-audit.json
 
 Want me to fix any of these issues?
 ```
@@ -383,6 +445,34 @@ Want me to fix any of these issues?
 | Critical | Will cause failures, security issues, or data corruption | Unvalidated LLM output used in database query; no fallback on payment-critical AI call |
 | Should Fix | Quality/reliability issues, technical debt | God Prompt that should be decomposed; sequential calls that could parallelize |
 | Minor | Suggestions, optimizations | Caching opportunity; slightly verbose context |
+
+---
+
+## Shipkit Artifact Convention
+
+This skill follows the **Shipkit JSON artifact convention** — a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
+
+**Every JSON artifact MUST include these top-level fields:**
+
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "<artifact-type>",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "<skill-name>",
+  "summary": { ... }
+}
+```
+
+- `$schema` — Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
+- `type` — The artifact type (`"prompt-audit"`, `"goals"`, `"spec"`, etc.). Dashboard uses this for rendering.
+- `version` — Schema version. Bump when fields change.
+- `lastUpdated` — When this file was last written.
+- `source` — Which skill wrote this file.
+- `summary` — Aggregated data for dashboard cards. Structure varies by type.
+
+Skills that haven't migrated to JSON yet continue writing markdown. The reporter hook ships both: JSON artifacts get structured dashboard rendering, markdown files fall back to metadata-only (exists, date, size).
 
 ---
 
@@ -401,7 +491,7 @@ Want me to fix any of these issues?
 | File | Purpose |
 |------|---------|
 | Source code | The actual LLM integration code |
-| `.shipkit/stack.md` | Know which AI SDKs/providers are used |
+| `.shipkit/stack.json` | Know which AI SDKs/providers are used |
 | `.shipkit/architecture.md` | Understand intended pipeline design |
 | `package.json` / `requirements.txt` | Detect AI SDK dependencies |
 
@@ -411,7 +501,7 @@ Want me to fix any of these issues?
 
 **Write Strategy**: OVERWRITE
 
-- `.shipkit/prompt-audit.md` — Audit report (overwritten on each run)
+- `.shipkit/prompt-audit.json` — Audit report (JSON artifact, overwritten on each run)
 
 ---
 
@@ -468,7 +558,9 @@ No follow-up skill automatically triggered.
 - [ ] Anti-patterns checked against known patterns
 - [ ] Findings prioritized (Critical / Should Fix / Minor)
 - [ ] Each finding has specific file:line reference
-- [ ] Report saved to `.shipkit/prompt-audit.md`
+- [ ] Report saved to `.shipkit/prompt-audit.json`
+- [ ] Output conforms to JSON schema above
+- [ ] Summary field is accurate
 - [ ] Report only — no unsolicited fixes
 <!-- /SECTION:success-criteria -->
 

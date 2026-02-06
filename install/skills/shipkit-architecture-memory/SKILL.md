@@ -31,7 +31,7 @@ agent: shipkit-architect-agent
 ## Prerequisites
 
 **Optional but helpful**:
-- Stack defined: `.shipkit/stack.md` (to ensure consistency)
+- Stack defined: `.shipkit/stack.json` (to ensure consistency)
 - Architecture log exists: `.shipkit/architecture.md` (to check contradictions)
 
 **Can run standalone**: Yes - creates architecture.md if it doesn't exist
@@ -49,7 +49,7 @@ agent: shipkit-architect-agent
 .shipkit/architecture.md
 
 # Check stack for consistency
-.shipkit/stack.md
+.shipkit/stack.json
 ```
 
 **Why read first**:
@@ -68,7 +68,7 @@ Before recording any decision, verify claims with tool calls:
 | "architecture.md exists" | `Read: file_path=".shipkit/architecture.md"` succeeds |
 | "X decisions recorded" | Count `## ` headings in file after reading |
 | "Decision contradicts existing" | `Grep: pattern="keyword"` in architecture.md |
-| "Aligns with stack.md" | `Grep: pattern="technology-name"` in stack.md returns match |
+| "Aligns with stack.json" | `Grep: pattern="technology-name"` in stack.json returns match |
 | "Supersedes entry X" | `Grep: pattern="entry-date"` in architecture.md returns match |
 
 **USE PARALLEL VERIFICATION** - Independent checks can run simultaneously:
@@ -77,7 +77,7 @@ Before recording any decision, verify claims with tool calls:
 Launch these operations IN PARALLEL (single message, multiple tool calls):
 
 1. Read: .shipkit/architecture.md    # Get existing decisions
-2. Read: .shipkit/stack.md           # Get tech stack for consistency check
+2. Read: .shipkit/stack.json           # Get tech stack for consistency check
 3. Grep: pattern="[pattern-keyword]" glob="**/*.{ts,tsx}"  # Find pattern usage
 ```
 
@@ -102,7 +102,7 @@ Example: Recording "Use Server Actions for mutations"
 
 ```
 1. From architecture.md read: count entries, check for contradictions
-2. From stack.md read: verify technology consistency
+2. From stack.json read: verify technology consistency
 3. From pattern grep: document current usage count in decision entry
 4. If all verifications pass → proceed to record
 ```
@@ -267,23 +267,23 @@ This file logs all architectural decisions made during development. Each entry c
 
 ### Step 6: Check Stack Consistency
 
-**After appending, verify consistency with stack.md**:
+**After appending, verify consistency with stack.json**:
 
 ```
 IF decision involves technology choice:
-  → Check if it's documented in stack.md
-  → If NO: Suggest "Should I update stack.md to reflect this?"
+  → Check if it's documented in stack.json
+  → If NO: Suggest "Should I update stack.json to reflect this?"
   → If YES: Verify it aligns
 
 IF inconsistency found:
-  → Warn user: "This conflicts with stack.md which says [X]"
+  → Warn user: "This conflicts with stack.json which says [X]"
 ```
 
 **Example**:
 ```
 Decision: "Use Prisma for database access"
 Stack.md says: "Database: PostgreSQL with Drizzle ORM"
-→ Warn: "This conflicts with stack.md (Drizzle ORM). Update stack.md?"
+→ Warn: "This conflicts with stack.json (Drizzle ORM). Update stack.json?"
 ```
 
 ---
@@ -347,7 +347,7 @@ Copy and track:
 **Before shipkit-architecture-memory**:
 - `/shipkit-spec` - Makes approach decisions worth logging
 - `/shipkit-plan` - Establishes patterns worth documenting
-- `/shipkit-project-context` - Generates stack.md for consistency checking
+- `/shipkit-project-context` - Generates stack.json for consistency checking
 
 **After shipkit-architecture-memory**:
 - `/shipkit-plan` - Create implementation plan using logged decisions
@@ -362,7 +362,7 @@ Copy and track:
 - `.shipkit/architecture.md` - Existing decisions (to check contradictions)
 
 **Secondary**:
-- `.shipkit/stack.md` - Tech stack (to verify consistency)
+- `.shipkit/stack.json` - Tech stack (to verify consistency)
 
 ---
 
@@ -389,7 +389,7 @@ Copy and track:
 1. User invokes `/shipkit-architecture-memory`
 2. Claude reads this SKILL.md
 3. Claude reads `.shipkit/architecture.md` (if exists) - ~500-1000 tokens
-4. Claude reads `.shipkit/stack.md` (if exists) - ~200 tokens
+4. Claude reads `.shipkit/stack.json` (if exists) - ~200 tokens
 5. Claude asks 2-3 questions
 6. Claude appends decision
 7. Total context: ~1000-2000 tokens (very lightweight)
@@ -594,7 +594,7 @@ Decision is logged when:
 - [ ] Includes implications
 - [ ] Notes what it supersedes (if applicable)
 - [ ] No contradictions with existing decisions (or user confirmed supersession)
-- [ ] Consistency with stack.md verified
+- [ ] Consistency with stack.json verified
 <!-- /SECTION:success-criteria -->
 ---
 
@@ -607,7 +607,7 @@ User: "Let's use Server Actions for all mutations"
 
 Claude (shipkit-architecture-memory):
 1. Read .shipkit/architecture.md (check contradictions)
-2. Read .shipkit/stack.md (verify Next.js version)
+2. Read .shipkit/stack.json (verify Next.js version)
 3. Decision is clear from statement → Skip "What was decided?" question
 4. Ask: "Why Server Actions over API routes?"
 5. User: "Co-location and simpler error handling"

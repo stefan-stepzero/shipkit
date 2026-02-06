@@ -203,7 +203,7 @@ Document what the skill reads and writes:
 | File | Purpose |
 |------|---------|
 | `.shipkit/why.md` | Understand project constraints |
-| `.shipkit/stack.md` | Know what technologies are in use |
+| `.shipkit/stack.json` | Know what technologies are in use |
 ```
 
 **Writes:**

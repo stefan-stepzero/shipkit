@@ -28,7 +28,7 @@ agent: shipkit-product-owner-agent
 
 **Optional**:
 - `.shipkit/why.md` (Vision helps guide persona creation)
-- `.shipkit/stack.md` (Technical constraints inform feasibility)
+- `.shipkit/stack.json` (Technical constraints inform feasibility)
 
 **If missing**: Generate personas and stories based on user input alone
 
@@ -95,7 +95,7 @@ options:
 
 **Read these files** (if exist):
 - `.shipkit/why.md` - Vision context
-- `.shipkit/stack.md` - Technical constraints
+- `.shipkit/stack.json` - Technical constraints
 
 **Token budget**: Keep context reading under 1000 tokens.
 
@@ -225,7 +225,7 @@ Copy and track:
 
 **Optional** (read if exist):
 - `.shipkit/why.md` - Understand project vision
-- `.shipkit/stack.md` - Understand technical constraints
+- `.shipkit/stack.json` - Understand technical constraints
 
 ---
 
@@ -248,7 +248,7 @@ Copy and track:
 1. User invokes `/shipkit-product-discovery`
 2. Check if file exists (Quick Exit Check)
 3. If regenerating: Ask 3 questions
-4. Read why.md, stack.md (~1000 tokens)
+4. Read why.md, stack.json (~1000 tokens)
 5. Generate Product Discovery Document
 6. Total context loaded: ~1500 tokens
 

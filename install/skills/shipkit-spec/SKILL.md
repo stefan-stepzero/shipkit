@@ -35,7 +35,7 @@ agent: shipkit-product-owner-agent
 ## Prerequisites
 
 **Recommended**:
-- Stack defined: `.shipkit/stack.md` (to understand tech constraints)
+- Stack defined: `.shipkit/stack.json` (to understand tech constraints)
 - Schema defined: `.shipkit/schema.md` (to understand data model)
 
 **Optional but helpful**:
@@ -93,7 +93,7 @@ options:
 ```
 Read these files IN PARALLEL (single message, multiple tool calls):
 
-1. Read: .shipkit/stack.md         # Tech constraints
+1. Read: .shipkit/stack.json         # Tech constraints
 2. Read: .shipkit/schema.md        # Data model
 3. Read: .shipkit/architecture.md  # Past decisions
 4. Glob + Read: .shipkit/specs/active/*.md  # Similar specs
@@ -378,7 +378,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 
 ## References
 
-- Stack: .shipkit/stack.md
+- Stack: .shipkit/stack.json
 - Schema: .shipkit/schema.md
 - Architecture: .shipkit/architecture.md
 ```
@@ -410,10 +410,10 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 
 ### Before This Skill
 
-- `/shipkit-project-context` - Generates stack.md and schema.md
+- `/shipkit-project-context` - Generates stack.json and schema.md
   - **When**: Project initialization or when stack/schema missing
   - **Why**: Spec needs tech constraints and data model context
-  - **Trigger**: Missing stack.md or schema.md detected during spec creation
+  - **Trigger**: Missing stack.json or schema.md detected during spec creation
 
 - **User describes feature idea** - Provides initial feature concept
   - **When**: User has new feature to build
@@ -442,7 +442,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 ## Context Files This Skill Reads
 
 **Recommended** (read if exist):
-- `.shipkit/stack.md` - Tech stack constraints
+- `.shipkit/stack.json` - Tech stack constraints
 - `.shipkit/schema.md` - Data model
 - `.shipkit/architecture.md` - Past decisions
 
@@ -486,7 +486,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 1. User invokes `/shipkit-spec` or describes feature
 2. shipkit-master tells Claude to read this SKILL.md
 3. Claude asks 2-3 clarifying questions
-4. Claude reads stack.md + schema.md (~500 tokens)
+4. Claude reads stack.json + schema.md (~500 tokens)
 5. Claude optionally reads architecture.md if relevant (~300 tokens)
 6. Claude generates spec
 7. Total context loaded: ~1000-1500 tokens (focused)

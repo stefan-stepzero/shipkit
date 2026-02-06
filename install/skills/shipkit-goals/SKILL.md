@@ -34,7 +34,7 @@ agent: shipkit-product-owner-agent
 
 **Optional**:
 - `.shipkit/why.md` (provides vision context — goals are more grounded with it)
-- `.shipkit/stack.md` (helps frame technically feasible goals)
+- `.shipkit/stack.json` (helps frame technically feasible goals)
 
 **If missing**: Skill still works — will ask user to describe vision inline instead.
 
@@ -81,7 +81,7 @@ agent: shipkit-product-owner-agent
 .shipkit/why.md
 
 # Technical context
-.shipkit/stack.md
+.shipkit/stack.json
 
 # Existing specs (to understand what's already planned)
 .shipkit/specs/active/
@@ -255,7 +255,7 @@ Skills that haven't migrated to JSON yet continue writing markdown. The reporter
 
 **Optional** (read if exist):
 - `.shipkit/why.md` - Project vision context
-- `.shipkit/stack.md` - Technical context
+- `.shipkit/stack.json` - Technical context
 - `.shipkit/specs/active/*.md` - Existing specs to link
 
 **If missing**: Asks user for inline context instead.

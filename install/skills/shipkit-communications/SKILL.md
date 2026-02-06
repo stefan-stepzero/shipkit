@@ -35,7 +35,7 @@ description: "Use when user wants to visualize or present shipkit content as HTM
 **Optional** (depends on what user wants to visualize):
 - `.shipkit/architecture.md` - For architecture decisions
 - `.shipkit/implementations.md` - For component/route docs
-- `.shipkit/stack.md` - For tech stack overview
+- `.shipkit/stack.json` - For tech stack overview
 - `.shipkit/specs/active/*.md` - For specs
 - `.shipkit/plans/*.md` - For implementation plans
 
@@ -81,7 +81,7 @@ Choose a number or describe what you need:
 | 4. Component Documentation | `.shipkit/implementations.md` | `component-docs` |
 | 5. Feature Specs | `.shipkit/specs/active/*.md` | `feature-specs` |
 | 6. Implementation Plans | `.shipkit/plans/*.md` | `implementation-plans` |
-| 7. Tech Stack | `.shipkit/stack.md` | `tech-stack` |
+| 7. Tech Stack | `.shipkit/stack.json` | `tech-stack` |
 | 8. Custom | User-specified files | User-specified description |
 
 **Description word**: Used for archive filename (2-4 kebab-case words)
@@ -98,7 +98,7 @@ Choose a number or describe what you need:
 Launch these Read operations IN PARALLEL (single message, multiple tool calls):
 
 1. Read: .shipkit/architecture.md
-2. Read: .shipkit/stack.md
+2. Read: .shipkit/stack.json
 3. Read: .shipkit/implementations.md
 4. Read: .shipkit/schema.md
 5. Glob + Read: .shipkit/specs/active/*.md
@@ -391,7 +391,7 @@ Copy and track:
 **Depends on visualization type** (see Step 2):
 - `.shipkit/architecture.md` - Architecture decisions
 - `.shipkit/implementations.md` - Components/routes
-- `.shipkit/stack.md` - Tech stack
+- `.shipkit/stack.json` - Tech stack
 - `.shipkit/specs/active/*.md` - Specifications
 - `.shipkit/plans/*.md` - Implementation plans
 - Any `.shipkit/**/*.md` - Custom/comprehensive

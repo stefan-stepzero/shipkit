@@ -43,7 +43,7 @@ This skill provides:
 - Other skills installed in `.claude/skills/shipkit-*/`
 
 **First-time users**:
-- If `.shipkit/stack.md` missing → Suggest `/shipkit-project-context` to create it
+- If `.shipkit/stack.json` missing → Suggest `/shipkit-project-context` to create it
 - If no specs/plans exist → Suggest starting with `/shipkit-spec` or `/shipkit-product-discovery`
 
 ---
@@ -56,7 +56,7 @@ This skill provides:
 1. Hook runs and outputs this SKILL.md to context
 2. Check file freshness (see `references/file-freshness-logic.md`)
 3. Load fresh context files:
-   - `.shipkit/stack.md` (if fresh and exists)
+   - `.shipkit/stack.json` (if fresh and exists)
    - `.shipkit/architecture.md` (if exists)
    - `.shipkit/why.md` (if exists)
 4. Display session start message with freshness warnings
@@ -107,7 +107,7 @@ This skill provides:
 |-----------|----------|--------------|
 | "Define vision", "Why this project?", "Project goals" | `/shipkit-why-project` | .shipkit/why.md |
 | "Set goals", "Objectives", "Priorities", "What to build toward" | `/shipkit-goals` | .shipkit/why.md, goals.json |
-| "Who are our users?", "Create personas", "User research", "User journey" | `/shipkit-product-discovery` | .shipkit/why.md, stack.md |
+| "Who are our users?", "Create personas", "User research", "User journey" | `/shipkit-product-discovery` | .shipkit/why.md, stack.json |
 
 ### Context & Status
 
@@ -129,7 +129,7 @@ This skill provides:
 |-----------|----------|--------------|
 | "Spec this feature", "Create specification", "Write requirements" | `/shipkit-spec` | .shipkit/specs/active/ |
 | "Triage feedback", "Process bug reports", "User testing feedback" | `/shipkit-feedback-bug` | .shipkit/specs/active/, codebase-index |
-| "Plan this", "How to implement?", "Create plan" | `/shipkit-plan` | specs/, stack.md, architecture.md |
+| "Plan this", "How to implement?", "Create plan" | `/shipkit-plan` | specs/, stack.json, architecture.md |
 | "Prototype", "Mockup", "Rapid prototype", "UI mockup" | `/shipkit-prototyping` | specs/, why.md |
 | "Extract prototype", "Prototype to spec", "Capture UI patterns" | `/shipkit-prototype-to-spec` | .shipkit-mockups/, specs/active/ |
 | "Help me think through", "Think with me", "Let's discuss", "What am I missing?" | `/shipkit-thinking-partner` | .shipkit/why.md, architecture.md |
@@ -141,7 +141,7 @@ This skill provides:
 |-----------|----------|--------------|
 | "Log this decision", "Architecture choice", "Why did we choose X?" | `/shipkit-architecture-memory` | .shipkit/architecture.md |
 | "Define data shapes", "Type definitions", "Data contracts" | `/shipkit-data-contracts` | .shipkit/types.md |
-| "Fetch integration docs", "API patterns", "Service integration" | `/shipkit-integration-docs` | .shipkit/stack.md |
+| "Fetch integration docs", "API patterns", "Service integration" | `/shipkit-integration-docs` | .shipkit/stack.json |
 | "Remember this", "Save this", "Update CLAUDE.md", "Add to CLAUDE.md" | `/shipkit-claude-md` | CLAUDE.md |
 
 ### Quality & Communication
@@ -149,11 +149,11 @@ This skill provides:
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
 | "Verify", "Check my work", "Ready to commit?", "Review changes" | `/shipkit-verify` | Git diff, specs, architecture |
-| "Preflight", "Production ready", "Ready to ship?", "Go live", "Launch check" | `/shipkit-preflight` | stack.md, why.md, architecture.md |
+| "Preflight", "Production ready", "Ready to ship?", "Go live", "Launch check" | `/shipkit-preflight` | stack.json, why.md, architecture.md |
 | "Audit UX", "Check UX patterns", "UX gaps" | `/shipkit-ux-audit` | implementations/ |
 | "Create task", "Track TODO", "User tasks" | `/shipkit-user-instructions` | user-tasks/active.md |
 | "Visualize", "HTML report", "Visual communication" | `/shipkit-communications` | Relevant files based on request |
-| "Audit prompts", "Prompt architecture", "LLM pipeline review", "Check my prompts" | `/shipkit-prompt-audit` | stack.md, architecture.md |
+| "Audit prompts", "Prompt architecture", "LLM pipeline review", "Check my prompts" | `/shipkit-prompt-audit` | stack.json, architecture.md |
 
 ### Execution
 
@@ -163,7 +163,7 @@ This skill provides:
 | "Build until", "Compile until success", "Fix build errors" | `/shipkit-build-relentlessly` | Build output |
 | "Test until", "Run tests until green", "Fix test failures" | `/shipkit-test-relentlessly` | Test output, test-cases |
 | "Lint until", "Fix lint errors", "Clean up lint" | `/shipkit-lint-relentlessly` | Lint output |
-| "Implement independently", "Parallel implementation", "Work on this separately" | `/shipkit-implement-independently` | Spec, stack.md, architecture.md |
+| "Implement independently", "Parallel implementation", "Work on this separately" | `/shipkit-implement-independently` | Spec, stack.json, architecture.md |
 | "Cleanup worktrees", "Clean up worktrees", "Remove old worktrees" | `/shipkit-cleanup-worktrees` | .shipkit/worktrees/ |
 
 ---
@@ -191,7 +191,7 @@ This skill provides:
 If user tries to manually edit:
 ```
 Use the appropriate skill instead:
-  • stack.md → /shipkit-project-context
+  • stack.json → /shipkit-project-context
   • specs/* → /shipkit-spec
   • plans/* → /shipkit-plan
   • architecture.md → /shipkit-architecture-memory
@@ -216,7 +216,7 @@ User asks about component → Load component docs (~1000 tokens)
 ## Context Files This Skill Reads
 
 **At session start:**
-- `.shipkit/stack.md` - Tech stack context
+- `.shipkit/stack.json` - Tech stack context
 - `.shipkit/architecture.md` - Architecture decisions
 - `.shipkit/why.md` - Project vision
 - `package.json` - For freshness comparison
@@ -301,7 +301,7 @@ This skill is the **central router** that connects all other skills.
 - **File freshness logic** - `references/file-freshness-logic.md`
   - Freshness thresholds per file type
   - Staleness detection algorithm
-  - Comparison logic (e.g., stack.md vs package.json)
+  - Comparison logic (e.g., stack.json vs package.json)
 
 ---
 

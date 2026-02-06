@@ -370,7 +370,7 @@ This approach is future-proof — new user content files automatically migrate w
 This includes (but is not limited to):
 - `why.md` - Vision document
 - `architecture.md` - Architecture decisions
-- `stack.md` - Tech stack (may have manual annotations)
+- `stack.json` - Tech stack (may have manual annotations)
 - `specs/**` - Feature specifications (active and implemented)
 - `plans/**` - Implementation plans
 - `progress.md` - Session history
@@ -380,14 +380,14 @@ This includes (but is not limited to):
 - `types.md` - Data contracts
 - `implementations.md` - Component/route documentation
 - `user-tasks/**` - User task lists
-- `production-readiness.md` - Audit reports
+- `preflight.json` - Audit reports
 - `audits/**` - Audit history
 - `ux-decisions.md` - UX decision log
 - `communications/**` - Generated HTML reports
-- `status.md` - Health snapshots
+- `status.json` - Health snapshots
 - Any other user-created files
 
-**Note on stack.md:** While initially auto-generated, users often add manual notes and decisions. Migrating preserves this context. If user wants fresh detection, they can run `/shipkit-project-context` after update.
+**Note on stack.json:** While initially auto-generated, users often add manual notes and decisions. Migrating preserves this context. If user wants fresh detection, they can run `/shipkit-project-context` after update.
 
 **Migration process:**
 1. List all files in archived `.shipkit/` context folder
@@ -435,7 +435,7 @@ Merged intelligently:
 Migrated user content:
 - why.md ✓
 - architecture.md ✓
-- stack.md ✓
+- stack.json ✓
 - specs/ (3 files) ✓
 - product-discovery.md ✓
 - types.md ✓
@@ -565,7 +565,7 @@ SHIPKIT_REPO=https://github.com/stefan-stepzero/shipkit
 
 | Skill | When to Use | Why |
 |-------|-------------|-----|
-| `/shipkit-project-context` | After fresh install | Scan codebase and generate stack.md |
+| `/shipkit-project-context` | After fresh install | Scan codebase and generate stack.json |
 | `/shipkit-why-project` | After fresh install (new project) | Define project vision if not migrated |
 | `/shipkit-codebase-index` | After update | Refresh navigation index |
 
@@ -610,7 +610,7 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 - [ ] CLAUDE.md merged intelligently (user content preserved)
 - [ ] settings.json merged intelligently (user permissions preserved)
 - [ ] settings.local.json untouched (warning if stale)
-- [ ] User context files migrated (including stack.md)
+- [ ] User context files migrated (including stack.json)
 - [ ] No data loss possible (archive has everything)
 <!-- /SECTION:success-criteria -->
 

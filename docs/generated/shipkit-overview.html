@@ -500,7 +500,7 @@
                         <tr>
                             <td class="trigger">Scan codebase, detect stack</td>
                             <td><span class="skill">/shipkit-project-context</span></td>
-                            <td class="creates">stack.md, schema.md</td>
+                            <td class="creates">stack.json, schema.md</td>
                         </tr>
                         <tr>
                             <td class="trigger">Index codebase for navigation</td>
@@ -608,17 +608,17 @@
                         <tr>
                             <td class="trigger">MVP production readiness</td>
                             <td><span class="skill">/shipkit-preflight</span></td>
-                            <td class="creates">production-readiness.md</td>
+                            <td class="creates">preflight.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Scale & enterprise readiness</td>
                             <td><span class="skill">/shipkit-scale-ready</span></td>
-                            <td class="creates">scale-readiness.md</td>
+                            <td class="creates">scale-readiness.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Audit LLM prompt architecture</td>
                             <td><span class="skill">/shipkit-prompt-audit</span></td>
-                            <td class="creates">prompt-audit.md</td>
+                            <td class="creates">prompt-audit.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Audit UX patterns</td>
@@ -709,7 +709,7 @@
                     <h3>🎯 Vision & Discovery</h3>
                     <ul class="skill-list">
                         <li><span class="name">/shipkit-why-project</span> <span class="desc">— Define project vision, strategic direction, and goals. Captures the "why" before building.</span></li>
-                        <li><span class="name">/shipkit-project-context</span> <span class="desc">— Auto-scan codebase to detect tech stack, frameworks, and patterns. Creates stack.md.</span></li>
+                        <li><span class="name">/shipkit-project-context</span> <span class="desc">— Auto-scan codebase to detect tech stack, frameworks, and patterns. Creates stack.json.</span></li>
                         <li><span class="name">/shipkit-codebase-index</span> <span class="desc">— Generate navigation index for faster file discovery. Creates codebase-index.json.</span></li>
                         <li><span class="name">/shipkit-claude-md</span> <span class="desc">— Append learnings, preferences, or project patterns to CLAUDE.md for persistence.</span></li>
                         <li><span class="name">/shipkit-product-discovery</span> <span class="desc">— Define user personas, journeys, and stories. Captures who you're building for.</span></li>
@@ -878,7 +878,7 @@
             <div style="background: #1e293b; color: #e2e8f0; padding: 25px; border-radius: 12px; font-family: 'Courier New', monospace; font-size: 0.95em; line-height: 1.8;">
 <pre>.shipkit/
 ├── why.md                 # Project vision
-├── stack.md               # Tech stack (auto-scanned)
+├── stack.json             # Tech stack (auto-scanned)
 ├── architecture.md        # Decisions log
 ├── types.md               # Type definitions
 ├── progress.md            # Session history

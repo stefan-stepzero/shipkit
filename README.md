@@ -161,7 +161,7 @@ Your project context is stored in:
 ├── specs/               # Feature specifications
 ├── plans/               # Implementation plans
 ├── architecture.md      # Architecture decisions
-├── stack.md             # Technology stack
+├── stack.json           # Technology stack
 ├── implementations.md   # What's been built
 └── types.md             # Data contracts
 ```

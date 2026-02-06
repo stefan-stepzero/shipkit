@@ -30,7 +30,7 @@ agent: shipkit-architect-agent
 
 **Check before starting**:
 - Spec exists: `.shipkit/specs/active/[feature-name].md`
-- Stack defined: `.shipkit/stack.md` (from shipkit-project-context)
+- Stack defined: `.shipkit/stack.json` (from shipkit-project-context)
 
 **UI-Heavy Feature Check** (CRITICAL):
 - If spec describes significant UI/UX → Prototype MUST exist before planning
@@ -102,7 +102,7 @@ options:
 
 **Read these files to understand project context**:
 - `.shipkit/specs/active/[feature-name].md` (Required)
-- `.shipkit/stack.md` (Stack info)
+- `.shipkit/stack.json` (Stack info)
 - `.shipkit/architecture.md` (Past decisions)
 
 **Optional context** (load if relevant): types.md, component-contracts.md, schema.md
@@ -573,7 +573,7 @@ Copy and track:
 
 ### Before This Skill
 - `/shipkit-spec` - Creates feature specification (required)
-- `/shipkit-project-context` - Generates stack.md, schema.md
+- `/shipkit-project-context` - Generates stack.json, schema.md
 - `/shipkit-architecture-memory` - Logs past decisions
 - `/shipkit-prototyping` - Creates UI prototypes (if UI-heavy)
 
@@ -588,7 +588,7 @@ Copy and track:
 
 **Always reads**:
 - `.shipkit/specs/active/[feature].md` - Feature requirements
-- `.shipkit/stack.md` - Tech stack info
+- `.shipkit/stack.json` - Tech stack info
 
 **Scans** (for pattern detection):
 - Existing source files matching patterns (state, fetch, error, auth)

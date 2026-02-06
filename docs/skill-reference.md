@@ -66,7 +66,7 @@ Complete reference for all 23 Shipkit skills.
 **Example output:**
 ```
 ✅ why.md exists
-✅ stack.md exists
+✅ stack.json exists
 ⚠️ No active specs
 ⚠️ architecture.md has no entries
 
@@ -85,7 +85,7 @@ Suggested: Create a spec with /shipkit-spec
 - Need to document existing project
 
 **Reads:** Project files (package.json, etc.)
-**Writes:** `.shipkit/stack.md`
+**Writes:** `.shipkit/stack.json`
 
 ---
 
@@ -162,7 +162,7 @@ Suggested: Create a spec with /shipkit-spec
 - Need to clarify requirements
 - Want documented acceptance criteria
 
-**Reads:** `.shipkit/why.md`, `.shipkit/stack.md`
+**Reads:** `.shipkit/why.md`, `.shipkit/stack.json`
 **Writes:** `.shipkit/specs/active/*.md`
 
 **Spec includes:**
@@ -267,7 +267,7 @@ Suggested: Create a spec with /shipkit-spec
 - Need current best practices
 - Want security patterns
 
-**Reads:** `.shipkit/stack.md`
+**Reads:** `.shipkit/stack.json`
 **Writes:** `references/[service]-patterns.md`
 
 **Supported services:**

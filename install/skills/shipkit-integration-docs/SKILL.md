@@ -33,7 +33,7 @@ agent: shipkit-researcher-agent
 ## Prerequisites
 
 **Check before starting**:
-- Stack defined: `.shipkit/stack.md` (from shipkit-project-context)
+- Stack defined: `.shipkit/stack.json` (from shipkit-project-context)
   - Confirms which services are officially in use
 - Code exists: Service integration code to review
 
@@ -117,26 +117,26 @@ For each pending service in the queue:
 
 ```bash
 # Read to confirm service is approved
-.shipkit/stack.md
+.shipkit/stack.json
 ```
 
-**If service NOT in stack.md**:
+**If service NOT in stack.json**:
 ```
-⚠️ [Service] not documented in stack.md
+⚠️ [Service] not documented in stack.json
 
 This integration adds a new external dependency.
 
 Options:
 1. Document it: /shipkit-project-context (re-scan)
-2. Add manually to stack.md
+2. Add manually to stack.json
 3. Proceed anyway (not recommended)
 
 Should I proceed?
 ```
 
-**If service IS in stack.md**:
+**If service IS in stack.json**:
 ```
-✅ [Service] confirmed in stack.md
+✅ [Service] confirmed in stack.json
 Loading integration patterns...
 ```
 
@@ -146,7 +146,7 @@ Before claiming any service state, verify with tool calls:
 
 | Claim | Required Verification |
 |-------|----------------------|
-| "Service in stack.md" | `Grep: pattern="service-name" path=".shipkit/stack.md"` returns match |
+| "Service in stack.json" | `Grep: pattern="service-name" path=".shipkit/stack.json"` returns match |
 | "Patterns file fresh" | `Read: references/[service]-patterns.md`, parse "Last Updated" as ISO 8601 |
 | "7 days since update" | Compare parsed date to current date mathematically |
 | "WebFetch succeeded" | Check response contains expected sections (Red Flags, Best Practices) |
@@ -155,7 +155,7 @@ Before claiming any service state, verify with tool calls:
 
 ```
 1. Service lookup:
-   - Grep: pattern="[service-name]" path=".shipkit/stack.md"
+   - Grep: pattern="[service-name]" path=".shipkit/stack.json"
    - If 0 matches → service not in stack, warn user
    - If matches → proceed with confidence
 
@@ -177,7 +177,7 @@ Before claiming any service state, verify with tool calls:
 
 **Service name matching:**
 - Case-insensitive search
-- If not found, suggest similar names from stack.md
+- If not found, suggest similar names from stack.json
 - Common variations: "lemon squeezy" vs "lemonsqueezy", "supabase-js" vs "supabase"
 
 **Timestamp format requirements:**
@@ -355,7 +355,7 @@ Read `references/[service]-patterns.md` and extract:
 **shipkit-project-context** - Scans and documents tech stack
 - **When**: Stack includes external services
 - **Why**: Validates services are documented before fetching patterns
-- **Trigger**: Stack check in Step 2 references `stack.md`
+- **Trigger**: Stack check in Step 2 references `stack.json`
 
 ### After This Skill
 
@@ -374,7 +374,7 @@ Read `references/[service]-patterns.md` and extract:
 ## Context Files This Skill Reads
 
 **Required:**
-- `.shipkit/stack.md` - Verifies service is in approved tech stack
+- `.shipkit/stack.json` - Verifies service is in approved tech stack
 
 **Optional:**
 - `.shipkit/.queues/fetch-integration-docs.md` - Queue of services needing docs
@@ -399,7 +399,7 @@ Read `references/[service]-patterns.md` and extract:
 ## Success Criteria
 
 Integration Docs is complete when:
-- [ ] Service identified and verified in stack.md
+- [ ] Service identified and verified in stack.json
 - [ ] Documentation freshness checked (<7 days = use cached)
 - [ ] Fresh patterns fetched via WebFetch (if needed)
 - [ ] Patterns saved to `references/[service]-patterns.md`

@@ -42,7 +42,7 @@ allowed-tools:
 **Optional but helpful**:
 - Existing patterns documented: `.shipkit/implementations.md`
 - Architecture decisions: `.shipkit/architecture.md`
-- Stack info: `.shipkit/stack.md`
+- Stack info: `.shipkit/stack.json`
 
 **No prerequisites required** - Can provide general guidance even for new projects.
 
@@ -103,7 +103,7 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 .shipkit/architecture.md
 
 # Tech stack (to know UI framework constraints)
-.shipkit/stack.md
+.shipkit/stack.json
 ```
 
 **Verification before claiming patterns:**
@@ -119,7 +119,7 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 **Auto-detect**:
 - Similar components in implementations.md
 - Established UX patterns in architecture.md
-- UI framework from stack.md (React, Vue, Svelte, etc.)
+- UI framework from stack.json (React, Vue, Svelte, etc.)
 
 **Token budget**: Keep context reading under 1500 tokens.
 
@@ -293,7 +293,7 @@ Copy and track:
 
 - `/shipkit-project-context` - Generates stack information
   - **When**: Stack includes UI framework (React, Vue, Svelte)
-  - **Why**: UX guidance references stack.md to understand UI framework capabilities
+  - **Why**: UX guidance references stack.json to understand UI framework capabilities
   - **Trigger**: Need to know what UI primitives are available
 
 ### After This Skill
@@ -320,7 +320,7 @@ Copy and track:
 **Optionally reads**:
 - `.shipkit/implementations.md` - Existing UI components/patterns
 - `.shipkit/architecture.md` - Past UX decisions
-- `.shipkit/stack.md` - UI framework info
+- `.shipkit/stack.json` - UI framework info
 
 **Never reads**:
 - Specs, plans, tasks (not relevant for UX guidance)
