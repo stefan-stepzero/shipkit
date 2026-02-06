@@ -156,7 +156,7 @@ Choose 1, 2, or 3:
 How does this skill write output?
 
 1. OVERWRITE - Creates/replaces a single file each time
-   Examples: why.md, latest.html
+   Examples: goals.json, why.md, latest.html
    → Will apply Quick Exit Check + File Exists Workflow patterns
 
 2. APPEND - Adds entries to an ongoing file
@@ -180,6 +180,40 @@ Choose 1, 2, 3, or 4:
 
 ---
 
+#### 1.5b: Output Format (If OVERWRITE or MULTIPLE)
+```
+What format should the output file use?
+
+1. JSON - Structured data following the Shipkit Artifact Convention
+   Use for: Goals, status, structured data that mission control can visualize
+   → Output as .json with required fields: $schema, type, version, lastUpdated, source, summary
+   → RECOMMENDED for new artifact skills
+
+2. Markdown - Human-readable document
+   Use for: Specs, plans, architecture decisions, narrative content
+   → Output as .md with standard sections
+
+Choose 1 or 2:
+```
+
+**Store as:** `output_format` (json|markdown)
+
+**If JSON**: The generated SKILL.md will include the Shipkit Artifact Convention:
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "<artifact-type>",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "<skill-name>",
+  "summary": { ... }
+}
+```
+
+**Reference implementation**: See `install/skills/shipkit-goals/SKILL.md` for a complete JSON artifact skill.
+
+---
+
 #### 1.6: Output Location (If Not NONE)
 ```
 Where does this skill write output?
@@ -189,11 +223,14 @@ Use placeholders for dynamic parts:
 - [component] for component name
 - [name] for generic name
 
-Examples:
+Examples (JSON artifacts):
+- .shipkit/goals.json
+- .shipkit/project-health.json
+
+Examples (Markdown):
 - .shipkit/specs/active/[feature].md
 - .shipkit/architecture.md
 - .shipkit/communications/latest.html
-- .shipkit/user-stories/[story].md
 
 → [user input]
 ```

@@ -58,6 +58,17 @@
 - [ ] NOT just generic lists - has causality
 - [ ] Bidirectional references (if A → B, then B → A)
 
+### JSON Artifact Convention
+- [ ] If skill outputs structured data to `.shipkit/`, uses `.json` format (not `.md`)
+- [ ] JSON output includes `$schema: "shipkit-artifact"` field
+- [ ] JSON output includes `type`, `version`, `lastUpdated`, `source` fields
+- [ ] JSON output includes `summary` object for dashboard rendering
+- [ ] SKILL.md documents the complete JSON schema
+- [ ] Reference implementation: `install/skills/shipkit-goals/SKILL.md`
+
+**Skills that should remain markdown**: specs, plans, architecture decisions (narrative content).
+**Skills that should migrate to JSON**: goals, project health, any structured/countable data.
+
 ### Quality Patterns
 
 **For Artifact Skills** (Part 1.3):
