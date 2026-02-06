@@ -36,6 +36,10 @@
       "Write(pyproject.toml)",
       "Write(requirements.txt)",
 
+      "Write(.claude/**)",
+      "Write(.shipkit/**)",
+      "Write(.shipkit-archive/**)",
+
       "Bash(git:*)",
       "Bash(python:*)",
       "Bash(pip:*)",
