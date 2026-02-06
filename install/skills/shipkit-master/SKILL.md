@@ -106,6 +106,7 @@ This skill provides:
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
 | "Define vision", "Why this project?", "Project goals" | `/shipkit-why-project` | .shipkit/why.md |
+| "Set goals", "Objectives", "Priorities", "What to build toward" | `/shipkit-goals` | .shipkit/why.md, goals.md |
 | "Who are our users?", "Create personas", "User research", "User journey" | `/shipkit-product-discovery` | .shipkit/why.md, stack.md |
 
 ### Context & Status
@@ -251,7 +252,7 @@ This skill is the **central router** that connects all other skills.
 
 | Category | Skills Routed To |
 |----------|------------------|
-| Vision/Discovery | `shipkit-why-project`, `shipkit-product-discovery` |
+| Vision/Discovery | `shipkit-why-project`, `shipkit-goals`, `shipkit-product-discovery` |
 | Context/Status | `shipkit-project-status`, `shipkit-project-context`, `shipkit-work-memory` |
 | Spec/Planning | `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec`, `shipkit-thinking-partner` |
 | Knowledge | `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`, `shipkit-claude-md` |

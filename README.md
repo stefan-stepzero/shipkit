@@ -2,9 +2,9 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**34 skills** organized for streamlined workflow:
+**35 skills** organized for streamlined workflow:
 - **Core Workflow** (5) - Orchestration, status, and context management
-- **Discovery & Planning** (8) - Product discovery, specification, and bug triage
+- **Discovery & Planning** (9) - Product discovery, goals, specification, and bug triage
 - **Implementation** (3) - Architecture, contracts, and integrations
 - **Execution** (6) - Test case generation, relentless build/test/lint, parallel implementation
 - **Quality & Documentation** (8) - Testing, UX, production readiness, prompt architecture, and documentation
@@ -17,7 +17,7 @@ Plus **9 agent personas** that specialize behaviors for different workflow stage
 
 ## What's Inside
 
-### Skills (34 total)
+### Skills (35 total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -28,9 +28,10 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-codebase-index` - Semantic codebase indexing
 - `shipkit-claude-md` - CLAUDE.md management
 
-**Discovery & Planning (8 skills):**
+**Discovery & Planning (9 skills):**
 - `shipkit-product-discovery` - Personas, journeys, user stories
 - `shipkit-why-project` - Strategic vision definition
+- `shipkit-goals` - Project goals, priorities, and success criteria
 - `shipkit-spec` - Feature specification
 - `shipkit-feedback-bug` - Process feedback into investigated bug specs (5 Whys root cause)
 - `shipkit-plan` - Implementation planning
@@ -99,7 +100,7 @@ Add `-y` for non-interactive mode (uses sensible defaults).
 **Already have Shipkit?** Update with `/shipkit-update`
 
 The installer will:
-- Install all 34 skills
+- Install all 35 skills
 - Set up 9 agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
@@ -114,7 +115,7 @@ your-project/
 │   ├── settings.json            # Permissions + hooks
 │   ├── rules/
 │   │   └── shipkit.md           # Framework rules (managed by /shipkit-update)
-│   ├── skills/                  # 34 skill definitions
+│   ├── skills/                  # 35 skill definitions
 │   ├── agents/                  # 9 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
@@ -219,7 +220,7 @@ shipkit/
 ## Key Features
 
 ### Streamlined Workflow
-- 34 focused skills
+- 35 focused skills
 - All skills use `shipkit-` prefix for clarity
 - Context stored in single `.shipkit/` folder
 - No complex workspace structure

@@ -14,6 +14,7 @@ Complete reference for all 23 Shipkit skills.
 | | `shipkit-codebase-index` | Semantic indexing |
 | | `shipkit-claude-md` | CLAUDE.md management |
 | **Discovery** | `shipkit-why-project` | Vision definition |
+| | `shipkit-goals` | Project goals & priorities |
 | | `shipkit-product-discovery` | Personas and journeys |
 | | `shipkit-spec` | Feature specification |
 | | `shipkit-plan` | Implementation planning |
