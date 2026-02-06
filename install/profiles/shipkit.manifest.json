@@ -50,7 +50,8 @@
         {"name": "shipkit-feedback-bug", "desc": "Process feedback into investigated bug specs"},
         {"name": "shipkit-plan", "desc": "Plan implementation steps"},
         {"name": "shipkit-prototyping", "desc": "Create quick UI mockups"},
-        {"name": "shipkit-prototype-to-spec", "desc": "Extract prototype learnings"}
+        {"name": "shipkit-prototype-to-spec", "desc": "Extract prototype learnings"},
+        {"name": "shipkit-thinking-partner", "desc": "Think through decisions with cognitive frameworks"}
       ],
       "Knowledge & Memory": [
         {"name": "shipkit-architecture-memory", "desc": "Log architecture decisions"},
@@ -69,10 +70,12 @@
       ],
       "Quality & Communication": [
         {"name": "shipkit-verify", "desc": "Review work (12 quality dimensions)"},
-        {"name": "shipkit-preflight", "desc": "Production readiness audit"},
+        {"name": "shipkit-preflight", "desc": "MVP production readiness audit"},
+        {"name": "shipkit-scale-ready", "desc": "Scale & enterprise readiness audit"},
         {"name": "shipkit-ux-audit", "desc": "Audit UX patterns"},
         {"name": "shipkit-user-instructions", "desc": "Track manual tasks for user"},
-        {"name": "shipkit-communications", "desc": "Create visual HTML reports"}
+        {"name": "shipkit-communications", "desc": "Create visual HTML reports"},
+        {"name": "shipkit-prompt-audit", "desc": "Audit LLM prompt pipeline architecture"}
       ],
       "Ecosystem": [
         {"name": "shipkit-get-skills", "desc": "Find & install community skills"},
@@ -92,6 +95,7 @@
     {"name": "shipkit-implementer-agent", "desc": "Code implementation"},
     {"name": "shipkit-implement-independently-agent", "desc": "Isolated parallel implementation"},
     {"name": "shipkit-reviewer-agent", "desc": "Code review & quality"},
-    {"name": "shipkit-researcher-agent", "desc": "Research & analysis"}
+    {"name": "shipkit-researcher-agent", "desc": "Research & analysis"},
+    {"name": "shipkit-thinking-partner-agent", "desc": "Cognitive discussion & thinking partner"}
   ]
 }

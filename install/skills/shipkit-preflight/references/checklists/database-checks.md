@@ -1,6 +1,9 @@
-# Database & Data Layer Checks
+# Database & Data Layer Checks (MVP)
 
 Applies when project has a database (Supabase, Postgres, etc.).
+
+**MVP focus**: Security (RLS, injection), data integrity, backup exists.
+**Moved to scale-ready**: Indexes, soft deletes, connection pooling, PITR.
 
 ---
 
@@ -71,11 +74,9 @@ Applies when project has a database (Supabase, Postgres, etc.).
 **Severity**: 🟡 Warning
 
 ### DB-SCHEMA-003: Indexes on Query Patterns
+**Status**: ➡️ MOVED TO SCALE-READY (performance, not correctness)
 **Check**: Frequently queried columns indexed
-**Scan for**: Index definitions, common WHERE clauses
-**Pass criteria**: Indexes match query patterns
-**Fail impact**: Slow queries as data grows
-**Severity**: 🟡 Warning
+**Severity**: 🟡 Warning — see `/shipkit-scale-ready`
 
 ---
 
@@ -120,41 +121,28 @@ Applies when project has a database (Supabase, Postgres, etc.).
 **Fail impact**: Backups might not work
 **Severity**: 🟡 Warning
 
-### DB-BACKUP-003: Point-in-Time Recovery (for production)
+### DB-BACKUP-003: Point-in-Time Recovery
+**Status**: ➡️ MOVED TO SCALE-READY (enterprise tier)
 **Check**: PITR available for critical data
-**Scan for**: PITR configuration
-**Pass criteria**: Can restore to specific point in time
-**Fail impact**: Can only restore to backup time
-**Severity**: 🟡 Warning (production only)
+**Severity**: 🟡 Warning — see `/shipkit-scale-ready`
 
 ---
 
 ## Soft Deletes & Data Retention
 
-### DB-DEL-001: Soft Deletes for User Data
-**Check**: User data soft deleted, not hard deleted
-**Scan for**: deleted_at column, soft delete logic
-**Pass criteria**: Data recoverable after "delete"
-**Fail impact**: Accidental permanent deletion, GDPR issues
-**Severity**: 🟡 Warning
+**Status**: ➡️ ENTIRE SECTION MOVED TO SCALE-READY
 
-### DB-DEL-002: Data Retention Policy
-**Check**: Policy for how long deleted data kept
-**Scan for**: Retention configuration, cleanup jobs
-**Pass criteria**: Clear retention period documented
-**Fail impact**: GDPR compliance issues
-**Severity**: 🟡 Warning
+These are important for GDPR compliance but can be added after MVP launch.
+See `/shipkit-scale-ready` for DB-DEL-001 (soft deletes) and DB-DEL-002 (retention policy).
 
 ---
 
 ## Connection Management
 
 ### DB-CONN-001: Connection Pooling
+**Status**: ➡️ MOVED TO SCALE-READY (performance at scale)
 **Check**: Database connections pooled appropriately
-**Scan for**: Pool configuration, connection limits
-**Pass criteria**: Pool sized for expected load
-**Fail impact**: Connection exhaustion under load
-**Severity**: 🟡 Warning
+**Severity**: 🟡 Warning — see `/shipkit-scale-ready`
 
 ### DB-CONN-002: Connection Secrets Not Logged
 **Check**: Database URLs/passwords not in logs

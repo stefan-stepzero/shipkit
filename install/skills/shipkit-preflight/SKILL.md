@@ -12,11 +12,13 @@ allowed-tools:
   - Bash
 ---
 
-# shipkit-preflight - Production Readiness Audit
+# shipkit-preflight - MVP Production Readiness Audit
 
-**Purpose**: Ensure your project is actually ready for real users — not just working on localhost.
+**Purpose**: Ensure your project is ready for first users — the essentials that can't wait.
 
-**What it does**: Aggregates context from existing skills, identifies gaps, runs a comprehensive SaaS production checklist, and generates a prioritized audit report.
+**What it does**: Runs an MVP-focused production checklist covering security, data integrity, error handling, UX basics, and legal compliance. For scale/enterprise readiness (observability, performance, operational maturity), use `/shipkit-scale-ready` after you have traction.
+
+**Philosophy**: With AI dev, building is cheap — but security, data integrity, and user trust aren't. This checklist keeps what matters for MVP while deferring optimization concerns.
 
 ---
 
@@ -91,6 +93,7 @@ This skill aggregates context from other skills. It will route you to create mis
 | `.env*`, `**/config/**` | Environment |
 | `Dockerfile`, `vercel.json`, `railway.*` | Deployment |
 | `**/payment/**`, `**/billing/**`, `**/webhook/**` | Payments |
+| `**/shared/**`, `**/common/**`, `**/features/**/components/**` | Code Structure & Reuse |
 
 **Communicate scope to user:**
 ```
@@ -167,40 +170,55 @@ Possible questions (only if not already documented):
 
 **See**: `references/checklists/` for full checklist content.
 
-**USE SUBAGENT FOR PARALLEL CHECKLIST VERIFICATION** - For full audits with multiple categories:
+**USE PARALLEL SUBAGENTS BY CATEGORY** - For full audits, spawn multiple Explore agents in parallel:
 
 ```
-Task tool with subagent_type: "Explore"
-Prompt: "Run production readiness checks on this [stack] codebase.
+Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
-Check these categories and report Pass/Fail/Warning with file:line evidence:
+1. AUTH & SECURITY AGENT (subagent_type: "Explore")
+   Prompt: "Audit authentication and security patterns in this [stack] codebase.
+   Check: auth on protected routes, session expiry, CSRF protection, rate limiting,
+   secrets in env vars, input validation, brute force prevention, form abuse prevention.
+   Report Pass/Fail/Warning with file:line evidence for each check."
 
-AUTH & SECURITY:
-- Auth on protected routes (getSession/requireAuth in API routes)
-- Secrets in env vars not code (no hardcoded keys/passwords)
-- Input validation on forms (zod/yup/schema.parse)
+2. DATA & ERROR HANDLING AGENT (subagent_type: "Explore")
+   Prompt: "Audit data integrity and error handling in this [stack] codebase.
+   Check: RLS policies (Supabase), cascade deletes, backup docs, try/catch on async,
+   error boundaries, consistent API errors, retry logic, graceful degradation, error logging.
+   Report Pass/Fail/Warning with file:line evidence for each check."
 
-ERROR HANDLING:
-- Try/catch on async operations
-- Error boundaries in React apps
-- Consistent API error responses
+3. UX & DEPLOYMENT AGENT (subagent_type: "Explore")
+   Prompt: "Audit UX resilience and deployment readiness in this [stack] codebase.
+   Check: loading states, empty states, confirmation dialogs, form validation,
+   mobile responsive, build passes, health endpoint, migrations, SSL, domain config.
+   Report Pass/Fail/Warning with file:line evidence for each check."
 
-UX RESILIENCE:
-- Loading states on async operations
-- Empty states handled
-- Form validation with clear errors
+4. CODE QUALITY & COMPLIANCE AGENT (subagent_type: "Explore")
+   Prompt: "Audit code structure, accessibility, and compliance in this [stack] codebase.
+   Check: no duplicate components, shared components used, consistent naming,
+   utils consolidated, types centralized, data-testid attributes, ARIA roles,
+   Terms of Service link, Privacy Policy link, cookie consent.
+   Report Pass/Fail/Warning with file:line evidence for each check."
 
-For each check: state Pass/Fail, provide file:line evidence, note what's missing."
+5. PAYMENTS AGENT (if applicable) (subagent_type: "Explore")
+   Prompt: "Audit payment integration in this [stack] codebase.
+   Check: webhook signature verification, idempotency, failed payment handling,
+   subscription state sync, test mode disabled in prod.
+   Report Pass/Fail/Warning with file:line evidence for each check."
 ```
 
-**Why subagent**: Full audit requires scanning many patterns across entire codebase. Explore agent runs checks in parallel and returns structured findings.
+**Why parallel subagents**:
+- Each category runs simultaneously → faster total execution
+- Smaller scope per agent → more thorough checks within category
+- Better context management → agent stays focused on related patterns
+- Clearer attribution → know which category each finding came from
 
-**When to use subagent**:
+**When to use parallel subagents**:
 - Full audit with 3+ checklist categories
 - Large codebase (50+ source files)
-- Multiple pattern types to scan
+- Need thorough coverage
 
-**When to scan manually**:
+**When to scan manually (single thread)**:
 - Quick verify (re-check failures only)
 - Incremental audit (few files changed)
 - Single category focus
@@ -295,6 +313,7 @@ Each checklist item describes what to "Scan for" — translate these to actual t
 | Environment | X | X | X | X | |
 | Deployment | X | X | X | X | |
 | UX Resilience | X | X | X | X | ✓ |
+| Code Structure & Reuse | X | X | X | X | |
 | Legal/Compliance | X | X | X | X | |
 
 **Overall**: [READY / READY WITH WARNINGS / NOT READY]
@@ -454,15 +473,15 @@ Ready to fix the remaining blockers?
 - Rate limiting on auth endpoints
 - Secrets in environment variables (not code)
 - Input sanitization
+- **Brute force prevention** — lockout or delay after N failed login attempts (pattern: counter in DB, exponential backoff)
+- **Form abuse prevention** — honeypot field + timing check on public forms (pattern: hidden field bots fill, reject < 2s submissions)
 
 ### 2. Data & Database
 - RLS policies on all user tables (Supabase)
-- Soft deletes for user data (GDPR)
 - Cascade deletes configured correctly
-- Database indexes on query patterns
 - Backup strategy documented
-- Data export capability (GDPR)
-- PII encryption at rest
+
+*Moved to scale-ready: soft deletes, indexes, data export, PII encryption*
 
 ### 3. Error Handling
 - Try/catch on all async operations
@@ -471,6 +490,7 @@ Ready to fix the remaining blockers?
 - Failed request retry logic
 - Graceful degradation for non-critical features
 - User-friendly error messages (not stack traces)
+- **Error visibility** — errors logged with context for debugging (pattern: structured error logging with user/request context; optional: error tracking service like Sentry free tier)
 
 ### 4. Environment & Config
 - All env vars documented in .env.example
@@ -483,34 +503,46 @@ Ready to fix the remaining blockers?
 - Build passes without warnings
 - Health check endpoint exists
 - Migrations run automatically or documented
-- Rollback plan documented
 - SSL/HTTPS enforced
 - Domain configured correctly
+
+*Moved to scale-ready: rollback plan documented*
 
 ### 6. UX Resilience
 - Loading states on all async operations
 - Empty states handled
-- Offline handling (or clear error)
 - Confirmation on destructive actions
 - Form validation with clear errors
-- Mobile responsive (if applicable)
+- Mobile responsive
+
+*Moved to scale-ready: offline handling*
 
 ### 7. Payments (if applicable)
 - Webhook signature verification
 - Idempotency on payment operations
 - Failed payment handling
 - Subscription state synced with provider
-- Receipts/invoices sent
 - Test mode disabled in prod
+
+*Moved to scale-ready: receipts/invoices*
 
 ### 8. Legal/Compliance
 - Terms of Service link
 - Privacy Policy link
 - Cookie consent (if required)
-- Data retention policy
-- GDPR compliance (if EU users)
 
-### 9. AI Agent Accessibility
+*Moved to scale-ready: data retention policy, GDPR data export/deletion*
+
+### 9. Code Structure & Reuse
+- **No duplicate components** (same component name in multiple feature directories)
+- **Shared components used** (features import from shared/common/ui, not local copies)
+- **Consistent naming** (no Modal vs Dialog vs Popup for same purpose)
+- **Utils consolidated** (no duplicate hooks/helpers across features)
+- **Types centralized** (shared types in one location, not scattered)
+
+**Why critical**: Duplication creates maintenance burden, inconsistent UX, and makes global updates (like design system changes) painful. Ships technical debt.
+
+### 10. AI Agent Accessibility
 - Interactive elements have `data-testid` attributes
 - Custom widgets have ARIA roles (`combobox`, `dialog`, `menu`, `tablist`)
 - State exposed via attributes (`aria-expanded`, `aria-checked`, `data-state`)
@@ -589,7 +621,15 @@ Ready to fix the remaining blockers?
 ### Differs From
 
 - `/shipkit-verify` — Code quality on recent changes (pre-commit)
-- `/shipkit-preflight` — Production readiness (pre-launch)
+- `/shipkit-preflight` — MVP production readiness (pre-launch)
+- `/shipkit-scale-ready` — Growth & enterprise readiness (post-traction)
+
+### Progression
+
+```
+/shipkit-preflight  →  Launch MVP  →  Get traction  →  /shipkit-scale-ready
+     (MVP)                                              (Growth/Enterprise)
+```
 
 ---
 

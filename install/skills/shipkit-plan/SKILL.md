@@ -142,26 +142,31 @@ options:
 
 **Why this matters**: Claude defaults to training data patterns. If codebase uses SWR but Claude proposes React Query, the plan creates inconsistency and technical debt.
 
-**USE SUBAGENT FOR THIS STEP** - Launch an Explore subagent to scan the codebase efficiently:
+**USE PARALLEL SUBAGENTS FOR PATTERN SCANNING** - Launch multiple Explore agents simultaneously for faster, more thorough scanning:
 
 ```
-Task tool with subagent_type: "Explore"
-Prompt: "Scan codebase for existing patterns. Find and report:
-1. State management pattern (useState/useReducer/Redux/Zustand/Jotai/signals)
-2. Data fetching pattern (fetch/axios/SWR/React Query/tRPC)
-3. Error handling pattern (ErrorBoundary/try-catch/error middleware)
-4. Auth pattern (session/JWT/middleware/protected routes)
-5. Component structure pattern (feature folders/atomic/etc)
+Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
-For each, provide: pattern name, example file path, brief code snippet showing usage.
-Be thorough - check multiple directories."
+1. FRONTEND PATTERNS AGENT (subagent_type: "Explore")
+   Prompt: "Scan codebase for frontend patterns. Find and report:
+   - State management (useState/useReducer/Redux/Zustand/Jotai/signals)
+   - Data fetching (fetch/axios/SWR/React Query/tRPC)
+   - Component structure (feature folders/atomic/barrel exports)
+   For each: pattern name, example file path, brief usage snippet."
+
+2. BACKEND & INFRASTRUCTURE AGENT (subagent_type: "Explore")
+   Prompt: "Scan codebase for backend/infrastructure patterns. Find and report:
+   - Auth pattern (session/JWT/middleware/protected routes)
+   - Error handling (ErrorBoundary/try-catch/error middleware)
+   - API patterns (route handlers, response format, validation)
+   For each: pattern name, example file path, brief usage snippet."
 ```
 
-**Why subagent**:
-- Explore agent is optimized for codebase scanning
+**Why parallel subagents**:
+- Each agent focuses on related patterns (frontend vs backend)
+- Runs simultaneously → faster total execution
+- More thorough coverage within each domain
 - Reduces context usage in main conversation
-- Can search multiple patterns in parallel
-- Returns focused summary instead of raw grep output
 
 **Fallback** (if subagent unavailable): Manual grep commands:
 ```bash

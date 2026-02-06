@@ -106,22 +106,35 @@ Before defining any type, verify claims with tool calls:
 
 When documenting a type, find ALL usages to understand impact.
 
-**USE SUBAGENT FOR TYPE RIPPLE DETECTION** - When checking impact of type changes:
+**USE PARALLEL SUBAGENTS FOR TYPE ANALYSIS** - For comprehensive type verification:
 
 ```
-Task tool with subagent_type: "Explore"
-Prompt: "Find all usages of type '[TypeName]' in the codebase.
+Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
-Report:
-1. Files that import this type
-2. Components using this type as props
-3. Functions with this type as parameter/return
-4. Other types that extend or reference this type
+1. TYPE RIPPLE AGENT (subagent_type: "Explore")
+   Prompt: "Find all usages of type '[TypeName]' in the codebase.
+   Report:
+   - Files that import this type
+   - Components using this type as props
+   - Functions with this type as parameter/return
+   - Other types that extend or reference this type
+   For each: file path, line number, how it's used."
 
-For each usage: file path, line number, how it's used (import/props/param/extends)."
+2. SCHEMA ALIGNMENT AGENT (subagent_type: "Explore")
+   Prompt: "Check alignment between TypeScript types and database schema.
+   Read .shipkit/schema.md (or prisma/schema.prisma).
+   Compare field names, types, and nullability.
+   Report:
+   - Fields in type but not in database
+   - Fields in database but not in type
+   - Type mismatches (string vs number, etc.)
+   - Nullable mismatches"
 ```
 
-**Why subagent**: Type ripple can span many files. Explore agent scans efficiently and returns structured impact report.
+**Why parallel subagents**:
+- Type ripple and schema alignment are independent checks
+- Running simultaneously speeds up validation
+- Each agent focuses on one concern (usage vs correctness)
 
 **Fallback** - Manual grep:
 ```

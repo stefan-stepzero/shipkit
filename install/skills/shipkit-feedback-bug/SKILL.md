@@ -127,18 +127,28 @@ Severity (for bugs):
 - Note exact error messages, console output
 - Find the simplest case that triggers the bug
 
-### 3b: Isolate the Problem
+### 3b: Isolate the Problem + 3d: Assess Blast Radius (PARALLEL)
 
-**Use Explore subagent to search codebase:**
+**FOR MULTIPLE BUGS, USE PARALLEL SUBAGENTS:**
 
 ```
-Spawn Explore agent:
-"Find code related to [feature/component from bug].
-Look for: event handlers, state management, API calls.
-Check for: error handling, edge cases, race conditions."
+Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+
+1. CODE ISOLATION AGENT (subagent_type: "Explore")
+   Prompt: "Find code related to [feature/component from bug].
+   Look for: event handlers, state management, API calls.
+   Check for: error handling, edge cases, race conditions.
+   Return: file paths, relevant code sections, potential problem areas."
+
+2. BLAST RADIUS AGENT (subagent_type: "Explore")
+   Prompt: "Find all places using similar patterns to [feature/component].
+   Check if same bug pattern could occur elsewhere.
+   Return: list of files with similar code, risk assessment per file."
 ```
 
-**Isolation techniques**:
+**Why parallel**: Isolation and blast radius are independent investigations - running them simultaneously speeds up the analysis.
+
+**Isolation techniques** (after agent returns):
 - Binary search: Disable half the code path, does bug persist?
 - Input variation: What inputs trigger vs don't trigger?
 - State inspection: What's the state when it fails?
@@ -171,17 +181,7 @@ ROOT CAUSE: Race condition between parent re-render and async response
 - Integration issue (API contract, external service)
 - Environment issue (browser, config)
 
-### 3d: Assess Blast Radius
-
-**Use Explore subagent:**
-
-```
-Spawn Explore agent:
-"Find all places using [pattern/function from root cause].
-Check if same bug could occur elsewhere."
-```
-
-**Document**: What other code/features could have the same issue?
+**Document blast radius**: Use results from parallel agent to identify other code/features with same issue.
 
 ### 3e: Capture Learnings
 

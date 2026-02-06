@@ -448,3 +448,191 @@ Grep: pattern="fetch\(|useSWR|useQuery"
 | Zod schemas | All validation code | Schema import consistency |
 | Error handling | All async code | Consistent try/catch |
 | Data fetching | All fetching code | Error/loading state handling |
+
+---
+
+## Component Duplication Patterns
+
+Detect cases where components are duplicated instead of reused from shared locations.
+
+### Duplicate Component Names Detection
+
+**Find component files with the same basename in different directories:**
+```
+# Step 1: Get all component files
+Glob: pattern="**/components/**/*.{tsx,jsx}"
+
+# Step 2: Group by basename and find duplicates
+# Look for patterns like:
+#   - src/features/auth/Button.tsx
+#   - src/features/dashboard/Button.tsx
+#   - src/components/Button.tsx  (this is the shared one!)
+
+# If same basename appears in multiple directories: potential duplication
+```
+
+**Common duplicate-prone component names:**
+```
+Grep: pattern="(Button|Modal|Card|Input|Select|Dropdown|Avatar|Badge|Spinner|Loading|Alert|Toast)\.tsx"
+      glob="**/*.tsx"
+      output_mode="files_with_matches"
+
+→ Group results by basename
+→ Flag if same component name in 2+ feature directories
+→ EXCLUDE: shared/, components/, common/, ui/ (these ARE the shared locations)
+```
+
+### Shared Directory Usage Check
+
+**Find shared component directories:**
+```
+Glob: pattern="**/+(shared|common|ui)/components/**/*.{tsx,jsx}"
+      # or
+Glob: pattern="**/components/+(ui|shared|common)/**/*.{tsx,jsx}"
+```
+
+**Check if features import from shared:**
+```
+# Step 1: Find feature-local components
+Glob: pattern="**/features/**/components/**/*.{tsx,jsx}"
+
+# Step 2: For each, check if similar component exists in shared
+# If shared/Button.tsx exists AND features/auth/components/Button.tsx exists
+# → Likely duplication
+
+# Step 3: Check import patterns in feature code
+Grep: pattern="from ['\"].*/(shared|common|ui)/components"
+      glob="**/features/**/*.{tsx,jsx}"
+      output_mode="count"
+
+→ Low count = features not using shared components
+```
+
+### Similar Purpose Detection (Heuristic)
+
+**Find components with similar naming patterns:**
+```
+# Modal variants
+Grep: pattern="(Modal|Dialog|Popup|Overlay)\\.(tsx|jsx)"
+      glob="**/*.{tsx,jsx}"
+      output_mode="files_with_matches"
+
+# Card variants
+Grep: pattern="(Card|Tile|Panel|Box)\\.(tsx|jsx)"
+      glob="**/*.{tsx,jsx}"
+      output_mode="files_with_matches"
+
+# Input variants
+Grep: pattern="(Input|Field|TextBox|TextField)\\.(tsx|jsx)"
+      glob="**/*.{tsx,jsx}"
+      output_mode="files_with_matches"
+
+# Button variants
+Grep: pattern="(Button|Btn|Action|CTA)\\.(tsx|jsx)"
+      glob="**/*.{tsx,jsx}"
+      output_mode="files_with_matches"
+
+→ If multiple files match same category outside shared: review for duplication
+```
+
+### Component Size Similarity Detection
+
+**Find similarly-sized component files (potential clones):**
+```
+# Manual review trigger: multiple component files between 30-100 lines
+# with similar export signatures
+
+# Step 1: Find component files
+Glob: pattern="**/components/**/*.tsx"
+
+# Step 2: Read each, check for:
+# - Similar prop interfaces
+# - Similar JSX structure
+# - Similar hooks usage
+
+→ Flag pairs with >70% structural similarity for review
+```
+
+### Import Pattern Analysis
+
+**Check if a feature directory has local implementations of common patterns:**
+```
+# Find feature directories with their own utils/hooks
+Glob: pattern="**/features/*/+(utils|hooks|helpers)/**"
+
+# Check if shared versions exist
+Glob: pattern="**/+(shared|common|lib)/+(utils|hooks|helpers)/**"
+
+# Compare: if feature has useAuth.ts AND shared has useAuth.ts
+# → Likely duplication
+```
+
+### "Should This Be Shared?" Sequence
+
+```
+1. Glob: pattern="**/*.{tsx,jsx}"
+   → Get all component files
+
+2. Group by basename (ignore path)
+   → Find names appearing 2+ times
+
+3. For each duplicate name:
+   a. Check if one is in shared/common/ui location
+      - YES → Check if feature copies are importing it
+      - NO → Flag as "no shared version, multiple copies exist"
+
+   b. Read both files, compare:
+      - Props interface
+      - Core functionality
+      - If >60% similar → "Should consolidate to shared"
+
+4. Classification:
+   - DUPLICATE_NO_SHARED: Same component in multiple features, no shared version
+   - DUPLICATE_NOT_USING_SHARED: Shared version exists, feature has local copy
+   - SIMILAR_PURPOSE: Different names but same purpose (Modal vs Dialog)
+```
+
+### Evidence Citation for Duplication
+
+```markdown
+**Maintainability: Component Duplication** [DUPLICATE_NOT_USING_SHARED]
+- Evidence: `Glob("**/Button.tsx")` → found 3 files:
+  - src/components/ui/Button.tsx (SHARED)
+  - src/features/auth/components/Button.tsx
+  - src/features/dashboard/components/Button.tsx
+- Evidence: `Grep("from.*components/ui/Button" in "features/auth")` → 0 matches
+- File: `src/features/auth/components/Button.tsx`
+- Classification: DUPLICATE_NOT_USING_SHARED (shared Button exists, feature has local copy)
+- Impact: Inconsistent UI, maintenance burden, harder to update styles globally
+- Fix: Delete local copy, import from shared: `import { Button } from '@/components/ui/Button'`
+```
+
+### Quick Duplication Check (Fast Pass)
+
+**Run these 3 checks for fast duplication detection:**
+
+```
+# 1. Find duplicate basenames
+Bash: find src -name "*.tsx" -type f | xargs -n1 basename | sort | uniq -c | sort -rn | head -20
+→ Any count > 1 outside shared = investigate
+
+# 2. Check shared component usage
+Grep: pattern="from ['\"]@?/?(shared|common|ui|components/ui)"
+      glob="**/features/**/*.{ts,tsx}"
+      output_mode="count"
+→ Low count = features not leveraging shared components
+
+# 3. Find modal/dialog variants (common duplication)
+Glob: pattern="**/*{Modal,Dialog}*.tsx"
+→ If multiple AND not in shared = likely duplication
+```
+
+### Duplication Severity Levels
+
+| Severity | Pattern | Action |
+|----------|---------|--------|
+| 🔴 Critical | Same component name, different implementations, both actively used | Consolidate immediately |
+| 🟡 Warning | Shared exists, feature has local copy | Migrate to shared |
+| 🟡 Warning | Same purpose, different names (Modal vs Dialog) | Review and standardize |
+| 🟢 Minor | Slight variations in similar components | Consider abstraction |
+| ⏭️ N/A | Intentionally different (e.g., AdminButton vs UserButton) | Document why separate |

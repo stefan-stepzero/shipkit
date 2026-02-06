@@ -1,6 +1,9 @@
-# Deployment Checks
+# Deployment Checks (MVP)
 
 Platform-specific checks for common deployment targets.
+
+**MVP focus**: Build passes, domain works, HTTPS, health endpoint.
+**Moved to scale-ready**: Rollback procedure, zero-downtime deploys.
 
 ---
 
@@ -174,11 +177,9 @@ Platform-specific checks for common deployment targets.
 **Severity**: 🟡 Warning
 
 ### DEPLOY-CI-002: Rollback Possible
+**Status**: ➡️ MOVED TO SCALE-READY (operational maturity)
 **Check**: Can revert to previous version
-**Scan for**: Rollback procedure, versioning
-**Pass criteria**: One-click or documented rollback
-**Fail impact**: Stuck with broken deploy
-**Severity**: 🟡 Warning
+**Severity**: 🟡 Warning — see `/shipkit-scale-ready`
 
 ### DEPLOY-CI-003: Deploy Notifications
 **Check**: Team notified of deployments

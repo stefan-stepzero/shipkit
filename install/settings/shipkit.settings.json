@@ -121,7 +121,10 @@
       "Skill(shipkit-lint-relentlessly)",
       "Skill(shipkit-test-cases)",
       "Skill(shipkit-implement-independently)",
-      "Skill(shipkit-cleanup-worktrees)"
+      "Skill(shipkit-cleanup-worktrees)",
+      "Skill(shipkit-thinking-partner)",
+      "Skill(shipkit-scale-ready)",
+      "Skill(shipkit-prompt-audit)"
     ],
 
     "deny": [

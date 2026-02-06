@@ -1,6 +1,9 @@
-# Authentication & Authorization Checks
+# Authentication & Authorization Checks (MVP)
 
 Applies when project has user authentication.
+
+**MVP focus**: Auth on routes, session management, rate limiting, brute force prevention.
+**Moved to scale-ready**: Security headers, admin route hardening, API key rotation.
 
 ---
 
@@ -41,7 +44,31 @@ Applies when project has user authentication.
 **Fail impact**: Credential stuffing attacks
 **Severity**: 🔴 Blocker
 
-### AUTH-006: Password Reset Flow Secure
+### AUTH-006: Brute Force Prevention Pattern
+**Check**: Account lockout or exponential delay after failed attempts
+**Pattern**: Counter in DB tracking failed attempts, lockout threshold
+**Scan for**:
+```
+Grep: pattern="failedAttempts|loginAttempts|lockout|accountLocked"
+      glob="**/*.{ts,js}"
+```
+**Pass criteria**: Failed login tracking exists, lockout or delay logic
+**Fail impact**: Automated credential stuffing succeeds eventually
+**Severity**: 🔴 Blocker
+
+### AUTH-007: Form Abuse Prevention Pattern
+**Check**: Public forms protected against bot spam
+**Pattern**: Honeypot field (hidden, bots fill it) + timing check (< 2s = bot)
+**Scan for**:
+```
+Grep: pattern="honeypot|botCheck|formTiming|spamProtection"
+      glob="**/*.{ts,tsx,js}"
+```
+**Pass criteria**: Contact/signup forms have spam protection
+**Fail impact**: Inbox flooded with bot submissions
+**Severity**: 🟡 Warning
+
+### AUTH-008: Password Reset Flow Secure
 **Check**: Password reset uses time-limited tokens
 **Scan for**: Reset token generation, expiry check
 **Pass criteria**: Token expires, single use, secure delivery

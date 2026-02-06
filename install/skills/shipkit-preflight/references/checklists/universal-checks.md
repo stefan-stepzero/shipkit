@@ -1,6 +1,36 @@
-# Universal Production Checks
+# Universal Production Checks (MVP)
 
-Applies to ALL projects regardless of stack.
+Applies to ALL projects regardless of stack. These are MVP-critical checks.
+
+For growth/enterprise checks (observability, performance, operational maturity), see `/shipkit-scale-ready`.
+
+---
+
+## Auth & Security Patterns
+
+### UNI-SEC-004: Brute Force Prevention
+**Check**: Login attempts are rate-limited with lockout
+**Pattern**: Counter in DB, lockout or exponential delay after N failures
+**Scan for**:
+```
+Grep: pattern="failedAttempts|loginAttempts|lockout|accountLocked"
+      glob="**/*.{ts,js}"
+```
+**Pass criteria**: Failed login tracking exists, lockout logic implemented
+**Fail impact**: Automated credential stuffing attacks succeed
+**Severity**: 🔴 Blocker
+
+### UNI-SEC-005: Form Abuse Prevention
+**Check**: Public forms protected against bot spam
+**Pattern**: Honeypot field (hidden field bots fill) + timing check (< 2s = bot)
+**Scan for**:
+```
+Grep: pattern="honeypot|botCheck|formTiming|spamProtection"
+      glob="**/*.{ts,tsx,js}"
+```
+**Pass criteria**: Contact/signup forms have spam protection
+**Fail impact**: Inbox flooded with bot submissions
+**Severity**: 🟡 Warning
 
 ---
 
@@ -32,6 +62,21 @@ Applies to ALL projects regardless of stack.
 **Scan for**: Errors caught but not logged
 **Pass criteria**: `console.error` or logging service captures errors
 **Fail impact**: Can't debug production issues
+**Severity**: 🟡 Warning
+
+### UNI-ERR-005: Error Visibility Pattern
+**Check**: Errors logged with context for debugging
+**Pattern**: Structured error logging with user/request context; optional error tracking service
+**Scan for**:
+```
+Grep: pattern="Sentry|LogRocket|errorTracking|captureException"
+      glob="**/*.{ts,tsx,js}"
+# Or structured logging
+Grep: pattern="error.*userId|error.*requestId|logError"
+      glob="**/*.{ts,js}"
+```
+**Pass criteria**: Errors include enough context to debug (user, action, stack)
+**Fail impact**: Can see errors but can't reproduce or understand them
 **Severity**: 🟡 Warning
 
 ---
@@ -190,3 +235,89 @@ Applies to ALL projects regardless of stack.
 **Pass criteria**: Deployment is repeatable
 **Fail impact**: Bus factor risk
 **Severity**: 🟡 Warning
+
+---
+
+## Code Structure & Reuse
+
+### UNI-REUSE-001: No Duplicate Component Names
+**Check**: Same component name doesn't exist in multiple feature directories
+**Scan for**:
+```
+# Find component files, group by basename
+Glob: pattern="**/components/**/*.{tsx,jsx}"
+# Flag if Button.tsx exists in both features/auth/ and features/dashboard/
+```
+**Pass criteria**: Each component name exists in ONE location (preferably shared)
+**Fail impact**: Inconsistent UI, duplicated maintenance, divergent behavior
+**Severity**: 🟡 Warning
+
+### UNI-REUSE-002: Shared Components Used
+**Check**: Features import from shared/common/ui directories, not local copies
+**Scan for**:
+```
+# Check for shared directory
+Glob: pattern="**/+(shared|common|ui)/components/**/*.{tsx,jsx}"
+
+# Check import patterns from feature code
+Grep: pattern="from ['\"].*/(shared|common|ui)/components"
+      glob="**/features/**/*.{tsx,jsx}"
+```
+**Pass criteria**: Features import shared components; no local copies of shared components
+**Fail impact**: Technical debt, harder to maintain design consistency
+**Severity**: 🟡 Warning
+
+### UNI-REUSE-003: Consistent Component Naming
+**Check**: No synonymous component names for same purpose (Modal vs Dialog vs Popup)
+**Scan for**:
+```
+# Find similar-purpose components
+Glob: pattern="**/*{Modal,Dialog,Popup}*.tsx"
+Glob: pattern="**/*{Card,Tile,Panel}*.tsx"
+Glob: pattern="**/*{Button,Btn,CTA}*.tsx"
+```
+**Pass criteria**: One naming convention for each component type
+**Fail impact**: Confusing codebase, inconsistent patterns
+**Severity**: 🟢 Info
+
+### UNI-REUSE-004: Utils Not Duplicated
+**Check**: Utility functions and hooks don't exist in multiple places
+**Scan for**:
+```
+# Find utils/hooks directories in features
+Glob: pattern="**/features/*/+(utils|hooks|helpers)/**"
+
+# Compare with shared utils
+Glob: pattern="**/+(shared|common|lib)/+(utils|hooks|helpers)/**"
+
+# Flag overlap (e.g., features/auth/hooks/useAuth.ts AND shared/hooks/useAuth.ts)
+```
+**Pass criteria**: Utilities exist in one canonical location
+**Fail impact**: Divergent implementations, hard to fix bugs globally
+**Severity**: 🟡 Warning
+
+### UNI-REUSE-005: Types Centralized
+**Check**: Shared types defined in one location, not scattered
+**Scan for**:
+```
+# Find type definition files
+Glob: pattern="**/types/**/*.{ts,d.ts}"
+Glob: pattern="**/*.types.ts"
+
+# Flag if same type name defined multiple times
+Grep: pattern="^export (type|interface) (User|Project|Settings)"
+      glob="**/*.ts"
+```
+**Pass criteria**: Core types in shared/types or similar, features extend not duplicate
+**Fail impact**: Type conflicts, refactoring pain
+**Severity**: 🟡 Warning
+
+### Detection Summary
+
+| Check | Quick Detection | Pass Signal |
+|-------|-----------------|-------------|
+| UNI-REUSE-001 | Glob + group by basename | Each basename appears once |
+| UNI-REUSE-002 | Grep for shared imports | Features use `from '@/shared'` |
+| UNI-REUSE-003 | Glob for synonyms | One Modal, not Modal+Dialog |
+| UNI-REUSE-004 | Glob utils in features vs shared | No overlap |
+| UNI-REUSE-005 | Grep for type definitions | Core types in one place |

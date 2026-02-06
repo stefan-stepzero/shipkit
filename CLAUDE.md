@@ -237,24 +237,24 @@ Location: `install/skills/`
 
 **Core Workflow:** `shipkit-master`, `shipkit-project-status`, `shipkit-project-context`, `shipkit-codebase-index`, `shipkit-claude-md`
 
-**Discovery & Planning:** `shipkit-product-discovery`, `shipkit-why-project`, `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec`
+**Discovery & Planning:** `shipkit-product-discovery`, `shipkit-why-project`, `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec`, `shipkit-thinking-partner`
 
 **Implementation:** `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`
 
 **Execution:** `shipkit-build-relentlessly`, `shipkit-test-relentlessly`, `shipkit-lint-relentlessly`, `shipkit-test-cases`, `shipkit-implement-independently`, `shipkit-cleanup-worktrees`
 
-**Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
+**Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-scale-ready`, `shipkit-prompt-audit`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
 
 **Ecosystem:** `shipkit-get-skills`, `shipkit-get-mcps`
 
 **System:** `shipkit-detect` (auto-triggered), `shipkit-update`
 
-**Total:** 31 skills
+**Total:** 34 skills
 
 ### Agents
 Location: `install/agents/`
 
-`shipkit-project-manager-agent`, `shipkit-product-owner-agent`, `shipkit-ux-designer-agent`, `shipkit-architect-agent`, `shipkit-implementer-agent`, `shipkit-implement-independently-agent`, `shipkit-reviewer-agent`, `shipkit-researcher-agent`
+`shipkit-project-manager-agent`, `shipkit-product-owner-agent`, `shipkit-ux-designer-agent`, `shipkit-architect-agent`, `shipkit-implementer-agent`, `shipkit-implement-independently-agent`, `shipkit-reviewer-agent`, `shipkit-researcher-agent`, `shipkit-thinking-partner-agent`
 
 ### Configuration Files
 - `install/settings/shipkit.settings.json` — Permissions and configuration

@@ -1,6 +1,9 @@
-# Data Privacy & Compliance Checks
+# Data Privacy & Compliance Checks (MVP)
 
 Applies when handling PII, EU users, or regulated data.
+
+**MVP focus**: Privacy Policy, Terms of Service, Cookie Consent, HTTPS for PII.
+**Moved to scale-ready**: Data export, audit logging, retention enforcement, breach response.
 
 ---
 
@@ -28,11 +31,9 @@ Applies when handling PII, EU users, or regulated data.
 **Severity**: 🔴 Blocker (if tracking cookies)
 
 ### PRIV-GDPR-004: Data Export Capability
+**Status**: ➡️ MOVED TO SCALE-READY (GDPR compliance depth)
 **Check**: Users can export their data
-**Scan for**: Data export feature
-**Pass criteria**: User can download their data
-**Fail impact**: GDPR right to data portability violation
-**Severity**: 🟡 Warning
+**Severity**: 🟡 Warning — see `/shipkit-scale-ready`
 
 ### PRIV-GDPR-005: Account Deletion
 **Check**: Users can delete their account
@@ -67,11 +68,9 @@ Applies when handling PII, EU users, or regulated data.
 **Severity**: 🟢 Info
 
 ### PRIV-PII-003: PII Encrypted at Rest
+**Status**: ➡️ MOVED TO SCALE-READY (enterprise tier)
 **Check**: Sensitive data encrypted in database
-**Scan for**: Encryption configuration, encrypted columns
-**Pass criteria**: PII encrypted in storage
-**Fail impact**: Data breach exposes plain text
-**Severity**: 🟡 Warning
+**Severity**: 🟡 Warning — see `/shipkit-scale-ready`
 
 ### PRIV-PII-004: PII Encrypted in Transit
 **Check**: PII only sent over HTTPS
@@ -91,26 +90,13 @@ Applies when handling PII, EU users, or regulated data.
 
 ## Data Retention
 
-### PRIV-RET-001: Retention Policy Defined
-**Check**: Know how long data is kept
-**Scan for**: Retention policy documentation
-**Pass criteria**: Clear retention periods
-**Fail impact**: GDPR storage limitation violation
-**Severity**: 🟡 Warning
+**Status**: ➡️ ENTIRE SECTION MOVED TO SCALE-READY
 
-### PRIV-RET-002: Automated Cleanup
-**Check**: Old data automatically purged
-**Scan for**: Cleanup jobs, retention enforcement
-**Pass criteria**: Data deleted after retention period
-**Fail impact**: Data kept longer than necessary
-**Severity**: 🟢 Info
-
-### PRIV-RET-003: Backup Retention Aligned
-**Check**: Backups follow same retention
-**Scan for**: Backup retention settings
-**Pass criteria**: Backups don't outlive retention policy
-**Fail impact**: "Deleted" data still in backups
-**Severity**: 🟡 Warning
+Data retention policies and enforcement are important for mature compliance
+but can be added after MVP. See `/shipkit-scale-ready` for:
+- PRIV-RET-001: Retention policy defined
+- PRIV-RET-002: Automated cleanup
+- PRIV-RET-003: Backup retention aligned
 
 ---
 

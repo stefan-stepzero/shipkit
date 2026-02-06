@@ -111,6 +111,45 @@ git diff --name-only HEAD~5..HEAD
 
 ### Step 4: Generate/Update Test Cases
 
+**FOR MULTIPLE FEATURES (3+), USE PARALLEL SUBAGENTS:**
+
+```
+Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+
+For each feature area discovered (auth, billing, checkout, etc.):
+
+1. AUTH TEST CASE AGENT (subagent_type: "Explore")
+   Prompt: "Generate test cases for auth feature files: [list auth files]
+   Read each file. For each function/endpoint, generate:
+   - Core test case (happy path)
+   - Edge test cases (error states, boundaries)
+   Return test cases in format: ID, Scenario, Validates, Type, Action, Verify."
+
+2. BILLING TEST CASE AGENT (subagent_type: "Explore")
+   Prompt: "Generate test cases for billing feature files: [list billing files]
+   Read each file. For each function/endpoint, generate:
+   - Core test case (happy path)
+   - Edge test cases (error states, boundaries)
+   Return test cases in format: ID, Scenario, Validates, Type, Action, Verify."
+
+3. [Additional agents for other features...]
+```
+
+**Why parallel subagents**:
+- Multiple features can be analyzed simultaneously
+- Each agent focuses on one domain (auth, billing, etc.)
+- Reduces total generation time for large codebases
+
+**When to use parallel agents:**
+- 3+ distinct feature areas identified
+- 10+ source files to analyze
+- Full codebase coverage requested
+
+**When to scan sequentially:**
+- Single feature focus (e.g., "test cases for auth")
+- Small codebase (< 10 source files)
+- Incremental update (few new files)
+
 **For each feature file, generate test cases:**
 
 **Test case format:**

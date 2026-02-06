@@ -133,7 +133,48 @@ Load relevant context for the review:
 
 ### Step 3: Work Through Quality Dimensions
 
-Review changes against these 12 dimensions, emphasizing based on what changed:
+Review changes against these 12 dimensions, emphasizing based on what changed.
+
+**FOR LARGE CHANGE SETS (10+ files), USE PARALLEL SUBAGENTS:**
+
+```
+Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+
+1. STRUCTURAL & SPEC AGENT (subagent_type: "Explore")
+   Prompt: "Verify structural integrity and spec alignment for these files: [list files]
+   STRUCTURAL: Check for orphan code, missing wiring, broken imports, circular deps, incomplete refactors.
+   SPEC: If .shipkit/specs/active/* exists, verify implementation matches spec criteria.
+   Report findings with file:line evidence and classification (NOT_CREATED, CREATED_UNUSED, WIRING_MISSING, etc.)."
+
+2. ERROR & SECURITY AGENT (subagent_type: "Explore")
+   Prompt: "Verify error resilience and security for these files: [list files]
+   ERROR: Check for unhandled async, missing try/catch, empty state handling, swallowed errors.
+   SECURITY: Check for auth on routes, input validation, SQL injection risk, hardcoded secrets, XSS, IDOR.
+   Report findings with file:line evidence and severity (critical/should-fix/minor)."
+
+3. STATE & PERFORMANCE AGENT (subagent_type: "Explore")
+   Prompt: "Verify state management, edge cases, and performance for these files: [list files]
+   STATE: Check for race conditions, stale state, missing loading states, N+1 queries.
+   EDGE CASES: Check for empty states, boundary values, unicode, timezone issues.
+   PERFORMANCE: Check for unnecessary re-renders, missing memoization, heavy deps, unoptimized queries.
+   Report findings with file:line evidence."
+
+4. UX & MAINTAINABILITY AGENT (subagent_type: "Explore")
+   Prompt: "Verify UX completeness and maintainability for these files: [list files]
+   UX: Check for loading indicators, action feedback, destructive confirmations, data-testid/ARIA attrs.
+   MAINTAINABILITY: Check for magic numbers, duplicated logic, component duplication, missing types, TODOs, console.logs.
+   Report findings with file:line evidence."
+```
+
+**When to use parallel agents:**
+- 10+ files in change set (including ripple files)
+- Multiple categories of changes (UI + API + DB)
+- Deep verify requested
+
+**When to use single-pass:**
+- Small change set (< 10 files)
+- Single category focus
+- Quick pre-commit check
 
 ---
 
@@ -200,6 +241,9 @@ Review changes against these 12 dimensions, emphasizing based on what changed:
 ### 9. Maintainability
 - Magic numbers/strings
 - Duplicated logic (same thing multiple ways)
+- **Component duplication** (same component in multiple feature directories instead of shared)
+- **Not using shared components** (shared version exists but feature has local copy)
+- **Similar-purpose components** (Modal vs Dialog, Card vs Tile — should standardize)
 - Confusing/misleading naming
 - Missing types on public interfaces
 - TODOs/FIXMEs left behind

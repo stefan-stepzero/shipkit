@@ -130,6 +130,8 @@ This skill provides:
 | "Plan this", "How to implement?", "Create plan" | `/shipkit-plan` | specs/, stack.md, architecture.md |
 | "Prototype", "Mockup", "Rapid prototype", "UI mockup" | `/shipkit-prototyping` | specs/, why.md |
 | "Extract prototype", "Prototype to spec", "Capture UI patterns" | `/shipkit-prototype-to-spec` | .shipkit-mockups/, specs/active/ |
+| "Help me think through", "Think with me", "Let's discuss", "What am I missing?" | `/shipkit-thinking-partner` | .shipkit/why.md, architecture.md |
+| "Devil's advocate", "Pre-mortem", "Trade-offs", "I'm torn between" | `/shipkit-thinking-partner` | .shipkit/why.md, architecture.md |
 
 ### Knowledge Persistence
 
@@ -149,6 +151,7 @@ This skill provides:
 | "Audit UX", "Check UX patterns", "UX gaps" | `/shipkit-ux-audit` | implementations/ |
 | "Create task", "Track TODO", "User tasks" | `/shipkit-user-instructions` | user-tasks/active.md |
 | "Visualize", "HTML report", "Visual communication" | `/shipkit-communications` | Relevant files based on request |
+| "Audit prompts", "Prompt architecture", "LLM pipeline review", "Check my prompts" | `/shipkit-prompt-audit` | stack.md, architecture.md |
 
 ### Execution
 
@@ -249,9 +252,9 @@ This skill is the **central router** that connects all other skills.
 |----------|------------------|
 | Vision/Discovery | `shipkit-why-project`, `shipkit-product-discovery` |
 | Context/Status | `shipkit-project-status`, `shipkit-project-context`, `shipkit-work-memory` |
-| Spec/Planning | `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec` |
+| Spec/Planning | `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec`, `shipkit-thinking-partner` |
 | Knowledge | `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`, `shipkit-claude-md` |
-| Quality | `shipkit-verify`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications` |
+| Quality | `shipkit-verify`, `shipkit-ux-audit`, `shipkit-prompt-audit`, `shipkit-user-instructions`, `shipkit-communications` |
 
 **Does NOT Route:**
 - Natural capabilities (implement, debug, test, refactor) - Claude handles directly

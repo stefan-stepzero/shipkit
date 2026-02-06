@@ -76,6 +76,7 @@ If `.shipkit/codebase-index.json` exists:
 | Plan implementation steps | `/shipkit-plan` |
 | Quick UI mockup | `/shipkit-prototyping` |
 | Extract prototype learnings | `/shipkit-prototype-to-spec` |
+| Think through decisions | `/shipkit-thinking-partner` |
 
 ### Knowledge & Memory
 | When... | Use |
@@ -101,6 +102,8 @@ If `.shipkit/codebase-index.json` exists:
 |---------|-----|
 | Verify work before commit | `/shipkit-verify` |
 | Production readiness audit | `/shipkit-preflight` |
+| Scale & enterprise readiness | `/shipkit-scale-ready` |
+| Audit LLM prompt architecture | `/shipkit-prompt-audit` |
 | Audit UX patterns | `/shipkit-ux-audit` |
 | Track manual tasks for user | `/shipkit-user-instructions` |
 | Create visual HTML report | `/shipkit-communications` |

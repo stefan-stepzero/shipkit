@@ -1,6 +1,9 @@
-# Payment Integration Checks
+# Payment Integration Checks (MVP)
 
 Applies when project handles payments (Stripe, Lemon Squeezy, etc.).
+
+**MVP focus**: Webhooks verified, idempotency, failed payments handled, test mode off.
+**Moved to scale-ready**: Receipts/invoices, subscription sync polish.
 
 ---
 
@@ -125,11 +128,9 @@ Applies when project handles payments (Stripe, Lemon Squeezy, etc.).
 ## Compliance
 
 ### PAY-COMP-001: Receipts/Invoices Sent
+**Status**: ➡️ MOVED TO SCALE-READY (polish, not critical)
 **Check**: Customers receive payment receipts
-**Scan for**: Receipt email configuration
-**Pass criteria**: Receipt sent on successful payment
-**Fail impact**: Compliance issues, customer frustration
-**Severity**: 🟡 Warning
+**Severity**: 🟡 Warning — see `/shipkit-scale-ready`
 
 ### PAY-COMP-002: Refund Process Exists
 **Check**: Refund mechanism available
