@@ -559,32 +559,59 @@ def main():
             skills = usage_data.get('skills', {})
 
             if skills:
-                # Find stale skills (not used in 14+ days)
-                stale_skills = []
                 now = datetime.now()
+                stale_skills = []
+                nudges = []
 
+                # Build lookup: skill_name -> days since last use
+                skill_age = {}
                 for skill_name, data in skills.items():
                     last_used_str = data.get('lastUsed', '')
                     if last_used_str:
                         try:
                             last_used = datetime.fromisoformat(last_used_str)
                             days_ago = (now - last_used).days
+                            skill_age[skill_name] = days_ago
                             if days_ago >= 14:
                                 stale_skills.append((skill_name, days_ago, data.get('count', 0)))
                         except ValueError:
                             pass
 
-                # Show summary if there are stale skills
-                if stale_skills:
-                    stale_skills.sort(key=lambda x: x[1], reverse=True)  # Most stale first
+                # Contextual nudges: cross-reference project state with usage
+                def skill_stale_or_never(name, threshold=7):
+                    """True if skill was never used or last used > threshold days ago."""
+                    return name not in skills or skill_age.get(name, 999) > threshold
+
+                if counts['specs'] > 0 and skill_stale_or_never('shipkit-plan'):
+                    nudges.append("You have active specs → consider `/shipkit-plan`")
+
+                if counts['plans'] > 0 and skill_stale_or_never('shipkit-verify'):
+                    nudges.append("Implementation in progress → `/shipkit-verify` to check your work")
+
+                if counts['plans'] > 0 and skill_stale_or_never('shipkit-preflight', 14):
+                    nudges.append("Approaching release? → `/shipkit-preflight` for launch checks")
+
+                quality_skills = ['shipkit-verify', 'shipkit-preflight', 'shipkit-ux-audit']
+                if not any(s in skills for s in quality_skills) and (counts['specs'] > 0 or counts['plans'] > 0):
+                    nudges.append("No quality skills used yet → try `/shipkit-verify` or `/shipkit-ux-audit`")
+
+                # Only show section if there's something to report
+                if stale_skills or nudges:
                     print("# 📊 Skill Usage")
                     print()
-                    print(f"**Stale skills** (not used in 14+ days):")
-                    for skill, days, count in stale_skills[:5]:  # Top 5 most stale
-                        print(f"  • `/{skill}`: {days}d ago (used {count}x)")
-                    print()
-                    print("*Consider if these skills are still needed or if you've been missing opportunities to use them.*")
-                    print()
+
+                    if stale_skills:
+                        stale_skills.sort(key=lambda x: x[1], reverse=True)
+                        print(f"**Stale skills** (not used in 14+ days):")
+                        for skill, days, count in stale_skills[:5]:
+                            print(f"  • `/{skill}`: {days}d ago (used {count}x)")
+                        print()
+
+                    if nudges:
+                        for nudge in nudges[:3]:  # Cap at 3 to keep it lightweight
+                            print(f"  💡 {nudge}")
+                        print()
+
                     print("---")
                     print()
         except Exception:
