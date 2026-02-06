@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Official Plugins Research</title>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --accent: #58a6ff;
+            --green: #3fb950;
+            --yellow: #d29922;
+            --red: #f85149;
+            --purple: #a371f7;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--accent);
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.75rem;
+            color: var(--purple);
+        }
+
+        h4 {
+            font-size: 1rem;
+            margin: 1rem 0 0.5rem;
+            color: var(--text);
+        }
+
+        p { margin-bottom: 1rem; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--surface);
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+
+        code {
+            background: var(--surface);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 0.85em;
+            color: var(--green);
+        }
+
+        pre {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .card h4 {
+            margin-top: 0;
+            color: var(--accent);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .tag-green { background: rgba(63, 185, 80, 0.2); color: var(--green); }
+        .tag-yellow { background: rgba(210, 153, 34, 0.2); color: var(--yellow); }
+        .tag-red { background: rgba(248, 81, 73, 0.2); color: var(--red); }
+        .tag-purple { background: rgba(163, 113, 247, 0.2); color: var(--purple); }
+        .tag-blue { background: rgba(88, 166, 255, 0.2); color: var(--accent); }
+
+        .toc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .toc h3 { margin-top: 0; }
+
+        .toc ul {
+            list-style: none;
+            columns: 2;
+        }
+
+        .toc li {
+            margin: 0.3rem 0;
+        }
+
+        .toc a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .toc a:hover { text-decoration: underline; }
+
+        .recommendation {
+            border-left: 4px solid;
+            padding-left: 1rem;
+            margin: 1rem 0;
+        }
+
+        .rec-integrate { border-color: var(--green); }
+        .rec-recommend { border-color: var(--yellow); }
+        .rec-conflict { border-color: var(--red); }
+        .rec-skip { border-color: var(--text-muted); }
+
+        .metadata {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+        }
+
+        ul, ol {
+            margin: 0.5rem 0 1rem 1.5rem;
+        }
+
+        li { margin: 0.3rem 0; }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 800px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+            .toc ul { columns: 1; }
+        }
+
+        .plugin-detail {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .plugin-detail h4 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            color: var(--accent);
+        }
+
+        .plugin-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 0.5rem 0 1rem;
+        }
+
+        .contains-list {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Claude Code Official Plugins Research</h1>
+    <p class="subtitle">Analysis of 13 official plugins from anthropics/claude-code for Shipkit integration decisions</p>
+
+    <div class="metadata">
+        <strong>Source:</strong> <a href="https://github.com/anthropics/claude-code" style="color: var(--accent)">github.com/anthropics/claude-code</a> |
+        <strong>Plugin System:</strong> Introduced v2.0.12 |
+        <strong>Marketplace:</strong> claude-code-plugins |
+        <strong>Research Date:</strong> February 2026
+    </div>
+
+    <div class="toc">
+        <h3>Table of Contents</h3>
+        <ul>
+            <li><a href="#overview">Overview: Plugin vs Skills</a></li>
+            <li><a href="#installation">Installation Commands</a></li>
+            <li><a href="#git-workflow">Git & PR Workflow Plugins</a></li>
+            <li><a href="#feature-dev">Feature Development Plugins</a></li>
+            <li><a href="#plugin-sdk">Plugin & SDK Development</a></li>
+            <li><a href="#automation">Automation & Hooks</a></li>
+            <li><a href="#output-styles">Output Styles</a></li>
+            <li><a href="#migration">Migration Utilities</a></li>
+            <li><a href="#decision-framework">Decision Framework for Shipkit</a></li>
+            <li><a href="#feature-dev-overlap">Feature-dev vs Shipkit Analysis</a></li>
+        </ul>
+    </div>
+
+    <h2 id="overview">Overview: Plugin vs Skills Ecosystem</h2>
+
+    <p>Claude Code has <strong>two distribution channels</strong> for extending functionality:</p>
+
+    <table>
+        <tr>
+            <th>Aspect</th>
+            <th>Plugins (<code>/plugin</code>)</th>
+            <th>Skills (<code>npx skills</code>)</th>
+        </tr>
+        <tr>
+            <td>Built into</td>
+            <td>Claude Code itself</td>
+            <td>External CLI (skills.sh)</td>
+        </tr>
+        <tr>
+            <td>Contains</td>
+            <td>Commands, agents, skills, hooks, MCP servers</td>
+            <td>Skills only (SKILL.md files)</td>
+        </tr>
+        <tr>
+            <td>Source</td>
+            <td>Marketplaces (catalogs of plugins)</td>
+            <td>Direct from repos</td>
+        </tr>
+        <tr>
+            <td>Installation</td>
+            <td>Two-step: add marketplace → install plugin</td>
+            <td>One-step: add skill</td>
+        </tr>
+        <tr>
+            <td>Namespacing</td>
+            <td>Namespaced (e.g., <code>plugin:skill-name</code>)</td>
+            <td>Flat namespace</td>
+        </tr>
+    </table>
+
+    <h2 id="installation">Installation Commands</h2>
+
+    <pre><code># Add the official Anthropic marketplace (may already be present)
+/plugin marketplace add anthropics/claude-code
+
+# Install a specific plugin
+/plugin install frontend-design@claude-code-plugins
+
+# List installed plugins
+/plugin
+
+# Manage plugins
+/plugin enable plugin-name
+/plugin disable plugin-name
+/plugin uninstall plugin-name</code></pre>
+
+    <h2 id="git-workflow">Git & PR Workflow Plugins</h2>
+
+    <div class="plugin-detail">
+        <h4>commit-commands</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-green">Productivity</span>
+            <span class="tag tag-blue">No Shipkit Overlap</span>
+        </div>
+        <div class="contains-list">
+            <code>/commit</code>
+            <code>/commit-push-pr</code>
+            <code>/clean_gone</code>
+        </div>
+
+        <h5>What it does:</h5>
+        <ul>
+            <li><strong>/commit</strong> - Analyzes staged/unstaged changes, examines recent commit messages for style, drafts appropriate message, stages files, creates commit</li>
+            <li><strong>/commit-push-pr</strong> - Complete workflow: creates branch (if on main), commits, pushes, creates PR with summary & test plan</li>
+            <li><strong>/clean_gone</strong> - Removes local branches deleted from remote, handles worktrees</li>
+        </ul>
+
+        <h5>Key features:</h5>
+        <ul>
+            <li>Matches repository's commit message style automatically</li>
+            <li>Avoids committing secrets (.env, credentials)</li>
+            <li>PR descriptions include summary bullets and test plan</li>
+            <li>Requires: <code>gh</code> CLI for PR creation</li>
+        </ul>
+
+        <div class="recommendation rec-integrate">
+            <strong>Recommendation: DEFAULT INTEGRATE</strong> - Essential git workflow, no Shipkit conflict, everyone needs this.
+        </div>
+    </div>
+
+    <div class="plugin-detail">
+        <h4>code-review</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-green">Productivity</span>
+            <span class="tag tag-blue">No Shipkit Overlap</span>
+        </div>
+        <div class="contains-list">
+            <code>/code-review [--comment]</code>
+            <span>+ 4 parallel agents</span>
+        </div>
+
+        <h5>How it works:</h5>
+        <ol>
+            <li>Checks if review needed (skips closed, draft, trivial, already-reviewed)</li>
+            <li>Gathers CLAUDE.md guidelines from repository</li>
+            <li>Launches 4 parallel agents:
+                <ul>
+                    <li>Agents #1 & #2: Audit for CLAUDE.md compliance</li>
+                    <li>Agent #3: Scan for obvious bugs in changes</li>
+                    <li>Agent #4: Analyze git blame/history for context</li>
+                </ul>
+            </li>
+            <li>Scores each issue 0-100 for confidence</li>
+            <li>Filters out issues below 80 threshold</li>
+            <li>Outputs to terminal or posts as PR comment (<code>--comment</code>)</li>
+        </ol>
+
+        <h5>Confidence scoring:</h5>
+        <table>
+            <tr><td>0</td><td>Not confident, false positive</td></tr>
+            <tr><td>25</td><td>Somewhat confident, might be real</td></tr>
+            <tr><td>50</td><td>Moderately confident, real but minor</td></tr>
+            <tr><td>75</td><td>Highly confident, real and important</td></tr>
+            <tr><td>100</td><td>Absolutely certain</td></tr>
+        </table>
+
+        <div class="recommendation rec-recommend">
+            <strong>Recommendation: RECOMMEND IN GET-SKILLS</strong> - Great for teams, but heavy (4 parallel agents = token cost). Let user opt-in.
+        </div>
+    </div>
+
+    <div class="plugin-detail">
+        <h4>pr-review-toolkit</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-green">Productivity</span>
+            <span class="tag tag-blue">No Shipkit Overlap</span>
+        </div>
+        <div class="contains-list">
+            <code>/pr-review-toolkit:review-pr</code>
+            <span>+ 6 specialized agents</span>
+        </div>
+
+        <h5>The 6 agents:</h5>
+        <table>
+            <tr>
+                <th>Agent</th>
+                <th>Focus</th>
+                <th>Triggers</th>
+            </tr>
+            <tr>
+                <td><code>comment-analyzer</code></td>
+                <td>Comment accuracy, documentation, comment rot</td>
+                <td>"Check if comments are accurate"</td>
+            </tr>
+            <tr>
+                <td><code>pr-test-analyzer</code></td>
+                <td>Test coverage quality, critical gaps</td>
+                <td>"Check if tests are thorough"</td>
+            </tr>
+            <tr>
+                <td><code>silent-failure-hunter</code></td>
+                <td>Silent failures in catch blocks, error handling</td>
+                <td>"Review error handling"</td>
+            </tr>
+            <tr>
+                <td><code>type-design-analyzer</code></td>
+                <td>Type encapsulation, invariants (rated 1-10)</td>
+                <td>"Review the UserAccount type design"</td>
+            </tr>
+            <tr>
+                <td><code>code-reviewer</code></td>
+                <td>CLAUDE.md compliance, style, bugs</td>
+                <td>"Review my recent changes"</td>
+            </tr>
+            <tr>
+                <td><code>code-simplifier</code></td>
+                <td>Complexity, redundancy, clarity</td>
+                <td>"Simplify this code"</td>
+            </tr>
+        </table>
+
+        <div class="recommendation rec-recommend">
+            <strong>Recommendation: RECOMMEND IN GET-SKILLS</strong> - Deep analysis for power users. 6 agents is expensive. Optional.
+        </div>
+    </div>
+
+    <h2 id="feature-dev">Feature Development Plugins</h2>
+
+    <div class="plugin-detail">
+        <h4>feature-dev</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-purple">Development</span>
+            <span class="tag tag-red">HIGH SHIPKIT OVERLAP</span>
+        </div>
+        <div class="contains-list">
+            <code>/feature-dev</code>
+            <code>code-explorer</code>
+            <code>code-architect</code>
+            <code>code-reviewer</code>
+        </div>
+
+        <h5>The 7-Phase Workflow:</h5>
+        <table>
+            <tr>
+                <th>Phase</th>
+                <th>Goal</th>
+                <th>What Happens</th>
+            </tr>
+            <tr>
+                <td>1. Discovery</td>
+                <td>Understand what to build</td>
+                <td>Clarifies request, asks about problem, constraints</td>
+            </tr>
+            <tr>
+                <td>2. Codebase Exploration</td>
+                <td>Understand existing code</td>
+                <td>Launches 2-3 <code>code-explorer</code> agents in parallel, identifies key files</td>
+            </tr>
+            <tr>
+                <td>3. Clarifying Questions</td>
+                <td>Fill gaps, resolve ambiguity</td>
+                <td>Asks about edge cases, error handling, integration, <strong>waits for answers</strong></td>
+            </tr>
+            <tr>
+                <td>4. Architecture Design</td>
+                <td>Design approaches</td>
+                <td>Launches 2-3 <code>code-architect</code> agents with focuses: minimal, clean, pragmatic. <strong>Asks which you prefer</strong></td>
+            </tr>
+            <tr>
+                <td>5. Implementation</td>
+                <td>Build the feature</td>
+                <td><strong>Waits for explicit approval</strong>, follows chosen architecture</td>
+            </tr>
+            <tr>
+                <td>6. Quality Review</td>
+                <td>Ensure quality</td>
+                <td>Launches 3 <code>code-reviewer</code> agents (simplicity, bugs, conventions), presents findings</td>
+            </tr>
+            <tr>
+                <td>7. Summary</td>
+                <td>Document results</td>
+                <td>What was built, decisions made, files modified, next steps</td>
+            </tr>
+        </table>
+
+        <h5>Example interaction:</h5>
+        <pre><code>/feature-dev Add user authentication with OAuth
+
+# Claude asks clarifying questions:
+# - Which OAuth providers? (Google, GitHub, custom?)
+# - Store OAuth tokens or just user profile?
+# - Replace current auth or add alongside?
+
+# Then presents 3 architecture approaches with trade-offs
+# Asks which you prefer before implementing</code></pre>
+
+        <div class="recommendation rec-conflict">
+            <strong>Recommendation: EVALUATE CONFLICT</strong> - Significant overlap with Shipkit's spec→plan→implement flow. See <a href="#feature-dev-overlap">detailed analysis below</a>.
+        </div>
+    </div>
+
+    <div class="plugin-detail">
+        <h4>frontend-design</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-purple">Development</span>
+            <span class="tag tag-green">Fills Gap</span>
+        </div>
+        <div class="contains-list">
+            <span>Skill (auto-invoked for frontend work)</span>
+        </div>
+
+        <h5>What it does:</h5>
+        <p>Automatically injects guidance when Claude detects frontend/UI work. Prevents "AI slop" aesthetics.</p>
+
+        <h5>Design philosophy injected:</h5>
+        <ul>
+            <li><strong>Typography</strong> - Distinctive fonts, avoid generic (Inter, Roboto, Arial)</li>
+            <li><strong>Color</strong> - Dominant colors with sharp accents, not timid palettes</li>
+            <li><strong>Motion</strong> - High-impact animations, staggered reveals, scroll triggers</li>
+            <li><strong>Spatial</strong> - Unexpected layouts, asymmetry, grid-breaking</li>
+            <li><strong>Backgrounds</strong> - Gradient meshes, noise textures, decorative elements</li>
+        </ul>
+
+        <h5>What it prevents:</h5>
+        <ul>
+            <li>Overused fonts (Inter, Roboto, Arial, system fonts)</li>
+            <li>Cliched color schemes (purple gradients on white)</li>
+            <li>Predictable layouts and cookie-cutter patterns</li>
+        </ul>
+
+        <div class="recommendation rec-integrate">
+            <strong>Recommendation: DEFAULT INTEGRATE</strong> - Fills a gap in Shipkit (no UI guidance). Auto-invoked, low overhead.
+        </div>
+    </div>
+
+    <h2 id="plugin-sdk">Plugin & SDK Development</h2>
+
+    <div class="plugin-detail">
+        <h4>plugin-dev</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-purple">Development</span>
+            <span class="tag tag-blue">Meta-tooling</span>
+        </div>
+        <div class="contains-list">
+            <code>/plugin-dev:create-plugin</code>
+            <span>+ 3 agents + 7 skills</span>
+        </div>
+
+        <h5>The 7 skills:</h5>
+        <ol>
+            <li><strong>Hook Development</strong> - PreToolUse, PostToolUse, Stop, SessionStart hooks</li>
+            <li><strong>MCP Integration</strong> - stdio, SSE, HTTP server configuration</li>
+            <li><strong>Plugin Structure</strong> - Directory layout, plugin.json manifest</li>
+            <li><strong>Plugin Settings</strong> - .local.md configuration files</li>
+            <li><strong>Command Development</strong> - Slash commands with frontmatter</li>
+            <li><strong>Agent Development</strong> - Autonomous agents with AI-assisted generation</li>
+            <li><strong>Skill Development</strong> - Skills with progressive disclosure</li>
+        </ol>
+
+        <h5>8-Phase plugin creation workflow:</h5>
+        <p>Discovery → Component Planning → Detailed Design → Structure Creation → Component Implementation → Validation → Testing → Documentation</p>
+
+        <div class="recommendation rec-skip">
+            <strong>Recommendation: NICHE/SKIP</strong> - Only for people building Claude Code plugins. Not relevant to most Shipkit users.
+        </div>
+    </div>
+
+    <div class="plugin-detail">
+        <h4>agent-sdk-dev</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-purple">Development</span>
+            <span class="tag tag-blue">Specialized</span>
+        </div>
+        <div class="contains-list">
+            <code>/new-sdk-app</code>
+            <code>agent-sdk-verifier-py</code>
+            <code>agent-sdk-verifier-ts</code>
+        </div>
+
+        <h5>What it does:</h5>
+        <ul>
+            <li>Interactive scaffolding for Claude Agent SDK apps (Python/TypeScript)</li>
+            <li>Installs latest SDK version</li>
+            <li>Sets up environment files, gitignore</li>
+            <li>Verifies against best practices</li>
+        </ul>
+
+        <div class="recommendation rec-skip">
+            <strong>Recommendation: NICHE/SKIP</strong> - Only for people building Agent SDK apps. Very specialized.
+        </div>
+    </div>
+
+    <h2 id="automation">Automation & Hooks</h2>
+
+    <div class="plugin-detail">
+        <h4>hookify</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-green">Productivity</span>
+            <span class="tag tag-blue">Advanced Users</span>
+        </div>
+        <div class="contains-list">
+            <code>/hookify</code>
+            <code>/hookify:list</code>
+            <code>/hookify:configure</code>
+            <code>/hookify:help</code>
+        </div>
+
+        <h5>What it does:</h5>
+        <p>Creates hooks from conversation patterns via simple markdown files. No coding required.</p>
+
+        <h5>Example rule file (<code>.claude/hookify.warn-rm.local.md</code>):</h5>
+        <pre><code>---
+name: block-dangerous-rm
+enabled: true
+event: bash
+pattern: rm\s+-rf
+action: block
+---
+
+⚠️ **Dangerous rm command detected!**
+
+This command could delete important files.</code></pre>
+
+        <h5>Events supported:</h5>
+        <ul>
+            <li><code>bash</code> - Triggers on Bash commands</li>
+            <li><code>file</code> - Triggers on Edit, Write, MultiEdit</li>
+            <li><code>stop</code> - Triggers when Claude wants to stop</li>
+            <li><code>prompt</code> - Triggers on user prompt</li>
+            <li><code>all</code> - All events</li>
+        </ul>
+
+        <div class="recommendation rec-recommend">
+            <strong>Recommendation: RECOMMEND IN GET-SKILLS</strong> - Powerful for advanced users who want custom hooks. Could complement Shipkit's hooks.
+        </div>
+    </div>
+
+    <div class="plugin-detail">
+        <h4>ralph-wiggum</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-purple">Development</span>
+            <span class="tag tag-yellow">Niche</span>
+        </div>
+        <div class="contains-list">
+            <code>/ralph-loop</code>
+            <code>/cancel-ralph</code>
+            <span>+ Stop hook</span>
+        </div>
+
+        <h5>What it does:</h5>
+        <p>Self-referential AI loops - keeps running same prompt until completion promise detected.</p>
+
+        <pre><code>/ralph-loop "Build a REST API for todos. Requirements: CRUD, validation, tests. Output &lt;promise&gt;COMPLETE&lt;/promise&gt; when done." --completion-promise "COMPLETE" --max-iterations 50</code></pre>
+
+        <h5>How it works:</h5>
+        <ol>
+            <li>You run <code>/ralph-loop</code> once with a prompt</li>
+            <li>Claude works on the task</li>
+            <li>Tries to exit → Stop hook blocks it</li>
+            <li>Stop hook feeds SAME prompt back</li>
+            <li>Repeat until completion promise found</li>
+        </ol>
+
+        <h5>Real-world results cited:</h5>
+        <ul>
+            <li>6 repositories generated overnight (Y Combinator hackathon)</li>
+            <li>$50k contract completed for $297 in API costs</li>
+        </ul>
+
+        <div class="recommendation rec-recommend">
+            <strong>Recommendation: RECOMMEND IN GET-SKILLS</strong> - Niche but powerful for autonomous overnight runs.
+        </div>
+    </div>
+
+    <div class="plugin-detail">
+        <h4>security-guidance</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-red">Security</span>
+            <span class="tag tag-green">Safety Net</span>
+        </div>
+        <div class="contains-list">
+            <span>PreToolUse hook</span>
+        </div>
+
+        <h5>What it does:</h5>
+        <p>Warns about potential security issues when editing files. Monitors 9 security patterns:</p>
+
+        <ul>
+            <li>Command injection</li>
+            <li>XSS vulnerabilities</li>
+            <li>eval() usage</li>
+            <li>Dangerous HTML</li>
+            <li>Pickle deserialization</li>
+            <li>os.system calls</li>
+            <li>SQL injection patterns</li>
+            <li>Hardcoded credentials</li>
+            <li>Unsafe file operations</li>
+        </ul>
+
+        <div class="recommendation rec-integrate">
+            <strong>Recommendation: DEFAULT INTEGRATE</strong> - Valuable safety net, runs silently as hook, no user overhead.
+        </div>
+    </div>
+
+    <h2 id="output-styles">Output Styles (SessionStart Hooks)</h2>
+
+    <div class="plugin-detail">
+        <h4>explanatory-output-style</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-yellow">Learning</span>
+            <span class="tag tag-yellow">Token Cost</span>
+        </div>
+        <div class="contains-list">
+            <span>SessionStart hook</span>
+        </div>
+
+        <h5>What it does:</h5>
+        <p>Injects "★ Insight" boxes explaining implementation choices:</p>
+
+        <pre><code>★ Insight ─────────────────────────────────────
+[2-3 key educational points about the codebase]
+─────────────────────────────────────────────────</code></pre>
+
+        <p>Focuses on: implementation choices, patterns, trade-offs, codebase-specific details.</p>
+
+        <div class="recommendation rec-skip">
+            <strong>Recommendation: NICHE/SKIP</strong> - Token cost, personal preference. Educational but not production-focused.
+        </div>
+    </div>
+
+    <div class="plugin-detail">
+        <h4>learning-output-style</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-yellow">Learning</span>
+            <span class="tag tag-yellow">Pedagogical</span>
+        </div>
+        <div class="contains-list">
+            <span>SessionStart hook (includes explanatory features)</span>
+        </div>
+
+        <h5>What it does:</h5>
+        <p>Requests user write 5-10 lines of meaningful code at decision points. Transforms "watch and learn" into "build and understand".</p>
+
+        <h5>When Claude requests contributions:</h5>
+        <ul>
+            <li>Business logic with multiple valid approaches</li>
+            <li>Error handling strategies</li>
+            <li>Algorithm choices</li>
+            <li>Design patterns</li>
+        </ul>
+
+        <h5>When Claude won't request:</h5>
+        <ul>
+            <li>Boilerplate code</li>
+            <li>Obvious implementations</li>
+            <li>Configuration/setup</li>
+        </ul>
+
+        <div class="recommendation rec-skip">
+            <strong>Recommendation: NICHE/SKIP</strong> - Pedagogical mode, not for production work.
+        </div>
+    </div>
+
+    <h2 id="migration">Migration Utilities</h2>
+
+    <div class="plugin-detail">
+        <h4>claude-opus-4-5-migration</h4>
+        <div class="plugin-meta">
+            <span class="tag tag-purple">Development</span>
+            <span class="tag tag-blue">One-time</span>
+        </div>
+        <div class="contains-list">
+            <span>Skill (auto-invoked)</span>
+        </div>
+
+        <h5>What it does:</h5>
+        <p>Migrates code and prompts from Sonnet 4.x / Opus 4.1 to Opus 4.5. Updates model strings, beta headers, configuration.</p>
+
+        <pre><code>"Migrate my codebase to Opus 4.5"</code></pre>
+
+        <div class="recommendation rec-skip">
+            <strong>Recommendation: NICHE/SKIP</strong> - One-time migration utility for API users.
+        </div>
+    </div>
+
+    <h2 id="decision-framework">Decision Framework for Shipkit</h2>
+
+    <h3>1. Default Integrate (High value, no conflict)</h3>
+    <div class="card">
+        <table>
+            <tr>
+                <th>Plugin</th>
+                <th>Rationale</th>
+            </tr>
+            <tr>
+                <td><strong>frontend-design</strong></td>
+                <td>Fills UI/design gap in Shipkit. Auto-invoked skill, low overhead.</td>
+            </tr>
+            <tr>
+                <td><strong>security-guidance</strong></td>
+                <td>Safety net for security issues. Silent hook, no user burden.</td>
+            </tr>
+            <tr>
+                <td><strong>commit-commands</strong></td>
+                <td>Essential git workflow everyone needs. No Shipkit conflict.</td>
+            </tr>
+        </table>
+    </div>
+
+    <h3>2. Recommend in get-skills (Valuable but optional)</h3>
+    <div class="card">
+        <table>
+            <tr>
+                <th>Plugin</th>
+                <th>Rationale</th>
+            </tr>
+            <tr>
+                <td><strong>code-review</strong></td>
+                <td>Great for teams, but heavy (4 parallel agents = token cost).</td>
+            </tr>
+            <tr>
+                <td><strong>pr-review-toolkit</strong></td>
+                <td>Deep analysis with 6 agents. Power users only.</td>
+            </tr>
+            <tr>
+                <td><strong>hookify</strong></td>
+                <td>Advanced users who want custom hooks without coding.</td>
+            </tr>
+            <tr>
+                <td><strong>ralph-wiggum</strong></td>
+                <td>Niche for autonomous overnight runs.</td>
+            </tr>
+        </table>
+    </div>
+
+    <h3>3. Potential Conflict - Evaluate</h3>
+    <div class="card">
+        <table>
+            <tr>
+                <th>Plugin</th>
+                <th>Conflict</th>
+                <th>Options</th>
+            </tr>
+            <tr>
+                <td><strong>feature-dev</strong></td>
+                <td>7-phase workflow overlaps with Shipkit's spec→plan→implement flow</td>
+                <td>
+                    <ol>
+                        <li>Keep both (Shipkit for product, feature-dev for code)</li>
+                        <li>Replace Shipkit workflow (lose product focus)</li>
+                        <li>Enhance Shipkit with similar patterns</li>
+                    </ol>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <h3>4. Niche/Skip (Limited audience)</h3>
+    <div class="card">
+        <table>
+            <tr>
+                <th>Plugin</th>
+                <th>Rationale</th>
+            </tr>
+            <tr>
+                <td><strong>agent-sdk-dev</strong></td>
+                <td>Only for building Agent SDK apps</td>
+            </tr>
+            <tr>
+                <td><strong>plugin-dev</strong></td>
+                <td>Only for building Claude Code plugins</td>
+            </tr>
+            <tr>
+                <td><strong>claude-opus-4-5-migration</strong></td>
+                <td>One-time migration utility</td>
+            </tr>
+            <tr>
+                <td><strong>explanatory-output-style</strong></td>
+                <td>Token cost, personal preference</td>
+            </tr>
+            <tr>
+                <td><strong>learning-output-style</strong></td>
+                <td>Pedagogical mode, not production</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2 id="feature-dev-overlap">Feature-dev vs Shipkit Detailed Analysis</h2>
+
+    <p>The <strong>feature-dev</strong> plugin has significant overlap with Shipkit's workflow:</p>
+
+    <div class="comparison-grid">
+        <div class="card">
+            <h4>feature-dev Phases</h4>
+            <ol>
+                <li>Discovery (understand requirements)</li>
+                <li>Codebase Exploration (2-3 parallel agents)</li>
+                <li>Clarifying Questions (waits for answers)</li>
+                <li>Architecture Design (3 approaches)</li>
+                <li>Implementation (waits for approval)</li>
+                <li>Quality Review (3 agents)</li>
+                <li>Summary (documentation)</li>
+            </ol>
+        </div>
+        <div class="card">
+            <h4>Shipkit Equivalents</h4>
+            <ol>
+                <li><code>/shipkit-product-discovery</code>, <code>/shipkit-spec</code></li>
+                <li>(Claude does naturally)</li>
+                <li><code>/shipkit-spec</code> (requirements)</li>
+                <li><code>/shipkit-plan</code>, <code>/shipkit-architecture-memory</code></li>
+                <li>(Claude does naturally)</li>
+                <li><code>/shipkit-verify</code>, <code>/shipkit-preflight</code></li>
+                <li><code>/shipkit-work-memory</code></li>
+            </ol>
+        </div>
+    </div>
+
+    <h3>Key Differences</h3>
+    <table>
+        <tr>
+            <th>Aspect</th>
+            <th>feature-dev</th>
+            <th>Shipkit</th>
+        </tr>
+        <tr>
+            <td><strong>Focus</strong></td>
+            <td>Code features</td>
+            <td>Product development</td>
+        </tr>
+        <tr>
+            <td><strong>Multi-agent</strong></td>
+            <td>Yes (2-3 parallel agents per phase)</td>
+            <td>No (single agent flow)</td>
+        </tr>
+        <tr>
+            <td><strong>Persistence</strong></td>
+            <td>Session only</td>
+            <td>Files in <code>.shipkit/</code></td>
+        </tr>
+        <tr>
+            <td><strong>Architecture options</strong></td>
+            <td>3 approaches with trade-offs</td>
+            <td>Single recommended approach</td>
+        </tr>
+        <tr>
+            <td><strong>Approval gates</strong></td>
+            <td>Explicit (waits for user)</td>
+            <td>Implicit (continues unless stopped)</td>
+        </tr>
+    </table>
+
+    <h3>Resolution Options</h3>
+
+    <div class="recommendation rec-integrate">
+        <h4>Option A: Keep Both</h4>
+        <p>Use Shipkit for product work (why, who, what), feature-dev for pure code features. Document when to use each.</p>
+    </div>
+
+    <div class="recommendation rec-conflict">
+        <h4>Option B: Replace Shipkit Workflow</h4>
+        <p>Adopt feature-dev as the implementation workflow. Risk: loses Shipkit's product/user focus.</p>
+    </div>
+
+    <div class="recommendation rec-recommend">
+        <h4>Option C: Enhance Shipkit</h4>
+        <p>Borrow patterns from feature-dev: multi-agent exploration, architecture options, explicit approval gates. Integrate into existing Shipkit flow.</p>
+    </div>
+
+    <hr style="margin: 3rem 0; border-color: var(--border);">
+
+    <p style="color: var(--text-muted); font-size: 0.9rem;">
+        Generated from Claude Code GitHub repository research.
+        Source: <a href="https://github.com/anthropics/claude-code" style="color: var(--accent)">anthropics/claude-code</a>
+    </p>
+
+</body>
+</html>

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preflight vs Scale-Ready Split - Proposal</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+            padding: 40px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #0f172a;
+        }
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .framework {
+            background: #e0f2fe;
+            border: 1px solid #7dd3fc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .framework h2 { color: #0369a1; margin-bottom: 10px; }
+        .framework table { width: 100%; border-collapse: collapse; }
+        .framework th, .framework td {
+            text-align: left;
+            padding: 8px 12px;
+            border-bottom: 1px solid #7dd3fc;
+        }
+        .framework th { background: #bae6fd; }
+
+        .columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .column {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .column-header {
+            padding: 20px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+        .column-header.mvp { background: #22c55e; }
+        .column-header.scale { background: #3b82f6; }
+        .column-header .desc { font-weight: normal; font-size: 0.8em; opacity: 0.9; }
+
+        .category {
+            border-bottom: 1px solid #e2e8f0;
+            padding: 15px 20px;
+        }
+        .category:last-child { border-bottom: none; }
+        .category h3 {
+            font-size: 1em;
+            color: #475569;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .category ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .category li {
+            padding: 4px 0;
+            font-size: 0.9em;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .category li::before {
+            content: "•";
+            color: #94a3b8;
+        }
+
+        .keep { color: #166534; }
+        .add { color: #15803d; background: #dcfce7; padding: 2px 6px; border-radius: 4px; }
+        .move { color: #9333ea; }
+        .remove { color: #dc2626; text-decoration: line-through; opacity: 0.7; }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9em;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .legend-dot.keep { background: #166534; }
+        .legend-dot.add { background: #15803d; }
+        .legend-dot.move { background: #9333ea; }
+        .legend-dot.remove { background: #dc2626; }
+
+        .decision-section {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .decision-section h2 { color: #92400e; margin-bottom: 15px; }
+
+        .question {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .question strong { color: #78350f; }
+
+        .tier-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+        .tier-badge.growth { background: #fef3c7; color: #92400e; }
+        .tier-badge.enterprise { background: #ede9fe; color: #5b21b6; }
+
+        .rationale {
+            font-size: 0.85em;
+            color: #64748b;
+            margin-top: 4px;
+            padding-left: 16px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: 700;
+        }
+        .stat-label { color: #64748b; font-size: 0.9em; }
+        .stat-number.green { color: #22c55e; }
+        .stat-number.blue { color: #3b82f6; }
+        .stat-number.red { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Preflight vs Scale-Ready Split</h1>
+        <p class="subtitle">Proposed changes for review — what stays in MVP preflight vs moves to scale-ready</p>
+
+        <div class="framework">
+            <h2>📐 Prioritization Framework Used</h2>
+            <table>
+                <tr>
+                    <th>Factor</th>
+                    <th>Question</th>
+                    <th>MVP Threshold</th>
+                </tr>
+                <tr>
+                    <td><strong>Likelihood (L)</strong></td>
+                    <td>How likely to happen/be exploited?</td>
+                    <td>1-3 scale</td>
+                </tr>
+                <tr>
+                    <td><strong>Impact (I)</strong></td>
+                    <td>How bad if it happens?</td>
+                    <td>1-3 scale</td>
+                </tr>
+                <tr>
+                    <td><strong>Effort</strong></td>
+                    <td>How hard to implement?</td>
+                    <td>3 = easy, 1 = hard</td>
+                </tr>
+                <tr>
+                    <td><strong>Reversible</strong></td>
+                    <td>Can you add it later without pain?</td>
+                    <td>Y/N</td>
+                </tr>
+            </table>
+            <p style="margin-top: 15px; color: #0369a1;">
+                <strong>MVP if:</strong> L×I ≥ 6, OR (L×I ≥ 4 AND Effort = easy), OR (NOT reversible AND L×I ≥ 4)
+            </p>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot keep"></div> Keep in Preflight (MVP)</div>
+            <div class="legend-item"><div class="legend-dot add"></div> Add to Preflight (MVP)</div>
+            <div class="legend-item"><div class="legend-dot move"></div> Proposed: Move to Scale-Ready</div>
+            <div class="legend-item"><div class="legend-dot remove"></div> Remove entirely</div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">59</div>
+                <div class="stat-label">Current Preflight Items</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number green">~39</div>
+                <div class="stat-label">Proposed MVP Items</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number blue">~20</div>
+                <div class="stat-label">Move to Scale-Ready</div>
+            </div>
+        </div>
+
+        <div class="columns">
+            <!-- PREFLIGHT (MVP) COLUMN -->
+            <div class="column">
+                <div class="column-header mvp">
+                    ✅ Preflight (MVP)
+                    <div class="desc">Before first users — "won't embarrass me or harm users"</div>
+                </div>
+
+                <div class="category">
+                    <h3>🔐 Auth & Security</h3>
+                    <ul>
+                        <li class="keep">Auth on protected routes</li>
+                        <li class="keep">Secrets in env vars (not code)</li>
+                        <li class="keep">Input validation/sanitization</li>
+                        <li class="keep">Password hashing (if storing)</li>
+                        <li class="keep">HTTPS enforced</li>
+                        <li class="keep">CSRF protection</li>
+                        <li class="keep">Rate limiting on auth endpoints</li>
+                        <li class="add">Brute force prevention pattern (lockout after N failures)</li>
+                        <li class="add">Form abuse prevention pattern (honeypot/timing)</li>
+                        <li class="move">Session management (expiry, refresh)</li>
+                    </ul>
+                    <div class="rationale">Security items stay because automated attacks don't care if you're an MVP</div>
+                </div>
+
+                <div class="category">
+                    <h3>🗄️ Data & Database</h3>
+                    <ul>
+                        <li class="keep">RLS policies on user tables (Supabase)</li>
+                        <li class="keep">Cascade deletes configured correctly</li>
+                        <li class="keep">Backup strategy exists</li>
+                        <li class="move">Soft deletes for user data (GDPR)</li>
+                        <li class="move">Database indexes on query patterns</li>
+                        <li class="move">Data export capability (GDPR)</li>
+                        <li class="move">PII encryption at rest</li>
+                    </ul>
+                    <div class="rationale">Keep data integrity essentials; perf/compliance can wait</div>
+                </div>
+
+                <div class="category">
+                    <h3>⚠️ Error Handling</h3>
+                    <ul>
+                        <li class="keep">Try/catch on async operations</li>
+                        <li class="keep">Error boundaries in UI (React)</li>
+                        <li class="keep">User-friendly error messages (not stack traces)</li>
+                        <li class="add">Error visibility pattern (errors logged with context)</li>
+                        <li class="move">API error responses are consistent</li>
+                        <li class="move">Failed request retry logic</li>
+                        <li class="move">Graceful degradation for non-critical features</li>
+                    </ul>
+                    <div class="rationale">App shouldn't crash; reliability patterns are growth-tier</div>
+                </div>
+
+                <div class="category">
+                    <h3>⚙️ Environment & Config</h3>
+                    <ul>
+                        <li class="keep">Env vars documented in .env.example</li>
+                        <li class="keep">No hardcoded URLs/endpoints</li>
+                        <li class="keep">Secrets not in git history</li>
+                        <li class="move">Environment parity (dev ≈ prod)</li>
+                        <li class="move">Feature flags for WIP features</li>
+                    </ul>
+                    <div class="rationale">Config essentials stay; operational maturity moves</div>
+                </div>
+
+                <div class="category">
+                    <h3>🚀 Deployment</h3>
+                    <ul>
+                        <li class="keep">Build passes</li>
+                        <li class="keep">Health check endpoint exists</li>
+                        <li class="keep">Migrations documented/automated</li>
+                        <li class="keep">SSL/HTTPS enforced</li>
+                        <li class="keep">Domain configured correctly</li>
+                        <li class="move">Build without warnings</li>
+                        <li class="move">Rollback plan documented</li>
+                    </ul>
+                    <div class="rationale">Can deploy and it works; ops maturity moves</div>
+                </div>
+
+                <div class="category">
+                    <h3>🎨 UX Resilience</h3>
+                    <ul>
+                        <li class="keep">Loading states on async operations</li>
+                        <li class="keep">Empty states handled</li>
+                        <li class="keep">Confirmation on destructive actions</li>
+                        <li class="keep">Form validation with clear errors</li>
+                        <li class="keep">Mobile responsive</li>
+                        <li class="move">Offline handling (or clear error)</li>
+                    </ul>
+                    <div class="rationale">Core UX stays; offline is edge case for MVP</div>
+                </div>
+
+                <div class="category">
+                    <h3>💳 Payments (if applicable)</h3>
+                    <ul>
+                        <li class="keep">Webhook signature verification</li>
+                        <li class="keep">Idempotency on payment operations</li>
+                        <li class="keep">Failed payment handling</li>
+                        <li class="keep">Test mode disabled in prod</li>
+                        <li class="move">Subscription state synced with provider</li>
+                        <li class="move">Receipts/invoices sent</li>
+                    </ul>
+                    <div class="rationale">Can't double-charge or accept fake webhooks; polish moves</div>
+                </div>
+
+                <div class="category">
+                    <h3>⚖️ Legal/Compliance</h3>
+                    <ul>
+                        <li class="keep">Terms of Service link</li>
+                        <li class="keep">Privacy Policy link</li>
+                        <li class="keep">Cookie consent (if EU + cookies)</li>
+                        <li class="move">Data retention policy</li>
+                        <li class="move">GDPR data export/deletion</li>
+                    </ul>
+                    <div class="rationale">Basic legal coverage; compliance depth moves</div>
+                </div>
+
+                <div class="category">
+                    <h3>🧹 Code Structure & Reuse</h3>
+                    <ul>
+                        <li class="move">No duplicate components</li>
+                        <li class="move">Shared components used</li>
+                        <li class="move">Consistent naming</li>
+                        <li class="move">Utils consolidated</li>
+                        <li class="move">Types centralized</li>
+                    </ul>
+                    <div class="rationale">Entire category is maintainability — not launch-critical</div>
+                </div>
+
+                <div class="category">
+                    <h3>🤖 AI Agent Accessibility</h3>
+                    <ul>
+                        <li class="move">data-testid on interactive elements</li>
+                        <li class="move">ARIA roles on custom widgets</li>
+                        <li class="move">State exposed via attributes</li>
+                        <li class="move">Form inputs have labels</li>
+                        <li class="move">Dynamic content announced</li>
+                    </ul>
+                    <div class="rationale">Nice for testing; not blocking for MVP launch</div>
+                </div>
+            </div>
+
+            <!-- SCALE-READY COLUMN -->
+            <div class="column">
+                <div class="column-header scale">
+                    📈 Scale-Ready
+                    <div class="desc">After traction — "can handle growth and be operated"</div>
+                </div>
+
+                <div class="category">
+                    <h3>🔐 Security Hardening <span class="tier-badge growth">Growth</span></h3>
+                    <ul>
+                        <li>Session expiry and refresh configured</li>
+                        <li>Security headers (CSP, HSTS, X-Frame)</li>
+                        <li>Admin routes extra-protected</li>
+                        <li>Sensitive actions require re-auth</li>
+                        <li>API keys scoped and rotatable</li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>🗄️ Database Optimization <span class="tier-badge growth">Growth</span></h3>
+                    <ul>
+                        <li>Indexes on query patterns</li>
+                        <li>No N+1 query patterns</li>
+                        <li>Connection pooling configured</li>
+                        <li>Soft deletes for user data</li>
+                        <li>PII encryption at rest</li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>👁️ Observability <span class="tier-badge growth">Growth</span></h3>
+                    <ul>
+                        <li>Structured logging (not console.log)</li>
+                        <li>Log levels configured</li>
+                        <li>Request correlation IDs</li>
+                        <li>Error tracking with context</li>
+                        <li>Alerting on error spikes</li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>⚡ Performance <span class="tier-badge growth">Growth</span></h3>
+                    <ul>
+                        <li>Core Web Vitals passing</li>
+                        <li>Bundle size optimized</li>
+                        <li>Code splitting / lazy loading</li>
+                        <li>Image optimization</li>
+                        <li>Caching strategy</li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>🛡️ Reliability <span class="tier-badge growth">Growth</span></h3>
+                    <ul>
+                        <li>Timeouts on external calls</li>
+                        <li>Retry with exponential backoff</li>
+                        <li>Graceful degradation / fallbacks</li>
+                        <li>Idempotency on critical operations</li>
+                        <li>Queue job reliability</li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>🔧 Operational Readiness <span class="tier-badge growth">Growth</span></h3>
+                    <ul>
+                        <li>Runbooks exist</li>
+                        <li>Rollback procedure documented</li>
+                        <li>Zero-downtime deployments</li>
+                        <li>Staging environment</li>
+                        <li>Feature flags infrastructure</li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>🧹 Code Maturity <span class="tier-badge growth">Growth</span></h3>
+                    <ul>
+                        <li>No duplicate components</li>
+                        <li>Shared components used</li>
+                        <li>Types centralized</li>
+                        <li>Test coverage on critical paths</li>
+                        <li>Dependencies vulnerability-free</li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>📋 Compliance <span class="tier-badge enterprise">Enterprise</span></h3>
+                    <ul>
+                        <li>GDPR data export works</li>
+                        <li>GDPR deletion works</li>
+                        <li>Audit logging on sensitive actions</li>
+                        <li>Data retention policy enforced</li>
+                        <li>SOC2 / HIPAA (if applicable)</li>
+                    </ul>
+                </div>
+
+                <div class="category">
+                    <h3>🏢 Enterprise <span class="tier-badge enterprise">Enterprise</span></h3>
+                    <ul>
+                        <li>Penetration testing done</li>
+                        <li>Load testing completed</li>
+                        <li>Multi-region deployment</li>
+                        <li>Incident response process</li>
+                        <li>SLAs defined and monitored</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="decision-section">
+            <h2>🤔 Decisions Needed</h2>
+
+            <div class="question">
+                <strong>Q1: Session management (expiry, refresh)</strong><br>
+                Currently proposed to MOVE to scale-ready. But basic session expiry might be security-critical?
+                <br><em>Argument for MVP: Stolen session = permanent access without expiry</em>
+                <br><em>Argument for Scale: Basic sessions work, refresh is optimization</em>
+            </div>
+
+            <div class="question">
+                <strong>Q2: Consistent API error responses</strong><br>
+                Currently proposed to MOVE. But inconsistent errors = harder frontend development?
+                <br><em>Argument for MVP: Dev friction is real</em>
+                <br><em>Argument for Scale: App still works, just annoying</em>
+            </div>
+
+            <div class="question">
+                <strong>Q3: Offline handling</strong><br>
+                Currently proposed to MOVE. But many users are on flaky mobile connections?
+                <br><em>Argument for MVP: Mobile users = most users</em>
+                <br><em>Argument for Scale: "No connection" error is acceptable MVP UX</em>
+            </div>
+
+            <div class="question">
+                <strong>Q4: Code Structure & Reuse (entire category)</strong><br>
+                Currently proposed to MOVE entirely. But dev is cheap with AI agents?
+                <br><em>Argument for MVP: AI can refactor later easily</em>
+                <br><em>Argument for Scale: Maintainability ≠ launch-critical</em>
+            </div>
+
+            <div class="question">
+                <strong>Q5: AI Agent Accessibility (entire category)</strong><br>
+                Currently proposed to MOVE entirely. But you use AI testing?
+                <br><em>Argument for MVP: Blocks your own QA workflow</em>
+                <br><em>Argument for Scale: Manual testing works for MVP</em>
+            </div>
+
+            <div class="question">
+                <strong>Q6: Build without warnings</strong><br>
+                Currently proposed to MOVE (keep "build passes"). But warnings often indicate real issues?
+                <br><em>Argument for MVP: Warnings are often real bugs waiting to happen</em>
+                <br><em>Argument for Scale: Warnings ≠ broken, can ship</em>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: #f1f5f9; border-radius: 8px;">
+            <h2 style="margin-bottom: 15px;">📝 Next Steps</h2>
+            <ol style="padding-left: 20px;">
+                <li>Review this document and make decisions on the 6 questions above</li>
+                <li>Update preflight with pattern-based additions (brute force, form abuse, error visibility)</li>
+                <li>Move confirmed items to scale-ready</li>
+                <li>Update reference checklists in both skills</li>
+            </ol>
+        </div>
+
+        <footer style="margin-top: 40px; text-align: center; color: #64748b; font-size: 0.9em;">
+            <p>Shipkit • Preflight/Scale-Ready Split Proposal • Review Document</p>
+        </footer>
+    </div>
+</body>
+</html>

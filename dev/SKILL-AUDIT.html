@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipkit Light Skill Audit</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0f0f0f;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 30px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .card {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .card.keep {
+            border-left: 4px solid #22c55e;
+        }
+
+        .card.kill {
+            border-left: 4px solid #ef4444;
+        }
+
+        .card.merge {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .card-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .card.keep .card-number { color: #22c55e; }
+        .card.kill .card-number { color: #ef4444; }
+        .card.merge .card-number { color: #f59e0b; }
+
+        .card-label {
+            font-size: 1rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th {
+            text-align: left;
+            padding: 16px 20px;
+            background: #222;
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 16px 20px;
+            border-top: 1px solid #2a2a2a;
+            vertical-align: top;
+        }
+
+        tr:hover {
+            background: #222;
+        }
+
+        tr.deleted {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        .skill-name {
+            font-family: 'SF Mono', Consolas, monospace;
+            font-size: 0.9rem;
+            color: #60a5fa;
+        }
+
+        .verdict {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .verdict.keep {
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+        }
+
+        .verdict.kill {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .verdict.merge {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .verdict.done {
+            background: rgba(107, 114, 128, 0.15);
+            color: #6b7280;
+        }
+
+        .justification {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .revision {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid #f59e0b;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #f59e0b;
+        }
+
+        .insight-box {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 50px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .insight-box h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .insight-column h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .insight-column.keep h3 { color: #22c55e; }
+        .insight-column.kill h3 { color: #ef4444; }
+
+        .insight-column p {
+            color: #ccc;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .final-count {
+            text-align: center;
+            padding: 40px;
+            margin-top: 50px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 12px;
+        }
+
+        .final-count .number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        .final-count .label {
+            font-size: 1.2rem;
+            color: #888;
+            margin-top: 10px;
+        }
+
+        .final-count .from {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .new-skill {
+            background: rgba(34, 197, 94, 0.05);
+        }
+
+        .new-skill .skill-name {
+            color: #22c55e;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shipkit Light Skill Audit</h1>
+    <p class="subtitle">Evaluating 28 skills against Claude Code's native capabilities</p>
+    <div class="status-badge">✓ Audit Complete - Changes Applied</div>
+
+    <div class="summary-cards">
+        <div class="card keep">
+            <div class="card-number">18</div>
+            <div class="card-label">Keep</div>
+        </div>
+        <div class="card kill">
+            <div class="card-number">6</div>
+            <div class="card-label">Deleted</div>
+        </div>
+        <div class="card merge">
+            <div class="card-number">4→1</div>
+            <div class="card-label">Merged</div>
+        </div>
+    </div>
+
+    <!-- Core Workflow -->
+    <div class="section">
+        <h2 class="section-header">Core Workflow</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%">Skill</th>
+                    <th style="width: 12%">Verdict</th>
+                    <th>Justification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="skill-name">shipkit-master</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Meta-orchestration. Necessary for the framework to function.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-project-status</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Gap analysis requires structured check. Claude won't volunteer "here's what's missing."</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-project-context</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Systematic codebase scan. Creates persistent stack.md. Valuable for onboarding and session start.</td>
+                </tr>
+                <tr class="deleted">
+                    <td><span class="skill-name">shipkit-whats-next</span></td>
+                    <td><span class="verdict done">Deleted</span></td>
+                    <td class="justification">Training wheels. Experienced users don't need workflow guidance. Claude can suggest next steps naturally if asked.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Discovery & Planning -->
+    <div class="section">
+        <h2 class="section-header">Discovery & Planning</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%">Skill</th>
+                    <th style="width: 12%">Verdict</th>
+                    <th>Justification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="skill-name">shipkit-product-discovery</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Human-driven. Personas, journeys, stories require human insight about users. Claude structures, human provides.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-why-project</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Strategic vision is purely human. Forces explicit articulation of purpose.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-spec</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Forces "what" before "how." Prevents monolithic architecture. Human decisions made explicit.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-plan</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Sequencing, priorities, constraints are human decisions. Creates implementation roadmap.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-prototyping</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">
+                        Structured prototype location. Creates separate prototype folder with specified structure, keeping throwaway code isolated from production codebase.
+                        <div class="revision">REVISED: Originally marked KILL. Kept for structured file location, not capability.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-prototype-to-spec</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Captures learnings from prototypes. Bridges throwaway code to real spec. Human reflection required.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Implementation -->
+    <div class="section">
+        <h2 class="section-header">Implementation</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%">Skill</th>
+                    <th style="width: 12%">Verdict</th>
+                    <th>Justification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="deleted">
+                    <td><span class="skill-name">shipkit-implement</span></td>
+                    <td><span class="verdict done">Deleted</span></td>
+                    <td class="justification">Claude's core competency. Given a spec, Claude implements. This skill adds no value over "implement the spec."</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-architecture-memory</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Decision records. "We chose X over Y because Z." Only humans can make these calls. Persistence is crucial.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-data-contracts</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Domain modeling is human-driven. Forces explicit type definitions before implementation sprawl.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-component-knowledge</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Institutional memory. Documents component responsibilities for future sessions/developers.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-route-knowledge</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Same as above for routes. Especially valuable for Next.js app router complexity.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-integration-docs</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">External service patterns. How we use Stripe, Auth0, etc. Persists tribal knowledge.</td>
+                </tr>
+                <tr class="deleted">
+                    <td><span class="skill-name">shipkit-debug-systematically</span></td>
+                    <td><span class="verdict done">Deleted</span></td>
+                    <td class="justification">Claude debugs systematically by nature. Show error, Claude investigates. No skill needed.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Quality & Documentation -->
+    <div class="section">
+        <h2 class="section-header">Quality & Documentation</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%">Skill</th>
+                    <th style="width: 12%">Verdict</th>
+                    <th>Justification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="skill-name">shipkit-ux-audit</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Structured UX review. Claude can do this but won't think to without prompting. Catches issues.</td>
+                </tr>
+                <tr class="deleted">
+                    <td><span class="skill-name">shipkit-quality-confidence</span></td>
+                    <td><span class="verdict done">Deleted</span></td>
+                    <td class="justification">Overlaps with post-implement-check. Redundant validation gate.</td>
+                </tr>
+                <tr class="deleted">
+                    <td><span class="skill-name">shipkit-document-artifact</span></td>
+                    <td><span class="verdict done">Deleted</span></td>
+                    <td class="justification">Claude writes docs naturally. "Document this component" works without a skill.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-user-instructions</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">User-facing docs require human perspective on what users need to know. Different from code docs.</td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-communications</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">
+                        Rich HTML output via mini Vite repo. Creates visual presentations, interactive reports beyond CLI text. Not about formatting.
+                        <div class="revision">REVISED: Originally marked KILL. Kept for rich HTML visual communication beyond text boxes.</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="skill-name">shipkit-work-memory</span></td>
+                    <td><span class="verdict keep">Keep</span></td>
+                    <td class="justification">Session persistence. Claude has no memory. This is the bridge between sessions. Critical.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- System Skills -->
+    <div class="section">
+        <h2 class="section-header">System Skills (Auto-triggered)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%">Skill</th>
+                    <th style="width: 12%">Verdict</th>
+                    <th>Justification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="deleted">
+                    <td><span class="skill-name">shipkit-milestone-detector</span></td>
+                    <td><span class="verdict done">Deleted</span></td>
+                    <td class="justification">Over-engineered. User knows when something is done. Auto-detection adds complexity without value.</td>
+                </tr>
+                <tr class="deleted">
+                    <td><span class="skill-name">shipkit-post-spec-check</span></td>
+                    <td><span class="verdict done">Merged</span></td>
+                    <td class="justification">Merged into shipkit-detect --mode=services</td>
+                </tr>
+                <tr class="deleted">
+                    <td><span class="skill-name">shipkit-post-plan-check</span></td>
+                    <td><span class="verdict done">Merged</span></td>
+                    <td class="justification">Merged into shipkit-detect --mode=contracts</td>
+                </tr>
+                <tr class="deleted">
+                    <td><span class="skill-name">shipkit-post-implement-check</span></td>
+                    <td><span class="verdict done">Merged</span></td>
+                    <td class="justification">Merged into shipkit-detect --mode=changes</td>
+                </tr>
+                <tr class="deleted">
+                    <td><span class="skill-name">shipkit-pre-ship-check</span></td>
+                    <td><span class="verdict done">Merged</span></td>
+                    <td class="justification">Merged into shipkit-detect --mode=ux-gaps</td>
+                </tr>
+                <tr class="new-skill">
+                    <td><span class="skill-name">shipkit-detect</span></td>
+                    <td><span class="verdict keep">New</span></td>
+                    <td class="justification">
+                        <strong>Unified detection skill.</strong> Scans artifacts after parent skills complete and creates work queues for follow-up skills.
+                        <br><br>
+                        <strong>Modes:</strong>
+                        <ul style="margin-top: 8px; margin-left: 20px; color: #888;">
+                            <li><code>--mode=services</code> → After shipkit-spec, detects external services</li>
+                            <li><code>--mode=contracts</code> → After shipkit-plan, detects data structures</li>
+                            <li><code>--mode=changes</code> → After implementation, detects modified files</li>
+                            <li><code>--mode=ux-gaps</code> → After quality check, detects UX gaps</li>
+                        </ul>
+                        <br>
+                        <strong>Trigger:</strong> Stop hook reads .last-skill breadcrumb and dispatches to appropriate mode.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Insight Box -->
+    <div class="insight-box">
+        <h2>The Pattern</h2>
+        <div class="insight-grid">
+            <div class="insight-column kill">
+                <h3>Killed Skills Share One Trait</h3>
+                <p>Claude does them well without instruction. Debugging, documenting, implementing &mdash; these are native capabilities. Adding a skill adds overhead without adding value.</p>
+            </div>
+            <div class="insight-column keep">
+                <h3>Kept Skills Share One Trait</h3>
+                <p>They force human decisions to be explicit OR they create persistence Claude lacks. Vision, architecture decisions, domain models, institutional memory &mdash; these require human input or survive beyond a session.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Count -->
+    <div class="final-count">
+        <div class="number">19</div>
+        <div class="label">Final Skill Count</div>
+        <div class="from">18 user-invocable + 1 system skill (down from 28)</div>
+    </div>
+
+</body>
+</html>
