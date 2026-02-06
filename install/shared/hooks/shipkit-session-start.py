@@ -56,8 +56,8 @@ def format_age(days: float) -> str:
 
 
 def check_stack_freshness(project_root: Path) -> tuple[bool, str]:
-    """Check if stack.md is fresher than package.json."""
-    stack_file = project_root / '.shipkit' / 'stack.md'
+    """Check if stack.json is fresher than package.json."""
+    stack_file = project_root / '.shipkit' / 'stack.json'
     package_json = project_root / 'package.json'
     pyproject = project_root / 'pyproject.toml'
 
@@ -131,7 +131,7 @@ def check_implementations_freshness(project_root: Path) -> tuple[bool, str, int,
 
 def get_last_progress_entry(project_root: Path) -> tuple[str, str]:
     """Get last progress entry summary and timestamp."""
-    progress_file = project_root / '.shipkit' / 'progress.md'
+    progress_file = project_root / '.shipkit' / 'progress.json'
 
     if not progress_file.exists():
         return "", "No sessions logged"
@@ -165,7 +165,7 @@ def get_last_progress_entry(project_root: Path) -> tuple[str, str]:
             if len(summary_lines) >= 2:
                 break
 
-    summary = "; ".join(summary_lines) if summary_lines else "See progress.md"
+    summary = "; ".join(summary_lines) if summary_lines else "See progress.json"
     age = get_file_age_days(progress_file)
 
     return summary, format_age(age)
@@ -429,7 +429,7 @@ def main():
     # Smart Recommendation
     # ─────────────────────────────────────────────────────────────────
 
-    has_stack = (project_root / '.shipkit' / 'stack.md').exists()
+    has_stack = (project_root / '.shipkit' / 'stack.json').exists()
     recommendation = get_smart_recommendation(project_root, counts, has_stack)
 
     print("## 💡 Recommended Next")
@@ -456,8 +456,8 @@ def main():
         print("---")
         print()
 
-    # Load stack.md (only if fresh)
-    stack_file = shipkit_dir / 'stack.md'
+    # Load stack.json (only if fresh)
+    stack_file = shipkit_dir / 'stack.json'
     if stack_file.exists():
         if stack_fresh:
             print("# Tech Stack (current)")
@@ -479,8 +479,8 @@ def main():
         print("---")
         print()
 
-    # Load architecture.md (decisions - usually stable)
-    arch_file = shipkit_dir / 'architecture.md'
+    # Load architecture.json (decisions - usually stable)
+    arch_file = shipkit_dir / 'architecture.json'
     if arch_file.exists():
         age = get_file_age_days(arch_file)
         if age > 14:
@@ -657,8 +657,8 @@ def main():
     # Check each context file
     context_files = [
         ('why.md', 'Before product decisions'),
-        ('stack.md', 'Before implementing (check patterns)'),
-        ('architecture.md', 'Before design decisions'),
+        ('stack.json', 'Before implementing (check patterns)'),
+        ('architecture.json', 'Before design decisions'),
         ('schema.md', 'Before database work'),
         ('codebase-index.json', 'For navigation'),
     ]
@@ -670,7 +670,7 @@ def main():
             status = format_age(age)
         else:
             status = "Missing"
-            read_when = f"Create: `/shipkit-project-context`" if filename in ['stack.md', 'schema.md'] else f"Create when needed"
+            read_when = f"Create: `/shipkit-project-context`" if filename in ['stack.json', 'schema.md'] else f"Create when needed"
 
         print(f"| `{filename}` | {status} | {read_when} |")
 

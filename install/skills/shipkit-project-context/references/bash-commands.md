@@ -10,24 +10,24 @@ Platform-specific commands for scanning project files and checking freshness.
 
 **Windows (PowerShell-compatible)**:
 ```bash
-# Get modification time of stack.md
-(Get-Item ".shipkit/stack.md" -ErrorAction SilentlyContinue).LastWriteTime
+# Get modification time of stack.json
+(Get-Item ".shipkit/stack.json" -ErrorAction SilentlyContinue).LastWriteTime
 
 # Get modification time of package.json
 (Get-Item "package.json").LastWriteTime
 
-# Compare: is stack.md newer than package.json?
+# Compare: is stack.json newer than package.json?
 # (Stack is fresh if its mtime > package.json mtime)
 ```
 
 **Unix/Mac**:
 ```bash
 # Get modification time as timestamp
-stat -f %m .shipkit/stack.md 2>/dev/null || echo 0
+stat -f %m .shipkit/stack.json 2>/dev/null || echo 0
 stat -f %m package.json
 
 # Or with date format
-stat -f "%Sm" -t "%Y-%m-%d %H:%M" .shipkit/stack.md
+stat -f "%Sm" -t "%Y-%m-%d %H:%M" .shipkit/stack.json
 ```
 
 **Cross-platform (prefer in Claude Code)**:
@@ -36,7 +36,7 @@ stat -f "%Sm" -t "%Y-%m-%d %H:%M" .shipkit/stack.md
 import os
 from pathlib import Path
 
-stack = Path('.shipkit/stack.md')
+stack = Path('.shipkit/stack.json')
 pkg = Path('package.json')
 
 if stack.exists() and pkg.exists():
@@ -228,4 +228,4 @@ which gh 2>/dev/null && echo "gh: installed"
 | Migration scan | <1s | ~100-300 tokens |
 | Full project scan | 2-5s | ~800-1200 tokens |
 
-**Recommendation**: Always check freshness first. If stack.md is fresh, skip the full scan.
+**Recommendation**: Always check freshness first. If stack.json is fresh, skip the full scan.

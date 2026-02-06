@@ -75,7 +75,7 @@ This skill asks clarifying questions and creates `.shipkit/why.md` — the found
 /shipkit-project-context
 ```
 
-This detects your tech stack and creates `.shipkit/stack.md`.
+This detects your tech stack and creates `.shipkit/stack.json`.
 
 ### 4. Create a Feature Spec
 
@@ -150,9 +150,9 @@ All project context lives here:
 | File | Purpose |
 |------|---------|
 | `why.md` | Vision, constraints, approach |
-| `stack.md` | Tech choices (auto-scanned) |
-| `architecture.md` | Decisions log (append-only) |
-| `progress.md` | Session continuity |
+| `stack.json` | Tech choices (auto-scanned) |
+| `architecture.json` | Decisions log (append-only) |
+| `progress.json` | Session continuity |
 | `specs/active/` | Feature specifications |
 | `plans/` | Implementation plans |
 
@@ -190,7 +190,7 @@ Shows what context exists, what's missing, and suggests next steps.
 /shipkit-architecture-memory
 ```
 
-Appends a decision to `.shipkit/architecture.md` with rationale.
+Appends a decision to `.shipkit/architecture.json` with rationale.
 
 ### Create a UI Prototype
 

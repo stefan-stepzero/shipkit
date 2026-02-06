@@ -43,7 +43,8 @@
         {"name": "shipkit-product-discovery", "desc": "Create personas & user journeys"},
         {"name": "shipkit-project-context", "desc": "Scan codebase, detect stack"},
         {"name": "shipkit-project-status", "desc": "Check project health & gaps"},
-        {"name": "shipkit-codebase-index", "desc": "Index codebase for navigation"}
+        {"name": "shipkit-codebase-index", "desc": "Index codebase for navigation"},
+        {"name": "shipkit-goals", "desc": "Capture project goals & priorities"}
       ],
       "Spec & Planning": [
         {"name": "shipkit-spec", "desc": "Create feature specifications"},

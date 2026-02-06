@@ -16,7 +16,9 @@ allowed-tools:
 
 **Purpose**: Ensure your project is ready for first users — the essentials that can't wait.
 
-**What it does**: Runs an MVP-focused production checklist covering security, data integrity, error handling, UX basics, and legal compliance. For scale/enterprise readiness (observability, performance, operational maturity), use `/shipkit-scale-ready` after you have traction.
+**What it does**: Runs an MVP-focused production checklist covering security, data integrity, error handling, UX basics, and legal compliance. Generates `.shipkit/preflight.json` with structured results. For scale/enterprise readiness (observability, performance, operational maturity), use `/shipkit-scale-ready` after you have traction.
+
+**Output format**: JSON — readable by Claude, renderable by mission control dashboard, and the single source of truth for production readiness status.
 
 **Philosophy**: With AI dev, building is cheap — but security, data integrity, and user trust aren't. This checklist keeps what matters for MVP while deferring optimization concerns.
 
@@ -49,10 +51,10 @@ This skill aggregates context from other skills. It will route you to create mis
 
 | Needed Context | Source Skill | File | Required? |
 |----------------|--------------|------|-----------|
-| Tech stack, deployment target | `/shipkit-project-context` | `stack.md` | Yes |
+| Tech stack, deployment target | `/shipkit-project-context` | `stack.json` | Yes |
 | Vision, constraints, scale | `/shipkit-why-project` | `why.md` | Yes |
-| Architecture decisions, auth model | `/shipkit-architecture-memory` | `architecture.md` | Recommended |
-| Data shapes, what's stored | `/shipkit-data-contracts` | `types.md` | Recommended |
+| Architecture decisions, auth model | `/shipkit-architecture-memory` | `architecture.json` | Recommended |
+| Data shapes, what's stored | `/shipkit-data-contracts` | `contracts.json` | Recommended |
 | Feature specs | `/shipkit-spec` | `specs/active/*.md` | Helpful |
 
 **If missing required context**: Skill will route you to the appropriate skill first.
@@ -66,7 +68,7 @@ This skill aggregates context from other skills. It will route you to create mis
 **Check for previous audit:**
 
 ```
-1. Check if .shipkit/production-readiness.md exists
+1. Check if .shipkit/preflight.json exists
 
 2. If exists, extract metadata:
    - Last run timestamp
@@ -112,7 +114,7 @@ Since last preflight (a1b2c3d, 3 days ago):
 **Read existing context files:**
 
 ```
-1. Check .shipkit/stack.md
+1. Check .shipkit/stack.json
    - Missing? → "Run /shipkit-project-context first — I need to know your stack and deployment target"
    - Exists but no deployment target? → Ask: "Where are you deploying? (Vercel, AWS, Railway, Docker, etc.)"
 
@@ -120,11 +122,11 @@ Since last preflight (a1b2c3d, 3 days ago):
    - Missing? → "Run /shipkit-why-project first — I need to understand scale and constraints"
    - Exists → Extract: expected users, data sensitivity, uptime requirements
 
-3. Check .shipkit/architecture.md
+3. Check .shipkit/architecture.json
    - Missing? → Note: "No architecture decisions documented — will use generic checks"
    - Exists → Extract: auth model, database choices, key patterns
 
-4. Check .shipkit/types.md
+4. Check .shipkit/contracts.json
    - Missing? → Note: "No data contracts — will infer from code"
    - Exists → Extract: what sensitive data is stored
 ```
@@ -139,13 +141,13 @@ Since last preflight (a1b2c3d, 3 days ago):
 
 Possible questions (only if not already documented):
 
-1. **Deployment target** (if not in stack.md):
+1. **Deployment target** (if not in stack.json):
    - "Where are you deploying? (Vercel, Railway, AWS, Docker, self-hosted)"
 
 2. **Expected scale** (if not in why.md):
    - "Expected concurrent users at launch? (just me, <100, 100-1000, 1000+)"
 
-3. **Data sensitivity** (if not in types.md):
+3. **Data sensitivity** (if not in contracts.json):
    - "What's the most sensitive data you store? (none, emails, PII, payments, healthcare)"
 
 4. **Current state**:
@@ -280,117 +282,196 @@ Each checklist item describes what to "Scan for" — translate these to actual t
 
 ### Step 4: Generate Audit Report
 
-**Create**: `.shipkit/production-readiness.md`
+**Create**: `.shipkit/preflight.json`
 
-**Report structure (with tracking metadata):**
-
-```markdown
-# Production Readiness Audit
-
-<!-- PREFLIGHT METADATA - DO NOT EDIT -->
-<!-- last_run: 2024-01-15T14:32:00Z -->
-<!-- commit: a1b2c3d4e5f6 -->
-<!-- scope: full|incremental|quick-verify -->
-<!-- files_checked: 47 -->
-<!-- END METADATA -->
-
-**Generated**: [date]
-**Commit**: [short hash] ([X commits since last audit])
-**Scope**: [Full Audit | Incremental (12 files changed) | Quick Verify]
-**Project**: [from why.md]
-**Stack**: [from stack.md]
-**Deployment**: [target]
+**The output MUST conform to the schema below.** This is a strict contract — mission control and other skills depend on this structure.
 
 ---
 
-## Summary
+## JSON Schema
 
-| Category | Pass | Warn | Fail | N/A | Changed |
-|----------|------|------|------|-----|---------|
-| Auth & Security | X | X | X | X | ✓ |
-| Data & Database | X | X | X | X | |
-| Error Handling | X | X | X | X | ✓ |
-| Environment | X | X | X | X | |
-| Deployment | X | X | X | X | |
-| UX Resilience | X | X | X | X | ✓ |
-| Code Structure & Reuse | X | X | X | X | |
-| Legal/Compliance | X | X | X | X | |
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "preflight",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "shipkit-preflight",
 
-**Overall**: [READY / READY WITH WARNINGS / NOT READY]
+  "summary": {
+    "overallStatus": "ready | ready-with-warnings | not-ready",
+    "readinessScore": 85,
+    "scope": "full | incremental | quick-verify",
+    "commit": "a1b2c3d",
+    "filesChecked": 47,
+    "previousAuditCommit": "x9y8z7w",
+    "counts": {
+      "pass": 22,
+      "fail": 3,
+      "warning": 5,
+      "notApplicable": 4,
+      "unchanged": 0
+    },
+    "byCategory": {
+      "auth-security": { "pass": 5, "fail": 1, "warning": 1, "notApplicable": 0, "changed": true },
+      "data-database": { "pass": 3, "fail": 0, "warning": 1, "notApplicable": 0, "changed": false },
+      "error-handling": { "pass": 4, "fail": 1, "warning": 0, "notApplicable": 0, "changed": true },
+      "environment": { "pass": 3, "fail": 0, "warning": 1, "notApplicable": 1, "changed": false },
+      "deployment": { "pass": 3, "fail": 1, "warning": 0, "notApplicable": 1, "changed": false },
+      "ux-resilience": { "pass": 3, "fail": 0, "warning": 1, "notApplicable": 1, "changed": true },
+      "code-structure": { "pass": 3, "fail": 0, "warning": 1, "notApplicable": 0, "changed": false },
+      "legal-compliance": { "pass": 2, "fail": 0, "warning": 0, "notApplicable": 1, "changed": false },
+      "payments": { "pass": 0, "fail": 0, "warning": 0, "notApplicable": 0, "changed": false },
+      "ai-accessibility": { "pass": 1, "fail": 0, "warning": 0, "notApplicable": 0, "changed": false }
+    }
+  },
 
----
+  "checks": [
+    {
+      "id": "auth-protected-routes",
+      "category": "auth-security",
+      "name": "Authentication on protected routes",
+      "status": "pass | fail | warning | not-applicable | unchanged",
+      "evidence": "src/middleware/auth.ts:15 — requireAuth applied to all /api/protected/* routes",
+      "file": "src/middleware/auth.ts",
+      "line": 15,
+      "statusChange": null,
+      "details": "All 12 protected routes have auth middleware"
+    },
+    {
+      "id": "secrets-in-env",
+      "category": "auth-security",
+      "name": "Secrets in environment variables",
+      "status": "fail",
+      "evidence": "src/config/api.ts:8 — hardcoded API key found",
+      "file": "src/config/api.ts",
+      "line": 8,
+      "statusChange": "new",
+      "details": "API key hardcoded in source instead of environment variable"
+    }
+  ],
 
-## 🔴 Blockers (Must Fix)
+  "blockers": [
+    {
+      "checkId": "secrets-in-env",
+      "category": "auth-security",
+      "name": "Hardcoded API key in source",
+      "file": "src/config/api.ts",
+      "line": 8,
+      "problem": "API key is hardcoded in source code",
+      "impact": "Key exposed in git history, anyone with repo access can use it",
+      "fix": "Move to environment variable, add to .env.example, rotate the key",
+      "statusChange": "new | still-failing | regression"
+    }
+  ],
 
-[Critical issues that will cause problems in production]
+  "recommendations": [
+    {
+      "checkId": "rate-limiting",
+      "category": "auth-security",
+      "name": "Rate limiting on auth endpoints",
+      "severity": "warning",
+      "suggestion": "Add rate limiting middleware to /api/auth/* routes to prevent brute force attacks",
+      "effort": "low | medium | high"
+    }
+  ],
 
-### [Category]: [Issue Title]
-- **File**: `path/to/file.ts:line`
-- **Problem**: [What's wrong]
-- **Impact**: [What happens if not fixed]
-- **Fix**: [How to fix]
-- **Status**: NEW | Still failing | Regression
+  "statusChanges": {
+    "fixed": [
+      { "checkId": "error-boundaries", "description": "Error boundaries now present in root layout" }
+    ],
+    "newIssues": [
+      { "checkId": "secrets-in-env", "description": "Hardcoded API key introduced in recent commit" }
+    ],
+    "regressions": []
+  },
 
----
+  "auditHistory": [
+    {
+      "date": "2024-01-15",
+      "commit": "a1b2c3d",
+      "scope": "full",
+      "blockers": 3,
+      "warnings": 7
+    },
+    {
+      "date": "2024-01-12",
+      "commit": "x9y8z7w",
+      "scope": "incremental",
+      "blockers": 5,
+      "warnings": 9
+    }
+  ],
 
-## 🟡 Warnings (Should Fix)
-
-[Issues that won't break production but create risk]
-
----
-
-## 🔄 Status Changes (since last audit)
-
-### ✅ Now Fixed
-- [Check ID]: [Description] — was failing, now passes
-
-### ❌ New Issues
-- [Check ID]: [Description] — introduced since last audit
-
-### ⚠️ Regressions
-- [Check ID]: [Description] — was passing, now fails
-
----
-
-## 🟢 Passed Checks
-
-[Checklist items that passed — collapsed by default]
-
----
-
-## ⏭️ Unchanged (carried forward)
-
-[Categories not affected by changes since last audit]
-- Auth & Security: 12 checks (last verified: [date])
-- ...
-
----
-
-## ⏭️ Not Applicable
-
-[Checks skipped based on your stack/context]
-
----
-
-## Audit History
-
-| Date | Commit | Scope | Blockers | Warnings |
-|------|--------|-------|----------|----------|
-| 2024-01-15 | a1b2c3d | Full | 3 | 7 |
-| 2024-01-12 | x9y8z7w | Incremental | 5 | 9 |
-
----
-
-## Next Steps
-
-1. [ ] Fix blockers before deploying
-2. [ ] Review warnings and decide which to address
-3. [ ] Re-run `/shipkit-preflight` after fixes to verify
-
----
-
-**Previous audits**: .shipkit/audits/
+  "context": {
+    "project": "From why.md",
+    "stack": "From stack.json",
+    "deployment": "Target platform"
+  }
+}
 ```
+
+### Field Reference
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `$schema` | string | yes | Always `"shipkit-artifact"` — identifies this as a Shipkit-managed file |
+| `type` | string | yes | Always `"preflight"` — artifact type for routing/rendering |
+| `version` | string | yes | Schema version for forward compatibility |
+| `lastUpdated` | string | yes | ISO date of last modification |
+| `source` | string | yes | Always `"shipkit-preflight"` |
+| `summary` | object | yes | Aggregated counts for dashboard rendering |
+| `summary.overallStatus` | enum | yes | `"ready"` \| `"ready-with-warnings"` \| `"not-ready"` |
+| `summary.readinessScore` | number | yes | 0-100 percentage (pass / (pass + fail + warning) * 100) |
+| `summary.scope` | enum | yes | `"full"` \| `"incremental"` \| `"quick-verify"` |
+| `summary.commit` | string | yes | Git commit hash at time of audit |
+| `summary.filesChecked` | number | yes | Number of source files scanned |
+| `summary.previousAuditCommit` | string | no | Commit hash of last audit (for incremental) |
+| `summary.counts` | object | yes | Total pass/fail/warning/notApplicable/unchanged |
+| `summary.byCategory` | object | yes | Per-category breakdown with `changed` flag for incremental |
+| `checks` | array | yes | All individual checks with status and evidence |
+| `checks[].id` | string | yes | Slug identifier (kebab-case) |
+| `checks[].category` | string | yes | Category slug matching `summary.byCategory` keys |
+| `checks[].name` | string | yes | Human-readable check name |
+| `checks[].status` | enum | yes | `"pass"` \| `"fail"` \| `"warning"` \| `"not-applicable"` \| `"unchanged"` |
+| `checks[].evidence` | string | yes | Tool output evidence (file:line or "0 matches") |
+| `checks[].file` | string | no | File path where evidence was found |
+| `checks[].line` | number | no | Line number in file |
+| `checks[].statusChange` | enum | no | `"new"` \| `"fixed"` \| `"regression"` \| `null` |
+| `checks[].details` | string | no | Additional context |
+| `blockers` | array | yes | Critical issues extracted from checks where status is `"fail"` |
+| `blockers[].checkId` | string | yes | References `checks[].id` |
+| `blockers[].category` | string | yes | Category slug |
+| `blockers[].name` | string | yes | Issue title |
+| `blockers[].file` | string | no | File path |
+| `blockers[].line` | number | no | Line number |
+| `blockers[].problem` | string | yes | What is wrong |
+| `blockers[].impact` | string | yes | What happens if not fixed |
+| `blockers[].fix` | string | yes | How to fix it |
+| `blockers[].statusChange` | enum | no | `"new"` \| `"still-failing"` \| `"regression"` |
+| `recommendations` | array | yes | Non-critical issues extracted from checks where status is `"warning"` |
+| `recommendations[].checkId` | string | yes | References `checks[].id` |
+| `recommendations[].category` | string | yes | Category slug |
+| `recommendations[].name` | string | yes | Issue title |
+| `recommendations[].severity` | string | yes | Always `"warning"` |
+| `recommendations[].suggestion` | string | yes | What to do about it |
+| `recommendations[].effort` | enum | no | `"low"` \| `"medium"` \| `"high"` |
+| `statusChanges` | object | yes | Delta from previous audit |
+| `statusChanges.fixed` | array | yes | Checks that were failing but now pass |
+| `statusChanges.newIssues` | array | yes | Checks that are new failures |
+| `statusChanges.regressions` | array | yes | Checks that were passing but now fail |
+| `auditHistory` | array | yes | Previous audit summaries (append on each full audit) |
+| `context` | object | yes | Project context used for this audit |
+
+### Summary Object
+
+The `summary` field MUST be kept in sync with the `checks` array. It exists so the dashboard can render overview cards without iterating the full array. Recompute it every time the file is written.
+
+### Determining Overall Status
+
+- `"not-ready"` — Any blockers exist (checks with status `"fail"`)
+- `"ready-with-warnings"` — No blockers, but recommendations exist (checks with status `"warning"`)
+- `"ready"` — All checks pass or are not-applicable
 
 ---
 
@@ -399,10 +480,10 @@ Each checklist item describes what to "Scan for" — translate these to actual t
 **Archive previous** (if exists and doing full audit):
 ```bash
 # Move existing to archive with date
-.shipkit/production-readiness.md → .shipkit/audits/production-readiness-2024-01-15.md
+.shipkit/preflight.json → .shipkit/audits/preflight-2024-01-15.json
 ```
 
-**Write new**: `.shipkit/production-readiness.md` (with metadata header)
+**Write new**: `.shipkit/preflight.json` (conforming to JSON schema above)
 
 **Output to user (Full Audit):**
 ```
@@ -418,7 +499,7 @@ Each checklist item describes what to "Scan for" — translate these to actual t
   1. [Brief description]
   2. [Brief description]
 
-📁 Full report: .shipkit/production-readiness.md
+📁 Full report: .shipkit/preflight.json
 
 Ready to review blockers? I can help fix them.
 
@@ -440,7 +521,7 @@ Ready to review blockers? I can help fix them.
 🔴 Current blockers: 2 (was 3)
 🟡 Current warnings: 5 (was 7)
 
-📁 Full report: .shipkit/production-readiness.md
+📁 Full report: .shipkit/preflight.json
 
 Ready to review the new issue? I can help fix it.
 ```
@@ -455,7 +536,7 @@ Ready to review the new issue? I can help fix it.
    ❌ 2 still failing
    ✅ 1 now fixed
 
-📁 Full report: .shipkit/production-readiness.md
+📁 Full report: .shipkit/preflight.json
 
 Ready to fix the remaining blockers?
 ```
@@ -556,16 +637,16 @@ Ready to fix the remaining blockers?
 ## Context Files This Skill Reads
 
 **For incremental audit**:
-- `.shipkit/production-readiness.md` — Previous audit with metadata (commit hash, findings)
+- `.shipkit/preflight.json` — Previous audit with metadata (commit hash, findings)
 - Git history — `git diff <last-commit>..HEAD --name-only`
 
 **Required (full audit)**:
-- `.shipkit/stack.md` — Tech stack, deployment target
+- `.shipkit/stack.json` — Tech stack, deployment target
 - `.shipkit/why.md` — Vision, constraints, scale expectations
 
 **Recommended**:
-- `.shipkit/architecture.md` — Auth model, key decisions
-- `.shipkit/types.md` — Data shapes, sensitive fields
+- `.shipkit/architecture.json` — Auth model, key decisions
+- `.shipkit/contracts.json` — Data shapes, sensitive fields
 - `.shipkit/specs/active/*.md` — Feature requirements
 
 **Scans**:
@@ -581,17 +662,10 @@ Ready to fix the remaining blockers?
 **Write Strategy**: OVERWRITE with ARCHIVE (full audit) or UPDATE-IN-PLACE (incremental)
 
 **Creates/Updates**:
-- `.shipkit/production-readiness.md` — Current audit report with metadata header:
-  ```
-  <!-- PREFLIGHT METADATA -->
-  <!-- last_run: ISO timestamp -->
-  <!-- commit: git commit hash -->
-  <!-- scope: full|incremental|quick-verify -->
-  <!-- END METADATA -->
-  ```
+- `.shipkit/preflight.json` — Current audit report (JSON artifact with `$schema`, `type`, `version`, `lastUpdated`, `source`, `summary` fields)
 
 **Archives** (full audit only):
-- `.shipkit/audits/production-readiness-[YYYY-MM-DD].md` — Previous audits
+- `.shipkit/audits/preflight-[YYYY-MM-DD].json` — Previous audits
 
 **Why track metadata**:
 - Enable incremental audits (know what changed since last run)
@@ -601,16 +675,44 @@ Ready to fix the remaining blockers?
 
 ---
 
+## Shipkit Artifact Convention
+
+This skill follows the **Shipkit JSON artifact convention** — a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
+
+**Every JSON artifact MUST include these top-level fields:**
+
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "<artifact-type>",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "<skill-name>",
+  "summary": { ... }
+}
+```
+
+- `$schema` — Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
+- `type` — The artifact type (`"preflight"`, `"goals"`, `"spec"`, etc.). Dashboard uses this for rendering.
+- `version` — Schema version. Bump when fields change.
+- `lastUpdated` — When this file was last written.
+- `source` — Which skill wrote this file.
+- `summary` — Aggregated data for dashboard cards. Structure varies by type.
+
+Skills that haven't migrated to JSON yet continue writing markdown. The reporter hook ships both: JSON artifacts get structured dashboard rendering, markdown files fall back to metadata-only (exists, date, size).
+
+---
+
 ## When This Skill Integrates with Others
 
 ### Routes TO (when prerequisites missing)
 
 | Missing | Routes To |
 |---------|-----------|
-| stack.md | `/shipkit-project-context` |
+| stack.json | `/shipkit-project-context` |
 | why.md | `/shipkit-why-project` |
-| architecture.md | `/shipkit-architecture-memory` (suggests, doesn't require) |
-| types.md | `/shipkit-data-contracts` (suggests, doesn't require) |
+| architecture.json | `/shipkit-architecture-memory` (suggests, doesn't require) |
+| contracts.json | `/shipkit-data-contracts` (suggests, doesn't require) |
 
 ### After This Skill
 
@@ -661,9 +763,11 @@ Ready to fix the remaining blockers?
 - [ ] Each finding has specific file/line reference
 - [ ] Findings prioritized (blocker/warning/pass)
 - [ ] Status changes tracked (fixed/new/regression)
-- [ ] Metadata header written for future incremental runs
+- [ ] JSON artifact fields populated (`$schema`, `type`, `version`, `lastUpdated`, `source`, `summary`)
 - [ ] Previous audit archived if full audit
-- [ ] Report saved to `.shipkit/production-readiness.md`
+- [ ] Output conforms to JSON schema above
+- [ ] Summary field is accurate (counts match checks array)
+- [ ] Report saved to `.shipkit/preflight.json`
 - [ ] Clear delta summary for incremental audits
 <!-- /SECTION:success-criteria -->
 
@@ -692,7 +796,7 @@ For **maximum scrutiny**, use the `pr-review-toolkit` plugin to deep-review the 
 2. **Run pr-review-toolkit on each partition** with project context:
    ```
    For each partition:
-   - Provide: partition files + codebase-index summary + architecture.md
+   - Provide: partition files + codebase-index summary + architecture.json
    - Run: /pr-review-toolkit:review-pr
    - Collect: findings
    ```

@@ -220,7 +220,7 @@ Does your skill create a file?
 ### Example 2: SHOULD NOT Modify (Flexible Flow)
 
 **Skill**: `shipkit-architecture-memory`
-**Output**: Appends to `.shipkit/architecture.md`
+**Output**: Appends to `.shipkit/architecture.json`
 **Next Step**: Could be `/shipkit-spec`, `/shipkit-plan`, `/shipkit-implement`, or something else
 
 ❌ **Don't modify**: Next step is context-dependent

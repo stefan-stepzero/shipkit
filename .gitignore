@@ -20,6 +20,7 @@ Thumbs.db
 # Node (if you add any tooling)
 node_modules/
 package-lock.json
+*.tsbuildinfo
 
 # Python (if you add any tooling)
 __pycache__/

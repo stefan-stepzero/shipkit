@@ -34,8 +34,8 @@ All project context lives in `.shipkit/`:
 |------|---------|
 | `why.md` | Vision, constraints, approach |
 | `stack.md` | Tech choices (auto-scanned) |
-| `architecture.md` | Decisions log (append-only) |
-| `progress.md` | Session continuity |
+| `architecture.json` | Decisions log (append-only) |
+| `progress.json` | Session continuity |
 | `codebase-index.json` | Navigation index (concept → files) |
 | `specs/active/` | Feature specs |
 | `plans/active/` | Implementation plans |

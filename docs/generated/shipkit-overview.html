@@ -407,7 +407,7 @@
             <h1>⚡ Shipkit <span style="font-size: 0.5em; opacity: 0.8;">v1.7.0</span></h1>
             <div class="stats">
                 <div class="stat">
-                    <span class="stat-number">35</span>
+                    <span class="stat-number">36</span>
                     <span class="stat-label">Skills</span>
                 </div>
                 <div class="stat">
@@ -493,9 +493,14 @@
                             <td class="creates">why.md</td>
                         </tr>
                         <tr>
+                            <td class="trigger">Set objectives & priorities</td>
+                            <td><span class="skill">/shipkit-goals</span></td>
+                            <td class="creates">goals.json</td>
+                        </tr>
+                        <tr>
                             <td class="trigger">Scan codebase, detect stack</td>
                             <td><span class="skill">/shipkit-project-context</span></td>
-                            <td class="creates">stack.md, schema.md</td>
+                            <td class="creates">stack.json, schema.md</td>
                         </tr>
                         <tr>
                             <td class="trigger">Index codebase for navigation</td>
@@ -510,7 +515,7 @@
                         <tr>
                             <td class="trigger">Define personas, journeys, stories</td>
                             <td><span class="skill">/shipkit-product-discovery</span></td>
-                            <td class="creates">product-discovery.md</td>
+                            <td class="creates">product-discovery.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Check project health & gaps</td>
@@ -572,12 +577,12 @@
                         <tr>
                             <td class="trigger">Log an architecture decision</td>
                             <td><span class="skill">/shipkit-architecture-memory</span></td>
-                            <td class="creates">architecture.md (append)</td>
+                            <td class="creates">architecture.json (append)</td>
                         </tr>
                         <tr>
                             <td class="trigger">Define data contracts/types</td>
                             <td><span class="skill">/shipkit-data-contracts</span></td>
-                            <td class="creates">types.md</td>
+                            <td class="creates">contracts.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Fetch integration patterns</td>
@@ -603,17 +608,17 @@
                         <tr>
                             <td class="trigger">MVP production readiness</td>
                             <td><span class="skill">/shipkit-preflight</span></td>
-                            <td class="creates">production-readiness.md</td>
+                            <td class="creates">preflight.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Scale & enterprise readiness</td>
                             <td><span class="skill">/shipkit-scale-ready</span></td>
-                            <td class="creates">scale-readiness.md</td>
+                            <td class="creates">scale-readiness.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Audit LLM prompt architecture</td>
                             <td><span class="skill">/shipkit-prompt-audit</span></td>
-                            <td class="creates">prompt-audit.md</td>
+                            <td class="creates">prompt-audit.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Audit UX patterns</td>
@@ -628,7 +633,7 @@
                         <tr>
                             <td class="trigger">Log progress + save resume state</td>
                             <td><span class="skill">/shipkit-work-memory</span></td>
-                            <td class="creates">progress.md (resume + log)</td>
+                            <td class="creates">progress.json (resume + log)</td>
                         </tr>
                         <tr>
                             <td class="trigger">Create visual HTML report</td>
@@ -697,18 +702,19 @@
 
         <!-- ALL SKILLS TAB -->
         <div id="skills" class="tab-content">
-            <h2 class="section-header">All 35 Skills by Category</h2>
+            <h2 class="section-header">All 36 Skills by Category</h2>
 
             <div class="skill-groups">
                 <div class="skill-group">
                     <h3>🎯 Vision & Discovery</h3>
                     <ul class="skill-list">
                         <li><span class="name">/shipkit-why-project</span> <span class="desc">— Define project vision, strategic direction, and goals. Captures the "why" before building.</span></li>
-                        <li><span class="name">/shipkit-project-context</span> <span class="desc">— Auto-scan codebase to detect tech stack, frameworks, and patterns. Creates stack.md.</span></li>
+                        <li><span class="name">/shipkit-project-context</span> <span class="desc">— Auto-scan codebase to detect tech stack, frameworks, and patterns. Creates stack.json.</span></li>
                         <li><span class="name">/shipkit-codebase-index</span> <span class="desc">— Generate navigation index for faster file discovery. Creates codebase-index.json.</span></li>
                         <li><span class="name">/shipkit-claude-md</span> <span class="desc">— Append learnings, preferences, or project patterns to CLAUDE.md for persistence.</span></li>
                         <li><span class="name">/shipkit-product-discovery</span> <span class="desc">— Define user personas, journeys, and stories. Captures who you're building for.</span></li>
                         <li><span class="name">/shipkit-project-status</span> <span class="desc">— Health check: scans specs, plans, progress to show what's done and pending.</span></li>
+                        <li><span class="name">/shipkit-goals</span> <span class="desc">— Capture structured project goals with priorities, status, and success criteria. Bridges vision to specs.</span></li>
                     </ul>
                 </div>
 
@@ -872,10 +878,10 @@
             <div style="background: #1e293b; color: #e2e8f0; padding: 25px; border-radius: 12px; font-family: 'Courier New', monospace; font-size: 0.95em; line-height: 1.8;">
 <pre>.shipkit/
 ├── why.md                 # Project vision
-├── stack.md               # Tech stack (auto-scanned)
-├── architecture.md        # Decisions log
-├── types.md               # Type definitions
-├── progress.md            # Session history
+├── stack.json             # Tech stack (auto-scanned)
+├── architecture.json      # Decisions log
+├── contracts.json         # Data contracts
+├── progress.json          # Session history
 ├── specs/
 │   ├── active/            # Current specs
 │   └── implemented/       # Completed specs
@@ -921,7 +927,7 @@
         </div>
 
         <footer>
-            <p>Shipkit v1.7.0 • 35 Skills • 9 Agents • 7 Principles</p>
+            <p>Shipkit v1.7.0 • 36 Skills • 9 Agents • 7 Principles</p>
             <p style="margin-top: 10px;">Production-ready MVPs for SaaS applications</p>
         </footer>
     </div>

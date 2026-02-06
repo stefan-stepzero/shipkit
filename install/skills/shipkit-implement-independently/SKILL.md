@@ -51,7 +51,7 @@ Spawn an autonomous implementation agent in an isolated git worktree. The agent 
 
 **Recommended:**
 - Spec file in `.shipkit/specs/active/` for structured implementation
-- `.shipkit/stack.md` exists for project patterns
+- `.shipkit/stack.json` exists for project patterns
 
 ---
 
@@ -263,8 +263,8 @@ To cleanup: /shipkit-cleanup-worktrees
 ## Context Files This Skill Reads
 
 - `.shipkit/specs/active/*.md` - Spec files (if provided)
-- `.shipkit/stack.md` - Project patterns (passed to agent)
-- `.shipkit/architecture.md` - Design decisions (passed to agent)
+- `.shipkit/stack.json` - Project patterns (passed to agent)
+- `.shipkit/architecture.json` - Design decisions (passed to agent)
 
 ---
 

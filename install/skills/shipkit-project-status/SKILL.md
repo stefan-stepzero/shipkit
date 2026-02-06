@@ -5,6 +5,7 @@ model: haiku
 context: fork
 allowed-tools:
   - Read
+  - Write
   - Glob
   - Grep
   - Bash
@@ -65,10 +66,10 @@ fi
 
 ```bash
 # Core context files to check
-.shipkit/stack.md
-.shipkit/architecture.md
+.shipkit/stack.json
+.shipkit/architecture.json
 .shipkit/implementations.md
-.shipkit/progress.md
+.shipkit/progress.json
 ```
 
 **For each file, check**:
@@ -87,11 +88,11 @@ fi
 
 **Parse each context file and count documented elements**:
 
-**stack.md**:
+**stack.json**:
 - Count sections (Framework, Database, Key Libraries, etc.)
 - Extract tech stack summary
 
-**architecture.md**:
+**architecture.json**:
 - Count decisions (count markdown H2/H3 headings)
 - Extract recent decisions
 
@@ -99,7 +100,7 @@ fi
 - Count documented components/routes (count H2 sections)
 - Extract file paths mentioned
 
-**progress.md**:
+**progress.json**:
 - Count session entries
 - Get last session date
 
@@ -133,7 +134,7 @@ find src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.js
 
 **Gap types to detect**:
 - Large files (>200 LOC) not documented in implementations.md
-- package.json modified more recently than stack.md
+- package.json modified more recently than stack.json
 - Database migration files newer than schema.md (if it exists)
 - Active specs with no corresponding plans
 - Plans with no implementation notes
@@ -197,91 +198,244 @@ fi
 
 ### Step 6: Generate Status Report
 
-**Write health summary to `.shipkit/status.md`** AND display in terminal:
+**Write health summary to `.shipkit/status.json`** AND display formatted summary in terminal.
 
-**Include timestamp at top**:
-```bash
-# Add timestamp to status report
-echo "Last Updated: $(date '+%Y-%m-%d %H:%M:%S')" > .shipkit/status.md
-echo "" >> .shipkit/status.md
+**Use Write tool to create/overwrite**: `.shipkit/status.json`
+
+The output MUST conform to the JSON Schema below. This is a strict contract -- mission control and other skills depend on this structure.
+
+**Terminal display**: After writing the JSON file, display a human-readable formatted summary to the user (not raw JSON). Example:
+
+```
+Status saved.
+
+Location: .shipkit/status.json
+
+  Health Score: 72/100
+  Core Context: 3/4 files present (1 stale)
+  Specs: 2 active | Plans: 0 | Tasks: 5 active
+
+  Gaps Found: 4
+    - stack.json is stale (2 days, package.json modified since)
+    - 2 undocumented files >200 LOC
+    - Active specs have no plans
+
+  Top Recommendations:
+    1. /shipkit-project-context (stack is stale)
+    2. /shipkit-plan for recipe-sharing spec
+    3. Document large components manually
+
+  Skill Usage: 47 total invocations, 2 never used, 2 stale
 ```
 
-**Format**:
+---
+
+## JSON Schema
+
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "project-status",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "shipkit-project-status",
+
+  "summary": {
+    "healthScore": 72,
+    "totalSpecs": 2,
+    "totalPlans": 0,
+    "totalTasks": 5,
+    "gapsFound": 4,
+    "coreFilesPresent": 3,
+    "coreFilesTotal": 4
+  },
+
+  "coreContext": [
+    {
+      "file": "stack.json",
+      "exists": true,
+      "freshness": "aging",
+      "lastModified": "2025-12-26",
+      "sizeBytes": 1240,
+      "notes": "package.json modified more recently"
+    },
+    {
+      "file": "architecture.json",
+      "exists": true,
+      "freshness": "fresh",
+      "lastModified": "2025-12-27",
+      "sizeBytes": 3420,
+      "itemCount": 12,
+      "notes": "12 decisions logged"
+    },
+    {
+      "file": "implementations.md",
+      "exists": true,
+      "freshness": "fresh",
+      "lastModified": "2025-12-28",
+      "sizeBytes": 5100,
+      "itemCount": 23,
+      "notes": "23 components documented"
+    },
+    {
+      "file": "progress.json",
+      "exists": true,
+      "freshness": "fresh",
+      "lastModified": "2025-12-28",
+      "sizeBytes": 2800,
+      "itemCount": 8,
+      "notes": "8 sessions logged"
+    }
+  ],
+
+  "workflow": {
+    "specs": {
+      "activeCount": 2,
+      "files": ["specs/active/recipe-sharing.md", "specs/active/user-profile.md"]
+    },
+    "plans": {
+      "count": 0,
+      "files": []
+    },
+    "tasks": {
+      "activeCount": 5,
+      "completedCount": 0
+    }
+  },
+
+  "gaps": [
+    {
+      "id": "stale-stack",
+      "severity": "warning",
+      "category": "freshness",
+      "description": "stack.json is stale (2 days old, package.json modified since)",
+      "suggestedAction": "/shipkit-project-context"
+    },
+    {
+      "id": "undocumented-auth",
+      "severity": "warning",
+      "category": "undocumented",
+      "description": "src/lib/auth.ts (347 lines) not documented in implementations.md",
+      "file": "src/lib/auth.ts",
+      "lineCount": 347,
+      "suggestedAction": "Document component manually"
+    },
+    {
+      "id": "undocumented-datatable",
+      "severity": "warning",
+      "category": "undocumented",
+      "description": "src/components/DataTable.tsx (215 lines) not documented in implementations.md",
+      "file": "src/components/DataTable.tsx",
+      "lineCount": 215,
+      "suggestedAction": "Document component manually"
+    },
+    {
+      "id": "specs-without-plans",
+      "severity": "critical",
+      "category": "workflow-gap",
+      "description": "2 active specs have no corresponding plans",
+      "suggestedAction": "/shipkit-plan"
+    }
+  ],
+
+  "skillUsage": {
+    "totalInvocations": 47,
+    "mostUsed": [
+      { "skill": "shipkit-spec", "count": 12 },
+      { "skill": "shipkit-plan", "count": 8 },
+      { "skill": "shipkit-project-context", "count": 6 }
+    ],
+    "neverUsed": ["shipkit-ux-audit", "shipkit-data-contracts"],
+    "stale": [
+      { "skill": "shipkit-verify", "daysSinceUse": 21, "count": 2 },
+      { "skill": "shipkit-preflight", "daysSinceUse": 18, "count": 1 }
+    ]
+  },
+
+  "recommendations": [
+    {
+      "priority": 1,
+      "action": "/shipkit-project-context",
+      "reason": "Stack context is stale — package.json modified more recently"
+    },
+    {
+      "priority": 2,
+      "action": "/shipkit-plan",
+      "reason": "Active specs (recipe-sharing, user-profile) have no plans"
+    },
+    {
+      "priority": 3,
+      "action": "Document components manually",
+      "reason": "2 large files (>200 LOC) are undocumented"
+    }
+  ]
+}
 ```
-Last Updated: 2025-12-28 14:32:15
 
-📊 Project Status (.shipkit)
+### Field Reference
 
-════════════════════════════════════════════════════
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `$schema` | string | yes | Always `"shipkit-artifact"` -- identifies as Shipkit-managed file |
+| `type` | string | yes | Always `"project-status"` -- artifact type for routing/rendering |
+| `version` | string | yes | Schema version for forward compatibility |
+| `lastUpdated` | string | yes | ISO date of last status check |
+| `source` | string | yes | Always `"shipkit-project-status"` |
+| `summary` | object | yes | Aggregated counts for dashboard rendering |
+| `summary.healthScore` | number | yes | 0-100 score based on freshness, gaps, and workflow state |
+| `summary.totalSpecs` | number | yes | Count of active specs |
+| `summary.totalPlans` | number | yes | Count of plans |
+| `summary.totalTasks` | number | yes | Count of active user tasks |
+| `summary.gapsFound` | number | yes | Total number of detected gaps |
+| `summary.coreFilesPresent` | number | yes | How many of 4 core context files exist |
+| `summary.coreFilesTotal` | number | yes | Always 4 (stack, architecture, implementations, progress) |
+| `coreContext` | array | yes | Status of each core `.shipkit/` context file |
+| `coreContext[].file` | string | yes | Filename (relative to `.shipkit/`) |
+| `coreContext[].exists` | boolean | yes | Whether the file exists |
+| `coreContext[].freshness` | enum | yes | `"fresh"` (<24h) \| `"aging"` (1-7d) \| `"stale"` (>7d) \| `"missing"` |
+| `coreContext[].lastModified` | string | no | ISO date of last modification (omit if missing) |
+| `coreContext[].sizeBytes` | number | no | File size in bytes (omit if missing) |
+| `coreContext[].itemCount` | number | no | Count of documented items (decisions, components, sessions) |
+| `coreContext[].notes` | string | no | Human-readable summary of file state |
+| `workflow` | object | yes | Status of specs, plans, and tasks |
+| `workflow.specs.activeCount` | number | yes | Number of active spec files |
+| `workflow.specs.files` | string[] | yes | Paths to active spec files |
+| `workflow.plans.count` | number | yes | Number of plan files |
+| `workflow.plans.files` | string[] | yes | Paths to plan files |
+| `workflow.tasks.activeCount` | number | yes | Number of active (unchecked) tasks |
+| `workflow.tasks.completedCount` | number | yes | Number of completed tasks |
+| `gaps` | array | yes | Detected documentation and workflow gaps |
+| `gaps[].id` | string | yes | Slug identifier for the gap |
+| `gaps[].severity` | enum | yes | `"critical"` \| `"warning"` \| `"info"` |
+| `gaps[].category` | enum | yes | `"freshness"` \| `"undocumented"` \| `"workflow-gap"` \| `"missing"` |
+| `gaps[].description` | string | yes | Human-readable description of the gap |
+| `gaps[].file` | string | no | File path associated with gap (if applicable) |
+| `gaps[].lineCount` | number | no | Line count for undocumented file gaps |
+| `gaps[].suggestedAction` | string | yes | Skill or action to resolve the gap |
+| `skillUsage` | object | no | Skill usage analytics (omit if no tracking data) |
+| `skillUsage.totalInvocations` | number | yes | Total tracked invocations |
+| `skillUsage.mostUsed` | array | yes | Top skills by usage count |
+| `skillUsage.neverUsed` | string[] | yes | Skills with 0 invocations |
+| `skillUsage.stale` | array | yes | Skills not used in 14+ days |
+| `recommendations` | array | yes | Prioritized next actions |
+| `recommendations[].priority` | number | yes | Priority rank (1 = highest) |
+| `recommendations[].action` | string | yes | Skill command or action to take |
+| `recommendations[].reason` | string | yes | Why this action is recommended |
 
-CORE CONTEXT
+### Summary Object
 
-✓ Stack: documented (Next.js 14, Supabase, Tailwind)
-⚠ Stack freshness: 2 days old
-  → package.json modified today
-  → Run /shipkit-project-context to refresh
+The `summary` field MUST be kept in sync with the scan results. It exists so the dashboard can render overview cards without traversing the full structure. Recompute it every time the file is written.
 
-✓ Architecture: 12 decisions logged
-  → Last updated: 1 day ago
+### Health Score Calculation
 
-⚠ Implementations: 23 components documented
-  → 2 undocumented files >200 LOC:
-     • src/lib/auth.ts (347 lines)
-     • src/components/DataTable.tsx (215 lines)
-  → Run document components manually to document
+Compute `healthScore` (0-100) based on weighted factors:
 
-✓ Progress: 8 sessions logged
-  → Last session: 6 hours ago
-
-════════════════════════════════════════════════════
-
-WORKFLOW STATUS
-
-✓ Specs: 2 active
-  • recipe-sharing.md
-  • user-profile.md
-
-✗ Plans: 0 plans found
-  → Run /shipkit-plan for active specs
-
-✗ Implementations: No implementation notes
-  → Run implement (no skill needed) after planning
-
-⚠ User Tasks: 5 active, 0 completed
-  → Tasks defined but no progress
-
-════════════════════════════════════════════════════
-
-SKILL USAGE INSIGHTS
-
-📊 Total: 47 skill invocations tracked
-
-Most Used:
-  • /shipkit-spec (12x)
-  • /shipkit-plan (8x)
-  • /shipkit-project-context (6x)
-
-Never Used:
-  • /shipkit-ux-audit
-  • /shipkit-data-contracts
-
-⚠ Stale (14+ days):
-  • /shipkit-verify (21d ago, used 2x)
-  • /shipkit-preflight (18d ago, used 1x)
-
-💡 You have active specs → consider /shipkit-plan
-💡 Implementation phase → /shipkit-verify would help
-
-════════════════════════════════════════════════════
-
-SUGGESTED NEXT ACTIONS
-
-Priority 1: Run /shipkit-project-context (stack is stale)
-Priority 2: Run /shipkit-plan for recipe-sharing spec
-Priority 3: Document large components with document components manually
-
-════════════════════════════════════════════════════
-```
+| Factor | Weight | Scoring |
+|--------|--------|---------|
+| Core files present | 30 | 0 pts per missing, 7.5 pts per existing |
+| Core files freshness | 25 | 0 pts stale, 12.5 pts aging, 25 pts all fresh |
+| Workflow completeness | 25 | Specs+plans+tasks scored proportionally |
+| Documentation coverage | 20 | Based on ratio of documented vs undocumented large files |
 
 ---
 
@@ -295,7 +449,7 @@ Priority 3: Document large components with document components manually
 IF .shipkit/ doesn't exist:
   → "Run /shipkit-project-context to initialize"
 
-ELSE IF stack.md is stale (>7 days) OR package.json newer than stack.md:
+ELSE IF stack.json is stale (>7 days) OR package.json newer than stack.json:
   → "Run /shipkit-project-context to refresh stack"
 
 ELSE IF active specs exist AND no plans exist:
@@ -353,6 +507,34 @@ The bash commands for freshness checking and gap detection are documented inline
 
 ---
 
+## Shipkit Artifact Convention
+
+This skill follows the **Shipkit JSON artifact convention** -- a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
+
+**Every JSON artifact MUST include these top-level fields:**
+
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "<artifact-type>",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "<skill-name>",
+  "summary": { ... }
+}
+```
+
+- `$schema` -- Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
+- `type` -- The artifact type (`"project-status"`, `"goals"`, `"spec"`, etc.). Dashboard uses this for rendering.
+- `version` -- Schema version. Bump when fields change.
+- `lastUpdated` -- When this file was last written.
+- `source` -- Which skill wrote this file.
+- `summary` -- Aggregated data for dashboard cards. Structure varies by type.
+
+Skills that haven't migrated to JSON yet continue writing markdown. The reporter hook ships both: JSON artifacts get structured dashboard rendering, markdown files fall back to metadata-only (exists, date, size).
+
+---
+
 ## Completion Checklist
 
 Copy and track:
@@ -368,7 +550,7 @@ Copy and track:
 - ✅ Fast scanning (<5 seconds)
 - ✅ Core context file checks (stack, architecture, implementations, progress)
 - ✅ Basic gap detection (large files, stale docs, workflow gaps)
-- ✅ Terminal output only (no file creation)
+- ✅ JSON artifact output (`.shipkit/status.json`) + terminal summary
 - ✅ Actionable suggestions
 
 **Not included** (vs full shipkit-status):
@@ -399,8 +581,8 @@ Copy and track:
 
 **Common suggestions**:
 
-- `/shipkit-project-context` - When stack.md is stale or missing
-  - **When**: package.json modified after stack.md OR .shipkit/ doesn't exist
+- `/shipkit-project-context` - When stack.json is stale or missing
+  - **When**: package.json modified after stack.json OR .shipkit/ doesn't exist
   - **Why**: Stale stack causes wrong tech assumptions
   - **Trigger**: Freshness check fails
 
@@ -424,17 +606,17 @@ Copy and track:
 ## Context Files This Skill Reads
 
 **Always attempts to read**:
-- `.shipkit/stack.md`
-- `.shipkit/architecture.md`
+- `.shipkit/stack.json`
+- `.shipkit/architecture.json`
 - `.shipkit/implementations.md`
-- `.shipkit/progress.md`
+- `.shipkit/progress.json`
 
 **Conditionally reads**:
 - `.shipkit/specs/active/*.md` (glob to count)
 - `.shipkit/plans/*.md` (glob to count)
 - `.shipkit/user-tasks/active.md` (if exists)
 - `.shipkit/schema.md` (if exists)
-- `.shipkit/types.md` (if exists)
+- `.shipkit/contracts.json` (if exists)
 - `.shipkit/skill-usage.json` (if exists, for usage analytics)
 
 **Also checks**:
@@ -445,23 +627,26 @@ Copy and track:
 
 ## Context Files This Skill Writes
 
-**Creates**: `.shipkit/status.md`
+**Write Strategy: OVERWRITE**
 
-**Write Strategy**: **OVERWRITE AND REPLACE**
+**Creates/Updates**:
+- `.shipkit/status.json` - Project health status (JSON artifact)
 
-**Rationale**: Status is a point-in-time snapshot. Each invocation completely replaces the previous status report. Old status data has no historical value - if stack was stale yesterday and you fixed it, you don't need to remember it was stale. Users want the latest health check, not an archive of past statuses.
+**Rationale**: Status is a point-in-time snapshot. Each invocation completely replaces the previous status report. Old status data has no historical value -- if stack was stale yesterday and you fixed it, you don't need to remember it was stale. Users want the latest health check, not an archive of past statuses.
 
-**Content written**:
-- Timestamp of status check
-- Core context health (stack, architecture, implementations, progress)
-- Workflow status (specs, plans, implementations, tasks)
-- Detected gaps and warnings
-- Prioritized next action suggestions
+**Content written** (see JSON Schema section for full structure):
+- Artifact metadata (`$schema`, `type`, `version`, `lastUpdated`, `source`)
+- Summary with health score and counts
+- Core context file inventory with freshness
+- Workflow status (specs, plans, tasks)
+- Detected gaps with severity and suggested actions
+- Skill usage analytics (if tracking data exists)
+- Prioritized recommendations
 
-**When file is updated**:
-- Every time `/shipkit-project-status` is invoked
-- Completely overwrites previous content
+**Update Behavior**:
+- Each write REPLACES entire file contents
 - No archiving or history preservation
+- No File Exists Workflow (always overwrite -- status is ephemeral)
 
 **Why OVERWRITE instead of APPEND**:
 - Status is ephemeral (yesterday's status is irrelevant)
@@ -496,18 +681,20 @@ Status check is complete when:
 - [ ] Workflow status checked
 - [ ] Skill usage analyzed (if tracking data exists)
 - [ ] Prioritized next action suggested
-- [ ] Status report written to `.shipkit/status.md` (OVERWRITE previous)
-- [ ] Terminal summary displayed (same content as file)
+- [ ] Output conforms to JSON schema (all required fields present)
+- [ ] Summary field counts are accurate
+- [ ] Status report written to `.shipkit/status.json` (OVERWRITE previous)
+- [ ] Terminal summary displayed (human-readable format, not raw JSON)
 <!-- /SECTION:success-criteria -->
 ---
 
 ## Example Output Scenarios
 
-See Step 6 above for a complete status report example. The output format adapts to project state:
-- Healthy Project: All green indicators, no suggestions
-- Stale Stack: Warning on stack.md freshness
-- Workflow Gap: Missing specs/plans highlighted
-- Fresh Project: Context files up to date
+See the JSON Schema section above for the complete structure. The JSON adapts to project state:
+- **Healthy Project**: `healthScore` near 100, empty `gaps` array, no critical recommendations
+- **Stale Stack**: Gap entry with `category: "freshness"`, recommendation to run `/shipkit-project-context`
+- **Workflow Gap**: Gap entry with `category: "workflow-gap"`, missing specs/plans highlighted
+- **Fresh Project**: All `coreContext` entries have `freshness: "fresh"`, high health score
 
 ---
 
@@ -541,21 +728,22 @@ See Step 6 above for a complete status report example. The output format adapts 
 ## Special Notes
 
 **This skill is unique**:
-- Writes single status file (`.shipkit/status.md`) using OVERWRITE strategy
+- Writes single status file (`.shipkit/status.json`) using OVERWRITE strategy
 - Fast execution (<5 seconds)
-- Terminal output mirrors file content
+- Terminal output shows human-readable summary (not raw JSON)
 - Can run anytime - safe to invoke frequently
 
 **Design decisions**:
 - Uses bash for file scanning (glob, stat, wc, grep)
-- Writes status snapshot to persistent file (`.shipkit/status.md`)
+- Writes status snapshot to persistent file (`.shipkit/status.json`)
+- Follows Shipkit JSON artifact convention (`$schema`, `type`, `version`, etc.)
 - OVERWRITE strategy (point-in-time data, no historical value)
 - Focused on actionability (suggests next skill)
 - Optimized for POC/MVP context (doesn't check production concerns)
 
 **Freshness logic**:
 - Compares file timestamps
-- Detects package.json changes vs stack.md
+- Detects package.json changes vs stack.json
 - Flags large undocumented files
 - Identifies workflow bottlenecks
 

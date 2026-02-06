@@ -30,7 +30,7 @@ agent: shipkit-architect-agent
 
 **Check before starting**:
 - Spec exists: `.shipkit/specs/active/[feature-name].md`
-- Stack defined: `.shipkit/stack.md` (from shipkit-project-context)
+- Stack defined: `.shipkit/stack.json` (from shipkit-project-context)
 
 **UI-Heavy Feature Check** (CRITICAL):
 - If spec describes significant UI/UX → Prototype MUST exist before planning
@@ -38,8 +38,8 @@ agent: shipkit-architect-agent
 - See "Step 1.5: UI-Heavy Gate" below
 
 **Optional but helpful**:
-- Architecture decisions: `.shipkit/architecture.md`
-- Type definitions: `.shipkit/types.md`
+- Architecture decisions: `.shipkit/architecture.json`
+- Type definitions: `.shipkit/contracts.json`
 
 ---
 
@@ -102,10 +102,10 @@ options:
 
 **Read these files to understand project context**:
 - `.shipkit/specs/active/[feature-name].md` (Required)
-- `.shipkit/stack.md` (Stack info)
-- `.shipkit/architecture.md` (Past decisions)
+- `.shipkit/stack.json` (Stack info)
+- `.shipkit/architecture.json` (Past decisions)
 
-**Optional context** (load if relevant): types.md, component-contracts.md, schema.md
+**Optional context** (load if relevant): contracts.json, schema.md
 
 **Extract from spec:**
 - All requirements (for coverage mapping later)
@@ -573,7 +573,7 @@ Copy and track:
 
 ### Before This Skill
 - `/shipkit-spec` - Creates feature specification (required)
-- `/shipkit-project-context` - Generates stack.md, schema.md
+- `/shipkit-project-context` - Generates stack.json, schema.md
 - `/shipkit-architecture-memory` - Logs past decisions
 - `/shipkit-prototyping` - Creates UI prototypes (if UI-heavy)
 
@@ -588,14 +588,14 @@ Copy and track:
 
 **Always reads**:
 - `.shipkit/specs/active/[feature].md` - Feature requirements
-- `.shipkit/stack.md` - Tech stack info
+- `.shipkit/stack.json` - Tech stack info
 
 **Scans** (for pattern detection):
 - Existing source files matching patterns (state, fetch, error, auth)
 
 **Conditionally reads**:
-- `.shipkit/architecture.md` - Past decisions
-- `.shipkit/types.md` - Type definitions
+- `.shipkit/architecture.json` - Past decisions
+- `.shipkit/contracts.json` - Type definitions
 - `.shipkit/schema.md` - Database schema
 
 ---

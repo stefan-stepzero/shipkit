@@ -9,6 +9,10 @@ context: fork
 
 **Purpose**: Generate and maintain lightweight project context files (stack, env, schema) by scanning package files, configs, and migrations. Uses file modification time checks to avoid unnecessary rescans.
 
+**What it does**: Scans project files to detect tech stack, environment requirements, and database schema. Generates `.shipkit/stack.json` as a structured JSON artifact, plus optional markdown files for env and schema.
+
+**Output format**: JSON — readable by Claude, renderable by mission control dashboard, and the single source of truth for project tech stack.
+
 ---
 
 ## When to Invoke
@@ -21,7 +25,7 @@ context: fork
 - "What's my tech stack?"
 
 **Auto-triggered by**:
-- `shipkit-master` (when stack.md is missing or stale)
+- `shipkit-master` (when stack.json is missing or stale)
 - `shipkit-project-status` (when it detects staleness)
 
 **First run**:
@@ -51,11 +55,11 @@ context: fork
 **Commands**: See `references/bash-commands.md` for platform-specific freshness checks
 
 **Freshness logic**:
-1. If `.shipkit/stack.md` doesn't exist → First run, proceed to Step 2
-2. If `stack.md` exists:
+1. If `.shipkit/stack.json` doesn't exist → First run, proceed to Step 2
+2. If `stack.json` exists:
    - Compare modification times
-   - If `stack.md` newer than `package.json` → **SKIP SCAN**, just read cached file
-   - If `package.json` newer than `stack.md` → Ask user to confirm rescan
+   - If `stack.json` newer than `package.json` → **SKIP SCAN**, just read cached file
+   - If `package.json` newer than `stack.json` → Ask user to confirm rescan
 
 **Token savings**: Cached read ~100-200 tokens vs Full scan ~1,500 tokens
 
@@ -67,7 +71,7 @@ context: fork
 
 **First run**: "First run detected - no context files exist. Scan now? (yes/no)"
 
-**Stale context**: "Context appears stale: package.json modified after stack.md. Rescan? (yes/no)"
+**Stale context**: "Context appears stale: package.json modified after stack.json. Rescan? (yes/no)"
 
 **If user says no**: "Okay, using existing context. Run `/shipkit-project-context` when you want to update."
 
@@ -138,17 +142,18 @@ Before claiming any stack item, verify it with tool calls:
 | MEDIUM | Verified in package.json only | Dependency present, no config found |
 | LOW | Inferred from file patterns only | No package.json entry, just files |
 
-**Report confidence in stack.md output:**
+**Report confidence in stack.json output:**
 
-```markdown
-## Tech Stack
+Each stack entry includes a `confidence` field. Example:
 
-| Technology | Version | Confidence | Evidence |
-|------------|---------|------------|----------|
-| Next.js | 14.2.0 | HIGH | package.json + next.config.js |
-| Tailwind | 3.4.0 | HIGH | package.json + tailwind.config.ts |
-| Prisma | 5.10.0 | MEDIUM | package.json only (no schema found) |
-| shadcn/ui | inferred | LOW | components/ui/ folder exists |
+```json
+{
+  "name": "Next.js",
+  "version": "14.2.0",
+  "purpose": "React framework with SSR/SSG",
+  "confidence": "high",
+  "evidence": "package.json + next.config.js"
+}
 ```
 
 **Fallback behavior:**
@@ -175,37 +180,30 @@ Before claiming any stack item, verify it with tool calls:
 
 **Why this matters**: Claude has implicit defaults from training. Working Patterns override defaults with project-specific conventions.
 
-**Example output** (added to stack.md):
+**Example output** (included in stack.json `workingPatterns` field):
 
-```markdown
-## Working Patterns
-
-### Provider Hierarchy
-
-1. `QueryClientProvider` (React Query)
-2. `AuthProvider` (Supabase auth)
-3. `ThemeProvider` (next-themes)
-
-### API Patterns
-
-| Pattern | Location | Methods |
-|---------|----------|---------|
-| Auth | `/api/auth/*` | POST |
-| CRUD | `/api/[resource]/*` | GET, POST, PUT, DELETE |
-
-### Component Conventions
-
-| Aspect | Convention |
-|--------|------------|
-| Location | `src/components/` |
-| Structure | Feature folders |
-| Naming | PascalCase |
-
-### Import Aliases
-
-| Alias | Path |
-|-------|------|
-| `@/*` | `./src/*` |
+```json
+{
+  "workingPatterns": {
+    "providerHierarchy": [
+      "QueryClientProvider (React Query)",
+      "AuthProvider (Supabase auth)",
+      "ThemeProvider (next-themes)"
+    ],
+    "apiPatterns": [
+      { "pattern": "Auth", "location": "/api/auth/*", "methods": ["POST"] },
+      { "pattern": "CRUD", "location": "/api/[resource]/*", "methods": ["GET", "POST", "PUT", "DELETE"] }
+    ],
+    "componentConventions": {
+      "location": "src/components/",
+      "structure": "Feature folders",
+      "naming": "PascalCase"
+    },
+    "importAliases": {
+      "@/*": "./src/*"
+    }
+  }
+}
 ```
 
 **If detection fails**: Mark section as TBD and note that manual input is needed.
@@ -216,25 +214,140 @@ Before claiming any stack item, verify it with tool calls:
 
 **Use Write tool to create 3 files**.
 
-#### File 1: `.shipkit/stack.md`
+#### File 1: `.shipkit/stack.json`
 
-**Template**: See `references/templates.md` for complete stack.md template
+**Create file using Write tool**: `.shipkit/stack.json`
 
-Contains: Framework, Database, Styling, Key Dependencies, Project Structure, Total Dependencies, **Available CLIs**
+The output MUST conform to the JSON schema below. This is a strict contract -- mission control and other skills depend on this structure.
 
-**CLI Section** (add at end of stack.md):
-```markdown
-## Available CLIs
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "stack",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "shipkit-project-context",
 
-| CLI | Status | Use For |
-|-----|--------|---------|
-| supabase | ✅ / ❌ | `db diff`, `db push`, `db reset`, `functions deploy` |
-| stripe | ✅ / ❌ | `listen` (webhooks), `trigger`, `logs tail` |
-| vercel | ✅ / ❌ | `deploy`, `env pull`, `dev` |
-| gh | ✅ / ❌ | `pr create`, `issue`, `api` |
+  "summary": {
+    "framework": "Next.js 14.2",
+    "language": "TypeScript 5.3",
+    "database": "Supabase (PostgreSQL)",
+    "deployment": "Vercel",
+    "totalDependencies": 42,
+    "totalDevDependencies": 18,
+    "envVarsRequired": 5
+  },
 
-**Recommended**: [List CLIs to install based on detected services]
+  "stack": {
+    "framework": [
+      { "name": "Next.js", "version": "14.2.0", "purpose": "React framework with SSR/SSG", "confidence": "high", "evidence": "package.json + next.config.js" }
+    ],
+    "language": [
+      { "name": "TypeScript", "version": "5.3.3", "purpose": "Type-safe JavaScript", "confidence": "high", "evidence": "package.json + tsconfig.json" }
+    ],
+    "database": [
+      { "name": "Supabase", "version": "2.39.0", "purpose": "PostgreSQL BaaS with auth", "confidence": "high", "evidence": "package.json + supabase/config.toml" }
+    ],
+    "auth": [
+      { "name": "Supabase Auth", "version": null, "purpose": "Authentication via Supabase", "confidence": "medium", "evidence": "package.json only" }
+    ],
+    "payments": [],
+    "styling": [
+      { "name": "Tailwind CSS", "version": "3.4.0", "purpose": "Utility-first CSS", "confidence": "high", "evidence": "package.json + tailwind.config.ts" },
+      { "name": "shadcn/ui", "version": null, "purpose": "Component library", "confidence": "low", "evidence": "components/ui/ folder exists" }
+    ],
+    "testing": [
+      { "name": "Vitest", "version": "1.2.0", "purpose": "Unit/integration testing", "confidence": "high", "evidence": "package.json + vitest.config.ts" }
+    ],
+    "other": []
+  },
+
+  "dependencies": {
+    "next": "14.2.0",
+    "@supabase/supabase-js": "2.39.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+
+  "devDependencies": {
+    "typescript": "5.3.3",
+    "tailwindcss": "3.4.0",
+    "vitest": "1.2.0",
+    "eslint": "8.56.0"
+  },
+
+  "envRequirements": [
+    { "name": "NEXT_PUBLIC_SUPABASE_URL", "required": true, "description": "Supabase project URL" },
+    { "name": "NEXT_PUBLIC_SUPABASE_ANON_KEY", "required": true, "description": "Supabase anonymous key" },
+    { "name": "SUPABASE_SERVICE_ROLE_KEY", "required": true, "description": "Supabase service role key (server-only)" }
+  ],
+
+  "availableCLIs": [
+    { "name": "supabase", "installed": true, "useFor": "db diff, db push, db reset, functions deploy" },
+    { "name": "stripe", "installed": false, "useFor": "listen (webhooks), trigger, logs tail" },
+    { "name": "vercel", "installed": true, "useFor": "deploy, env pull, dev" },
+    { "name": "gh", "installed": true, "useFor": "pr create, issue, api" }
+  ],
+
+  "recommendedCLIs": ["stripe"],
+
+  "workingPatterns": {
+    "providerHierarchy": [],
+    "apiPatterns": [],
+    "componentConventions": {
+      "location": "",
+      "structure": "",
+      "naming": ""
+    },
+    "importAliases": {},
+    "projectStructure": {
+      "srcDir": true,
+      "appRouter": true,
+      "apiRoutes": "app/api/"
+    }
+  }
+}
 ```
+
+**Note**: The example above shows a typical Next.js + Supabase project. Adapt field values to whatever stack is detected. Empty arrays/objects for categories with no detected entries.
+
+### Field Reference
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `$schema` | string | yes | Always `"shipkit-artifact"` -- identifies this as a Shipkit-managed file |
+| `type` | string | yes | Always `"stack"` -- artifact type for routing/rendering |
+| `version` | string | yes | Schema version for forward compatibility |
+| `lastUpdated` | string | yes | ISO date of last modification |
+| `source` | string | yes | Always `"shipkit-project-context"` |
+| `summary` | object | yes | Quick-glance fields: framework, language, database, deployment, counts |
+| `stack` | object | yes | Categories of detected technologies |
+| `stack.<category>[]` | array | yes | Array of stack entries per category |
+| `stack.<category>[].name` | string | yes | Technology name |
+| `stack.<category>[].version` | string/null | yes | Detected version or null |
+| `stack.<category>[].purpose` | string | yes | What it does in this project |
+| `stack.<category>[].confidence` | enum | yes | `"high"` \| `"medium"` \| `"low"` |
+| `stack.<category>[].evidence` | string | yes | What verification confirmed it |
+| `dependencies` | object | yes | Key production packages (name: version) |
+| `devDependencies` | object | yes | Key dev packages (name: version) |
+| `envRequirements` | array | yes | Required/optional env vars |
+| `envRequirements[].name` | string | yes | Variable name |
+| `envRequirements[].required` | boolean | yes | Whether required for app to run |
+| `envRequirements[].description` | string | yes | What the variable is for |
+| `availableCLIs` | array | yes | Detected dev CLIs |
+| `availableCLIs[].name` | string | yes | CLI command name |
+| `availableCLIs[].installed` | boolean | yes | Whether CLI is available |
+| `availableCLIs[].useFor` | string | yes | Common commands |
+| `recommendedCLIs` | array | no | CLIs to suggest installing |
+| `workingPatterns` | object | yes | Project-specific conventions |
+
+### Summary Object
+
+The `summary` field MUST be kept in sync with the `stack` data. It exists so the dashboard can render overview cards without parsing the full structure. Recompute it every time the file is written.
+
+### Stack Categories
+
+Standard categories: `framework`, `language`, `database`, `auth`, `payments`, `styling`, `testing`, `other`. Add additional categories as needed (e.g., `monitoring`, `email`, `storage`). Empty categories should be present as empty arrays.
 
 #### File 2: `.shipkit/env-requirements.md`
 
@@ -262,7 +375,35 @@ Copy and track:
 - [ ] Scanned package.json and project structure
 - [ ] Identified tech stack and dependencies
 - [ ] Checked for available CLIs (supabase, stripe, vercel, gh, etc.)
-- [ ] Created `.shipkit/stack.md` (includes CLI availability)
+- [ ] Created `.shipkit/stack.json` (includes CLI availability)
+
+---
+
+## Shipkit Artifact Convention
+
+This skill follows the **Shipkit JSON artifact convention** -- a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
+
+**Every JSON artifact MUST include these top-level fields:**
+
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "<artifact-type>",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "<skill-name>",
+  "summary": { ... }
+}
+```
+
+- `$schema` -- Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
+- `type` -- The artifact type (`"stack"`, `"goals"`, `"spec"`, `"plan"`, etc.). Dashboard uses this for rendering.
+- `version` -- Schema version. Bump when fields change.
+- `lastUpdated` -- When this file was last written.
+- `source` -- Which skill wrote this file.
+- `summary` -- Aggregated data for dashboard cards. Structure varies by type.
+
+Skills that haven't migrated to JSON yet continue writing markdown. The reporter hook ships both: JSON artifacts get structured dashboard rendering, markdown files fall back to metadata-only (exists, date, size).
 
 ---
 
@@ -288,11 +429,11 @@ Copy and track:
 
 ## Freshness Check Logic
 
-**When to skip rescan**: stack.md modification time > package.json modification time
+**When to skip rescan**: stack.json modification time > package.json modification time
 
-**When to suggest rescan**: package.json modification time > stack.md modification time
+**When to suggest rescan**: package.json modification time > stack.json modification time
 
-**When to auto-scan**: .shipkit/stack.md doesn't exist (first run)
+**When to auto-scan**: .shipkit/stack.json doesn't exist (first run)
 
 ---
 
@@ -303,12 +444,12 @@ Copy and track:
 
 ### After This Skill
 - `/shipkit-project-status` - Uses context to suggest next steps
-- `/shipkit-spec` - References stack.md for technical constraints
-- `/shipkit-plan` - References stack.md for tech choices
-- `implement (no skill needed)` - References stack.md and schema.md while coding
+- `/shipkit-spec` - References stack.json for technical constraints
+- `/shipkit-plan` - References stack.json for tech choices
+- `implement (no skill needed)` - References stack.json and schema.md while coding
 
 ### Triggered By
-- `/shipkit-master` - When stack.md missing or stale
+- `/shipkit-master` - When stack.json missing or stale
 - `/shipkit-project-status` - When detecting staleness
 
 ---
@@ -316,7 +457,7 @@ Copy and track:
 ## Context Files This Skill Reads
 
 **To check freshness**:
-- `.shipkit/stack.md` (check if exists and modification time)
+- `.shipkit/stack.json` (check if exists and modification time)
 - `package.json` (modification time)
 - `package-lock.json` or `pnpm-lock.yaml` or `yarn.lock` (modification time)
 
@@ -334,11 +475,14 @@ Copy and track:
 All context files are **completely replaced** on each scan. No history is preserved because context files are snapshots of current state, not historical records.
 
 **Creates** (first run):
-- `.shipkit/stack.md`
+- `.shipkit/stack.json` (structured JSON artifact)
 - `.shipkit/env-requirements.md`
 - `.shipkit/schema.md`
 
 **Updates** (rescan): Same 3 files (overwrites with fresh data)
+
+**Archive location** (if replacing):
+- `.shipkit/.archive/stack.YYYY-MM-DD.json`
 
 **Never modifies**: Source files (package.json, migrations, etc.) - read-only
 
@@ -349,8 +493,8 @@ All context files are **completely replaced** on each scan. No history is preser
 **This skill uses smart caching**:
 
 1. User invokes `/shipkit-project-context`
-2. Check if `.shipkit/stack.md` exists
-3. **Fast path** (stack.md is fresh): Read 3 files, Total: ~180 tokens
+2. Check if `.shipkit/stack.json` exists
+3. **Fast path** (stack.json is fresh): Read 3 files, Total: ~180 tokens
 4. **Slow path** (first run or stale): Full scan, Total: ~1,400 tokens
 
 **Token savings over sessions**: First run: 1,400 tokens, Subsequent runs (fresh): 180 tokens (87% reduction)
@@ -423,8 +567,9 @@ Claude already knows these CLI commands from training. The value is **awareness*
 ## Success Criteria
 
 Context generation is complete when:
-- [ ] `.shipkit/stack.md` exists with framework, database, styling, dependencies
-- [ ] `.shipkit/stack.md` includes Available CLIs section
+- [ ] `.shipkit/stack.json` exists with framework, database, styling, dependencies
+- [ ] `.shipkit/stack.json` conforms to JSON schema (includes $schema, type, version, lastUpdated, source, summary)
+- [ ] `.shipkit/stack.json` includes availableCLIs array
 - [ ] `.shipkit/env-requirements.md` exists with all env vars from .env.example
 - [ ] `.shipkit/schema.md` exists with tables, columns, relationships (if migrations found)
 - [ ] Modification times are current (fresher than source files)

@@ -224,7 +224,36 @@ def validate_skill_md_quality(skill_name):
 
 ---
 
-#### 2.4: Quality Pattern Validation
+#### 2.4: JSON Artifact Convention Check
+
+**Check**: If the skill writes to `.shipkit/*.json`, does it follow the Shipkit Artifact Convention?
+
+```markdown
+✓ JSON artifact convention check:
+- [ ] Output file ends in .json (not .md) if it produces structured data
+- [ ] JSON schema includes required top-level fields:
+      $schema: "shipkit-artifact"
+      type: "<artifact-type>"
+      version: "1.0"
+      lastUpdated: "YYYY-MM-DD"
+      source: "<skill-name>"
+      summary: { ... }
+- [ ] SKILL.md documents the full JSON schema
+- [ ] summary field is documented for dashboard rendering
+```
+
+**Migration check**: If skill writes to `.shipkit/*.md` and the output is primarily structured data (lists, status tracking, counts), flag as:
+```
+WARNING: {skill_name} outputs .shipkit/{file}.md — consider migrating to JSON artifact convention
+  → Structured data renders better in mission control dashboard
+  → Reference: install/skills/shipkit-goals/SKILL.md for JSON artifact pattern
+```
+
+**Skills that should remain markdown**: Specs, plans, architecture decisions — narrative content that humans read directly.
+
+---
+
+#### 2.5: Quality Pattern Validation
 
 **Check**: Skill includes appropriate quality patterns based on type
 
