@@ -12,12 +12,19 @@
 - [ ] `install/VERSION` exists
 - [ ] VERSION contains valid semver (e.g., `1.3.0`)
 - [ ] VERSION matches latest git release tag (if tags exist)
+- [ ] VERSION matches version in `docs/generated/shipkit-overview.html` header
+- [ ] VERSION matches version in `docs/generated/shipkit-overview.html` footer
 
 **Why this matters**: The VERSION file is the single source of truth for Shipkit releases. During installation, this version is:
 - Written to `_shipkit` key in user's `.claude/settings.json`
 - Inserted into CLAUDE.md markers: `<!-- BEGIN Shipkit v{VERSION} -->`
 
 If VERSION is stale, users will get incorrect version markers after update.
+
+**HTML Version Check**: The overview HTML displays the version in header and footer. Extract with:
+```bash
+grep -oP 'v\d+\.\d+\.\d+' docs/generated/shipkit-overview.html | head -1
+```
 
 ---
 
