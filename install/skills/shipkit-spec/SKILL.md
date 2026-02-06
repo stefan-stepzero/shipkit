@@ -88,23 +88,20 @@ options:
 
 ### Step 2: Read Existing Context
 
-**Read these files to understand project context**:
+**USE PARALLEL READS FOR CONTEXT LOADING** - All context files are independent:
 
-```bash
-# Tech constraints
-.shipkit/stack.md
+```
+Read these files IN PARALLEL (single message, multiple tool calls):
 
-# Data model
-.shipkit/schema.md
-
-# Past decisions
-.shipkit/architecture.md
-
-# Check for similar specs
-.shipkit/specs/active/*.md
+1. Read: .shipkit/stack.md         # Tech constraints
+2. Read: .shipkit/schema.md        # Data model
+3. Read: .shipkit/architecture.md  # Past decisions
+4. Glob + Read: .shipkit/specs/active/*.md  # Similar specs
 ```
 
-**Token budget**: Keep context reading under 1500 tokens.
+**Why parallel**: All 4 reads are independent - no file depends on another. Parallel reads reduce context loading time by ~40%.
+
+**Token budget**: Keep context reading under 1500 tokens total.
 
 **If files don't exist**: Proceed without them, ask user about tech/data as needed.
 

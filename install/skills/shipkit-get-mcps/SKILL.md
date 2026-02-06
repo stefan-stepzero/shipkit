@@ -92,27 +92,35 @@ User: /get-mcps supabase
 **If user asks "what's available" or wants to browse:**
 → Present options from the catalog grouped by category
 
-**If not in catalog, search these sources:**
+**If not in catalog, USE PARALLEL SUBAGENTS to search multiple registries:**
 
-1. **MCP Registry** (official)
-   ```
+```
+Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+
+1. OFFICIAL REGISTRY AGENT (subagent_type: "Explore")
+   Prompt: "Search for '[query]' MCP server on official registry.
    WebFetch: registry.modelcontextprotocol.io
-   ```
+   Return: matching MCPs with name, description, install command."
 
-2. **mcp.so** (community directory)
-   ```
-   WebSearch: "<query> MCP server site:mcp.so"
-   ```
+2. COMMUNITY DIRECTORY AGENT (subagent_type: "Explore")
+   Prompt: "Search for '[query]' MCP server on community sites.
+   WebSearch: '[query] MCP server site:mcp.so'
+   WebSearch: '[query] site:mcpservers.org'
+   Return: matching MCPs with name, description, source URL."
 
-3. **mcpservers.org** (curated collection)
-   ```
-   WebSearch: "<query> site:mcpservers.org"
-   ```
+3. GITHUB SEARCH AGENT (subagent_type: "Explore")
+   Prompt: "Search for '[query]' MCP server on GitHub.
+   WebSearch: '[query] MCP server site:github.com'
+   Return: matching repos with name, stars, description, install command."
+```
 
-4. **GitHub** (source repos)
-   ```
-   WebSearch: "<query> MCP server site:github.com"
-   ```
+**Why parallel**: Network fetches to different registries are independent - run simultaneously for faster discovery.
+
+**After agents return**:
+1. Merge results from all sources
+2. Deduplicate (same MCP may appear in multiple registries)
+3. Rank by relevance and popularity (stars, official status)
+4. Present consolidated list to user
 
 ---
 

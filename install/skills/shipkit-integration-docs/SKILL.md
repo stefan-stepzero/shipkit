@@ -52,13 +52,35 @@ agent: shipkit-researcher-agent
 Read file (if exists): `.shipkit/.queues/fetch-integration-docs.md`
 
 **If queue file exists and has pending items**:
-1. Parse the `## Pending` section for services needing docs
-2. For each pending service:
-   - Fetch current integration patterns (Step 3 logic)
-   - Save to `references/[service]-patterns.md`
-   - Move item from Pending to Completed in queue
+
+**FOR 3+ PENDING SERVICES, USE PARALLEL SUBAGENTS:**
+
+```
+Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+
+For each pending service in the queue:
+
+1. SERVICE A DOCS AGENT (subagent_type: "Explore")
+   Prompt: "Fetch current integration patterns for [Service A].
+   Check freshness of references/[service-a]-patterns.md (if exists).
+   If stale or missing: WebFetch official docs, extract security patterns, best practices.
+   Return: patterns summary for saving to references/[service-a]-patterns.md"
+
+2. SERVICE B DOCS AGENT (subagent_type: "Explore")
+   Prompt: "Fetch current integration patterns for [Service B]..."
+
+3. SERVICE C DOCS AGENT (subagent_type: "Explore")
+   Prompt: "Fetch current integration patterns for [Service C]..."
+```
+
+**Why parallel**: Each service fetch is independent - WebFetch calls can run concurrently.
+
+**After agents return**:
+1. Save each service's patterns to `references/[service]-patterns.md`
+2. Move all items from Pending to Completed in queue atomically
 3. Skip Step 1 questions (services already identified)
-4. Continue with Step 3-4 for each service
+
+**For 1-2 services**: Process sequentially (parallel overhead not worth it)
 
 **If queue file doesn't exist or is empty**:
 - Continue to Step 1 (manual mode - ask user questions)

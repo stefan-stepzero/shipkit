@@ -71,6 +71,18 @@ Before recording any decision, verify claims with tool calls:
 | "Aligns with stack.md" | `Grep: pattern="technology-name"` in stack.md returns match |
 | "Supersedes entry X" | `Grep: pattern="entry-date"` in architecture.md returns match |
 
+**USE PARALLEL VERIFICATION** - Independent checks can run simultaneously:
+
+```
+Launch these operations IN PARALLEL (single message, multiple tool calls):
+
+1. Read: .shipkit/architecture.md    # Get existing decisions
+2. Read: .shipkit/stack.md           # Get tech stack for consistency check
+3. Grep: pattern="[pattern-keyword]" glob="**/*.{ts,tsx}"  # Find pattern usage
+```
+
+**Why parallel**: Context reads and pattern grep are independent. Parallel execution speeds up verification by ~40%.
+
 **Pattern Ripple for Decisions:**
 
 When recording "we use X pattern", grep for ALL instances of that pattern and document the scope:
@@ -86,18 +98,13 @@ Example: Recording "Use Server Actions for mutations"
 
 **Why this matters:** Recording a pattern decision without knowing current usage leads to inconsistent enforcement.
 
-**Verification sequence:**
+**Verification sequence (after parallel reads complete):**
 
 ```
-1. Read architecture.md (verify file readable, count entries)
-2. For new decision involving technology:
-   - Grep: pattern="technology-name" in stack.md
-   - If not found → warn about stack.md inconsistency
-3. For new decision involving pattern:
-   - Grep: pattern="pattern-keyword" glob="**/*.{ts,tsx}"
-   - Document current usage count in decision entry
-4. Check for contradictions with existing decisions
-5. If all verifications pass → proceed to record
+1. From architecture.md read: count entries, check for contradictions
+2. From stack.md read: verify technology consistency
+3. From pattern grep: document current usage count in decision entry
+4. If all verifications pass → proceed to record
 ```
 
 **See also:** `shared/references/VERIFICATION-PROTOCOL.md` for standard verification patterns.

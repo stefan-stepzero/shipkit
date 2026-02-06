@@ -92,17 +92,26 @@ Choose a number or describe what you need:
 
 **Use Read tool to load source markdown files.**
 
-**Examples:**
+**FOR COMPREHENSIVE REPORTS (Project Status), USE PARALLEL READS:**
+
+```
+Launch these Read operations IN PARALLEL (single message, multiple tool calls):
+
+1. Read: .shipkit/architecture.md
+2. Read: .shipkit/stack.md
+3. Read: .shipkit/implementations.md
+4. Read: .shipkit/schema.md
+5. Glob + Read: .shipkit/specs/active/*.md
+6. Glob + Read: .shipkit/plans/*.md
+```
+
+**Why parallel**: All file reads are independent - no dependencies between them. Parallel reads significantly speed up comprehensive report generation.
+
+**Examples for single-source reports:**
 
 For architecture decisions:
 ```
 Read: .shipkit/architecture.md
-```
-
-For project status (comprehensive):
-```
-Glob: .shipkit/**/*.md
-Read each file found
 ```
 
 For quality checklist:
