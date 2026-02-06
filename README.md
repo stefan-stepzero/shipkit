@@ -82,29 +82,16 @@ All skills use the `shipkit-` prefix for clarity.
 
 ### Installation
 
-**Option 1: Ask Claude (for updates)**
-
-If Shipkit is already installed, ask Claude:
-> "Use /shipkit-update to update Shipkit"
-
-For first-time installs, use Option 2.
-
-**Option 2: Python Installer**
+**Download and run the Python installer:**
 ```bash
-# Interactive (prompts for options)
 cd your-project
 curl -O https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/installers/install.py
 python install.py --from-github
-
-# Non-interactive (uses sensible defaults: python, current dir, all skills/agents)
-python install.py --from-github -y
 ```
 
-Or with a local clone:
-```bash
-git clone https://github.com/stefan-stepzero/shipkit.git
-python shipkit/installers/install.py --target . -y
-```
+Add `-y` for non-interactive mode (uses sensible defaults).
+
+**Already have Shipkit?** Update with `/shipkit-update`
 
 The installer will:
 - Install all 29 skills
