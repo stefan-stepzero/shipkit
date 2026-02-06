@@ -1,6 +1,8 @@
 ---
 name: shipkit-project-status
 description: "Use when user asks about project health or needs orientation. Triggers: 'what's the status', 'project health', 'where are we', 'what's done'."
+model: haiku
+context: fork
 allowed-tools:
   - Read
   - Glob

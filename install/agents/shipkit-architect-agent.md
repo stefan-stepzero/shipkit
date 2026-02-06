@@ -2,6 +2,7 @@
 name: shipkit-architect
 description: Technical architect for system design, implementation planning, and architectural decisions. Use when planning features, designing data models, or making technical choices.
 tools: Read, Glob, Grep, Write, Edit, Bash
+disallowedTools: NotebookEdit
 model: opus
 permissionMode: acceptEdits
 memory: project

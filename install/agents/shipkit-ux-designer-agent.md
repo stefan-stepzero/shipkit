@@ -2,6 +2,7 @@
 name: shipkit-ux-designer
 description: UX designer for UI patterns, prototyping, and design decisions. Use when designing interfaces, reviewing UX, or creating wireframes.
 tools: Read, Glob, Grep, Write, Edit
+disallowedTools: Bash, NotebookEdit
 model: opus
 permissionMode: acceptEdits
 memory: project

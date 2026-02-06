@@ -1,6 +1,7 @@
 ---
 name: shipkit-integration-docs
 description: "Use when needing current API patterns for external services. Triggers: 'fetch docs', 'integration help', 'current API patterns', 'how to use [service]'."
+agent: shipkit-researcher-agent
 ---
 
 # shipkit-integration-docs - Live Documentation Integration Safety

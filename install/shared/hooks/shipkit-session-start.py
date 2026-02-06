@@ -591,6 +591,32 @@ def main():
             pass  # Silent fail on parse errors
 
     # ─────────────────────────────────────────────────────────────────
+    # Stale Worktrees Warning
+    # ─────────────────────────────────────────────────────────────────
+
+    worktrees_dir = shipkit_dir / 'worktrees'
+    if worktrees_dir.exists():
+        stale_worktrees = []
+        for worktree in worktrees_dir.iterdir():
+            if worktree.is_dir():
+                age_days = get_file_age_days(worktree)
+                if age_days > 7:
+                    stale_worktrees.append((worktree.name, int(age_days)))
+
+        if stale_worktrees:
+            stale_worktrees.sort(key=lambda x: x[1], reverse=True)
+            print("# ⚠️ Stale Worktrees")
+            print()
+            print(f"**{len(stale_worktrees)} worktree(s) older than 7 days:**")
+            for name, days in stale_worktrees[:5]:
+                print(f"  • `.shipkit/worktrees/{name}` ({days}d old)")
+            print()
+            print("Run `/shipkit-cleanup-worktrees` to review and clean up.")
+            print()
+            print("---")
+            print()
+
+    # ─────────────────────────────────────────────────────────────────
     # Available Context Files Manifest
     # ─────────────────────────────────────────────────────────────────
 

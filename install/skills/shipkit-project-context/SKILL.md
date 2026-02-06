@@ -1,6 +1,8 @@
 ---
 name: shipkit-project-context
 description: "Use when starting a new project or refreshing tech stack context. Triggers: 'scan project', 'what's my stack', 'refresh context', 'generate stack'."
+model: haiku
+context: fork
 ---
 
 # shipkit-project-context - Smart Project Context Scanner

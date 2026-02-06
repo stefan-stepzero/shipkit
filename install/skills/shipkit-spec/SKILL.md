@@ -2,6 +2,8 @@
 name: shipkit-spec
 description: "Use when user describes a feature to build. Triggers: 'spec this', 'create specification', 'define requirements', 'I want to build'."
 argument-hint: "<feature name or description>"
+model: opus
+agent: shipkit-product-owner-agent
 ---
 
 # shipkit-spec - Lightweight Feature Specification

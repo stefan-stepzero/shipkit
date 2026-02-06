@@ -94,9 +94,10 @@ Detection targets:
 │   ├── agents/lite-*.md         # Legacy agents
 │   ├── hooks/shipkit-*.py       # Current hooks
 │   ├── hooks/lite-*.py          # Legacy hooks
+│   ├── rules/shipkit.md         # Framework rules (replace on update)
 │   ├── settings.json            # Main settings (check _shipkit key)
 │   └── settings.local.json      # Local overrides (check for stale refs)
-├── CLAUDE.md                    # Root (check for Shipkit sections)
+├── CLAUDE.md                    # Root (user-editable, merge carefully)
 └── **/CLAUDE.md                 # Subfolders (check for Shipkit sections)
 ```
 
@@ -404,11 +405,12 @@ This includes (but is not limited to):
 ✓ Shipkit installed
 
 Installed:
-- 24 skills → .claude/skills/shipkit-*/
+- 29 skills → .claude/skills/shipkit-*/
 - 7 agents → .claude/agents/
-- 2 hooks → .claude/hooks/
+- 5 hooks → .claude/hooks/
+- Framework rules → .claude/rules/shipkit.md
 - Settings created
-- CLAUDE.md created with Shipkit section
+- CLAUDE.md created (user-editable sections)
 - HTML Overview → .shipkit/shipkit-overview.html
 
 💡 Open .shipkit/shipkit-overview.html in your browser for a skill reference guide
@@ -500,6 +502,7 @@ The installer handles fetching and installing:
 - `.claude/skills/shipkit-*/` - All skills
 - `.claude/agents/shipkit-*.md` - All agents
 - `.claude/hooks/shipkit-*.py` - All hooks
+- `.claude/rules/shipkit.md` - Framework rules (always replaced)
 
 **Merge (modifies):**
 - `.claude/settings.json` - Merged settings
@@ -527,12 +530,14 @@ The installer handles fetching and installing:
 │   │   └── shipkit-*.md                 # All agents
 │   ├── shared/hooks/
 │   │   └── shipkit-*.py                 # All hooks
+│   ├── rules/
+│   │   └── shipkit.md                   # Framework rules (replace on update)
 │   ├── settings/
 │   │   └── shipkit.settings.json        # Settings template
 │   ├── templates/
 │   │   └── *.md                         # Template files
 │   └── claude-md/
-│       └── shipkit.md                   # CLAUDE.md template
+│       └── shipkit.md                   # CLAUDE.md template (user-editable)
 ├── docs/
 │   └── generated/
 │       └── shipkit-overview.html        # Skill reference (browser viewable)

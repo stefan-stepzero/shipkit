@@ -3,6 +3,7 @@ name: shipkit-verify
 description: Review recent changes across 12 quality dimensions — report issues by priority. Use after a chunk of work, before commit, or when asked to check work.
 argument-hint: "[scope or feature]"
 context: fork
+agent: shipkit-reviewer-agent
 allowed-tools:
   - Read
   - Glob

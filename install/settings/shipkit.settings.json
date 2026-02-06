@@ -78,6 +78,7 @@
       "Bash(uniq:*)",
       "Bash(diff:*)",
       "Bash(tree:*)",
+      "Bash(gh:*)",
 
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
@@ -118,7 +119,9 @@
       "Skill(shipkit-build-relentlessly)",
       "Skill(shipkit-test-relentlessly)",
       "Skill(shipkit-lint-relentlessly)",
-      "Skill(shipkit-test-cases)"
+      "Skill(shipkit-test-cases)",
+      "Skill(shipkit-implement-independently)",
+      "Skill(shipkit-cleanup-worktrees)"
     ],
 
     "deny": [
@@ -169,6 +172,16 @@
             "type": "command",
             "command": "python -X utf8 .claude/hooks/shipkit-relentless-stop-hook.py",
             "timeout": 180
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 .claude/hooks/shipkit-precompact-hook.py"
           }
         ]
       }

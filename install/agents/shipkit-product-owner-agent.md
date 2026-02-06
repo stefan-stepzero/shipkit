@@ -2,6 +2,7 @@
 name: shipkit-product-owner
 description: Product owner for requirements, feature specs, user research, and product discovery. Use when defining what to build, who users are, or prioritizing features.
 tools: Read, Glob, Grep, Write, Edit
+disallowedTools: Bash, NotebookEdit
 model: opus
 permissionMode: acceptEdits
 memory: project

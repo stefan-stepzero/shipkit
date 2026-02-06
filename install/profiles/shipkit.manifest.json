@@ -63,7 +63,9 @@
         {"name": "shipkit-build-relentlessly", "desc": "Build until compiles"},
         {"name": "shipkit-test-relentlessly", "desc": "Test until green"},
         {"name": "shipkit-lint-relentlessly", "desc": "Lint until clean"},
-        {"name": "shipkit-test-cases", "desc": "Generate code-anchored test cases"}
+        {"name": "shipkit-test-cases", "desc": "Generate code-anchored test cases"},
+        {"name": "shipkit-implement-independently", "desc": "Parallel implementation in worktree"},
+        {"name": "shipkit-cleanup-worktrees", "desc": "Clean up stale worktrees"}
       ],
       "Quality & Communication": [
         {"name": "shipkit-verify", "desc": "Review work (12 quality dimensions)"},
@@ -88,6 +90,7 @@
     {"name": "shipkit-ux-designer-agent", "desc": "UI/UX design"},
     {"name": "shipkit-architect-agent", "desc": "Technical decisions"},
     {"name": "shipkit-implementer-agent", "desc": "Code implementation"},
+    {"name": "shipkit-implement-independently-agent", "desc": "Isolated parallel implementation"},
     {"name": "shipkit-reviewer-agent", "desc": "Code review & quality"},
     {"name": "shipkit-researcher-agent", "desc": "Research & analysis"}
   ]

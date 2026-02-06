@@ -40,6 +40,10 @@ Update CLAUDE.md so future sessions and subagents automatically inherit learning
 **Optional:**
 - Subfolder `CLAUDE.md` files for folder-specific learnings
 
+**Important distinction:**
+- `CLAUDE.md` → User-editable (preferences, learnings) — THIS skill edits this file
+- `.claude/rules/shipkit.md` → Framework-managed (skills reference, core rules) — DO NOT edit
+
 ---
 
 ## Process
@@ -190,6 +194,7 @@ Then append the learning.
 2. **Always confirm** — Show what was added and where
 3. **Respect structure** — Append to existing sections, don't reorganize
 4. **Check duplicates** — Avoid redundant entries
+5. **Never edit `.claude/rules/`** — Framework rules are managed by `/shipkit-update`, not this skill
 
 ---
 

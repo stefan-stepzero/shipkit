@@ -2,6 +2,7 @@
 name: shipkit-project-manager
 description: Project manager for coordination, status tracking, and context management. Use when checking project status, understanding codebase structure, updating project context, or orchestrating workflows.
 tools: Read, Glob, Grep, Write, Edit, Bash
+disallowedTools: NotebookEdit
 model: opus
 permissionMode: acceptEdits
 memory: project

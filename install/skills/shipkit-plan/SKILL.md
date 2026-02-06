@@ -2,6 +2,8 @@
 name: shipkit-plan
 description: "Use when a spec exists and user wants implementation steps. Triggers: 'how to implement', 'create plan', 'plan this', 'what are the steps'."
 argument-hint: "[spec name]"
+model: opus
+agent: shipkit-architect-agent
 ---
 
 # shipkit-plan - Implementation Planning with Failure Mode Prevention

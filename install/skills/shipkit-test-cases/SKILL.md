@@ -2,6 +2,7 @@
 name: shipkit-test-cases
 description: Generate and maintain code-anchored test case specifications. Use when setting up test coverage, reviewing what to test, or before test-relentlessly.
 argument-hint: "[feature or scope]"
+context: fork
 ---
 
 # shipkit-test-cases - Code-Anchored Test Case Management

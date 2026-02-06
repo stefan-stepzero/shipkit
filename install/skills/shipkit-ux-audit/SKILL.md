@@ -2,6 +2,8 @@
 name: shipkit-ux-audit
 description: "Use when auditing implemented UI for missing UX patterns. Triggers: 'audit UX', 'check UX', 'missing patterns', 'UX gaps'."
 argument-hint: "<component or area>"
+context: fork
+agent: shipkit-ux-designer-agent
 allowed-tools:
   - Read
   - Glob

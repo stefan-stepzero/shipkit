@@ -2,6 +2,7 @@
 name: shipkit-researcher
 description: Research specialist for documentation lookup, integration research, and troubleshooting. Use when researching APIs, finding solutions, or investigating errors.
 tools: Read, Glob, Grep, WebFetch, WebSearch
+disallowedTools: Write, Edit, Bash, NotebookEdit
 model: opus
 permissionMode: default
 memory: project

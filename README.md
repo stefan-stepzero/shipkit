@@ -2,22 +2,22 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**29 skills** organized for streamlined workflow:
+**31 skills** organized for streamlined workflow:
 - **Core Workflow** (5) - Orchestration, status, and context management
 - **Discovery & Planning** (7) - Product discovery, specification, and bug triage
 - **Implementation** (3) - Architecture, contracts, and integrations
-- **Execution** (4) - Test case generation, relentless build/test/lint
+- **Execution** (6) - Test case generation, relentless build/test/lint, parallel implementation
 - **Quality & Documentation** (6) - Testing, UX, and documentation
 - **Ecosystem** (2) - Get skills and MCPs
 - **System** (2) - Auto-triggered detection and updates
 
-Plus **7 agent personas** that specialize behaviors for different workflow stages.
+Plus **8 agent personas** that specialize behaviors for different workflow stages.
 
 ---
 
 ## What's Inside
 
-### Skills (29 total)
+### Skills (31 total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -42,11 +42,13 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-data-contracts` - Type definitions (Zod patterns)
 - `shipkit-integration-docs` - Integration patterns
 
-**Execution (4 skills):**
+**Execution (6 skills):**
 - `shipkit-test-cases` - Generate code-anchored test case specs
 - `shipkit-build-relentlessly` - Build until compiles
 - `shipkit-test-relentlessly` - Test until green
 - `shipkit-lint-relentlessly` - Lint until clean
+- `shipkit-implement-independently` - Parallel implementation in isolated worktree
+- `shipkit-cleanup-worktrees` - Clean up stale implementation worktrees
 
 **Quality & Documentation (6 skills):**
 - `shipkit-ux-audit` - UX analysis and patterns
@@ -64,7 +66,7 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-detect` - Pattern detection and queue creation (auto-triggered)
 - `shipkit-update` - Install or update Shipkit from GitHub
 
-### Agent Personas (7)
+### Agent Personas (8)
 
 | Agent | Used For |
 |-------|----------|
@@ -73,6 +75,7 @@ All skills use the `shipkit-` prefix for clarity.
 | `shipkit-ux-designer-agent` | UX/design perspective |
 | `shipkit-architect-agent` | Technical architecture |
 | `shipkit-implementer-agent` | Implementation focus |
+| `shipkit-implement-independently-agent` | Isolated parallel implementation |
 | `shipkit-reviewer-agent` | Code review/quality |
 | `shipkit-researcher-agent` | Research/discovery |
 
@@ -94,7 +97,7 @@ Add `-y` for non-interactive mode (uses sensible defaults).
 **Already have Shipkit?** Update with `/shipkit-update`
 
 The installer will:
-- Install all 29 skills
+- Install all 31 skills
 - Set up 7 agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
@@ -104,11 +107,13 @@ The installer will:
 Your project will have:
 ```
 your-project/
-├── CLAUDE.md                    # Workflow guide
+├── CLAUDE.md                    # User preferences & learnings (editable)
 ├── .claude/
 │   ├── settings.json            # Permissions + hooks
-│   ├── skills/                  # 24 skill definitions
-│   ├── agents/                  # 7 agent personas
+│   ├── rules/
+│   │   └── shipkit.md           # Framework rules (managed by /shipkit-update)
+│   ├── skills/                  # 31 skill definitions
+│   ├── agents/                  # 8 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
     ├── specs/                   # Feature specifications
@@ -183,14 +188,16 @@ shipkit/
 │   └── README.md                 # Installer documentation
 │
 ├── install/                      # Everything that gets installed
-│   ├── skills/                   # 24 shipkit-* skill definitions
-│   ├── agents/                   # 7 shipkit-*-agent personas
+│   ├── skills/                   # 31 shipkit-* skill definitions
+│   ├── agents/                   # 8 shipkit-*-agent personas
+│   ├── rules/
+│   │   └── shipkit.md            # Framework rules (auto-loaded)
 │   ├── profiles/
 │   │   └── shipkit.manifest.json # Skill manifest
 │   ├── settings/
 │   │   └── shipkit.settings.json # Permissions + hooks
 │   ├── claude-md/
-│   │   └── shipkit.md            # CLAUDE.md template
+│   │   └── shipkit.md            # CLAUDE.md template (user-editable)
 │   ├── shared/
 │   │   ├── hooks/                # Session hooks
 │   │   └── scripts/              # Shared utilities

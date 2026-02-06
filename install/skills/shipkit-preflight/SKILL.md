@@ -2,6 +2,9 @@
 name: shipkit-preflight
 description: Aggregates project context and audits production readiness against a comprehensive SaaS checklist. Routes to prerequisite skills when context is missing.
 argument-hint: "[area to audit]"
+model: opus
+context: fork
+agent: shipkit-reviewer-agent
 allowed-tools:
   - Read
   - Glob

@@ -158,6 +158,8 @@ This skill provides:
 | "Build until", "Compile until success", "Fix build errors" | `/shipkit-build-relentlessly` | Build output |
 | "Test until", "Run tests until green", "Fix test failures" | `/shipkit-test-relentlessly` | Test output, test-cases |
 | "Lint until", "Fix lint errors", "Clean up lint" | `/shipkit-lint-relentlessly` | Lint output |
+| "Implement independently", "Parallel implementation", "Work on this separately" | `/shipkit-implement-independently` | Spec, stack.md, architecture.md |
+| "Cleanup worktrees", "Clean up worktrees", "Remove old worktrees" | `/shipkit-cleanup-worktrees` | .shipkit/worktrees/ |
 
 ---
 

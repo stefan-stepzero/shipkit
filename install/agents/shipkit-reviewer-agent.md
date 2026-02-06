@@ -2,6 +2,7 @@
 name: shipkit-reviewer
 description: Code reviewer for quality verification, security checks, and acceptance criteria validation. Use when reviewing code, checking for issues, or validating implementations.
 tools: Read, Glob, Grep
+disallowedTools: Write, Edit, Bash, NotebookEdit
 model: opus
 permissionMode: default
 memory: project

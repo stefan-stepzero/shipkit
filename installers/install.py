@@ -505,6 +505,7 @@ def verify_source_files(repo_root):
         "install/shared",
         "install/skills",
         "install/agents",
+        "install/rules",
         "install/settings",
         "install/claude-md",
         "install/profiles"
@@ -554,7 +555,19 @@ def install_shared_core(repo_root, target_dir, language, edition):
     shutil.copy2(hooks_src / "shipkit-after-skill-router.py", hooks_dest / "after-skill-router.py")
     shutil.copy2(hooks_src / "shipkit-track-skill-usage.py", hooks_dest / "shipkit-track-skill-usage.py")
     shutil.copy2(hooks_src / "shipkit-relentless-stop-hook.py", hooks_dest / "shipkit-relentless-stop-hook.py")
+    shutil.copy2(hooks_src / "shipkit-precompact-hook.py", hooks_dest / "shipkit-precompact-hook.py")
     print_success("Hooks installed")
+
+    # Install framework rules
+    print_info("Installing framework rules...")
+    rules_src = repo_root / "install" / "rules"
+    rules_dest = target_dir / ".claude" / "rules"
+    rules_dest.mkdir(parents=True, exist_ok=True)
+    if (rules_src / "shipkit.md").exists():
+        shutil.copy2(rules_src / "shipkit.md", rules_dest / "shipkit.md")
+        print_success("Framework rules installed (.claude/rules/shipkit.md)")
+    else:
+        print_warning("Framework rules not found, skipping")
 
     # Scripts (language-specific)
     print_info(f"Installing {language} scripts...")
@@ -772,6 +785,16 @@ def generate_settings(manifest, language, selected_skills):
                             "type": "command",
                             "command": "python -X utf8 .claude/hooks/shipkit-relentless-stop-hook.py",
                             "timeout": 180
+                        }
+                    ]
+                }
+            ],
+            "PreCompact": [
+                {
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "python -X utf8 .claude/hooks/shipkit-precompact-hook.py"
                         }
                     ]
                 }
@@ -1096,6 +1119,7 @@ def show_completion(target_dir, selected_skills, selected_agents, language):
     print()
     print_success(f"{len(selected_skills)} skill definitions (.claude/skills/)")
     print_success(f"{len(selected_agents)} agent personas (.claude/agents/)")
+    print_success("Framework rules (.claude/rules/shipkit.md)")
     print_success(f"Shared scripts (.shipkit/scripts/)")
     print_success("Session hooks (.claude/hooks/)")
     print_success(f"Settings (.claude/settings.json)")

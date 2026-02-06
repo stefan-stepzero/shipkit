@@ -15,7 +15,8 @@ This repo contains the Shipkit framework: skills, agents, hooks, and templates t
 | Framework name | **Shipkit** | One word, capital S and K |
 | Context folder | **`.shipkit/`** | Lowercase |
 | Skills prefix | **`shipkit-`** | Namespaced to avoid conflicts |
-| Installed CLAUDE.md | `install/claude-md/shipkit.md` | Template for user projects |
+| Framework rules | `install/rules/shipkit.md` | Auto-loaded, managed by /shipkit-update |
+| User CLAUDE.md | `install/claude-md/shipkit.md` | User-editable template (preferences, learnings) |
 
 ---
 
@@ -240,7 +241,7 @@ Location: `install/skills/`
 
 **Implementation:** `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`
 
-**Execution:** `shipkit-build-relentlessly`, `shipkit-test-relentlessly`, `shipkit-lint-relentlessly`, `shipkit-test-cases`
+**Execution:** `shipkit-build-relentlessly`, `shipkit-test-relentlessly`, `shipkit-lint-relentlessly`, `shipkit-test-cases`, `shipkit-implement-independently`, `shipkit-cleanup-worktrees`
 
 **Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
 
@@ -248,12 +249,12 @@ Location: `install/skills/`
 
 **System:** `shipkit-detect` (auto-triggered), `shipkit-update`
 
-**Total:** 29 skills
+**Total:** 31 skills
 
 ### Agents
 Location: `install/agents/`
 
-`shipkit-project-manager-agent`, `shipkit-product-owner-agent`, `shipkit-ux-designer-agent`, `shipkit-architect-agent`, `shipkit-implementer-agent`, `shipkit-reviewer-agent`, `shipkit-researcher-agent`
+`shipkit-project-manager-agent`, `shipkit-product-owner-agent`, `shipkit-ux-designer-agent`, `shipkit-architect-agent`, `shipkit-implementer-agent`, `shipkit-implement-independently-agent`, `shipkit-reviewer-agent`, `shipkit-researcher-agent`
 
 ### Configuration Files
 - `install/settings/shipkit.settings.json` — Permissions and configuration
