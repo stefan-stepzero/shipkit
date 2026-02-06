@@ -1,21 +1,22 @@
 ---
 name: shipkit-verify
-description: Review recent changes across 12 quality dimensions — report issues by priority. Use after a chunk of work, before commit, or when asked to check work.
+description: Verify and fix — review changes across 12 quality dimensions, auto-fix critical issues, loop up to 4 times. Use after a chunk of work or before commit.
 argument-hint: "[scope or feature]"
-context: fork
-agent: shipkit-reviewer-agent
 allowed-tools:
   - Read
+  - Write
+  - Edit
   - Glob
   - Grep
   - Bash
+  - Task
 ---
 
 # shipkit-verify
 
-Batch verification — Claude reviews your work across quality dimensions and reports findings.
+Batch verification with auto-fix — Claude reviews your work across quality dimensions, fixes critical issues, re-verifies, and reports what remains.
 
-**Report only.** Doesn't fix, doesn't persist. User sees issues, decides what to address.
+**Fix-and-recheck loop.** Runs up to 4 passes: verify → fix → re-verify → fix. The relentless stop hook prevents early exit. User sees the final state after auto-remediation.
 
 ---
 
@@ -46,6 +47,66 @@ git diff --name-only HEAD~3..HEAD
 Also consider: What did Claude work on this session?
 
 If unclear, ask: "What should I verify?"
+
+### Step 1.1: Quick Pre-Scan (Before Loop)
+
+Run a **lightweight first pass** across the 12 dimensions on the changed files only (no pattern ripple yet). This is a fast scan to surface the landscape of findings.
+
+Present a summary to the user:
+
+```
+## Pre-Scan Summary
+
+Found findings across these themes:
+
+1. 🔴 Missing auth checks on 2 API routes
+2. 🔴 Broken import in Dashboard.tsx
+3. 🟡 Magic numbers in config (3 instances)
+4. 🟡 Missing loading states on admin pages
+5. 🟢 console.logs left in (4 files)
+
+**Any themes to dismiss?** I'll skip dismissed themes during the fix-and-verify loop.
+(Reply "none" to proceed with all, or list numbers to dismiss)
+```
+
+**Wait for user response.** The user may:
+- Dismiss themes: "dismiss 3 and 4" → those won't be flagged or fixed
+- Dismiss none: "none" or "go" → proceed with everything
+- Add context: "3 is intentional, 4 is low priority" → record the reasoning
+
+### Step 1.2: Activate Relentless Loop
+
+Create the relentless state file to prevent early exit:
+
+```bash
+mkdir -p .shipkit
+```
+
+Write `.shipkit/relentless-state.local.md` — include dismissed themes in the body so the hook feeds them back on each iteration:
+
+```markdown
+---
+skill: verify
+iteration: 1
+max_iterations: 4
+enabled: true
+completion_promise: "Zero 🔴 Critical and zero 🟡 Should Fix findings on re-verification (excluding dismissed themes). 🟢 Minor findings are noted but never fixed."
+---
+Verify and fix across 12 quality dimensions.
+Fix all critical findings. Re-verify until clean or max iterations reached.
+
+## Dismissed Themes (do not flag or fix)
+- Magic numbers in config — user: "those are intentional"
+- Missing loading states on admin pages — user: "low priority"
+```
+
+If user dismissed nothing, omit the Dismissed Themes section.
+
+**This file activates the relentless stop hook.** Claude cannot stop until either:
+- Zero critical findings remain, excluding dismissed themes (delete the state file, then stop)
+- Max iterations (4) reached (hook auto-stops)
+
+**During all subsequent verification passes, skip dismissed themes entirely.** Do not report them, do not fix them, do not count them toward the completion promise.
 
 ### Step 1.5: Expand Scope via Pattern Ripple
 
@@ -175,6 +236,47 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 - Small change set (< 10 files)
 - Single category focus
 - Quick pre-commit check
+
+**IMPORTANT:** When using subagents, include dismissed themes in the prompt: "Skip these dismissed themes: [list from state file]"
+
+### Step 4: Fix Critical Findings
+
+After verification, **fix issues automatically** in priority order:
+
+1. **🔴 Critical findings first** — fix all of them
+2. **🟡 Should Fix** — fix straightforward ones (broken imports, missing try/catch, orphan code removal)
+3. **🟢 Minor** — **never fix, only note.** Minors are too subjective to auto-fix confidently. List them in the final report for the user to decide.
+
+**Do NOT fix:**
+- 🟢 Minor findings (report only)
+- Dismissed themes (from state file)
+- Anything requiring architectural decisions
+- Anything where the "right fix" is ambiguous
+- Security issues that need user input (e.g., which auth strategy)
+
+**Track what was fixed:**
+
+Keep a running list for the final report:
+```
+## Auto-Fixed
+- ✅ Added try/catch to src/api/auth/login.ts:34
+- ✅ Removed orphan file src/utils/oldAuth.ts
+- ✅ Fixed broken import in src/pages/Dashboard.tsx:5
+```
+
+### Step 5: Re-Verify and Loop Exit
+
+After fixing, **re-verify the changed files** (including files you just modified):
+
+1. Re-run verification on all files touched in Step 4
+2. Check: are there any remaining 🔴 Critical or 🟡 Should Fix findings (excluding dismissed themes)?
+   - **YES** → Continue fixing. When you try to stop, the hook will block you and send you back.
+   - **NO** → Delete `.shipkit/relentless-state.local.md` and proceed to final report. Any 🟢 Minor findings are listed in the report but do not block completion.
+
+The relentless hook manages the iteration. You don't need to count loops — just:
+- Fix what you find
+- Try to stop when you think you're done
+- If the hook sends you back, re-verify and fix again
 
 ---
 
@@ -453,44 +555,40 @@ Not all dimensions every time. Emphasize based on what changed:
 
 ## Output Format
 
-Ephemeral report with clear priorities:
+Final report after all fix-and-recheck passes:
 
 ```
 ## Verification Report
 
 Reviewed: 5 files (src/api/auth/*, src/middleware/*)
 Context: Auth feature implementation
+Passes: 3 (2 critical fixed, 1 clean re-verify)
 
-### 🔴 Critical (fix before commit)
+### ✅ Auto-Fixed (this session)
 
-**Security: Missing auth check**
-- `src/api/users/[id]/route.ts` — endpoint accessible without auth
-- Impact: Any user can access any other user's data
+- ✅ Added try/catch to `src/api/auth/login.ts:34` (was: unhandled rejection)
+- ✅ Removed orphan file `src/utils/oldAuth.ts` (was: exported but never imported)
+- ✅ Fixed broken import in `src/pages/Dashboard.tsx:5`
 
-**Error Resilience: Unhandled rejection**
-- `src/api/auth/login.ts:34` — await without try/catch
-- Impact: Will crash on invalid credentials
-
-### 🟡 Should Fix
-
-**Structural: Orphan code**
-- `src/utils/oldAuth.ts` — exported but never imported
-- Likely leftover from refactor
+### 🟡 Remaining — Should Fix
 
 **UX: Missing loading state**
 - `src/components/LoginForm.tsx` — no loading indicator during submit
 
-### 🟢 Minor / Consider
+### 🟢 Remaining — Minor / Consider
 
 **Maintainability: Magic string**
 - `src/api/auth/login.ts:12` — hardcoded "7d" for token expiry
 - Consider: `const TOKEN_EXPIRY = "7d"`
 
+### ⏭️ Dismissed (by user)
+
+- Magic numbers in config (user: "intentional")
+- Missing loading states on admin pages (user: "low priority")
+
 ---
 
-2 critical | 2 should fix | 2 minor
-
-💡 For deeper review: /code-review (4 agents) or /pr-review-toolkit:review-pr (6 agents)
+3 auto-fixed | 0 critical remaining | 1 should fix | 1 minor | 2 dismissed
 ```
 
 ---
@@ -507,9 +605,10 @@ Context: Auth feature implementation
 
 ## What This Skill Does NOT Do
 
-- **Fix issues** — report only, user decides what to address
+- **Make architectural decisions** — fixes obvious issues, defers ambiguous ones to user
+- **Override dismissals** — dismissed themes stay dismissed for the entire session
 - **Block commits** — informational, not a gate
-- **Persist results** — ephemeral output only
+- **Persist results** — ephemeral output only (state file is cleaned up)
 - **Run linters/tests** — this is Claude reasoning, not tooling
 - **Guarantee completeness** — best effort review
 
@@ -567,9 +666,13 @@ For **thorough multi-agent review**, two plugins are available:
 <!-- SECTION:after-completion -->
 ## After Completion
 
-Report is delivered. User decides next steps:
-- Fix critical issues (ask Claude to help)
-- Defer should-fix items
+Relentless loop is complete. State file has been deleted. Final report shows:
+- What was auto-fixed (with before/after context)
+- What remains unfixed (should-fix and minor)
+- What was dismissed by user
+
+User decides next steps:
+- Address remaining should-fix items
 - Ignore minor suggestions
 - Proceed with commit
 
@@ -584,9 +687,13 @@ No follow-up skill automatically triggered.
 ## Success Criteria
 
 - [ ] Scope detected from git diff or session context
-- [ ] Relevant quality dimensions emphasized
+- [ ] Pre-scan presented to user with dismissal option
+- [ ] Dismissed themes recorded in state file
+- [ ] Relentless state file created with correct format
+- [ ] Relevant quality dimensions emphasized (excluding dismissed)
 - [ ] Specs/architecture read for compliance
-- [ ] Clear prioritized output (🔴🟡🟢)
-- [ ] Findings are specific and actionable
-- [ ] Report only — no unsolicited fixes
+- [ ] Critical findings auto-fixed with evidence
+- [ ] Re-verification passes confirm fixes are clean
+- [ ] State file deleted on completion
+- [ ] Final report shows: auto-fixed, remaining, dismissed
 <!-- /SECTION:success-criteria -->

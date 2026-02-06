@@ -3,7 +3,7 @@
 Shipkit Relentless Stop Hook
 
 Prevents Claude from stopping until the completion promise is met.
-Used by: shipkit-build-relentlessly, shipkit-test-relentlessly, shipkit-lint-relentlessly
+Used by: shipkit-build-relentlessly, shipkit-test-relentlessly, shipkit-lint-relentlessly, shipkit-verify
 
 Based on the ralph-wiggum pattern:
 1. Checks if .shipkit/relentless-state.local.md exists
@@ -164,7 +164,8 @@ def build_continue_reason(skill: str, iteration: int, max_iterations: int,
     skill_names = {
         "build-relentlessly": "Build",
         "test-relentlessly": "Test",
-        "lint-relentlessly": "Lint"
+        "lint-relentlessly": "Lint",
+        "verify": "Verify"
     }
     skill_display = skill_names.get(skill, skill.replace("-", " ").title())
 
