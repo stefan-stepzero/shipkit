@@ -160,10 +160,10 @@ Your project context is stored in:
 .shipkit/
 ├── specs/               # Feature specifications
 ├── plans/               # Implementation plans
-├── architecture.md      # Architecture decisions
+├── architecture.json    # Architecture decisions
 ├── stack.json           # Technology stack
 ├── implementations.md   # What's been built
-└── types.md             # Data contracts
+└── contracts.json       # Data contracts
 ```
 
 ### 3. Skills Chain Together

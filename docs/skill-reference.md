@@ -68,7 +68,7 @@ Complete reference for all 23 Shipkit skills.
 ✅ why.md exists
 ✅ stack.json exists
 ⚠️ No active specs
-⚠️ architecture.md has no entries
+⚠️ architecture.json has no entries
 
 Suggested: Create a spec with /shipkit-spec
 ```
@@ -227,7 +227,7 @@ Suggested: Create a spec with /shipkit-spec
 - Want future sessions to know "why"
 
 **Reads:** Nothing
-**Writes:** `.shipkit/architecture.md` (append)
+**Writes:** `.shipkit/architecture.json` (append)
 
 **Entry format:**
 ```markdown
@@ -254,7 +254,7 @@ Suggested: Create a spec with /shipkit-spec
 - Need consistent types
 
 **Reads:** `.shipkit/specs/active/*.md`
-**Writes:** `.shipkit/types.md`
+**Writes:** `.shipkit/contracts.json`
 
 ---
 
@@ -369,7 +369,7 @@ Suggested: Create a spec with /shipkit-spec
 - Switching contexts
 
 **Reads:** Recent work
-**Writes:** `.shipkit/progress.md`
+**Writes:** `.shipkit/progress.json`
 
 ---
 

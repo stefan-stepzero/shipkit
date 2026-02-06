@@ -43,7 +43,7 @@ allowed-tools:
 
 **Recommended**:
 - `.shipkit/stack.json` — Knows which AI SDKs are in use
-- `.shipkit/architecture.md` — Knows pipeline design intent
+- `.shipkit/architecture.json` — Knows pipeline design intent
 
 **If no LLM integrations found**: Report cleanly and exit. Don't fabricate findings.
 
@@ -492,7 +492,7 @@ Skills that haven't migrated to JSON yet continue writing markdown. The reporter
 |------|---------|
 | Source code | The actual LLM integration code |
 | `.shipkit/stack.json` | Know which AI SDKs/providers are used |
-| `.shipkit/architecture.md` | Understand intended pipeline design |
+| `.shipkit/architecture.json` | Understand intended pipeline design |
 | `package.json` / `requirements.txt` | Detect AI SDK dependencies |
 
 ---

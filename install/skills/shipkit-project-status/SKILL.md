@@ -67,9 +67,9 @@ fi
 ```bash
 # Core context files to check
 .shipkit/stack.json
-.shipkit/architecture.md
+.shipkit/architecture.json
 .shipkit/implementations.md
-.shipkit/progress.md
+.shipkit/progress.json
 ```
 
 **For each file, check**:
@@ -92,7 +92,7 @@ fi
 - Count sections (Framework, Database, Key Libraries, etc.)
 - Extract tech stack summary
 
-**architecture.md**:
+**architecture.json**:
 - Count decisions (count markdown H2/H3 headings)
 - Extract recent decisions
 
@@ -100,7 +100,7 @@ fi
 - Count documented components/routes (count H2 sections)
 - Extract file paths mentioned
 
-**progress.md**:
+**progress.json**:
 - Count session entries
 - Get last session date
 
@@ -260,7 +260,7 @@ Location: .shipkit/status.json
       "notes": "package.json modified more recently"
     },
     {
-      "file": "architecture.md",
+      "file": "architecture.json",
       "exists": true,
       "freshness": "fresh",
       "lastModified": "2025-12-27",
@@ -278,7 +278,7 @@ Location: .shipkit/status.json
       "notes": "23 components documented"
     },
     {
-      "file": "progress.md",
+      "file": "progress.json",
       "exists": true,
       "freshness": "fresh",
       "lastModified": "2025-12-28",
@@ -607,16 +607,16 @@ Copy and track:
 
 **Always attempts to read**:
 - `.shipkit/stack.json`
-- `.shipkit/architecture.md`
+- `.shipkit/architecture.json`
 - `.shipkit/implementations.md`
-- `.shipkit/progress.md`
+- `.shipkit/progress.json`
 
 **Conditionally reads**:
 - `.shipkit/specs/active/*.md` (glob to count)
 - `.shipkit/plans/*.md` (glob to count)
 - `.shipkit/user-tasks/active.md` (if exists)
 - `.shipkit/schema.md` (if exists)
-- `.shipkit/types.md` (if exists)
+- `.shipkit/contracts.json` (if exists)
 - `.shipkit/skill-usage.json` (if exists, for usage analytics)
 
 **Also checks**:

@@ -561,7 +561,8 @@ If mismatch:
 | `.shipkit/*.json` with `$schema: "shipkit-artifact"` in SKILL.md | ✓ JSON artifact |
 | `.shipkit/*.md` with structured/countable data | ⚠ Migration candidate |
 | `.shipkit/specs/*.md`, `.shipkit/plans/*.md` | ✓ Correct as markdown |
-| `.shipkit/architecture.md`, `.shipkit/why.md` | ✓ Correct as markdown |
+| `.shipkit/architecture.json` | ✓ Migrated to JSON |
+| `.shipkit/why.md` | ✓ Correct as markdown |
 | No `.shipkit/` output (NONE strategy) | ⊘ N/A |
 
 **Report format**:
@@ -574,8 +575,8 @@ Correct as markdown:  Y skills
 No output:           Z skills
 
 Migration candidates:
-  ⚠ shipkit-project-status → .shipkit/status.md (structured data)
-  ⚠ shipkit-work-memory → .shipkit/progress.md (session log)
+  ✓ shipkit-project-status → .shipkit/status.json (migrated)
+  ✓ shipkit-work-memory → .shipkit/progress.json (migrated)
 
 Reference: install/skills/shipkit-goals/SKILL.md (JSON artifact pattern)
 Convention: $schema, type, version, lastUpdated, source, summary

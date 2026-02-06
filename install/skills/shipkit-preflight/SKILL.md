@@ -53,8 +53,8 @@ This skill aggregates context from other skills. It will route you to create mis
 |----------------|--------------|------|-----------|
 | Tech stack, deployment target | `/shipkit-project-context` | `stack.json` | Yes |
 | Vision, constraints, scale | `/shipkit-why-project` | `why.md` | Yes |
-| Architecture decisions, auth model | `/shipkit-architecture-memory` | `architecture.md` | Recommended |
-| Data shapes, what's stored | `/shipkit-data-contracts` | `types.md` | Recommended |
+| Architecture decisions, auth model | `/shipkit-architecture-memory` | `architecture.json` | Recommended |
+| Data shapes, what's stored | `/shipkit-data-contracts` | `contracts.json` | Recommended |
 | Feature specs | `/shipkit-spec` | `specs/active/*.md` | Helpful |
 
 **If missing required context**: Skill will route you to the appropriate skill first.
@@ -122,11 +122,11 @@ Since last preflight (a1b2c3d, 3 days ago):
    - Missing? → "Run /shipkit-why-project first — I need to understand scale and constraints"
    - Exists → Extract: expected users, data sensitivity, uptime requirements
 
-3. Check .shipkit/architecture.md
+3. Check .shipkit/architecture.json
    - Missing? → Note: "No architecture decisions documented — will use generic checks"
    - Exists → Extract: auth model, database choices, key patterns
 
-4. Check .shipkit/types.md
+4. Check .shipkit/contracts.json
    - Missing? → Note: "No data contracts — will infer from code"
    - Exists → Extract: what sensitive data is stored
 ```
@@ -147,7 +147,7 @@ Possible questions (only if not already documented):
 2. **Expected scale** (if not in why.md):
    - "Expected concurrent users at launch? (just me, <100, 100-1000, 1000+)"
 
-3. **Data sensitivity** (if not in types.md):
+3. **Data sensitivity** (if not in contracts.json):
    - "What's the most sensitive data you store? (none, emails, PII, payments, healthcare)"
 
 4. **Current state**:
@@ -645,8 +645,8 @@ Ready to fix the remaining blockers?
 - `.shipkit/why.md` — Vision, constraints, scale expectations
 
 **Recommended**:
-- `.shipkit/architecture.md` — Auth model, key decisions
-- `.shipkit/types.md` — Data shapes, sensitive fields
+- `.shipkit/architecture.json` — Auth model, key decisions
+- `.shipkit/contracts.json` — Data shapes, sensitive fields
 - `.shipkit/specs/active/*.md` — Feature requirements
 
 **Scans**:
@@ -711,8 +711,8 @@ Skills that haven't migrated to JSON yet continue writing markdown. The reporter
 |---------|-----------|
 | stack.json | `/shipkit-project-context` |
 | why.md | `/shipkit-why-project` |
-| architecture.md | `/shipkit-architecture-memory` (suggests, doesn't require) |
-| types.md | `/shipkit-data-contracts` (suggests, doesn't require) |
+| architecture.json | `/shipkit-architecture-memory` (suggests, doesn't require) |
+| contracts.json | `/shipkit-data-contracts` (suggests, doesn't require) |
 
 ### After This Skill
 
@@ -796,7 +796,7 @@ For **maximum scrutiny**, use the `pr-review-toolkit` plugin to deep-review the 
 2. **Run pr-review-toolkit on each partition** with project context:
    ```
    For each partition:
-   - Provide: partition files + codebase-index summary + architecture.md
+   - Provide: partition files + codebase-index summary + architecture.json
    - Run: /pr-review-toolkit:review-pr
    - Collect: findings
    ```

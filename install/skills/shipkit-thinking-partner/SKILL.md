@@ -40,7 +40,7 @@ allowed-tools: Read, Glob, Grep, AskUserQuestion
 
 **Recommended**:
 - `.shipkit/why.md` — Project vision provides decision-making context
-- `.shipkit/architecture.md` — Existing decisions constrain new ones
+- `.shipkit/architecture.json` — Existing decisions constrain new ones
 - `.shipkit/stack.json` — Technical constraints shape options
 
 **If missing**: Proceed without — the skill works for greenfield decisions too. Ask the user for relevant context instead.
@@ -55,7 +55,7 @@ allowed-tools: Read, Glob, Grep, AskUserQuestion
 
 ```
 Read: .shipkit/why.md         → Project vision, goals, constraints
-Read: .shipkit/architecture.md → Existing decisions and rationale
+Read: .shipkit/architecture.json → Existing decisions and rationale
 Read: .shipkit/stack.json        → Technology choices and constraints
 ```
 
@@ -215,7 +215,7 @@ Ask: "Would you like to explore any of these further, or shall we move to captur
 ## Context Files This Skill Reads
 
 - `.shipkit/why.md` — Project vision and goals
-- `.shipkit/architecture.md` — Existing architecture decisions
+- `.shipkit/architecture.json` — Existing architecture decisions
 - `.shipkit/stack.json` — Technology stack
 - `.shipkit/specs/active/*.md` — Active specifications (if relevant to discussion)
 

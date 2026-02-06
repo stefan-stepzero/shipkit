@@ -131,7 +131,7 @@ def check_implementations_freshness(project_root: Path) -> tuple[bool, str, int,
 
 def get_last_progress_entry(project_root: Path) -> tuple[str, str]:
     """Get last progress entry summary and timestamp."""
-    progress_file = project_root / '.shipkit' / 'progress.md'
+    progress_file = project_root / '.shipkit' / 'progress.json'
 
     if not progress_file.exists():
         return "", "No sessions logged"
@@ -165,7 +165,7 @@ def get_last_progress_entry(project_root: Path) -> tuple[str, str]:
             if len(summary_lines) >= 2:
                 break
 
-    summary = "; ".join(summary_lines) if summary_lines else "See progress.md"
+    summary = "; ".join(summary_lines) if summary_lines else "See progress.json"
     age = get_file_age_days(progress_file)
 
     return summary, format_age(age)
@@ -479,8 +479,8 @@ def main():
         print("---")
         print()
 
-    # Load architecture.md (decisions - usually stable)
-    arch_file = shipkit_dir / 'architecture.md'
+    # Load architecture.json (decisions - usually stable)
+    arch_file = shipkit_dir / 'architecture.json'
     if arch_file.exists():
         age = get_file_age_days(arch_file)
         if age > 14:
@@ -658,7 +658,7 @@ def main():
     context_files = [
         ('why.md', 'Before product decisions'),
         ('stack.json', 'Before implementing (check patterns)'),
-        ('architecture.md', 'Before design decisions'),
+        ('architecture.json', 'Before design decisions'),
         ('schema.md', 'Before database work'),
         ('codebase-index.json', 'For navigation'),
     ]

@@ -229,7 +229,7 @@ Examples (JSON artifacts):
 
 Examples (Markdown):
 - .shipkit/specs/active/[feature].md
-- .shipkit/architecture.md
+- .shipkit/architecture.json
 - .shipkit/communications/latest.html
 
 → [user input]

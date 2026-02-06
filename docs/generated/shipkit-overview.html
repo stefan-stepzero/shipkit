@@ -515,7 +515,7 @@
                         <tr>
                             <td class="trigger">Define personas, journeys, stories</td>
                             <td><span class="skill">/shipkit-product-discovery</span></td>
-                            <td class="creates">product-discovery.md</td>
+                            <td class="creates">product-discovery.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Check project health & gaps</td>
@@ -577,12 +577,12 @@
                         <tr>
                             <td class="trigger">Log an architecture decision</td>
                             <td><span class="skill">/shipkit-architecture-memory</span></td>
-                            <td class="creates">architecture.md (append)</td>
+                            <td class="creates">architecture.json (append)</td>
                         </tr>
                         <tr>
                             <td class="trigger">Define data contracts/types</td>
                             <td><span class="skill">/shipkit-data-contracts</span></td>
-                            <td class="creates">types.md</td>
+                            <td class="creates">contracts.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Fetch integration patterns</td>
@@ -633,7 +633,7 @@
                         <tr>
                             <td class="trigger">Log progress + save resume state</td>
                             <td><span class="skill">/shipkit-work-memory</span></td>
-                            <td class="creates">progress.md (resume + log)</td>
+                            <td class="creates">progress.json (resume + log)</td>
                         </tr>
                         <tr>
                             <td class="trigger">Create visual HTML report</td>
@@ -879,9 +879,9 @@
 <pre>.shipkit/
 ├── why.md                 # Project vision
 ├── stack.json             # Tech stack (auto-scanned)
-├── architecture.md        # Decisions log
-├── types.md               # Type definitions
-├── progress.md            # Session history
+├── architecture.json      # Decisions log
+├── contracts.json         # Data contracts
+├── progress.json          # Session history
 ├── specs/
 │   ├── active/            # Current specs
 │   └── implemented/       # Completed specs

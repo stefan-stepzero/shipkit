@@ -39,7 +39,7 @@ agent: shipkit-product-owner-agent
 ### Step 0: Check for Existing File
 
 **Quick Exit Check**:
-1. Check if `.shipkit/product-discovery.md` exists
+1. Check if `.shipkit/product-discovery.json` exists
 2. If exists AND modified < 5 minutes ago: Show user, ask "Use this or regenerate?"
 3. If exists AND modified > 5 minutes ago: Proceed to File Exists Workflow (Step 0b)
 4. If doesn't exist: Skip to Step 1 (generate new)
@@ -101,67 +101,184 @@ options:
 
 ---
 
-### Step 3: Generate Product Discovery Document
+### Step 3: Generate Product Discovery JSON Artifact
 
-**Create file using Write tool**: `.shipkit/product-discovery.md`
+**Create file using Write tool**: `.shipkit/product-discovery.json`
 
 **Content includes**:
-1. **Personas** (1-3 lightweight personas)
-2. **User Journeys** (current state, pain points, jobs-to-be-done)
-3. **User Stories** (feature requirements with acceptance criteria)
+1. **Personas** (1-3 lightweight personas with IDs for cross-referencing)
+2. **Pain Points** (extracted from personas, linked by ID)
+3. **User Journeys** (step-by-step with emotion tracking and pain point references)
+4. **Opportunities** (linked to pain points and personas)
+
+**All entities use stable IDs** (`persona-1`, `pain-1`, `journey-1`, `opp-1`) to enable graph traversal and relationship mapping across the artifact.
 
 ---
 
-## Product Discovery Document Template Structure
+## Product Discovery JSON Schema
 
-```markdown
-# Product Discovery
+The output MUST conform to the Shipkit JSON Artifact Convention. All `.shipkit/*.json` files require the standard envelope fields (`$schema`, `type`, `version`, `lastUpdated`, `source`, `summary`).
 
-**Last Updated**: [YYYY-MM-DD]
-
----
-
-## Personas
-
-**Persona 1: [Name/Role]**
-- **Who**: [Role, context, background]
-- **Goals**: [What they're trying to achieve]
-- **Pain Points**: [Current frustrations]
-- **Context**: [When/where they use the product]
-
----
-
-## User Journeys
-
-**Journey 1: [Persona Name] - [Job to be Done]**
-
-**Current State**: [Steps, Pain Point]
-**Jobs-to-be-Done**: Functional, Emotional, Social
-**Future State**: [Improved workflow, Benefit]
-
----
-
-## User Stories
-
-**Story 1: [Feature Name]**
-
-**As a** [Persona], **I want** [goal], **So that** [benefit].
-
-**Acceptance Criteria**:
-- [ ] Given [context], When [action], Then [result]
-
-**Priority**: High/Medium/Low
-
----
-
-## Quality Checklist
-
-- [ ] Each persona has clear goals (not generic)
-- [ ] Personas are distinct (not overlapping)
-- [ ] Jobs-to-be-done are specific and actionable
-- [ ] User stories have testable acceptance criteria
-- [ ] Stories trace back to specific persona needs
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "product-discovery",
+  "version": "1.0",
+  "lastUpdated": "2025-01-15T10:00:00Z",
+  "source": "shipkit-product-discovery",
+  "summary": {
+    "totalPersonas": 3,
+    "totalJourneys": 4,
+    "totalPainPoints": 8,
+    "totalOpportunities": 2,
+    "primaryPersona": "Solo Developer",
+    "topPainPoint": "Context loss between sessions"
+  },
+  "personas": [
+    {
+      "id": "persona-1",
+      "name": "Solo Developer",
+      "role": "Full-stack developer",
+      "goals": ["Ship MVP fast", "Avoid context loss"],
+      "frustrations": ["Starting over each session", "Forgetting decisions"],
+      "techComfort": "high",
+      "context": "Works alone on side projects, evenings and weekends",
+      "isPrimary": true
+    }
+  ],
+  "painPoints": [
+    {
+      "id": "pain-1",
+      "description": "Context loss between sessions",
+      "severity": "critical",
+      "affectedPersonas": ["persona-1"],
+      "currentWorkaround": "Manual notes in README",
+      "frequency": "every session"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "journey-1",
+      "name": "New Project Setup",
+      "persona": "persona-1",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "Initialize project",
+          "emotion": "excited",
+          "painPoints": [],
+          "touchpoints": ["CLI"]
+        },
+        {
+          "id": "step-2",
+          "action": "Configure stack",
+          "emotion": "neutral",
+          "painPoints": ["pain-1"],
+          "touchpoints": ["CLI", ".shipkit/"]
+        }
+      ]
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-1",
+      "description": "Auto-detect project context on session start",
+      "addressesPainPoints": ["pain-1"],
+      "impactedPersonas": ["persona-1"],
+      "effort": "medium",
+      "impact": "high"
+    }
+  ]
+}
 ```
+
+### Schema Field Reference
+
+**Envelope fields** (required on every Shipkit JSON artifact):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `$schema` | string | Always `"shipkit-artifact"` |
+| `type` | string | `"product-discovery"` for this skill |
+| `version` | string | Schema version, currently `"1.0"` |
+| `lastUpdated` | string | ISO 8601 timestamp |
+| `source` | string | `"shipkit-product-discovery"` |
+| `summary` | object | Aggregated counts for dashboard cards |
+
+**`summary` fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `totalPersonas` | number | Count of personas |
+| `totalJourneys` | number | Count of journeys |
+| `totalPainPoints` | number | Count of pain points |
+| `totalOpportunities` | number | Count of opportunities |
+| `primaryPersona` | string | Name of the primary persona |
+| `topPainPoint` | string | Most critical pain point description |
+
+**`personas[]` fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Stable ID: `persona-{n}` |
+| `name` | string | Persona name or archetype |
+| `role` | string | Role or job title |
+| `goals` | string[] | What they want to achieve |
+| `frustrations` | string[] | Current pain points (human-readable) |
+| `techComfort` | string | `"high"`, `"medium"`, or `"low"` |
+| `context` | string | When/where they use the product |
+| `isPrimary` | boolean | `true` for the primary persona |
+
+**`painPoints[]` fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Stable ID: `pain-{n}` |
+| `description` | string | Pain point description |
+| `severity` | string | `"critical"`, `"high"`, `"medium"`, or `"low"` |
+| `affectedPersonas` | string[] | Array of persona IDs |
+| `currentWorkaround` | string | How users cope today |
+| `frequency` | string | How often this occurs |
+
+**`journeys[]` fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Stable ID: `journey-{n}` |
+| `name` | string | Journey name |
+| `persona` | string | Persona ID this journey belongs to |
+| `steps` | object[] | Ordered steps in the journey |
+
+**`journeys[].steps[]` fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Stable ID: `step-{n}` (unique within journey) |
+| `action` | string | What the user does |
+| `emotion` | string | `"excited"`, `"neutral"`, `"frustrated"`, `"confused"`, `"satisfied"` |
+| `painPoints` | string[] | Array of pain point IDs encountered at this step |
+| `touchpoints` | string[] | Interfaces/channels involved |
+
+**`opportunities[]` fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | Stable ID: `opp-{n}` |
+| `description` | string | Opportunity description |
+| `addressesPainPoints` | string[] | Array of pain point IDs this addresses |
+| `impactedPersonas` | string[] | Array of persona IDs who benefit |
+| `effort` | string | `"low"`, `"medium"`, or `"high"` |
+| `impact` | string | `"low"`, `"medium"`, or `"high"` |
+
+### Graph Relationships
+
+The ID-based cross-references enable these graph traversals:
+
+- **Persona -> Pain Points**: `painPoints[].affectedPersonas` references `personas[].id`
+- **Journey -> Persona**: `journeys[].persona` references `personas[].id`
+- **Journey Step -> Pain Points**: `journeys[].steps[].painPoints` references `painPoints[].id`
+- **Opportunity -> Pain Points**: `opportunities[].addressesPainPoints` references `painPoints[].id`
+- **Opportunity -> Personas**: `opportunities[].impactedPersonas` references `personas[].id`
 
 ---
 
@@ -169,7 +286,7 @@ options:
 
 If user chose "Replace" in Step 0:
 1. Create archive: `.shipkit/archive/product-discovery/`
-2. Copy existing with timestamp
+2. Copy existing with timestamp: `product-discovery.[timestamp].json`
 3. Write new file
 
 ---
@@ -183,10 +300,13 @@ If user chose "Replace" in Step 0:
 ## Completion Checklist
 
 Copy and track:
-- [ ] Defined target personas
-- [ ] Created user journeys
-- [ ] Documented user stories
-- [ ] Saved to `.shipkit/product-discovery.md`
+- [ ] Defined target personas with stable IDs
+- [ ] Extracted pain points with severity and persona links
+- [ ] Created user journeys with emotion tracking and pain point references
+- [ ] Identified opportunities linked to pain points and personas
+- [ ] Summary fields populated with correct counts
+- [ ] All cross-references use valid IDs
+- [ ] Saved to `.shipkit/product-discovery.json`
 
 ---
 
@@ -194,9 +314,10 @@ Copy and track:
 
 **Included**:
 - 1-3 personas (not 5-7 like full prod-personas)
-- Combined workflow (personas → journeys → stories in one skill)
+- Combined workflow (personas -> pain points -> journeys -> opportunities in one skill)
 - Quick exit check (avoid regenerating recent files)
-- Lightweight acceptance criteria (happy path focus)
+- Graph-ready JSON with stable IDs for cross-referencing
+- Summary block for dashboard integration
 
 **Not included** (vs full prod-personas + prod-jobs-to-be-done + prod-user-stories):
 - Separate skills for each phase
@@ -204,7 +325,7 @@ Copy and track:
 - Extensive journey mapping workshops
 - Comprehensive edge case scenarios
 
-**Philosophy**: Capture enough to start building, not exhaustive research.
+**Philosophy**: Capture enough to start building, not exhaustive research. The JSON format ensures data is machine-readable and graph-traversable from day one.
 
 ---
 
@@ -234,10 +355,10 @@ Copy and track:
 **Write Strategy: OVERWRITE**
 
 **Creates/Updates**:
-- `.shipkit/product-discovery.md` - Combined personas, user journeys, user stories
+- `.shipkit/product-discovery.json` - Graph-ready JSON artifact with personas, pain points, journeys, and opportunities
 
 **Archive location** (if replacing):
-- `.shipkit/archive/product-discovery/product-discovery.[timestamp].md`
+- `.shipkit/archive/product-discovery/product-discovery.[timestamp].json`
 
 ---
 
@@ -247,9 +368,9 @@ Copy and track:
 
 1. User invokes `/shipkit-product-discovery`
 2. Check if file exists (Quick Exit Check)
-3. If regenerating: Ask 3 questions
+3. If regenerating: Ask 2 questions
 4. Read why.md, stack.json (~1000 tokens)
-5. Generate Product Discovery Document
+5. Generate Product Discovery JSON artifact
 6. Total context loaded: ~1500 tokens
 
 ---
@@ -271,16 +392,17 @@ Copy and track:
 <!-- SECTION:success-criteria -->
 ## Success Criteria
 
-Product Discovery Document is complete when:
-- [ ] 1-3 personas with clear goals and context
-- [ ] Each persona has distinct characteristics
-- [ ] User journeys identify current state pain points
-- [ ] Jobs-to-be-done are specific and actionable
-- [ ] User stories have testable acceptance criteria
-- [ ] Stories trace back to specific persona needs
-- [ ] Quality checklist embedded
-- [ ] File saved to `.shipkit/product-discovery.md`
+Product Discovery JSON artifact is complete when:
+- [ ] 1-3 personas with stable IDs, clear goals, and context
+- [ ] Each persona has distinct characteristics (`isPrimary` set on exactly one)
+- [ ] Pain points extracted with severity levels and persona cross-references
+- [ ] User journeys include emotion tracking at each step
+- [ ] Journey steps reference pain point IDs where friction occurs
+- [ ] Opportunities link to both pain points and personas they address
+- [ ] Summary counts match actual array lengths
+- [ ] All ID cross-references are valid (no dangling references)
+- [ ] File saved to `.shipkit/product-discovery.json`
 <!-- /SECTION:success-criteria -->
 ---
 
-**Remember**: This file is your single source of truth for user understanding. Update it as you learn more about users. Product discovery is iterative; refine as insights emerge.
+**Remember**: This file is your single source of truth for user understanding. Update it as you learn more about users. Product discovery is iterative; refine as insights emerge. The JSON format with stable IDs enables other skills and dashboards to traverse persona-pain-journey-opportunity relationships as a graph.

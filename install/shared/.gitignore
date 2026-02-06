@@ -12,7 +12,7 @@ CLAUDE.md
 # IMPORTANT: DO NOT IGNORE YOUR WORK PRODUCTS!
 # ✅ .shipkit/ contains YOUR context files (commit these!)
 #
-# Files like specs/, plans/, architecture.md, stack.json, implementations.md
+# Files like specs/, plans/, architecture.json, stack.json, implementations.md
 # represent your product discovery, specs, plans, and decisions.
 # They should be committed to git so your team has shared context.
 

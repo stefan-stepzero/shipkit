@@ -117,7 +117,7 @@ Detected Shipkit installation:
 - CLAUDE.md: Has Shipkit section (with markers / without markers)
 - settings.json: Has _shipkit key
 - settings.local.json: Found (has stale lite-* refs / clean)
-- User content: why.md, architecture.md, 3 specs
+- User content: why.md, architecture.json, 3 specs
 ```
 
 ---
@@ -369,15 +369,15 @@ This approach is future-proof — new user content files automatically migrate w
 
 This includes (but is not limited to):
 - `why.md` - Vision document
-- `architecture.md` - Architecture decisions
+- `architecture.json` - Architecture decisions
 - `stack.json` - Tech stack (may have manual annotations)
 - `specs/**` - Feature specifications (active and implemented)
 - `plans/**` - Implementation plans
-- `progress.md` - Session history
+- `progress.json` - Session history
 - `archives/**` - Progress archives
 - `codebase-index.json` - Navigation index
-- `product-discovery.md` - User personas and journeys
-- `types.md` - Data contracts
+- `product-discovery.json` - User personas and journeys
+- `contracts.json` - Data contracts
 - `implementations.md` - Component/route documentation
 - `user-tasks/**` - User task lists
 - `preflight.json` - Audit reports
@@ -434,11 +434,11 @@ Merged intelligently:
 
 Migrated user content:
 - why.md ✓
-- architecture.md ✓
+- architecture.json ✓
 - stack.json ✓
 - specs/ (3 files) ✓
-- product-discovery.md ✓
-- types.md ✓
+- product-discovery.json ✓
+- contracts.json ✓
 - [... all other user files ...]
 
 Not migrated (purely auto-generated):

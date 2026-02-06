@@ -63,7 +63,7 @@ Default audit covers Growth tier. Enterprise tier on request or if context indic
 2. Load project context
    - .shipkit/stack.json — tech stack
    - .shipkit/why.md — scale expectations
-   - .shipkit/architecture.md — key patterns
+   - .shipkit/architecture.json — key patterns
 ```
 
 ### Step 1: Determine Audit Scope
@@ -461,7 +461,7 @@ The `summary` field MUST be kept in sync with the `categories` array. It exists 
 
 **Recommended**:
 - `.shipkit/why.md` — Scale expectations
-- `.shipkit/architecture.md` — Patterns and decisions
+- `.shipkit/architecture.json` — Patterns and decisions
 - `.shipkit/scale-readiness.json` — Previous audit (for incremental)
 
 **Scans**:

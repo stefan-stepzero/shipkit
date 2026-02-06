@@ -38,8 +38,8 @@ agent: shipkit-architect-agent
 - See "Step 1.5: UI-Heavy Gate" below
 
 **Optional but helpful**:
-- Architecture decisions: `.shipkit/architecture.md`
-- Type definitions: `.shipkit/types.md`
+- Architecture decisions: `.shipkit/architecture.json`
+- Type definitions: `.shipkit/contracts.json`
 
 ---
 
@@ -103,9 +103,9 @@ options:
 **Read these files to understand project context**:
 - `.shipkit/specs/active/[feature-name].md` (Required)
 - `.shipkit/stack.json` (Stack info)
-- `.shipkit/architecture.md` (Past decisions)
+- `.shipkit/architecture.json` (Past decisions)
 
-**Optional context** (load if relevant): types.md, component-contracts.md, schema.md
+**Optional context** (load if relevant): contracts.json, schema.md
 
 **Extract from spec:**
 - All requirements (for coverage mapping later)
@@ -594,8 +594,8 @@ Copy and track:
 - Existing source files matching patterns (state, fetch, error, auth)
 
 **Conditionally reads**:
-- `.shipkit/architecture.md` - Past decisions
-- `.shipkit/types.md` - Type definitions
+- `.shipkit/architecture.json` - Past decisions
+- `.shipkit/contracts.json` - Type definitions
 - `.shipkit/schema.md` - Database schema
 
 ---

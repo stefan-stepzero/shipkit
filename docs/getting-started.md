@@ -151,8 +151,8 @@ All project context lives here:
 |------|---------|
 | `why.md` | Vision, constraints, approach |
 | `stack.json` | Tech choices (auto-scanned) |
-| `architecture.md` | Decisions log (append-only) |
-| `progress.md` | Session continuity |
+| `architecture.json` | Decisions log (append-only) |
+| `progress.json` | Session continuity |
 | `specs/active/` | Feature specifications |
 | `plans/` | Implementation plans |
 
@@ -190,7 +190,7 @@ Shows what context exists, what's missing, and suggests next steps.
 /shipkit-architecture-memory
 ```
 
-Appends a decision to `.shipkit/architecture.md` with rationale.
+Appends a decision to `.shipkit/architecture.json` with rationale.
 
 ### Create a UI Prototype
 

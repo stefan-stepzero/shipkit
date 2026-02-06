@@ -33,7 +33,7 @@ description: "Use when user wants to visualize or present shipkit content as HTM
 ## Prerequisites
 
 **Optional** (depends on what user wants to visualize):
-- `.shipkit/architecture.md` - For architecture decisions
+- `.shipkit/architecture.json` - For architecture decisions
 - `.shipkit/implementations.md` - For component/route docs
 - `.shipkit/stack.json` - For tech stack overview
 - `.shipkit/specs/active/*.md` - For specs
@@ -75,7 +75,7 @@ Choose a number or describe what you need:
 
 | Choice | Files to Read | Description Word |
 |--------|---------------|------------------|
-| 1. Architecture Decisions | `.shipkit/architecture.md` | `architecture-decisions` |
+| 1. Architecture Decisions | `.shipkit/architecture.json` | `architecture-decisions` |
 | 2. Project Status | Glob `.shipkit/**/*.md` | `project-status` |
 | 3. Quality Checklist | `.shipkit/implementations.md`, `.shipkit/specs/active/*.md` | `quality-checklist` |
 | 4. Component Documentation | `.shipkit/implementations.md` | `component-docs` |
@@ -97,7 +97,7 @@ Choose a number or describe what you need:
 ```
 Launch these Read operations IN PARALLEL (single message, multiple tool calls):
 
-1. Read: .shipkit/architecture.md
+1. Read: .shipkit/architecture.json
 2. Read: .shipkit/stack.json
 3. Read: .shipkit/implementations.md
 4. Read: .shipkit/schema.md
@@ -111,7 +111,7 @@ Launch these Read operations IN PARALLEL (single message, multiple tool calls):
 
 For architecture decisions:
 ```
-Read: .shipkit/architecture.md
+Read: .shipkit/architecture.json
 ```
 
 For quality checklist:
@@ -308,7 +308,7 @@ Copy and track:
 
 ### 1. Architecture Decisions
 
-**Source**: `.shipkit/architecture.md`
+**Source**: `.shipkit/architecture.json`
 
 **Converts to**: Visual timeline with cards for each decision, showing:
 - Decision date
@@ -389,7 +389,7 @@ Copy and track:
 ## Context Files This Skill Reads
 
 **Depends on visualization type** (see Step 2):
-- `.shipkit/architecture.md` - Architecture decisions
+- `.shipkit/architecture.json` - Architecture decisions
 - `.shipkit/implementations.md` - Components/routes
 - `.shipkit/stack.json` - Tech stack
 - `.shipkit/specs/active/*.md` - Specifications
@@ -457,7 +457,7 @@ User: "Visualize the architecture decisions"
 
 Claude:
 1. Ask confirmation (already clear)
-2. Read: .shipkit/architecture.md
+2. Read: .shipkit/architecture.json
 3. Check for latest.html (exists)
 4. Archive old: archive/20251228-1430-architecture-decisions.html
 5. Generate HTML with:

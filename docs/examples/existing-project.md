@@ -176,7 +176,7 @@ Capture decisions that were already made:
 ### Context Files
 ✅ stack.json - Tech stack documented
 ✅ why.md - Vision documented
-✅ architecture.md - 3 decisions logged
+✅ architecture.json - 3 decisions logged
 
 ### Missing
 ⚠️ No specs in specs/active/
@@ -322,9 +322,9 @@ your-project/
 ├── .shipkit/
 │   ├── why.md             # Vision
 │   ├── stack.json           # Tech stack
-│   ├── architecture.md    # Decisions
+│   ├── architecture.json  # Decisions
 │   ├── specs/active/      # Current work
-│   └── progress.md        # Session continuity
+│   └── progress.json      # Session continuity
 ├── src/
 ├── package.json
 └── README.md

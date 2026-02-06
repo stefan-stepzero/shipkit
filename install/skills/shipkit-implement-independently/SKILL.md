@@ -264,7 +264,7 @@ To cleanup: /shipkit-cleanup-worktrees
 
 - `.shipkit/specs/active/*.md` - Spec files (if provided)
 - `.shipkit/stack.json` - Project patterns (passed to agent)
-- `.shipkit/architecture.md` - Design decisions (passed to agent)
+- `.shipkit/architecture.json` - Design decisions (passed to agent)
 
 ---
 

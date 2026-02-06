@@ -39,7 +39,7 @@ agent: shipkit-product-owner-agent
 - Schema defined: `.shipkit/schema.md` (to understand data model)
 
 **Optional but helpful**:
-- Architecture decisions: `.shipkit/architecture.md`
+- Architecture decisions: `.shipkit/architecture.json`
 - Existing specs: `.shipkit/specs/active/*.md` (check for similar patterns)
 
 **If missing**: Ask user basic questions about tech stack and data instead
@@ -95,7 +95,7 @@ Read these files IN PARALLEL (single message, multiple tool calls):
 
 1. Read: .shipkit/stack.json         # Tech constraints
 2. Read: .shipkit/schema.md        # Data model
-3. Read: .shipkit/architecture.md  # Past decisions
+3. Read: .shipkit/architecture.json  # Past decisions
 4. Glob + Read: .shipkit/specs/active/*.md  # Similar specs
 ```
 
@@ -380,7 +380,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 
 - Stack: .shipkit/stack.json
 - Schema: .shipkit/schema.md
-- Architecture: .shipkit/architecture.md
+- Architecture: .shipkit/architecture.json
 ```
 
 ---
@@ -444,7 +444,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 **Recommended** (read if exist):
 - `.shipkit/stack.json` - Tech stack constraints
 - `.shipkit/schema.md` - Data model
-- `.shipkit/architecture.md` - Past decisions
+- `.shipkit/architecture.json` - Past decisions
 
 **Optional** (read if relevant):
 - `.shipkit/specs/active/*.md` - Check for similar specs
@@ -487,7 +487,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 2. shipkit-master tells Claude to read this SKILL.md
 3. Claude asks 2-3 clarifying questions
 4. Claude reads stack.json + schema.md (~500 tokens)
-5. Claude optionally reads architecture.md if relevant (~300 tokens)
+5. Claude optionally reads architecture.json if relevant (~300 tokens)
 6. Claude generates spec
 7. Total context loaded: ~1000-1500 tokens (focused)
 

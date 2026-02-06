@@ -38,7 +38,7 @@ agent: shipkit-researcher-agent
 - Code exists: Service integration code to review
 
 **Optional but helpful**:
-- Architecture decisions: `.shipkit/architecture.md`
+- Architecture decisions: `.shipkit/architecture.json`
 - Implementation docs: `.shipkit/implementations.md`
 
 ---
@@ -378,7 +378,7 @@ Read `references/[service]-patterns.md` and extract:
 
 **Optional:**
 - `.shipkit/.queues/fetch-integration-docs.md` - Queue of services needing docs
-- `.shipkit/architecture.md` - Architecture decisions affecting integration
+- `.shipkit/architecture.json` - Architecture decisions affecting integration
 - `references/[service]-patterns.md` - Cached integration patterns (if fresh)
 
 ---

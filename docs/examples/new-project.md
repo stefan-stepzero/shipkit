@@ -229,7 +229,7 @@ Before ending a session:
 /shipkit-work-memory
 ```
 
-**Creates/updates:** `.shipkit/progress.md`
+**Creates/updates:** `.shipkit/progress.json`
 
 ```markdown
 ## Session: 2026-02-03
@@ -259,8 +259,8 @@ recipeshare/
 ├── .shipkit/
 │   ├── why.md
 │   ├── stack.md
-│   ├── architecture.md
-│   ├── progress.md
+│   ├── architecture.json
+│   ├── progress.json
 │   ├── personas/
 │   │   └── home-cook.md
 │   ├── specs/active/

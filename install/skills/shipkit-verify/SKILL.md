@@ -189,7 +189,7 @@ Load relevant context for the review:
 |------|---------|
 | Changed files | The actual code to review |
 | `.shipkit/specs/active/*` | Check spec compliance |
-| `.shipkit/architecture.md` | Check pattern consistency |
+| `.shipkit/architecture.json` | Check pattern consistency |
 | `.shipkit/codebase-index.json` | Find related code |
 
 ### Step 3: Work Through Quality Dimensions
@@ -620,7 +620,7 @@ Passes: 3 (2 critical fixed, 1 clean re-verify)
 |------|---------|
 | Git diff | What changed |
 | `.shipkit/specs/active/*` | Check spec compliance |
-| `.shipkit/architecture.md` | Check pattern consistency |
+| `.shipkit/architecture.json` | Check pattern consistency |
 | `.shipkit/codebase-index.json` | Find related code |
 | Source files | The actual code |
 

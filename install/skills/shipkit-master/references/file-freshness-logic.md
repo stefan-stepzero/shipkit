@@ -9,7 +9,7 @@
 | File | Stale If | Compare Against | Rationale |
 |------|----------|-----------------|-----------|
 | `.shipkit/stack.json` | > 7 days old OR older than `package.json` | `package.json` mtime | Stack should reflect current dependencies |
-| `.shipkit/architecture.md` | > 14 days old OR major structural changes | `src/` directory mtime | Architecture evolves slower than code |
+| `.shipkit/architecture.json` | > 14 days old OR major structural changes | `src/` directory mtime | Architecture evolves slower than code |
 | `.shipkit/why.md` | > 30 days old | None (absolute) | Vision rarely changes |
 | `.shipkit/specs/*.md` | > 7 days AND feature not shipped | Git history | Specs shouldn't linger unimplemented |
 | `.shipkit/plans/*.md` | > 3 days AND plan not started | None (absolute) | Plans should be executed promptly |
@@ -36,7 +36,7 @@ def is_file_stale(file_path: str) -> tuple[bool, str]:
     if "stack.json" in file_path:
         threshold_days = 7
         compare_file = "package.json"
-    elif "architecture.md" in file_path:
+    elif "architecture.json" in file_path:
         threshold_days = 14
         compare_file = None
     elif "why.md" in file_path:
@@ -123,17 +123,17 @@ $days = $age.Days
 
 **Session Start**: Always check core context files
 - `.shipkit/stack.json`
-- `.shipkit/architecture.md`
+- `.shipkit/architecture.json`
 - `.shipkit/why.md`
 
 **Before Skill Execution**: Check skill-specific files
 - `/shipkit-spec` → Check existing specs in `.shipkit/specs/`
 - `/shipkit-plan` → Check existing plans in `.shipkit/plans/`
-- `/shipkit-architecture-memory` → Check `architecture.md`
+- `/shipkit-architecture-memory` → Check `architecture.json`
 
 **After Major Changes**: Prompt for updates
 - After `npm install` / `pip install` → Suggest stack.json update
-- After creating new directories → Suggest architecture.md update
+- After creating new directories → Suggest architecture.json update
 - After shipping feature → Suggest moving spec to `implemented/`
 
 ---
@@ -145,7 +145,7 @@ Session Start: shipkit-master loaded
 
 Context Freshness:
   ✓ stack.json (2 days)
-  ⚠ architecture.md (12 days - consider updating)
+  ⚠ architecture.json (12 days - consider updating)
   ✓ why.md (5 days)
 
 Active Work:
@@ -153,6 +153,6 @@ Active Work:
   ✗ plans/refactor-api.md (5 days - STALE, not started?)
 
 Suggestions:
-  → architecture.md is aging. Run /shipkit-project-context to refresh.
+  → architecture.json is aging. Run /shipkit-project-context to refresh.
   → plans/refactor-api.md may be abandoned. Archive or execute?
 ```

@@ -41,7 +41,7 @@ allowed-tools:
 
 **Optional but helpful**:
 - Existing patterns documented: `.shipkit/implementations.md`
-- Architecture decisions: `.shipkit/architecture.md`
+- Architecture decisions: `.shipkit/architecture.json`
 - Stack info: `.shipkit/stack.json`
 
 **No prerequisites required** - Can provide general guidance even for new projects.
@@ -100,7 +100,7 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 .shipkit/implementations.md
 
 # Architecture decisions about UX (if file exists)
-.shipkit/architecture.md
+.shipkit/architecture.json
 
 # Tech stack (to know UI framework constraints)
 .shipkit/stack.json
@@ -112,13 +112,13 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 |-------|----------------------|
 | "Similar pattern exists" | `Grep: pattern="[component type]" path="implementations.md"` returns matches |
 | "No existing pattern" | Grep returns 0 matches for component type AND related keywords |
-| "Established UX decision" | `Grep: pattern="[pattern name]" path="architecture.md"` returns match |
+| "Established UX decision" | `Grep: pattern="[pattern name]" path="architecture.json"` returns match |
 
 **Never claim** "no similar component" without actually grepping implementations.md.
 
 **Auto-detect**:
 - Similar components in implementations.md
-- Established UX patterns in architecture.md
+- Established UX patterns in architecture.json
 - UI framework from stack.json (React, Vue, Svelte, etc.)
 
 **Token budget**: Keep context reading under 1500 tokens.
@@ -158,7 +158,7 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 
 **[IF new pattern being established]**
 **New Pattern**: This establishes a new pattern for your project
-- Consider logging to architecture.md if this becomes standard
+- Consider logging to architecture.json if this becomes standard
 
 **Next Steps**:
 - [Specific action 1]
@@ -319,7 +319,7 @@ Copy and track:
 
 **Optionally reads**:
 - `.shipkit/implementations.md` - Existing UI components/patterns
-- `.shipkit/architecture.md` - Past UX decisions
+- `.shipkit/architecture.json` - Past UX decisions
 - `.shipkit/stack.json` - UI framework info
 
 **Never reads**:
@@ -361,7 +361,7 @@ Copy and track:
 ```
 
 **Also suggests writing to**:
-- `.shipkit/architecture.md` (via `/shipkit-architecture-memory`) - If UX decision becomes architectural pattern
+- `.shipkit/architecture.json` (via `/shipkit-architecture-memory`) - If UX decision becomes architectural pattern
 
 ---
 
@@ -372,7 +372,7 @@ Copy and track:
 1. User invokes `/shipkit-ux-audit`
 2. Claude asks what component user is building
 3. Claude optionally reads implementations.md (if exists) to check for similar patterns
-4. Claude optionally reads architecture.md (if exists) for established UX decisions
+4. Claude optionally reads architecture.json (if exists) for established UX decisions
 5. Claude provides terminal guidance
 6. Claude appends UX decision to `.shipkit/ux-decisions.md` (APPEND mode)
 7. Total context: ~500-1500 tokens (focused)
@@ -413,7 +413,7 @@ Guidance is complete when:
 ## Common Scenarios
 
 - **Reusing existing patterns** - Check implementations.md first, reference existing components
-- **Creating new patterns** - Provide guidance, suggest logging to architecture.md
+- **Creating new patterns** - Provide guidance, suggest logging to architecture.json
 - **Accessibility-focused requests** - Apply persona adaptations (see below)
 - **Reviewing existing UI** - Audit against pattern checklists above
 
