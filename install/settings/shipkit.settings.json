@@ -128,7 +128,8 @@
       "Skill(shipkit-cleanup-worktrees)",
       "Skill(shipkit-thinking-partner)",
       "Skill(shipkit-scale-ready)",
-      "Skill(shipkit-prompt-audit)"
+      "Skill(shipkit-prompt-audit)",
+      "Skill(shipkit-mission-control)"
     ],
 
     "deny": [
@@ -160,6 +161,26 @@
           {
             "type": "command",
             "command": "python -X utf8 .claude/hooks/shipkit-track-skill-usage.py"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 .claude/hooks/mission-control-reporter.py",
+            "async": true,
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 .claude/hooks/mission-control-receiver.py"
           }
         ]
       }

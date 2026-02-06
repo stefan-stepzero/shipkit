@@ -247,9 +247,9 @@ Location: `install/skills/`
 
 **Ecosystem:** `shipkit-get-skills`, `shipkit-get-mcps`
 
-**System:** `shipkit-detect` (auto-triggered), `shipkit-update`
+**System:** `shipkit-detect` (auto-triggered), `shipkit-update`, `shipkit-mission-control`
 
-**Total:** 34 skills
+**Total:** 35 skills
 
 ### Agents
 Location: `install/agents/`
