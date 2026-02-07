@@ -306,22 +306,24 @@ If count = 0: undocumented feature flag
 When reporting findings, use this format:
 
 ```markdown
-**[Dimension]: [Issue Title]** [STATE_CLASSIFICATION]
+**[Dimension]: [Issue Title]** [STATE_CLASSIFICATION] — `L:[High|Medium|Low] · I:[High|Medium|Low] · E:[High|Medium|Low]`
 - Evidence: `[Tool]("[pattern/path]")` → [result summary]
 - Evidence: `[Tool]("[pattern/path]")` → [result summary]
 - File: `path/to/file.ts:line`
 - Classification: [STATE] (brief explanation)
-- Impact: [What happens if not fixed]
+- Why: [What happens if not fixed — phrased as consequence]
 ```
+
+**L-I-E key:** Likelihood (will it happen?) · Impact (how bad?) · Effort (how hard to fix?)
 
 **Example:**
 ```markdown
-**Structural: Orphan component** [CREATED_UNUSED]
+**Structural: Orphan component** [CREATED_UNUSED] — `L:Medium · I:Low · E:Low`
 - Evidence: `Glob("**/PaymentForm.tsx")` → found at src/components/PaymentForm.tsx
 - Evidence: `Grep("PaymentForm" in "**/*.tsx")` → 1 match (definition only, line 1)
 - File: `src/components/PaymentForm.tsx`
 - Classification: CREATED_UNUSED (component exists but never rendered)
-- Impact: Dead code, likely incomplete payment feature
+- Why: Dead code ships to production, likely incomplete payment feature
 ```
 
 ---
@@ -595,7 +597,7 @@ Glob: pattern="**/+(shared|common|lib)/+(utils|hooks|helpers)/**"
 ### Evidence Citation for Duplication
 
 ```markdown
-**Maintainability: Component Duplication** [DUPLICATE_NOT_USING_SHARED]
+**Maintainability: Component Duplication** [DUPLICATE_NOT_USING_SHARED] — `L:Medium · I:Medium · E:Low`
 - Evidence: `Glob("**/Button.tsx")` → found 3 files:
   - src/components/ui/Button.tsx (SHARED)
   - src/features/auth/components/Button.tsx
@@ -603,7 +605,7 @@ Glob: pattern="**/+(shared|common|lib)/+(utils|hooks|helpers)/**"
 - Evidence: `Grep("from.*components/ui/Button" in "features/auth")` → 0 matches
 - File: `src/features/auth/components/Button.tsx`
 - Classification: DUPLICATE_NOT_USING_SHARED (shared Button exists, feature has local copy)
-- Impact: Inconsistent UI, maintenance burden, harder to update styles globally
+- Why: Inconsistent UI, maintenance burden, harder to update styles globally
 - Fix: Delete local copy, import from shared: `import { Button } from '@/components/ui/Button'`
 ```
 

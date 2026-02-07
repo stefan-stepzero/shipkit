@@ -59,11 +59,13 @@ Present a summary to the user:
 
 Found findings across these themes:
 
-1. 🔴 Missing auth checks on 2 API routes
-2. 🔴 Broken import in Dashboard.tsx
-3. 🟡 Magic numbers in config (3 instances)
-4. 🟡 Missing loading states on admin pages
-5. 🟢 console.logs left in (4 files)
+| # | Finding | L · I · E |
+|---|---------|-----------|
+| 1 | 🔴 Missing auth checks on 2 API routes | L:High · I:High · E:Low |
+| 2 | 🔴 Broken import in Dashboard.tsx | L:High · I:High · E:Low |
+| 3 | 🟡 Magic numbers in config (3 instances) | L:Low · I:Low · E:Low |
+| 4 | 🟡 Missing loading states on admin pages | L:Medium · I:Medium · E:Medium |
+| 5 | 🟢 console.logs left in (4 files) | L:Low · I:Low · E:Low |
 
 **Any themes to dismiss?** I'll skip dismissed themes during the fix-and-verify loop.
 (Reply "none" to proceed with all, or list numbers to dismiss)
@@ -488,24 +490,24 @@ Acceptance criteria check:
 
 ### Updated Output Format
 
-Each finding MUST include evidence:
+Each finding MUST include evidence and an L-I-E assessment:
 
 ```
 ### 🔴 Critical (fix before commit)
 
-**Structural: Orphan component** [CREATED_UNUSED]
+**Structural: Orphan component** [CREATED_UNUSED] — `L:Medium · I:Low · E:Low`
 - Evidence: `Glob("**/UserCard.tsx")` → found at src/components/UserCard.tsx
 - Evidence: `Grep("UserCard" in "**/*.{ts,tsx}")` → 1 match (definition only)
 - File: `src/components/UserCard.tsx`
 - Classification: CREATED_UNUSED (exported but never imported)
-- Impact: Dead code, likely incomplete feature
+- Why: Dead code ships to production, likely incomplete feature
 
-**Structural: Broken import** [BROKEN_IMPORT]
+**Structural: Broken import** [BROKEN_IMPORT] — `L:High · I:High · E:Low`
 - Evidence: `Read("src/pages/Dashboard.tsx")` line 5: `import { AuthCard } from './AuthCard'`
 - Evidence: `Glob("**/AuthCard.*")` → 0 matches
 - File: `src/pages/Dashboard.tsx:5`
 - Classification: BROKEN_IMPORT (import target doesn't exist)
-- Impact: Will cause runtime error
+- Why: Will crash at build or runtime on any page that loads Dashboard
 ```
 
 ### Anti-Patterns (What NOT to Do)
@@ -583,12 +585,18 @@ Passes: 3 (2 critical fixed, 1 clean re-verify)
 
 ### 🟡 Remaining — Should Fix
 
-**UX: Missing loading state**
+| Finding | L · I · E |
+|---------|-----------|
+| **UX: Missing loading state** | L:Medium · I:Medium · E:Low |
+
 - `src/components/LoginForm.tsx` — no loading indicator during submit
 
 ### 🟢 Remaining — Minor / Consider
 
-**Maintainability: Magic string**
+| Finding | L · I · E |
+|---------|-----------|
+| **Maintainability: Magic string** | L:Low · I:Low · E:Low |
+
 - `src/api/auth/login.ts:12` — hardcoded "7d" for token expiry
 - Consider: `const TOKEN_EXPIRY = "7d"`
 
@@ -611,6 +619,23 @@ Passes: 3 (2 critical fixed, 1 clean re-verify)
 | 🔴 Critical | Will cause bugs, security issues, or crashes | Fix before commit |
 | 🟡 Should Fix | Quality issues, tech debt, incomplete work | Fix soon |
 | 🟢 Minor | Suggestions, nice-to-haves, style | Consider |
+
+### L-I-E Assessment (Likelihood · Impact · Effort)
+
+Every finding MUST include a compact **L-I-E** rating to help the user prioritize.
+
+| Dimension | High | Medium | Low |
+|-----------|------|--------|-----|
+| **Likelihood** | Will hit in normal usage | May hit under certain conditions | Edge case, unlikely path |
+| **Impact** | Crash, data loss, security breach, broken core flow | Degraded experience, incorrect non-critical behavior | Cosmetic, minor inconvenience, tech debt |
+| **Effort** | 30+ min, multi-file or architectural change | 5–30 min, new function or section refactor | < 5 min, one-liner or config tweak |
+
+**Notation:** Use inline format — `L:High · I:High · E:Low`
+
+**Priority should follow from L-I-E:**
+- 🔴 Critical = High likelihood OR high impact (regardless of effort)
+- 🟡 Should Fix = Medium likelihood + medium impact, or high effort prevents auto-fix
+- 🟢 Minor = Low likelihood AND low impact
 
 ---
 
