@@ -188,7 +188,8 @@ def main():
             max_iterations=max_iterations,
             task=task,
             completion_promise=completion_promise,
-            state_filename=state_file.name
+            state_filename=state_file.name,
+            session_id=session_id
         )
     else:
         reason = build_relentless_reason(
@@ -307,27 +308,51 @@ Do not give up. Keep working until the completion promise is satisfied or you've
 
 def build_standby_reason(iteration: int, max_iterations: int,
                          task: str, completion_promise: str,
-                         state_filename: str) -> str:
-    """Build the reason message for standby daemon mode."""
+                         state_filename: str, session_id: str = "unknown") -> str:
+    """Build the reason message for standby daemon mode with active inbox polling."""
+
+    # Compute the inbox path using forward slashes for cross-platform compat
+    inbox_path = (Path.home() / ".shipkit-mission-control" / ".shipkit" / "mission-control" / "inbox" / session_id).as_posix()
 
     return f"""**Standby Mode - Iteration {iteration}/{max_iterations}**
 
-You are in standby mode, polling for Mission Control commands.
+You are in standby mode. **Actively poll** the inbox for Mission Control commands.
 
-**Your Task:**
-{task}
+**Inbox path:** `{inbox_path}/`
 
-**Instructions:**
-1. If a command was injected via additionalContext on the previous tool call, execute it fully
-2. After completing a command, rename the `.inflight` file to `.processed`
-3. After completing a command, edit `.shipkit/{state_filename}` to set `idle_count: 0`
-4. If no command was received, edit `.shipkit/{state_filename}` to increment `idle_count` by 1
-5. Read `idle_count` from the state file and calculate sleep: min(10 * 2^idle_count, 300) seconds
-6. Run `sleep N` via Bash — no other output during idle polls
-7. If a command contains "shutdown" or "exit standby", delete `.shipkit/{state_filename}` and stop
+**Instructions — do these IN ORDER every iteration:**
 
-Note: You manage `idle_count` yourself. The hook only manages `iteration`.
-Minimize output during idle polls. Produce full output only when executing commands."""
+1. **Check for stale `.inflight` files first** (recover from previous failed pickup):
+   - Glob `{inbox_path}/*.inflight`
+   - If found, read the oldest `.inflight` file, execute its `prompt`, then rename `.inflight` → `.processed`
+   - After executing, edit `.shipkit/{state_filename}` to set `idle_count: 0`
+   - Then try to stop (loop continues via hook)
+
+2. **Check for pending `.json` commands:**
+   - Glob `{inbox_path}/*.json`
+   - If found, take the oldest `.json` file:
+     a. Rename it from `.json` → `.inflight` (claim it)
+     b. Read the `.inflight` file (JSON with a `prompt` field)
+     c. Execute the `prompt` fully
+     d. Rename `.inflight` → `.processed` (mark done)
+     e. Edit `.shipkit/{state_filename}` to set `idle_count: 0`
+     f. Then try to stop (loop continues via hook)
+
+3. **If no commands found (idle cycle):**
+   - Read `.shipkit/{state_filename}` to get current `idle_count`
+   - Increment `idle_count` by 1 in the state file
+   - Calculate sleep: `min(10 * 2^idle_count, 300)` seconds
+   - Run `sleep N` via Bash — **no other output during idle polls**
+   - Then try to stop (hook blocks → next iteration)
+
+4. **Shutdown:** If a command prompt contains "shutdown", "exit standby", or "stop standby":
+   - Delete `.shipkit/{state_filename}` and stop
+
+**Rules:**
+- You manage `idle_count` yourself. The hook only manages `iteration`.
+- Minimize output during idle polls. Full output only when executing commands.
+- If the inbox directory doesn't exist, treat as "no commands" (idle cycle).
+- Use Bash `mv` with POSIX paths (forward slashes) for all renames."""
 
 
 def build_loop_reason(skill: str, iteration: int, max_iterations: int,

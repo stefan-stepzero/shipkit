@@ -120,6 +120,15 @@ def main():
         hook_input = {}
 
     session_id = hook_input.get("session_id", "unknown")
+    sid8 = session_id[:8] if session_id != "unknown" else "unknown"
+
+    # Standby bypass: when standby is active, it polls the inbox directly.
+    # The hook must NOT claim commands or they'll get stuck as .inflight.
+    project_dir = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
+    standby_state = Path(project_dir) / ".shipkit" / f"standby-state.{sid8}.local.md"
+    if standby_state.exists():
+        print(json.dumps({}))
+        return
 
     # Try queue directory first (new format)
     session_dir = INBOX_DIR / session_id

@@ -102,7 +102,7 @@ Add `-y` for non-interactive mode (uses sensible defaults).
 **Already have Shipkit?** Update with `/shipkit-update`
 
 The installer will:
-- Install all 35 skills
+- Install all 37 skills
 - Set up 9 agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace

@@ -54,8 +54,8 @@ Turns this Claude Code instance into an AFK daemon. Polls Mission Control for co
 ## Prerequisites
 
 - Mission Control server running (`/shipkit-mission-control start`)
-- Receiver hook configured (PreToolUse — `mission-control-receiver.py`)
 - Stop hook configured (Stop — `shipkit-relentless-stop-hook.py`)
+- Receiver hook bypass is automatic (no special config needed — when standby is active, the receiver hook defers to standby's direct polling)
 
 ---
 
@@ -81,36 +81,44 @@ Use this 8-character ID in all state file names below. If not found in session c
 ## How It Works
 
 1. **You create a state file** with standby configuration
-2. **You check the inbox** for pending commands
-3. **If command found:** Execute it, mark `.inflight` → `.processed`, reset backoff
-4. **If no command:** Increment `idle_count`, sleep for backoff duration, try to stop
-5. **Stop hook blocks** → you loop back to step 2
+2. **Each iteration, the stop hook tells you the exact inbox path** to poll
+3. **You actively Glob the inbox** for `.inflight` (stale recovery) and `.json` (new commands)
+4. **If command found:** Claim `.json` → `.inflight`, read & execute, mark `.inflight` → `.processed`, reset backoff
+5. **If no command:** Increment `idle_count`, sleep for backoff duration, try to stop
+6. **Stop hook blocks** → you loop back to step 3
+
+**Key design:** Standby polls the inbox directly each iteration (active polling). The receiver hook is bypassed when standby is active to prevent race conditions.
 
 ---
 
 ## CRITICAL: Loop Mechanism
 
+### Active Cycle (Command Found)
+
+Each iteration, the stop hook provides the exact inbox path. Follow this sequence:
+
+1. **Recover stale `.inflight` first:** Glob `{inbox_path}/*.inflight` — if found, read and execute the oldest, then rename `.inflight` → `.processed`
+2. **Check for new commands:** Glob `{inbox_path}/*.json` — if found, take the oldest:
+   a. Rename `.json` → `.inflight` (claim it) via Bash `mv`
+   b. Read the `.inflight` file (JSON with a `prompt` field)
+   c. Acknowledge briefly: "Received: [summary]"
+   d. Execute the `prompt` fully (normal output here)
+   e. Rename `.inflight` → `.processed` via Bash `mv`
+3. Reset `idle_count: 0` in state file
+4. Try to stop → Stop hook blocks → back to fast polling
+
 ### Idle Cycle (No Command)
 
-1. Read state file to get current `idle_count`
-2. No command was injected by the receiver hook — nothing to do
+1. Glob returns no `.inflight` or `.json` files (or inbox directory doesn't exist)
+2. Read state file to get current `idle_count`
 3. Increment `idle_count` in state file
 4. Calculate sleep: `min(10 * 2^idle_count, 300)` seconds
 5. Run `sleep N` via Bash — **this is your only output, no commentary**
 6. Try to stop → Stop hook blocks → next iteration
 
-### Active Cycle (Command Received)
-
-1. Receiver hook injected a command via `additionalContext` — you'll see it with a filepath
-2. Acknowledge briefly: "Received: [summary of command]"
-3. Execute the command fully (normal output here)
-4. Rename the `.inflight` file to `.processed` via Bash
-5. Reset `idle_count: 0` in state file
-6. Try to stop → Stop hook blocks → back to fast polling
-
 ### Shutdown
 
-If a command contains "shutdown", "exit standby", or "stop standby":
+If a command prompt contains "shutdown", "exit standby", or "stop standby":
 1. Delete `.shipkit/standby-state.{sid8}.local.md`
 2. Stop — the hook will allow it since the state file is gone
 
@@ -133,23 +141,27 @@ After processing a command, `idle_count` resets to 0 (fast polling resumes).
 
 ## Command Lifecycle
 
-Commands arrive as files in the inbox queue:
+Commands arrive as files in the inbox queue. **Standby handles the entire lifecycle.**
 
 ```
-~/.shipkit-mission-control/.shipkit/mission-control/inbox/{sessionId}/
+~/.shipkit-mission-control/.shipkit/mission-control/inbox/{full-session-id}/
   1738899990000.processed   ← you finished, marked done (oldest)
-  1738900000000.inflight    ← receiver hook claimed, you're working on it
+  1738900000000.inflight    ← you claimed it, now execute & mark processed
   1738900010000.json        ← pending (newest, server wrote)
 ```
 
 **States:** `.json` → `.inflight` → `.processed`
 
-The receiver hook handles `.json` → `.inflight`. **You** handle `.inflight` → `.processed`.
+**You** handle the entire lifecycle: `.json` → `.inflight` (claim) → `.processed` (done).
+The receiver hook is bypassed when standby is active.
 
-The `.inflight` filepath is included in the `additionalContext` injection. Use it to rename when done:
+**Important:** The inbox uses the **full session UUID** (not sid8). The stop hook provides the exact path each iteration — use it directly.
 
 ```bash
-mv /path/to/1738900000000.inflight /path/to/1738900000000.processed
+# Claim a command
+mv "{inbox_path}/1738900010000.json" "{inbox_path}/1738900010000.inflight"
+# After execution, mark done
+mv "{inbox_path}/1738900000000.inflight" "{inbox_path}/1738900000000.processed"
 ```
 
 ---
@@ -173,11 +185,11 @@ idle_count: 0
 enabled: true
 completion_promise: "Operator sent shutdown command or standby mode deactivated"
 ---
-You are in standby mode. Await Mission Control commands.
-If a command was injected via additionalContext, execute it and mark the .inflight file as .processed.
-If no command, increment idle_count, sleep for backoff duration, and stop.
+You are in standby mode. Actively poll the inbox for Mission Control commands.
+Each iteration, the stop hook provides the inbox path — Glob it for .json and .inflight files.
+If a command is found: claim .json→.inflight, read & execute, mark .inflight→.processed, reset idle_count to 0.
+If no command: increment idle_count, sleep for backoff duration, and stop.
 Minimize output during idle polls. No reasoning, no commentary — just sleep.
-After completing a command, reset idle_count to 0 in this file.
 ```
 
 **Verify the state file was created before proceeding.**
@@ -195,9 +207,14 @@ To exit: send "shutdown" from dashboard, or delete .shipkit/standby-state.{sid8}
 
 ### Step 3: Begin Polling
 
-1. Check if a command was injected via `additionalContext`
-2. **If yes:** Process it (active cycle above)
-3. **If no:** Read `idle_count` from state file, increment it, sleep, stop
+The stop hook provides the exact inbox path each iteration. Follow its instructions:
+
+1. **Glob for `.inflight` files** (stale recovery) — if found, execute & mark `.processed`
+2. **Glob for `.json` files** (new commands) — if found, claim → execute → mark `.processed`
+3. **If neither found** — idle cycle: increment `idle_count`, sleep, stop
+
+The stop hook's `reason` message contains the full inbox path and step-by-step instructions.
+Follow them exactly each iteration.
 
 **Idle output format (entire response):**
 ```
@@ -208,7 +225,7 @@ That's it. One Bash call. No other text.
 
 ### Step 4: After Processing a Command
 
-1. Rename `.inflight` → `.processed`
+1. Rename `.inflight` → `.processed` (the stop hook instructions include this)
 2. Write `idle_count: 0` in state file
 3. Brief summary: "Completed: [what was done]"
 4. Try to stop → loop continues
@@ -230,8 +247,10 @@ That's it. One Bash call. No other text.
 
 **Requires:**
 - Mission Control server running (`/shipkit-mission-control start`)
-- Receiver hook configured (PreToolUse)
-- Stop hook configured (Stop)
+- Stop hook configured (Stop — provides inbox path and polling instructions each iteration)
+
+**Automatic:**
+- Receiver hook bypass: when standby state file exists, the receiver hook returns empty (no race condition)
 
 **Works with:**
 - Any command sent from Mission Control dashboard

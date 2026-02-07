@@ -1015,6 +1015,14 @@ def install_mission_control(repo_root, target_dir):
     (mc_local / "inbox").mkdir(parents=True, exist_ok=True)
     print_success("Mission Control local directories created")
 
+    # Copy MC start script to project scripts
+    mc_start_src = mc_src / "start.py"
+    if mc_start_src.exists():
+        scripts_dest = target_dir / ".shipkit" / "scripts"
+        scripts_dest.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(mc_start_src, scripts_dest / "mission-control.py")
+        print_success("Mission Control start script copied to .shipkit/scripts/mission-control.py")
+
 def delete_unused_language(target_dir, language):
     """Delete scripts for the language not selected"""
     print()

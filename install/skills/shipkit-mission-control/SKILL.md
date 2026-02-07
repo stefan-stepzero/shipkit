@@ -7,7 +7,7 @@ description: Launch Mission Control dashboard to monitor and command multiple Cl
 
 **Purpose**: Monitor all active Claude Code instances from one dashboard, inject prompts remotely.
 
-**What it does**: Starts the Mission Control server (if not running), opens the web dashboard, and manages the monitoring infrastructure.
+**What it does**: Checks the Mission Control server status, shows the dashboard URL, and analyzes codebases for recommendations.
 
 ---
 
@@ -18,6 +18,7 @@ description: Launch Mission Control dashboard to monitor and command multiple Cl
 - "Monitor my Claude instances"
 - "Start the dashboard"
 - "I want to see all my sessions"
+- "Check mission control status"
 
 **Use cases**:
 - Running multiple Claude Code instances across different projects
@@ -29,120 +30,25 @@ description: Launch Mission Control dashboard to monitor and command multiple Cl
 ## Prerequisites
 
 - Node.js installed (for server)
-- Multiple Claude Code instances running (to have something to monitor)
+- Mission Control server running in a separate terminal
 
 ---
 
 ## Process
 
-### Step 1: Check/Create Hub Directory
+### Step 1: Check Server Status
 
-The Mission Control hub lives at `~/.shipkit-mission-control/`. Check if it exists:
-
-**Windows:** `%USERPROFILE%\.shipkit-mission-control\`
-**macOS/Linux:** `~/.shipkit-mission-control/`
-
-If the hub doesn't exist, create the full structure:
-
-```
-~/.shipkit-mission-control/
-├── server/
-│   ├── index.js          # Node.js API server
-│   └── package.json      # Server metadata
-├── dashboard/
-│   ├── dist/             # Built React app (served by server)
-│   │   ├── index.html
-│   │   └── assets/       # JS, CSS bundles
-│   ├── src/              # React source (for development)
-│   ├── package.json      # Dashboard dependencies
-│   └── vite.config.ts    # Vite configuration
-├── .shipkit/
-│   └── mission-control/
-│       ├── codebases/    # Per-codebase analytics
-│       ├── inbox/        # Command queue
-│       └── config.json   # Server configuration
-└── README.md
-```
-
-**Create directories:**
-```bash
-mkdir -p ~/.shipkit-mission-control/server
-mkdir -p ~/.shipkit-mission-control/dashboard/dist
-mkdir -p ~/.shipkit-mission-control/.shipkit/mission-control/codebases
-mkdir -p ~/.shipkit-mission-control/.shipkit/mission-control/inbox
-```
-
-### Step 2: Ensure Server Files Are Current
-
-The server is versioned via `SERVER_VERSION` in `index.js`. Compare source vs hub to decide whether to copy.
-
-1. **Read source version:** Extract the `SERVER_VERSION` value from `install/mission-control/server/index.js` in the Shipkit repo.
-
-2. **If hub doesn't exist** (`~/.shipkit-mission-control/server/index.js` missing):
-   - Copy everything fresh (current behavior):
-     - `install/mission-control/server/` → `~/.shipkit-mission-control/server/`
-     - `install/mission-control/dashboard/dist/` → `~/.shipkit-mission-control/dashboard/dist/`
-
-3. **If hub exists**, check the installed version:
-   - Try `GET http://localhost:7777/health` — if server is running, read `version` from response JSON.
-   - If server is not running, read `~/.shipkit-mission-control/server/index.js` directly and extract `SERVER_VERSION`.
-   - **If source version > hub version:**
-     - Stop the server if it's running (kill process on port 7777).
-     - Copy fresh files from `install/mission-control/server/` and `install/mission-control/dashboard/dist/` to the hub, overwriting.
-     - Log: `Mission Control hub updated: {old} → {new}`
-   - **If versions match:** Skip copy, proceed to next step.
-
-The dashboard is a React + Vite app. The pre-built `dist/` folder is included in Shipkit. For development:
-```bash
-cd ~/.shipkit-mission-control/dashboard && npm install && npm run dev
-```
-This starts a Vite dev server on port 5173 with API proxy to port 7777.
-
-### Step 3: Create Config (if missing)
-
-If `~/.shipkit-mission-control/.shipkit/mission-control/config.json` doesn't exist, create it:
-
-```json
-{
-  "port": 7777,
-  "host": "127.0.0.1",
-  "createdAt": "<current timestamp>",
-  "version": "1.0.0"
-}
-```
-
-### Step 4: Check Server Status
-
-Check if Mission Control server is already running:
+Check if Mission Control server is running:
 
 ```bash
 curl -s http://localhost:7777/health
 ```
 
-If response includes `"status":"ok"`, server is running. Skip to Step 6.
+### Step 2: Report Status
 
-### Step 5: Start Server
+**If server IS running** (response includes `"status":"ok"`):
 
-Start the Mission Control server as a background process from the hub:
-
-**Windows:**
-```bash
-cd %USERPROFILE%\.shipkit-mission-control && start /B node server\index.js
-```
-
-**macOS/Linux:**
-```bash
-cd ~/.shipkit-mission-control && nohup node server/index.js > server.log 2>&1 &
-```
-
-Wait 2 seconds for server to initialize, then verify:
-```bash
-curl -s http://localhost:7777/health
-```
-
-### Step 6: Get Network Address
-
-Get the local network IP so user can access from mobile:
+Get the local network IP:
 
 **Windows:**
 ```bash
@@ -154,30 +60,73 @@ ipconfig | findstr /i "IPv4"
 hostname -I | awk '{print $1}'
 ```
 
-### Step 7: Report Status
+Tell user:
+```
+Mission Control is running
+
+Dashboard URLs:
+   Local:   http://localhost:7777
+   Network: http://<local-ip>:7777
+
+Status:
+   Hub: ~/.shipkit-mission-control/
+   Connected instances: <count from health response>
+   Version: <version from health response>
+
+Tips:
+   Stop server: /shipkit-mission-control stop
+   Open dashboard: /shipkit-mission-control open
+   Analyze codebases: /shipkit-mission-control analyze
+```
+
+**If server is NOT running:**
 
 Tell user:
 ```
-✅ Mission Control is running
+Mission Control is not running.
 
-📍 Dashboard URLs:
-   Local:   http://localhost:7777
-   Network: http://<local-ip>:7777  ← Use this on mobile
+To start it, open a separate terminal and run:
+   python .shipkit/scripts/mission-control.py
 
-📊 Status:
-   Hub: ~/.shipkit-mission-control/
-   Connected instances: <count>
-
-💡 Tips:
-   • Other Claude instances will auto-report when active
-   • Access from phone: http://<local-ip>:7777
-   • Stop server: /mission-control stop
-   • Update recommendations: /mission-control analyze
+Then come back here and run /shipkit-mission-control again to see the status.
 ```
 
-### Step 8: Open Dashboard (optional)
+---
 
-If user wants, open browser:
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| (none) | Check server status and show dashboard URL |
+| `start` | Same as (none) but remind user to start in a separate terminal |
+| `stop` | Stop the running server |
+| `status` | Check server status without starting |
+| `open` | Open dashboard in browser |
+| `analyze` | Analyze all codebases and update recommendations |
+
+---
+
+## Stop Command
+
+To stop the Mission Control server:
+
+**Find and kill process on port 7777:**
+
+**Windows:**
+```bash
+for /f "tokens=5" %a in ('netstat -aon ^| find ":7777"') do taskkill /F /PID %a
+```
+
+**macOS/Linux:**
+```bash
+lsof -ti:7777 | xargs kill -9
+```
+
+---
+
+## Open Command
+
+Open the dashboard in the default browser:
 
 **Windows:**
 ```bash
@@ -196,22 +145,9 @@ xdg-open http://localhost:7777
 
 ---
 
-## Arguments
-
-| Argument | Description |
-|----------|-------------|
-| (none) | Start server and show status |
-| `start` | Start server and open dashboard |
-| `stop` | Stop the running server |
-| `status` | Check server status without starting |
-| `open` | Open dashboard in browser (start server if needed) |
-| `analyze` | Analyze all codebases and update recommendations |
-
----
-
 ## Analyze Command
 
-When running `/mission-control analyze`, the controller instance:
+When running `/shipkit-mission-control analyze`, the controller instance:
 
 ### Step 1: Fetch Current Data
 
@@ -276,45 +212,27 @@ Tell the user:
 ## Example Analysis Output
 
 ```
-📊 Mission Control Analysis Complete
+Mission Control Analysis Complete
 
 Analyzed 3 codebases:
 
-📁 sg-shipkit (P:/Projects/sg-shipkit)
+sg-shipkit (P:/Projects/sg-shipkit)
    Phase: Active Development
    Recommendations:
-   • [HIGH] /shipkit-verify - No quality check in 5 days
-   • [MED] /shipkit-work-memory - Log recent progress
+   [HIGH] /shipkit-verify - No quality check in 5 days
+   [MED] /shipkit-work-memory - Log recent progress
 
-📁 client-app (P:/Projects/client-app)
+client-app (P:/Projects/client-app)
    Phase: Planning
    Recommendations:
-   • [HIGH] /shipkit-plan - Spec exists, ready for planning
-   • [LOW] /shipkit-architecture-memory - Log tech decisions
+   [HIGH] /shipkit-plan - Spec exists, ready for planning
+   [LOW] /shipkit-architecture-memory - Log tech decisions
 
-📁 api-server (P:/Projects/api-server)
+api-server (P:/Projects/api-server)
    Phase: Discovery
    Recommendations:
-   • [HIGH] /shipkit-project-context - No context scan yet
-   • [MED] /shipkit-spec - Define first feature
-```
-
----
-
-## Stop Command
-
-To stop the Mission Control server:
-
-**Find and kill process on port 7777:**
-
-**Windows:**
-```bash
-for /f "tokens=5" %a in ('netstat -aon ^| find ":7777"') do taskkill /F /PID %a
-```
-
-**macOS/Linux:**
-```bash
-lsof -ti:7777 | xargs kill -9
+   [HIGH] /shipkit-project-context - No context scan yet
+   [MED] /shipkit-spec - Define first feature
 ```
 
 ---
@@ -322,21 +240,18 @@ lsof -ti:7777 | xargs kill -9
 ## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  MISSION CONTROL SERVER (http://localhost:7777)             │
-│  ├── /              - Dashboard UI                          │
-│  ├── /health        - Liveness check                        │
-│  ├── /api/instances - List connected instances              │
-│  ├── /api/events    - Receive events from hooks             │
-│  └── /api/command   - Queue command for instance            │
-└─────────────────────────────────────────────────────────────┘
-        ▲ HTTP POST (events)           │ File write (commands)
-        │                              ▼
-┌───────┴──────────────────────────────┴──────────────────────┐
-│  Each Claude Code Instance                                   │
-│  ├── Reporter Hook (PostToolUse) → sends events to server   │
-│  └── Receiver Hook (PreToolUse)  → checks for commands      │
-└──────────────────────────────────────────────────────────────┘
+                    MISSION CONTROL SERVER (http://localhost:7777)
+                    --- /              - Dashboard UI
+                    --- /health        - Liveness check
+                    --- /api/instances - List connected instances
+                    --- /api/events    - Receive events from hooks
+                    --- /api/command   - Queue command for instance
+
+        HTTP POST (events)           File write (commands)
+
+  Each Claude Code Instance
+  --- Reporter Hook (PostToolUse) -> sends events to server
+  --- Receiver Hook (PreToolUse)  -> checks for commands
 ```
 
 ---
@@ -348,12 +263,12 @@ lsof -ti:7777 | xargs kill -9
 - File-based command injection (simple, reliable)
 - React + Vite dashboard with graph visualization (React Flow)
 - Artifact viewer with interactive architecture diagrams, ER diagrams, journey maps
-- Auto-start on first use
+- User-visible foreground server process (Ctrl+C to stop)
 
 **Not included**:
-- Authentication (local use only)
+- Authentication (local network use only)
 - Multi-user support
-- Remote access (localhost only, but network IP shown for mobile access)
+- Remote access beyond LAN (binds to 0.0.0.0 for local network access from mobile devices)
 
 **Philosophy**: Simple monitoring for local development. Not a production ops tool.
 
@@ -384,8 +299,7 @@ lsof -ti:7777 | xargs kill -9
 | `~/.shipkit-mission-control/server/index.js` | Node.js API server |
 | `~/.shipkit-mission-control/server/package.json` | Server metadata |
 | `~/.shipkit-mission-control/dashboard/dist/` | Built React dashboard |
-| `~/.shipkit-mission-control/dashboard/src/` | React source code |
-| `~/.shipkit-mission-control/dashboard/package.json` | Dashboard dependencies |
+| `.shipkit/scripts/mission-control.py` | Startup script (run in separate terminal) |
 | Hooks: `shipkit-mission-control-reporter.py` | Event reporter hook |
 | Hooks: `shipkit-mission-control-receiver.py` | Command receiver hook |
 

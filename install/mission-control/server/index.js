@@ -1086,10 +1086,10 @@ function getEmbeddedDashboard() {
 </html>`;
 }
 
-// Start server - bind to localhost by default for security
-// Set MISSION_CONTROL_HOST=0.0.0.0 to allow network access
+// Start server - bind to all interfaces for LAN access
+// Set MISSION_CONTROL_HOST=127.0.0.1 to restrict to localhost only
 const server = http.createServer(handleRequest);
-const HOST = process.env.MISSION_CONTROL_HOST || '127.0.0.1';
+const HOST = process.env.MISSION_CONTROL_HOST || '0.0.0.0';
 
 server.listen(PORT, HOST, () => {
     const networkIP = getLocalIP();
