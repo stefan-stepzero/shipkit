@@ -5,7 +5,11 @@ description: "Use when there are manual tasks the user must complete. Triggers: 
 
 # shipkit-user-instructions - Task Tracking for Manual User Actions
 
-**Purpose**: Prevent manual tasks from being lost in chat by maintaining persistent markdown tracking files for tasks that require user action outside Claude's control.
+**Purpose**: Prevent manual tasks from being lost in chat by maintaining a persistent JSON tracking file for tasks that require user action outside Claude's control.
+
+**What it does**: Captures manual tasks the user must complete, tracks their status, and persists them in `.shipkit/user-tasks.json` — a structured JSON artifact readable by Claude, renderable by mission control, and the single source of truth for user action items.
+
+**Output format**: JSON — follows the Shipkit artifact convention for dashboard integration.
 
 ---
 
@@ -31,7 +35,6 @@ description: "Use when there are manual tasks the user must complete. Triggers: 
 
 **Optional**:
 - `.shipkit/` directory (will create if missing)
-- `.shipkit/user-tasks/` directory (will create if missing)
 
 **No hard prerequisites** - This skill can run anytime.
 
@@ -63,96 +66,72 @@ description: "Use when there are manual tasks the user must complete. Triggers: 
 
 ---
 
-### Step 2: Create Task Entry in active.md
+### Step 2: Add Task to user-tasks.json
 
-**Use Write tool to append to**: `.shipkit/user-tasks/active.md`
+**Use Write tool to create/update**: `.shipkit/user-tasks.json`
 
-**If file doesn't exist**, create it with header:
-```markdown
-# Active User Tasks
+**If file doesn't exist**, create it with the initial structure (see JSON Schema section below).
 
-Tasks that require manual action outside Claude Code's control.
+**If file exists**, read it, add the new task to the `tasks` array, recompute `summary`, and overwrite the file.
 
-**Status Legend**:
-- ⏳ Pending - Not started yet
-- 🚧 In Progress - User is working on it
-- ✅ Completed - Done (will be moved to completed.md)
-
----
-```
-
-**Then append task entry**:
-
-```markdown
-## [YYYY-MM-DD HH:MM] [Task Title]
-
-**Priority**: [🔴 High / 🟡 Medium / 🟢 Low]
-
-**Why needed**:
-[1-2 sentence explanation of why this task is necessary]
-
-**Steps**:
-1. [Specific action 1]
-2. [Specific action 2]
-3. [Specific action 3]
-
-**Verification**:
-- [ ] [How to verify task is complete]
-
-**Status**: ⏳ Pending
-
-**Related work**:
-- Feature: [feature name if applicable]
-- Skill: [which skill triggered this, e.g., /shipkit-integration-docs]
-
----
-```
+**New task entry fields**:
+- `id` — Kebab-case slug (e.g., `"configure-lemon-squeezy-webhook"`)
+- `title` — Human-readable task name
+- `description` — 1-2 sentence explanation of why this task is necessary
+- `status` — `"active"` for new tasks
+- `priority` — `"high"`, `"medium"`, or `"low"` (from Step 1)
+- `steps` — Array of specific action strings
+- `verification` — Array of criteria to confirm task is done
+- `relatedFeature` — Feature name or `null`
+- `triggeredBy` — Skill name that triggered this or `"manual"`
+- `createdAt` — ISO date (YYYY-MM-DD)
+- `completedAt` — `null` for new tasks
 
 **Example - Lemon Squeezy Webhook Task**:
-```markdown
-## [2025-01-15 14:30] Configure Lemon Squeezy Webhook
-
-**Priority**: 🔴 High
-
-**Why needed**:
-Webhook configuration enables Lemon Squeezy to notify your app of payment events (order_created, subscription_created). Without this, users won't get access after payment.
-
-**Steps**:
-1. Go to Lemon Squeezy dashboard → Settings → Webhooks
-2. Add webhook URL: `https://your-domain.com/api/webhooks/lemonsqueezy`
-3. Select events: `order_created`, `subscription_created`, `subscription_updated`
-4. Copy the signing secret
-5. Add to `.env.local`: `LEMONSQUEEZY_WEBHOOK_SECRET=...`
-6. Add API key: `LEMONSQUEEZY_API_KEY=...`
-
-**Verification**:
-- [ ] `.env.local` contains `LEMONSQUEEZY_WEBHOOK_SECRET`
-- [ ] `.env.local` contains `LEMONSQUEEZY_API_KEY`
-- [ ] Test purchase triggers webhook (use test mode)
-
-**Status**: ⏳ Pending
-
-**Related work**:
-- Feature: Payment processing
-- Skill: /shipkit-integration-docs
-
----
+```json
+{
+  "id": "configure-lemon-squeezy-webhook",
+  "title": "Configure Lemon Squeezy Webhook",
+  "description": "Webhook configuration enables Lemon Squeezy to notify your app of payment events (order_created, subscription_created). Without this, users won't get access after payment.",
+  "status": "active",
+  "priority": "high",
+  "steps": [
+    "Go to Lemon Squeezy dashboard → Settings → Webhooks",
+    "Add webhook URL: https://your-domain.com/api/webhooks/lemonsqueezy",
+    "Select events: order_created, subscription_created, subscription_updated",
+    "Copy the signing secret",
+    "Add to .env.local: LEMONSQUEEZY_WEBHOOK_SECRET=...",
+    "Add API key: LEMONSQUEEZY_API_KEY=..."
+  ],
+  "verification": [
+    ".env.local contains LEMONSQUEEZY_WEBHOOK_SECRET",
+    ".env.local contains LEMONSQUEEZY_API_KEY",
+    "Test purchase triggers webhook (use test mode)"
+  ],
+  "relatedFeature": "Payment processing",
+  "triggeredBy": "shipkit-integration-docs",
+  "createdAt": "2025-01-15",
+  "completedAt": null
+}
 ```
 
 ---
 
 ### Step 3: Confirm Task Tracked
 
-**Output to user**:
+**Output to user** (formatted summary, not raw JSON):
 ```
-✅ Task tracked in active tasks
+Task tracked.
 
-📁 Location: .shipkit/user-tasks/active.md
+Location: .shipkit/user-tasks.json
 
-📋 Task: [Task Title]
-🔴 Priority: High
+  Task: [Task Title]
+  Priority: High
+  Status: active
 
-Next: Complete the task steps, then tell me "Task [X] done" so I can move it to completed.md
+  Total tasks: X active, Y completed, Z deferred
+
+Next: Complete the task steps, then tell me "Task [X] done" so I can mark it complete.
 
 Should I continue with other work, or wait for you to complete this?
 ```
@@ -163,23 +142,21 @@ Should I continue with other work, or wait for you to complete this?
 
 **When user says**: "I'm working on task X", "Started the Lemon Squeezy setup"
 
-**Action**: Update task status from ⏳ Pending to 🚧 In Progress
-
-**Use Edit tool**:
-```markdown
-**Status**: 🚧 In Progress
-```
+**Action**: Read `.shipkit/user-tasks.json`, find the task by id or title match, update its `status` field from `"active"` to `"in-progress"`, recompute `summary`, and overwrite the file.
 
 **Confirmation**:
 ```
-✅ Updated task status to In Progress
+Updated task status to in-progress.
 
-You can continue working. Let me know when it's done!
+  Task: [Task Title]
+  Status: in-progress
+
+Let me know when it's done!
 ```
 
 ---
 
-### Step 5: Move Completed Tasks
+### Step 5: Mark Tasks Completed
 
 **When user says**: "Task done", "Finished the Lemon Squeezy setup", "Webhook is configured"
 
@@ -189,65 +166,57 @@ You can continue working. Let me know when it's done!
    - "Did you complete all verification steps?"
    - "Can you confirm [specific verification]?"
 
-2. **Read active.md** to find the task entry
+2. **Read `.shipkit/user-tasks.json`** and find the task by id or title match
 
-3. **Update task status** to ✅ Completed with completion timestamp:
-```markdown
-**Status**: ✅ Completed [2025-01-15 16:45]
+3. **Update the task entry**:
+   - Set `status` to `"completed"`
+   - Set `completedAt` to current date (YYYY-MM-DD)
+
+4. **Recompute `summary`** counts
+
+5. **Overwrite `.shipkit/user-tasks.json`** with updated content
+
+6. **Confirm to user**:
+```
+Task marked complete.
+
+  Task: [Task Title]
+  Completed: [YYYY-MM-DD]
+
+  Remaining: X active, Y completed, Z deferred
+
+Ready to continue with [next step]?
 ```
 
-4. **Copy entire task entry** (with completion timestamp)
-
-5. **Append to completed.md**:
-   - Location: `.shipkit/user-tasks/completed.md`
-   - If doesn't exist, create with header:
-   ```markdown
-   # Completed User Tasks
-
-   Tasks that have been finished and verified.
-
-   ---
-   ```
-
-6. **Remove task entry from active.md**
-
-7. **Confirm to user**:
-```
-✅ Task marked complete and archived
-
-📁 Moved from: active.md → completed.md
-⏱️  Completed: [timestamp]
-
-Great! Ready to continue with [next step]?
-```
+**Note**: Completed tasks remain in user-tasks.json with `status: "completed"`. They are not moved to a separate file — the single JSON file is the source of truth for all task states.
 
 ---
 
-### Step 6: List Active Tasks (On Demand)
+### Step 6: List Tasks (On Demand)
 
 **When user says**: "What tasks do I have?", "Show my todos", "What's pending?"
 
 **Action**:
-1. Read `.shipkit/user-tasks/active.md`
-2. Parse all task entries
-3. Show summary:
+1. Read `.shipkit/user-tasks.json`
+2. Parse the `tasks` array and `summary` object
+3. Show formatted summary (not raw JSON):
 
 ```
-📋 Active User Tasks
+User Tasks
 
-**High Priority (🔴)**:
-1. Configure Lemon Squeezy Webhook (⏳ Pending)
-2. Set up production database (🚧 In Progress)
+  High Priority:
+  1. Configure Lemon Squeezy Webhook (active)
+  2. Set up production database (in-progress)
 
-**Medium Priority (🟡)**:
-1. Install Docker for local development (⏳ Pending)
+  Medium Priority:
+  1. Install Docker for local development (active)
 
-**Low Priority (🟢)**:
-(none)
+  Low Priority:
+  (none)
 
-Total: 3 active tasks
+  Summary: 3 active, 0 completed, 0 deferred
 
-View full details in .shipkit/user-tasks/active.md
+View full details in .shipkit/user-tasks.json
 ```
 
 ---
@@ -257,7 +226,8 @@ View full details in .shipkit/user-tasks/active.md
 Copy and track:
 - [ ] Identified manual task for user
 - [ ] Created clear step-by-step instructions
-- [ ] Added to `.shipkit/user-tasks/active.md`
+- [ ] Added to `.shipkit/user-tasks.json`
+- [ ] Summary counts recomputed
 - [ ] User confirmed task is clear
 
 ---
@@ -265,19 +235,19 @@ Copy and track:
 ## What Makes This "Lite"
 
 **Included**:
-- ✅ Active task tracking (pending/in-progress/completed)
-- ✅ Priority levels (high/medium/low)
-- ✅ Structured task entries with verification steps
-- ✅ Move completed tasks to archive
-- ✅ List active tasks on demand
+- Task tracking with statuses (active/in-progress/completed/deferred)
+- Priority levels (high/medium/low)
+- Structured task entries with verification steps
+- Single consolidated JSON file with summary counts
+- List tasks on demand
 
 **Not included** (vs full user-instructions):
-- ❌ Recurring tasks or reminders
-- ❌ Task dependencies graph
-- ❌ Time tracking or estimates
-- ❌ Task assignment to team members
-- ❌ Integration with external task managers
-- ❌ Automated task completion detection
+- Recurring tasks or reminders
+- Task dependencies graph
+- Time tracking or estimates
+- Task assignment to team members
+- Integration with external task managers
+- Automated task completion detection
 
 **Philosophy**: Simple todo tracking for manual actions. Not a full task management system.
 
@@ -300,7 +270,7 @@ Copy and track:
 - `/shipkit-project-context` - Identifies environment requirements
   - **When**: Context generation detects missing environment configuration
   - **Why**: Track setup tasks needed before development can proceed
-  - **Trigger**: stack.md generation reveals missing env vars or tools
+  - **Trigger**: stack.json generation reveals missing env vars or tools
 
 - `verify manually` - Pre-deployment checklist
   - **When**: Quality check reveals manual deploy configuration needed
@@ -312,20 +282,19 @@ Copy and track:
 - `/shipkit-project-status` - Displays active task count
   - **When**: User asks "what's the project status?"
   - **Why**: Show pending user tasks as part of overall project health
-  - **Trigger**: Status check reads active.md to count pending tasks
+  - **Trigger**: Status check reads user-tasks.json summary to count pending tasks
 
 - `/shipkit-work-memory` - Logs task events
   - **When**: Tasks created or completed
   - **Why**: Track task lifecycle in session memory for continuity
-  - **Trigger**: Task added to active.md or moved to completed.md
+  - **Trigger**: Task added or status changed in user-tasks.json
 
 ---
 
 ## Context Files This Skill Reads
 
 **May read** (to check existing tasks):
-- `.shipkit/user-tasks/active.md` - Current active tasks
-- `.shipkit/user-tasks/completed.md` - Completed task archive
+- `.shipkit/user-tasks.json` - All tasks (active, completed, deferred)
 
 **Usually starts from scratch** - Doesn't need to read context first.
 
@@ -333,16 +302,16 @@ Copy and track:
 
 ## Context Files This Skill Writes
 
-**Creates/Updates**:
-- `.shipkit/user-tasks/active.md` - Active task list
-  - **Write Strategy**: OVERWRITE AND REPLACE
-  - **Why**: Active tasks are mutable state (status changes, removals). Small working set (1-10 tasks). Complete file replacement maintains clean structure.
-  - **Implementation**: Read entire file → Modify in memory → Write entire file back
+**Write Strategy: OVERWRITE**
 
-- `.shipkit/user-tasks/completed.md` - Completed task archive
-  - **Write Strategy**: APPEND
-  - **Why**: Completed tasks are immutable historical records. Never edited or removed. Chronological log of accomplished work.
-  - **Implementation**: Read existing content → Append new completed task entry → Write combined content back
+**Creates/Updates**:
+- `.shipkit/user-tasks.json` - Structured user tasks (JSON artifact)
+
+**Update Behavior**:
+- File doesn't exist → Create with initial schema structure
+- File exists → Read, modify tasks array, recompute summary, overwrite entire file
+- Each write REPLACES entire file contents
+- All task states (active, completed, deferred) live in the same file
 
 **Never modifies**:
 - Other `.shipkit/` files (read-only from this skill's perspective)
@@ -355,12 +324,12 @@ Copy and track:
 
 1. User invokes `/shipkit-user-instructions` OR other skill triggers it
 2. Claude asks 2-3 questions about task
-3. Claude appends to `.shipkit/user-tasks/active.md`
-4. Total context loaded: ~100-200 tokens (minimal)
+3. Claude reads/creates `.shipkit/user-tasks.json` and adds entry
+4. Total context loaded: ~200-400 tokens (minimal for JSON)
 
 **Only loads more context when**:
-- User asks "What tasks do I have?" → Read active.md
-- Moving task to completed → Read active.md + completed.md
+- User asks "What tasks do I have?" → Read user-tasks.json
+- Updating task status → Read user-tasks.json
 
 **Not loaded unless needed**:
 - Specs, plans, implementations
@@ -387,46 +356,111 @@ Copy and track:
 ## Success Criteria
 
 Task tracking is complete when:
-- [ ] Task entry created in active.md
-- [ ] All required fields present (title, priority, why, steps, verification, status)
+- [ ] Task entry created in user-tasks.json
+- [ ] All required fields present (id, title, description, status, priority, steps, verification, createdAt)
+- [ ] Summary counts are accurate
+- [ ] Output conforms to JSON schema
 - [ ] User understands what needs to be done
 - [ ] User knows how to update status
 - [ ] Clear verification criteria defined
 - [ ] User knows how to mark complete
+- [ ] File saved to `.shipkit/user-tasks.json`
 <!-- /SECTION:success-criteria -->
 ---
 
-## Task Entry Template
+## JSON Schema
 
-**Use this exact structure for every task**:
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "user-tasks",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "shipkit-user-instructions",
 
-```markdown
-## [YYYY-MM-DD HH:MM] [Task Title]
+  "summary": {
+    "total": 3,
+    "byStatus": { "active": 2, "completed": 1, "deferred": 0 },
+    "byPriority": { "high": 1, "medium": 1, "low": 1 }
+  },
 
-**Priority**: [🔴 High / 🟡 Medium / 🟢 Low]
-
-**Why needed**:
-[1-2 sentence explanation]
-
-**Steps**:
-1. [Action 1]
-2. [Action 2]
-3. [Action 3]
-
-**Verification**:
-- [ ] [Check 1]
-- [ ] [Check 2]
-
-**Status**: [⏳ Pending / 🚧 In Progress / ✅ Completed [timestamp]]
-
-**Related work**:
-- Feature: [feature name or "N/A"]
-- Skill: [which skill triggered this or "Manual"]
-
----
+  "tasks": [
+    {
+      "id": "task-slug",
+      "title": "Human-readable task name",
+      "description": "Why this task is necessary",
+      "status": "active",
+      "priority": "high",
+      "steps": [
+        "Specific action 1",
+        "Specific action 2"
+      ],
+      "verification": [
+        "How to verify task is complete"
+      ],
+      "relatedFeature": "Feature name or null",
+      "triggeredBy": "skill-name or manual",
+      "createdAt": "YYYY-MM-DD",
+      "completedAt": null
+    }
+  ]
+}
 ```
 
-**All fields are required** - Don't skip any.
+### Field Reference
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `$schema` | string | yes | Always `"shipkit-artifact"` — identifies this as a Shipkit-managed file |
+| `type` | string | yes | Always `"user-tasks"` — artifact type for routing/rendering |
+| `version` | string | yes | Schema version for forward compatibility |
+| `lastUpdated` | string | yes | ISO date of last modification |
+| `source` | string | yes | Always `"shipkit-user-instructions"` |
+| `summary` | object | yes | Aggregated counts for dashboard rendering |
+| `tasks` | array | yes | The task entries |
+| `tasks[].id` | string | yes | Slug identifier (kebab-case) |
+| `tasks[].title` | string | yes | Display name |
+| `tasks[].description` | string | yes | Why this task is necessary (1-2 sentences) |
+| `tasks[].status` | enum | yes | `"active"` \| `"in-progress"` \| `"completed"` \| `"deferred"` |
+| `tasks[].priority` | enum | yes | `"high"` \| `"medium"` \| `"low"` |
+| `tasks[].steps` | string[] | yes | Specific actions the user must take |
+| `tasks[].verification` | string[] | yes | How to confirm the task is done |
+| `tasks[].relatedFeature` | string | no | Feature name or `null` |
+| `tasks[].triggeredBy` | string | no | Skill that created this task or `"manual"` |
+| `tasks[].createdAt` | string | yes | ISO date when task was created |
+| `tasks[].completedAt` | string | no | ISO date when task was completed, or `null` |
+
+### Summary Object
+
+The `summary` field MUST be kept in sync with the `tasks` array. It exists so the dashboard can render overview cards without iterating the full array. Recompute it every time the file is written.
+
+---
+
+## Shipkit Artifact Convention
+
+This skill follows the **Shipkit JSON artifact convention** — a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
+
+**Every JSON artifact MUST include these top-level fields:**
+
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "<artifact-type>",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "<skill-name>",
+  "summary": { ... }
+}
+```
+
+- `$schema` — Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
+- `type` — The artifact type (`"user-tasks"`, `"goals"`, `"spec"`, etc.). Dashboard uses this for rendering.
+- `version` — Schema version. Bump when fields change.
+- `lastUpdated` — When this file was last written.
+- `source` — Which skill wrote this file.
+- `summary` — Aggregated data for dashboard cards. Structure varies by type.
+
+Skills that haven't migrated to JSON yet continue writing markdown. The reporter hook ships both: JSON artifacts get structured dashboard rendering, markdown files fall back to metadata-only (exists, date, size).
 
 ---
 

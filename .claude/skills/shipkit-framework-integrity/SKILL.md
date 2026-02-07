@@ -538,7 +538,55 @@ If mismatch:
 
 ---
 
-### Step 9b: Claude Code Compatibility Audit (Always Run)
+### Step 9b: JSON Artifact Migration Tracking (Always Run)
+
+**Check**: Which skills output structured data to `.shipkit/` and whether they use the JSON artifact convention.
+
+**Logic**:
+```
+1. Scan all SKILL.md files for "Context Files This Skill Writes" sections
+2. Extract output paths that write to .shipkit/
+3. Classify each:
+   - .json with $schema: "shipkit-artifact" → ✓ Migrated
+   - .json without convention → ⚠ JSON but missing convention
+   - .md with structured data (lists, status, counts) → ⚠ Should migrate
+   - .md with narrative content (specs, plans, decisions) → ✓ Correct as markdown
+
+4. Report migration progress
+```
+
+**Classification rules**:
+| Output Pattern | Classification |
+|---------------|---------------|
+| `.shipkit/*.json` with `$schema: "shipkit-artifact"` in SKILL.md | ✓ JSON artifact |
+| `.shipkit/*.md` with structured/countable data | ⚠ Migration candidate |
+| `.shipkit/specs/*.md`, `.shipkit/plans/*.md` | ✓ Correct as markdown |
+| `.shipkit/architecture.json` | ✓ Migrated to JSON |
+| `.shipkit/why.md` | ✓ Correct as markdown |
+| No `.shipkit/` output (NONE strategy) | ⊘ N/A |
+
+**Report format**:
+```
+JSON ARTIFACT MIGRATION
+───────────────────────
+Migrated to JSON:     1/N skills (goals.json)
+Candidates for JSON:  X skills
+Correct as markdown:  Y skills
+No output:           Z skills
+
+Migration candidates:
+  ✓ shipkit-project-status → .shipkit/status.json (migrated)
+  ✓ shipkit-work-memory → .shipkit/progress.json (migrated)
+
+Reference: install/skills/shipkit-goals/SKILL.md (JSON artifact pattern)
+Convention: $schema, type, version, lastUpdated, source, summary
+```
+
+**Why this matters**: JSON artifacts are natively visualizable by mission control dashboard. Progressive migration ensures the dashboard gets richer data over time without requiring a big-bang rewrite.
+
+---
+
+### Step 9c: Claude Code Compatibility Audit (Always Run)
 
 **Framework-wide check against current Claude Code changelog.**
 
@@ -739,6 +787,17 @@ README.md:      27 skills ✓
 CLAUDE.md:      27 skills ✓
 Overview HTML:  27 skills ✓
 
+JSON ARTIFACT MIGRATION
+───────────────────────
+Migrated to JSON:     1 skill (goals.json)
+Candidates for JSON:  3 skills
+Correct as markdown:  12 skills
+No output:           11 skills
+
+⚠ Migration candidates:
+  shipkit-project-status → structured health data
+  shipkit-work-memory → session progress log
+
 CLAUDE CODE COMPATIBILITY (v{claude_code_version})
 ───────────────────────────────────────────────────
 ✓ All hook events recognized
@@ -796,6 +855,8 @@ State saved to: .claude/skills/shipkit-framework-integrity/.integrity-state.json
 | Stale changelog | WARNING | No | Changelog >7 days old or missing |
 | Version drift | INFO | No | New Claude Code versions since last check |
 | Feature opportunity | INFO | No | Framework could leverage newer features |
+| JSON migration candidate | WARNING | No | Skill outputs structured .md that should be .json |
+| JSON convention missing | WARNING | No | Skill outputs .json but missing artifact convention |
 
 ---
 

@@ -129,7 +129,8 @@
       "Skill(shipkit-thinking-partner)",
       "Skill(shipkit-scale-ready)",
       "Skill(shipkit-prompt-audit)",
-      "Skill(shipkit-mission-control)"
+      "Skill(shipkit-mission-control)",
+      "Skill(shipkit-goals)"
     ],
 
     "deny": [
@@ -231,7 +232,7 @@
   "_notes": {
     "edition": "Shipkit - Streamlined for POCs and side projects",
     "permissionsPhilosophy": "Allow by default, deny only critical infrastructure and context files.",
-    "deniedFiles": "Critical infrastructure: settings.json, hooks. Protected context: specs, plans, implementations.md, architecture.md, stack.md, types.md. Secrets: actual .env files (not .example), *.pem, *.key, production configs.",
+    "deniedFiles": "Critical infrastructure: settings.json, hooks. Protected context: specs, plans, implementations.md, architecture.json, stack.md, contracts.json. Secrets: actual .env files (not .example), *.pem, *.key, production configs.",
     "allowedFiles": "Can read .env.example files. Full access to project source code and skill outputs via Read tool.",
     "sessionHooks": "SessionStart loads shipkit-master with status summary, Stop runs shipkit-after-skill-router for auto-detection",
     "contextFiles": "All context stored in .shipkit/ folder",

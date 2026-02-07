@@ -47,9 +47,15 @@ If the hub doesn't exist, create the full structure:
 ```
 ~/.shipkit-mission-control/
 ├── server/
-│   └── index.js          # Server code
+│   ├── index.js          # Node.js API server
+│   └── package.json      # Server metadata
 ├── dashboard/
-│   └── index.html        # Dashboard UI
+│   ├── dist/             # Built React app (served by server)
+│   │   ├── index.html
+│   │   └── assets/       # JS, CSS bundles
+│   ├── src/              # React source (for development)
+│   ├── package.json      # Dashboard dependencies
+│   └── vite.config.ts    # Vite configuration
 ├── .shipkit/
 │   └── mission-control/
 │       ├── codebases/    # Per-codebase analytics
@@ -61,20 +67,24 @@ If the hub doesn't exist, create the full structure:
 **Create directories:**
 ```bash
 mkdir -p ~/.shipkit-mission-control/server
-mkdir -p ~/.shipkit-mission-control/dashboard
+mkdir -p ~/.shipkit-mission-control/dashboard/dist
 mkdir -p ~/.shipkit-mission-control/.shipkit/mission-control/codebases
 mkdir -p ~/.shipkit-mission-control/.shipkit/mission-control/inbox
 ```
 
-### Step 2: Ensure Server Files Exist
+### Step 2: Ensure Server and Dashboard Files Exist
 
 Check if `~/.shipkit-mission-control/server/index.js` exists.
 
-If NOT, copy from Shipkit install location OR write the server code directly using the Write tool. The server code is available at:
-- Installed: `~/.claude/mission-control/server/index.js`
-- Or create fresh from the template in this skill
+If NOT, copy from Shipkit install location:
+- `install/mission-control/server/` → `~/.shipkit-mission-control/server/`
+- `install/mission-control/dashboard/dist/` → `~/.shipkit-mission-control/dashboard/dist/`
 
-Similarly ensure `~/.shipkit-mission-control/dashboard/index.html` exists.
+The dashboard is a React + Vite app. The pre-built `dist/` folder is included in Shipkit. For development:
+```bash
+cd ~/.shipkit-mission-control/dashboard && npm install && npm run dev
+```
+This starts a Vite dev server on port 5173 with API proxy to port 7777.
 
 ### Step 3: Create Config (if missing)
 
@@ -324,14 +334,14 @@ lsof -ti:7777 | xargs kill -9
 **Included**:
 - Single-server architecture (no databases)
 - File-based command injection (simple, reliable)
-- Basic HTML dashboard (no build step)
+- React + Vite dashboard with graph visualization (React Flow)
+- Artifact viewer with interactive architecture diagrams, ER diagrams, journey maps
 - Auto-start on first use
 
 **Not included**:
-- Persistent storage (events are in-memory)
 - Authentication (local use only)
 - Multi-user support
-- Remote access (localhost only)
+- Remote access (localhost only, but network IP shown for mobile access)
 
 **Philosophy**: Simple monitoring for local development. Not a production ops tool.
 
@@ -359,12 +369,13 @@ lsof -ti:7777 | xargs kill -9
 
 | Path | Purpose |
 |------|---------|
-| `~/.claude/mission-control/server/index.js` | Node.js server |
-| `~/.claude/mission-control/server/package.json` | Dependencies |
-| `~/.claude/mission-control/dashboard/index.html` | Web UI |
-| `~/.claude/hooks/mission-control-reporter.py` | Event reporter hook |
-| `~/.claude/hooks/mission-control-receiver.py` | Command receiver hook |
-| `~/.claude/mission-control/inbox/` | Command queue (per instance) |
+| `~/.shipkit-mission-control/server/index.js` | Node.js API server |
+| `~/.shipkit-mission-control/server/package.json` | Server metadata |
+| `~/.shipkit-mission-control/dashboard/dist/` | Built React dashboard |
+| `~/.shipkit-mission-control/dashboard/src/` | React source code |
+| `~/.shipkit-mission-control/dashboard/package.json` | Dashboard dependencies |
+| Hooks: `shipkit-mission-control-reporter.py` | Event reporter hook |
+| Hooks: `shipkit-mission-control-receiver.py` | Command receiver hook |
 
 ---
 

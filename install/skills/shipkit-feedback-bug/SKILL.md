@@ -34,7 +34,7 @@ agent: shipkit-researcher-agent
 - Feedback to process (user provides)
 
 **Recommended**:
-- Stack defined: `.shipkit/stack.md` (tech context)
+- Stack defined: `.shipkit/stack.json` (tech context)
 - Codebase indexed: `.shipkit/codebase-index.json` (faster investigation)
 - Existing specs: `.shipkit/specs/active/*.md` (avoid duplicates)
 
@@ -362,7 +362,7 @@ For obvious bugs that don't need deep investigation:
 
 ## Context Files This Skill Reads
 
-- `.shipkit/stack.md` - Tech context for investigation
+- `.shipkit/stack.json` - Tech context for investigation
 - `.shipkit/codebase-index.json` - Navigate codebase efficiently
 - `.shipkit/specs/active/*.md` - Check for duplicates
 

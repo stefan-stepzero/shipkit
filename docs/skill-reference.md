@@ -14,6 +14,7 @@ Complete reference for all 23 Shipkit skills.
 | | `shipkit-codebase-index` | Semantic indexing |
 | | `shipkit-claude-md` | CLAUDE.md management |
 | **Discovery** | `shipkit-why-project` | Vision definition |
+| | `shipkit-goals` | Project goals & priorities |
 | | `shipkit-product-discovery` | Personas and journeys |
 | | `shipkit-spec` | Feature specification |
 | | `shipkit-plan` | Implementation planning |
@@ -65,9 +66,9 @@ Complete reference for all 23 Shipkit skills.
 **Example output:**
 ```
 ✅ why.md exists
-✅ stack.md exists
+✅ stack.json exists
 ⚠️ No active specs
-⚠️ architecture.md has no entries
+⚠️ architecture.json has no entries
 
 Suggested: Create a spec with /shipkit-spec
 ```
@@ -84,7 +85,7 @@ Suggested: Create a spec with /shipkit-spec
 - Need to document existing project
 
 **Reads:** Project files (package.json, etc.)
-**Writes:** `.shipkit/stack.md`
+**Writes:** `.shipkit/stack.json`
 
 ---
 
@@ -161,7 +162,7 @@ Suggested: Create a spec with /shipkit-spec
 - Need to clarify requirements
 - Want documented acceptance criteria
 
-**Reads:** `.shipkit/why.md`, `.shipkit/stack.md`
+**Reads:** `.shipkit/why.md`, `.shipkit/stack.json`
 **Writes:** `.shipkit/specs/active/*.md`
 
 **Spec includes:**
@@ -226,7 +227,7 @@ Suggested: Create a spec with /shipkit-spec
 - Want future sessions to know "why"
 
 **Reads:** Nothing
-**Writes:** `.shipkit/architecture.md` (append)
+**Writes:** `.shipkit/architecture.json` (append)
 
 **Entry format:**
 ```markdown
@@ -253,7 +254,7 @@ Suggested: Create a spec with /shipkit-spec
 - Need consistent types
 
 **Reads:** `.shipkit/specs/active/*.md`
-**Writes:** `.shipkit/types.md`
+**Writes:** `.shipkit/contracts.json`
 
 ---
 
@@ -266,7 +267,7 @@ Suggested: Create a spec with /shipkit-spec
 - Need current best practices
 - Want security patterns
 
-**Reads:** `.shipkit/stack.md`
+**Reads:** `.shipkit/stack.json`
 **Writes:** `references/[service]-patterns.md`
 
 **Supported services:**
@@ -368,7 +369,7 @@ Suggested: Create a spec with /shipkit-spec
 - Switching contexts
 
 **Reads:** Recent work
-**Writes:** `.shipkit/progress.md`
+**Writes:** `.shipkit/progress.json`
 
 ---
 

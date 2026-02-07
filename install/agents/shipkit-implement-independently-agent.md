@@ -33,7 +33,7 @@ Implement the assigned spec/task completely and autonomously, then create a PR.
 - Identify files that need to be created/modified
 
 ### 2. Implement
-- Write code following project patterns (check `.shipkit/stack.md` if exists)
+- Write code following project patterns (check `.shipkit/stack.json` if exists)
 - Stay focused on the spec scope - don't over-engineer
 - Create tests for critical paths
 - Handle errors gracefully

@@ -23,7 +23,21 @@ const DATA_DIR = path.join(HUB_ROOT, '.shipkit', 'mission-control');
 const INBOX_DIR = path.join(DATA_DIR, 'inbox');
 const CODEBASES_DIR = path.join(DATA_DIR, 'codebases');
 const EVENTS_FILE = path.join(DATA_DIR, 'events.jsonl');
-const DASHBOARD_PATH = path.join(HUB_ROOT, 'dashboard', 'index.html');
+const DASHBOARD_DIR = path.join(HUB_ROOT, 'dashboard', 'dist');
+const DASHBOARD_INDEX = path.join(DASHBOARD_DIR, 'index.html');
+
+// MIME types for static file serving
+const MIME_TYPES = {
+    '.html': 'text/html',
+    '.js': 'application/javascript',
+    '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.svg': 'image/svg+xml',
+    '.ico': 'image/x-icon',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2',
+};
 
 // In-memory storage
 const instances = new Map(); // sessionId -> instance data
@@ -179,6 +193,11 @@ function updateInstance(eventData) {
     if (projectPath) {
         updateCodebaseAnalytics(projectPath, project, skill, timestamp);
     }
+
+    // Store artifacts if present (JSON files from .shipkit/)
+    if (eventData.artifacts && projectPath) {
+        updateCodebaseArtifacts(projectPath, eventData.artifacts);
+    }
 }
 
 /**
@@ -219,6 +238,28 @@ function updateCodebaseAnalytics(projectPath, projectName, skill, timestamp) {
     }
 
     // Persist to disk
+    persistCodebase(codebase);
+}
+
+/**
+ * Store JSON artifacts from .shipkit/ for dashboard rendering
+ */
+function updateCodebaseArtifacts(projectPath, artifacts) {
+    let codebase = codebases.get(projectPath);
+    if (!codebase) return;
+
+    if (!codebase.artifacts) {
+        codebase.artifacts = {};
+    }
+
+    // Merge new artifacts (keyed by filename, e.g. "goals.json")
+    for (const [filename, data] of Object.entries(artifacts)) {
+        codebase.artifacts[filename] = {
+            ...data,
+            _receivedAt: Date.now()
+        };
+    }
+
     persistCodebase(codebase);
 }
 
@@ -434,10 +475,26 @@ async function handleRequest(req, res) {
             return;
         }
 
-        // Dashboard
+        // Static files from Vite build (CSS, JS, assets)
+        if (pathname.startsWith('/assets/') || pathname === '/vite.svg') {
+            const filePath = path.join(DASHBOARD_DIR, pathname);
+            if (fs.existsSync(filePath)) {
+                const ext = path.extname(filePath);
+                const mime = MIME_TYPES[ext] || 'application/octet-stream';
+                res.writeHead(200, {
+                    'Content-Type': mime,
+                    'Access-Control-Allow-Origin': '*',
+                    'Cache-Control': pathname.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache',
+                });
+                fs.createReadStream(filePath).pipe(res);
+                return;
+            }
+        }
+
+        // Dashboard root
         if (pathname === '/' || pathname === '/dashboard') {
-            if (fs.existsSync(DASHBOARD_PATH)) {
-                const html = fs.readFileSync(DASHBOARD_PATH, 'utf-8');
+            if (fs.existsSync(DASHBOARD_INDEX)) {
+                const html = fs.readFileSync(DASHBOARD_INDEX, 'utf-8');
                 sendHtml(res, html);
             } else {
                 sendHtml(res, getEmbeddedDashboard());
@@ -593,6 +650,13 @@ async function handleRequest(req, res) {
             };
 
             sendJson(res, { updated: true, projectPath });
+            return;
+        }
+
+        // SPA fallback - serve React app for unknown routes (client-side routing)
+        if (!pathname.startsWith('/api') && fs.existsSync(DASHBOARD_INDEX)) {
+            const html = fs.readFileSync(DASHBOARD_INDEX, 'utf-8');
+            sendHtml(res, html);
             return;
         }
 

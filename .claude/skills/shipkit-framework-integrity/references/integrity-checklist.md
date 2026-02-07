@@ -204,7 +204,38 @@ shutil.copy2(hooks_src / "shipkit-relentless-stop-hook.py", ...)
 
 ---
 
-## Part 6b: Claude Code Compatibility
+## Part 6b: JSON Artifact Migration
+
+### Migration Tracking
+- [ ] All skills scanned for `.shipkit/` output paths
+- [ ] Each output classified: JSON artifact / migration candidate / correct as markdown / no output
+- [ ] Migration progress reported (X/N skills using JSON convention)
+
+### JSON Artifact Convention
+Required fields for `.shipkit/*.json` files:
+- [ ] `$schema: "shipkit-artifact"` — identifies as Shipkit-managed
+- [ ] `type` — artifact type (e.g., "goals", "status")
+- [ ] `version` — schema version for forward compat
+- [ ] `lastUpdated` — ISO date
+- [ ] `source` — skill that wrote the file
+- [ ] `summary` — aggregated data for dashboard cards
+
+### Classification Rules
+| Output | Classification |
+|--------|---------------|
+| `.shipkit/*.json` with convention | ✓ Migrated |
+| `.shipkit/*.md` with structured data | ⚠ Should migrate |
+| `.shipkit/specs/*.md`, `plans/*.md` | ✓ Correct as markdown |
+| `.shipkit/architecture.json` | ✓ Migrated to JSON |
+| `.shipkit/why.md` | ✓ Correct as markdown |
+| No `.shipkit/` output | ⊘ N/A |
+
+### Reference Implementation
+- `install/skills/shipkit-goals/SKILL.md` — complete JSON artifact skill
+
+---
+
+## Part 6c: Claude Code Compatibility
 
 **Source**: `docs/development/claude-code-changelog.md` (auto-fetched from GitHub)
 

@@ -332,10 +332,10 @@ This flags technical debt while still providing a workable (if fragile) selector
   test-cases/
     STRATEGY.md           # Auto-generated: priorities, approach
     cases/
-      auth.md             # Per-feature test cases
+      auth.md             # Per-feature test cases (markdown - narrative descriptions)
       checkout.md
       ...
-    COVERAGE.md           # Auto-generated: gaps report
+    coverage.json         # Auto-generated: structured coverage metrics (JSON)
 ```
 
 **STRATEGY.md** (auto-generated, user can instruct Claude to edit):
@@ -389,31 +389,81 @@ This flags technical debt while still providing a workable (if fragile) selector
 | AUTH-R01 | Rate limiting after 5 attempts | `login.ts` | #142 | 🆕 pending |
 ```
 
-**COVERAGE.md** (regenerated each run):
+**coverage.json** (regenerated each run, follows Shipkit Artifact Convention):
 
-```markdown
-# Test Coverage Report
-
-**Generated:** [YYYY-MM-DD]
-
-## Summary
-- **Files with test cases:** X/Y (Z%)
-- **Core cases:** N (M verified, P pending)
-- **Stale cases:** Q (code changed since verification)
-
-## Gaps (files without test cases)
-- `src/api/billing/refund.ts` ⚠️ no coverage
-- `src/services/notifications.ts` ⚠️ no coverage
-
-## Stale Cases (need re-verification)
-| Case | File Changed | Last Verified |
-|------|--------------|---------------|
-| AUTH-01 | 2024-01-20 | 2024-01-15 |
-
-## Orphaned Cases (code deleted)
-| Case | Original File |
-|------|---------------|
-| BILLING-03 | `src/api/billing/old.ts` (deleted) |
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "test-coverage",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "shipkit-test-cases",
+  "summary": {
+    "totalCases": 15,
+    "filesWithCases": 8,
+    "totalSourceFiles": 12,
+    "coverageScore": 67,
+    "byPriority": {
+      "core": 6,
+      "edge": 7,
+      "regression": 2
+    },
+    "byStatus": {
+      "verified": 5,
+      "pending": 7,
+      "stale": 2,
+      "orphaned": 1
+    }
+  },
+  "cases": [
+    {
+      "id": "AUTH-01",
+      "name": "Valid login returns token",
+      "priority": "core",
+      "status": "verified",
+      "sourceFile": "src/api/auth/login.ts",
+      "linkedSpec": ".shipkit/specs/auth.md",
+      "codeModified": "2024-01-15",
+      "lastVerified": "2024-01-21"
+    },
+    {
+      "id": "AUTH-02",
+      "name": "Invalid password rejected",
+      "priority": "core",
+      "status": "stale",
+      "sourceFile": "src/api/auth/login.ts",
+      "linkedSpec": ".shipkit/specs/auth.md",
+      "codeModified": "2024-01-20",
+      "lastVerified": "2024-01-15"
+    }
+  ],
+  "gaps": [
+    {
+      "file": "src/api/billing/refund.ts",
+      "reason": "no coverage",
+      "priority": "core"
+    },
+    {
+      "file": "src/services/notifications.ts",
+      "reason": "no coverage",
+      "priority": "edge"
+    }
+  ],
+  "staleCases": [
+    {
+      "caseId": "AUTH-02",
+      "sourceFile": "src/api/auth/login.ts",
+      "codeModified": "2024-01-20",
+      "lastVerified": "2024-01-15"
+    }
+  ],
+  "orphanedCases": [
+    {
+      "caseId": "BILLING-03",
+      "originalFile": "src/api/billing/old.ts"
+    }
+  ]
+}
 ```
 
 ---
@@ -451,7 +501,7 @@ This flags technical debt while still providing a workable (if fragile) selector
 |------|---------|---------|-------|
 | `STRATEGY.md` | Auto | User edits via Claude | User (steers via conversation) |
 | `cases/*.md` | Auto | Append only (merge) | Shared (Claude generates, user can adjust) |
-| `COVERAGE.md` | Auto | Regenerated each run | Skill (computed report) |
+| `coverage.json` | Auto | Regenerated each run | Skill (computed report, Shipkit Artifact) |
 
 **User intervention model:** User does nothing unless they want to change something. If user disagrees, they tell Claude:
 - "Make AUTH-03 core priority"
@@ -559,9 +609,13 @@ This makes test execution **change-aware**.
 **Write Strategy: APPEND with SMART MERGE**
 
 **Creates/Updates:**
-- `.shipkit/test-cases/STRATEGY.md` — Test approach (auto-generated)
-- `.shipkit/test-cases/cases/*.md` — Per-feature test cases (append-only)
-- `.shipkit/test-cases/COVERAGE.md` — Coverage report (regenerated)
+- `.shipkit/test-cases/STRATEGY.md` — Test approach (auto-generated, markdown)
+- `.shipkit/test-cases/cases/*.md` — Per-feature test cases (append-only, markdown — narrative test descriptions)
+- `.shipkit/test-cases/coverage.json` — Coverage metrics and gap report (regenerated, JSON — Shipkit Artifact Convention)
+
+**Dual output rationale:**
+- **Markdown for cases** (`cases/*.md`): Test cases contain narrative descriptions, action steps, and verification tables that benefit from human-readable formatting
+- **JSON for coverage** (`coverage.json`): Coverage data is structured metrics (counts, scores, file lists) consumed by other skills and tooling — JSON enables programmatic access
 
 **Merge Behavior:**
 - Reads existing files first
@@ -569,6 +623,37 @@ This makes test execution **change-aware**.
 - Appends new cases for new code
 - Flags stale cases (code changed)
 - Never deletes user-accepted cases
+
+---
+
+## Shipkit Artifact Convention
+
+The `coverage.json` file follows the **Shipkit Artifact Convention** -- a standard envelope for structured data files produced by Shipkit skills. This enables programmatic consumption by other skills and tooling.
+
+**Required envelope fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `$schema` | string | Always `"shipkit-artifact"` |
+| `type` | string | Artifact type identifier (this skill: `"test-coverage"`) |
+| `version` | string | Schema version for forward compatibility (currently `"1.0"`) |
+| `lastUpdated` | string | ISO date (`YYYY-MM-DD`) of last generation |
+| `source` | string | Skill that produced the artifact (`"shipkit-test-cases"`) |
+
+**Coverage-specific payload:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `summary` | object | Aggregate metrics: `totalCases`, `filesWithCases`, `totalSourceFiles`, `coverageScore` (0-100), `byPriority` counts, `byStatus` counts |
+| `cases` | array | Each entry: `id`, `name`, `priority` (core/edge/regression), `status` (verified/pending/stale/orphaned), `sourceFile`, `linkedSpec`, `codeModified`, `lastVerified` |
+| `gaps` | array | Untested areas: `file`, `reason`, `priority` |
+| `staleCases` | array | Cases needing re-verification: `caseId`, `sourceFile`, `codeModified`, `lastVerified` |
+| `orphanedCases` | array | Cases whose source was deleted: `caseId`, `originalFile` |
+
+**Why JSON for coverage data:**
+- Other skills (e.g., `shipkit-verify`, `shipkit-preflight`) can parse coverage programmatically
+- Structured data enables threshold checks (e.g., "coverageScore >= 80")
+- Arrays and counts are naturally represented in JSON, not markdown tables
 
 ---
 
@@ -613,7 +698,7 @@ Test case generation is complete when:
 - [ ] New cases generated with AI-executable format
 - [ ] Cases anchored to source files
 - [ ] STRATEGY.md reflects priorities
-- [ ] COVERAGE.md shows gaps
+- [ ] coverage.json shows gaps and metrics (valid Shipkit Artifact)
 - [ ] Stale cases flagged
 - [ ] cases/*.md written
 

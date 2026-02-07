@@ -203,7 +203,7 @@ Document what the skill reads and writes:
 | File | Purpose |
 |------|---------|
 | `.shipkit/why.md` | Understand project constraints |
-| `.shipkit/stack.md` | Know what technologies are in use |
+| `.shipkit/stack.json` | Know what technologies are in use |
 ```
 
 **Writes:**
@@ -212,7 +212,7 @@ Document what the skill reads and writes:
 
 | File | Strategy | Purpose |
 |------|----------|---------|
-| `.shipkit/architecture.md` | APPEND | Add decision without overwriting history |
+| `.shipkit/architecture.json` | APPEND | Add decision without overwriting history |
 | `.shipkit/specs/active/*.md` | CREATE | New spec file per feature |
 ```
 
@@ -333,7 +333,7 @@ For decision logs, always append:
 
 | File | Strategy | Purpose |
 |------|----------|---------|
-| `.shipkit/architecture.md` | APPEND | Preserve decision history |
+| `.shipkit/architecture.json` | APPEND | Preserve decision history |
 ```
 
 ### Reference External Docs

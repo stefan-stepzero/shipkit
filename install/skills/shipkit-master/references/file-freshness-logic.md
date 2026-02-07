@@ -8,8 +8,8 @@
 
 | File | Stale If | Compare Against | Rationale |
 |------|----------|-----------------|-----------|
-| `.shipkit/stack.md` | > 7 days old OR older than `package.json` | `package.json` mtime | Stack should reflect current dependencies |
-| `.shipkit/architecture.md` | > 14 days old OR major structural changes | `src/` directory mtime | Architecture evolves slower than code |
+| `.shipkit/stack.json` | > 7 days old OR older than `package.json` | `package.json` mtime | Stack should reflect current dependencies |
+| `.shipkit/architecture.json` | > 14 days old OR major structural changes | `src/` directory mtime | Architecture evolves slower than code |
 | `.shipkit/why.md` | > 30 days old | None (absolute) | Vision rarely changes |
 | `.shipkit/specs/*.md` | > 7 days AND feature not shipped | Git history | Specs shouldn't linger unimplemented |
 | `.shipkit/plans/*.md` | > 3 days AND plan not started | None (absolute) | Plans should be executed promptly |
@@ -33,10 +33,10 @@ def is_file_stale(file_path: str) -> tuple[bool, str]:
     age_days = (datetime.now() - file_mtime).days
 
     # Determine threshold based on file type
-    if "stack.md" in file_path:
+    if "stack.json" in file_path:
         threshold_days = 7
         compare_file = "package.json"
-    elif "architecture.md" in file_path:
+    elif "architecture.json" in file_path:
         threshold_days = 14
         compare_file = None
     elif "why.md" in file_path:
@@ -73,25 +73,25 @@ When displaying session status, use these indicators:
 
 | Status | Symbol | Message |
 |--------|--------|---------|
-| Fresh (< 50% of threshold) | ✓ | "stack.md (2 days)" |
-| Aging (50-100% of threshold) | ⚠ | "stack.md (5 days - consider updating)" |
-| Stale (> threshold) | ✗ | "stack.md (12 days - STALE)" |
-| Missing | ○ | "stack.md (not found)" |
+| Fresh (< 50% of threshold) | ✓ | "stack.json (2 days)" |
+| Aging (50-100% of threshold) | ⚠ | "stack.json (5 days - consider updating)" |
+| Stale (> threshold) | ✗ | "stack.json (12 days - STALE)" |
+| Missing | ○ | "stack.json (not found)" |
 
 ---
 
-## Comparison Logic for stack.md
+## Comparison Logic for stack.json
 
-`stack.md` has special comparison logic because it documents the tech stack:
+`stack.json` has special comparison logic because it documents the tech stack:
 
 ```
-stack.md is STALE if ANY of:
+stack.json is STALE if ANY of:
 1. Modified > 7 days ago
 2. package.json modified more recently (dependencies changed)
 3. New config files detected that aren't documented:
-   - tsconfig.json exists but TypeScript not in stack.md
-   - tailwind.config.js exists but Tailwind not in stack.md
-   - prisma/schema.prisma exists but Prisma not in stack.md
+   - tsconfig.json exists but TypeScript not in stack.json
+   - tailwind.config.js exists but Tailwind not in stack.json
+   - prisma/schema.prisma exists but Prisma not in stack.json
 ```
 
 ---
@@ -122,18 +122,18 @@ $days = $age.Days
 ## When to Trigger Freshness Warnings
 
 **Session Start**: Always check core context files
-- `.shipkit/stack.md`
-- `.shipkit/architecture.md`
+- `.shipkit/stack.json`
+- `.shipkit/architecture.json`
 - `.shipkit/why.md`
 
 **Before Skill Execution**: Check skill-specific files
 - `/shipkit-spec` → Check existing specs in `.shipkit/specs/`
 - `/shipkit-plan` → Check existing plans in `.shipkit/plans/`
-- `/shipkit-architecture-memory` → Check `architecture.md`
+- `/shipkit-architecture-memory` → Check `architecture.json`
 
 **After Major Changes**: Prompt for updates
-- After `npm install` / `pip install` → Suggest stack.md update
-- After creating new directories → Suggest architecture.md update
+- After `npm install` / `pip install` → Suggest stack.json update
+- After creating new directories → Suggest architecture.json update
 - After shipping feature → Suggest moving spec to `implemented/`
 
 ---
@@ -144,8 +144,8 @@ $days = $age.Days
 Session Start: shipkit-master loaded
 
 Context Freshness:
-  ✓ stack.md (2 days)
-  ⚠ architecture.md (12 days - consider updating)
+  ✓ stack.json (2 days)
+  ⚠ architecture.json (12 days - consider updating)
   ✓ why.md (5 days)
 
 Active Work:
@@ -153,6 +153,6 @@ Active Work:
   ✗ plans/refactor-api.md (5 days - STALE, not started?)
 
 Suggestions:
-  → architecture.md is aging. Run /shipkit-project-context to refresh.
+  → architecture.json is aging. Run /shipkit-project-context to refresh.
   → plans/refactor-api.md may be abandoned. Archive or execute?
 ```

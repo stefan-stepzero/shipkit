@@ -17,6 +17,56 @@ from pathlib import Path
 
 SERVER_URL = os.environ.get("SHIPKIT_MISSION_CONTROL_URL", "http://localhost:7777")
 
+# Track last artifact sync time to avoid redundant sends
+_ARTIFACT_CACHE_FILE = ".shipkit/.artifact-sync-cache.json"
+
+
+def collect_artifacts(cwd: str) -> dict | None:
+    """Scan .shipkit/ for JSON artifacts that follow the shipkit-artifact convention.
+
+    Only includes artifacts modified since last sync to minimize payload.
+    Returns dict of {filename: artifact_data} or None if nothing changed.
+    """
+    shipkit_dir = Path(cwd) / ".shipkit"
+    if not shipkit_dir.exists():
+        return None
+
+    cache_path = Path(cwd) / _ARTIFACT_CACHE_FILE
+    last_sync = 0
+    try:
+        if cache_path.exists():
+            last_sync = json.loads(cache_path.read_text()).get("lastSync", 0)
+    except Exception:
+        pass
+
+    artifacts = {}
+    for json_file in shipkit_dir.glob("*.json"):
+        # Skip internal files
+        if json_file.name.startswith(".") or json_file.name == "skill-usage.json":
+            continue
+        try:
+            mtime = json_file.stat().st_mtime
+            if mtime <= last_sync:
+                continue
+            data = json.loads(json_file.read_text())
+            # Only ship files that follow the shipkit-artifact convention
+            if data.get("$schema") == "shipkit-artifact":
+                artifacts[json_file.name] = data
+        except Exception:
+            continue
+
+    if not artifacts:
+        return None
+
+    # Update sync cache
+    try:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(json.dumps({"lastSync": time.time()}))
+    except Exception:
+        pass
+
+    return artifacts
+
 
 def server_running() -> bool:
     """Check if Mission Control server is running."""
@@ -82,6 +132,11 @@ def main():
     if not server_running():
         print(json.dumps({}))  # Silent exit - no server, no reporting
         return
+
+    # Collect .shipkit/ JSON artifacts if any have changed
+    artifacts = collect_artifacts(cwd)
+    if artifacts:
+        event_data["artifacts"] = artifacts
 
     # Server exists, report to it
     send_event(event_data)
