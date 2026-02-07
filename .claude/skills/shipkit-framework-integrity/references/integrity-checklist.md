@@ -9,7 +9,7 @@
 ## Part 0: Version File
 
 ### VERSION Sync
-- [ ] `install/VERSION` exists
+- [ ] `VERSION` exists (repo root)
 - [ ] VERSION contains valid semver (e.g., `1.3.0`)
 - [ ] VERSION matches latest git release tag (if tags exist)
 - [ ] VERSION matches version in `docs/generated/shipkit-overview.html` header

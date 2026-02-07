@@ -184,7 +184,7 @@ All files preserved in context/ subfolder.
 
 **Step 3a: Fetch VERSION to know target version:**
 ```bash
-curl -sL https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/install/VERSION
+curl -sL https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/VERSION
 ```
 Store this for reporting (e.g., "Updating to v1.3.0").
 
@@ -582,7 +582,7 @@ Ready to use. Review merged files, archive has originals.
 - `**/CLAUDE.md` - Subfolder instructions
 
 **From GitHub:**
-- `install/VERSION` - Target version (fetched to report version)
+- `VERSION` - Target version (fetched to report version)
 - `installers/install.py` - Python installer (fetched and executed)
 
 The installer handles fetching and installing:

@@ -508,7 +508,8 @@ def verify_source_files(repo_root):
         "install/rules",
         "install/settings",
         "install/claude-md",
-        "install/profiles"
+        "install/profiles",
+        "install/mission-control"
     ]
 
     missing = 0
@@ -556,6 +557,8 @@ def install_shared_core(repo_root, target_dir, language, edition):
     shutil.copy2(hooks_src / "shipkit-track-skill-usage.py", hooks_dest / "shipkit-track-skill-usage.py")
     shutil.copy2(hooks_src / "shipkit-relentless-stop-hook.py", hooks_dest / "shipkit-relentless-stop-hook.py")
     shutil.copy2(hooks_src / "shipkit-precompact-hook.py", hooks_dest / "shipkit-precompact-hook.py")
+    shutil.copy2(hooks_src / "shipkit-mission-control-reporter.py", hooks_dest / "mission-control-reporter.py")
+    shutil.copy2(hooks_src / "shipkit-mission-control-receiver.py", hooks_dest / "mission-control-receiver.py")
     print_success("Hooks installed")
 
     # Install framework rules
@@ -589,14 +592,16 @@ def install_shared_core(repo_root, target_dir, language, edition):
 
     # Git files
     print_info("Installing git configuration files...")
-    filename = ".gitignore"
-    src = shared_dir / filename
-    dest = target_dir / filename
-    if not dest.exists():
-        shutil.copy2(src, dest)
-        print_success(f"{filename} installed")
-    else:
-        print_warning(f"{filename} already exists, skipping")
+    for filename in [".gitignore", ".gitattributes"]:
+        src = shared_dir / filename
+        dest = target_dir / filename
+        if not src.exists():
+            continue
+        if not dest.exists():
+            shutil.copy2(src, dest)
+            print_success(f"{filename} installed")
+        else:
+            print_warning(f"{filename} already exists, skipping")
 
 def install_edition_files(repo_root, target_dir, manifest, language, selected_skills, claude_md_action, skip_prompts=False):
     """Install edition-specific settings and CLAUDE.md"""
@@ -686,6 +691,10 @@ def generate_settings(manifest, language, selected_skills):
                 "Write(pyproject.toml)",
                 "Write(requirements.txt)",
 
+                "Write(.claude/**)",
+                "Write(.shipkit/**)",
+                "Write(.shipkit-archive/**)",
+
                 "Bash(git:*)",
                 "Bash(python:*)",
                 "Bash(pip:*)",
@@ -728,6 +737,7 @@ def generate_settings(manifest, language, selected_skills):
                 "Bash(uniq:*)",
                 "Bash(diff:*)",
                 "Bash(tree:*)",
+                "Bash(gh:*)",
 
                 "WebFetch(domain:github.com)",
                 "WebFetch(domain:raw.githubusercontent.com)",
@@ -766,6 +776,26 @@ def generate_settings(manifest, language, selected_skills):
                         {
                             "type": "command",
                             "command": "python -X utf8 .claude/hooks/shipkit-track-skill-usage.py"
+                        }
+                    ]
+                },
+                {
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "python -X utf8 .claude/hooks/mission-control-reporter.py",
+                            "async": True,
+                            "timeout": 5000
+                        }
+                    ]
+                }
+            ],
+            "PreToolUse": [
+                {
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": "python -X utf8 .claude/hooks/mission-control-receiver.py"
                         }
                     ]
                 }
@@ -896,6 +926,70 @@ def install_agents(repo_root, target_dir, selected_agents):
             print_warning(f"Agent not found: {agent_file}")
 
     print_success(f"Installed {count} agent personas")
+
+def _parse_server_version(index_js_path):
+    """Extract SERVER_VERSION from mission control index.js"""
+    try:
+        with open(index_js_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                if "SERVER_VERSION" in line and "=" in line:
+                    # Match: const SERVER_VERSION = '1.1.0';
+                    parts = line.split("'")
+                    if len(parts) >= 2:
+                        return parts[1]
+                    parts = line.split('"')
+                    if len(parts) >= 2:
+                        return parts[1]
+    except Exception:
+        pass
+    return None
+
+def install_mission_control(repo_root, target_dir):
+    """Install Mission Control hub (server + dashboard) to ~/.shipkit-mission-control/"""
+    print()
+    print(f"  {Colors.BOLD}Installing Mission Control hub{Colors.RESET}")
+    print()
+
+    mc_src = repo_root / "install" / "mission-control"
+    if not mc_src.exists():
+        print_warning("Mission Control source not found, skipping")
+        return
+
+    # Hub lives in user home, shared across projects
+    hub_dir = Path.home() / ".shipkit-mission-control"
+
+    # Check if hub already has same or newer version
+    src_version = _parse_server_version(mc_src / "server" / "index.js")
+    existing_version = _parse_server_version(hub_dir / "server" / "index.js")
+
+    if src_version and existing_version and existing_version >= src_version:
+        print_info(f"Mission Control hub already at v{existing_version} (source: v{src_version}), skipping")
+    else:
+        # Copy server (index.js + package.json only, no node_modules)
+        server_dest = hub_dir / "server"
+        server_dest.mkdir(parents=True, exist_ok=True)
+        server_src = mc_src / "server"
+        for filename in ["index.js", "package.json"]:
+            src_file = server_src / filename
+            if src_file.exists():
+                shutil.copy2(src_file, server_dest / filename)
+
+        # Copy dashboard dist (pre-built assets)
+        dashboard_dist_src = mc_src / "dashboard" / "dist"
+        if dashboard_dist_src.exists():
+            dashboard_dist_dest = hub_dir / "dashboard" / "dist"
+            if dashboard_dist_dest.exists():
+                shutil.rmtree(dashboard_dist_dest)
+            shutil.copytree(dashboard_dist_src, dashboard_dist_dest)
+
+        version_msg = f" v{src_version}" if src_version else ""
+        print_success(f"Mission Control hub{version_msg} installed to {hub_dir}")
+
+    # Create project-local MC directories
+    mc_local = target_dir / ".shipkit" / "mission-control"
+    (mc_local / "codebases").mkdir(parents=True, exist_ok=True)
+    (mc_local / "inbox").mkdir(parents=True, exist_ok=True)
+    print_success("Mission Control local directories created")
 
 def delete_unused_language(target_dir, language):
     """Delete scripts for the language not selected"""
@@ -1066,17 +1160,25 @@ def install_mcp_config(target_dir, selected_mcps):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def install_html_docs(repo_root, target_dir):
-    """Copy HTML overview to target project for easy reference"""
+    """Copy HTML overview to target project, injecting version from VERSION file"""
     html_dir = repo_root / "docs" / "generated"
     overview_file = html_dir / "shipkit-overview.html"
 
     if not overview_file.exists():
         return None
 
-    # Copy to .shipkit/ for easy access
+    # Read version
+    version_file = repo_root / "VERSION"
+    version = "dev"
+    if version_file.exists():
+        version = "v" + version_file.read_text(encoding="utf-8").strip()
+
+    # Read HTML, replace placeholder, write to dest
     dest_file = target_dir / ".shipkit" / "shipkit-overview.html"
     dest_file.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(overview_file, dest_file)
+    html = overview_file.read_text(encoding="utf-8")
+    html = html.replace("{{SHIPKIT_VERSION}}", version)
+    dest_file.write_text(html, encoding="utf-8")
     return dest_file
 
 def open_html_docs(repo_root, target_dir, edition):
@@ -1124,7 +1226,8 @@ def show_completion(target_dir, selected_skills, selected_agents, language):
     print_success("Session hooks (.claude/hooks/)")
     print_success(f"Settings (.claude/settings.json)")
     print_success(f"Project instructions (CLAUDE.md)")
-    print_success("Git configuration (.gitignore)")
+    print_success("Git configuration (.gitignore, .gitattributes)")
+    print_success(f"Mission Control hub (~/.shipkit-mission-control/)")
     print_success("HTML skill reference (.shipkit/shipkit-overview.html)")
 
     print()
@@ -1278,6 +1381,7 @@ def main():
     install_edition_files(repo_root, target_dir, manifest, language, selected_skills, claude_md_action, skip_prompts=args.yes)
     install_skills(repo_root, target_dir, selected_skills)
     install_agents(repo_root, target_dir, selected_agents)
+    install_mission_control(repo_root, target_dir)
     delete_unused_language(target_dir, language)
     make_scripts_executable(target_dir, language)
 

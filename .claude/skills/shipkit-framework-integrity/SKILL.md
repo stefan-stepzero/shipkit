@@ -111,18 +111,18 @@ argument-hint: "[--full] [--quick] [--fix] [--json] [--loop N]"
 
 **Check VERSION file exists and is valid**:
 ```
-1. Verify install/VERSION exists
+1. Verify VERSION exists
    If NOT exists:
-     → ERROR: install/VERSION file missing (single source of truth for releases)
+     → ERROR: VERSION file missing (single source of truth for releases)
 
 2. Read VERSION content, trim whitespace
    If empty or invalid semver:
-     → ERROR: install/VERSION must contain valid semver (e.g., "1.3.0")
+     → ERROR: VERSION must contain valid semver (e.g., "1.3.0")
 
 3. Check VERSION matches latest git tag (if tags exist):
    git describe --tags --abbrev=0 2>/dev/null
    If tag exists and doesn't match VERSION:
-     → WARNING: install/VERSION ({version}) doesn't match latest git tag ({tag})
+     → WARNING: VERSION ({version}) doesn't match latest git tag ({tag})
 ```
 
 **Why this matters**: VERSION is the single source of truth. During installation:
@@ -833,7 +833,7 @@ State saved to: .claude/skills/shipkit-framework-integrity/.integrity-state.json
 
 | Check | Severity | Cached | Description |
 |-------|----------|--------|-------------|
-| VERSION missing | ERROR | No | `install/VERSION` file doesn't exist |
+| VERSION missing | ERROR | No | `VERSION` file doesn't exist |
 | VERSION invalid | ERROR | No | VERSION file empty or not valid semver |
 | VERSION/tag mismatch | WARNING | No | VERSION doesn't match latest git tag |
 | Orphan skill | ERROR | No | Skill directory exists but not in manifest |
