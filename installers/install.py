@@ -620,10 +620,11 @@ def install_edition_files(repo_root, target_dir, manifest, language, selected_sk
         print_success(f"Settings installed with {len(selected_skills)} skill permissions")
     else:
         print_warning("settings.json exists, preserving your custom config")
-        # Still update skill permissions (auto-yes if skip_prompts)
-        if skip_prompts or confirm("Update skill permissions in existing settings?", default=True):
+        # Still update skill permissions and hooks (auto-yes if skip_prompts)
+        if skip_prompts or confirm("Update skill permissions and hooks in existing settings?", default=True):
             update_skill_permissions(settings_dest, selected_skills)
-            print_success("Skill permissions updated")
+            update_hooks(settings_dest)
+            print_success("Skill permissions and hooks updated")
 
     # CLAUDE.md
     claude_md_file = manifest["claudeMdFile"]
@@ -757,79 +758,7 @@ def generate_settings(manifest, language, selected_skills):
             ]
         },
         "defaultMode": "acceptEdits",
-        "hooks": {
-            "SessionStart": [
-                {
-                    "matcher": "startup|resume|clear|compact",
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": "python -X utf8 .claude/hooks/session-start.py"
-                        }
-                    ]
-                }
-            ],
-            "PostToolUse": [
-                {
-                    "matcher": "Skill",
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": "python -X utf8 .claude/hooks/shipkit-track-skill-usage.py"
-                        }
-                    ]
-                },
-                {
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": "python -X utf8 .claude/hooks/mission-control-reporter.py",
-                            "async": True,
-                            "timeout": 5000
-                        }
-                    ]
-                }
-            ],
-            "PreToolUse": [
-                {
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": "python -X utf8 .claude/hooks/mission-control-receiver.py"
-                        }
-                    ]
-                }
-            ],
-            "Stop": [
-                {
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": "python -X utf8 .claude/hooks/after-skill-router.py"
-                        }
-                    ]
-                },
-                {
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": "python -X utf8 .claude/hooks/shipkit-relentless-stop-hook.py",
-                            "timeout": 180
-                        }
-                    ]
-                }
-            ],
-            "PreCompact": [
-                {
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": "python -X utf8 .claude/hooks/shipkit-precompact-hook.py"
-                        }
-                    ]
-                }
-            ]
-        },
+        "hooks": _build_hooks_config(),
         "skills": {
             "description": "Skill configuration and defaults",
             "autoLoadConstitutions": False
@@ -872,6 +801,101 @@ def update_skill_permissions(settings_path, selected_skills):
     if "shipkit" not in settings:
         settings["shipkit"] = {}
     settings["shipkit"]["installedSkills"] = selected_skills
+
+    with open(settings_path, 'w', encoding='utf-8') as f:
+        json.dump(settings, f, indent=2)
+
+def _build_hooks_config():
+    """Build the canonical hooks configuration for Shipkit.
+
+    Single source of truth for hook wiring — used by both generate_settings()
+    and update_hooks() to avoid drift.
+    """
+    return {
+        "SessionStart": [
+            {
+                "matcher": "startup|resume|clear|compact",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python -X utf8 .claude/hooks/session-start.py"
+                    }
+                ]
+            }
+        ],
+        "PostToolUse": [
+            {
+                "matcher": "Skill",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python -X utf8 .claude/hooks/shipkit-track-skill-usage.py"
+                    }
+                ]
+            },
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python -X utf8 .claude/hooks/mission-control-reporter.py",
+                        "async": True,
+                        "timeout": 5000
+                    }
+                ]
+            }
+        ],
+        "PreToolUse": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python -X utf8 .claude/hooks/mission-control-receiver.py"
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python -X utf8 .claude/hooks/after-skill-router.py"
+                    }
+                ]
+            },
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python -X utf8 .claude/hooks/shipkit-relentless-stop-hook.py",
+                        "timeout": 180
+                    }
+                ]
+            }
+        ],
+        "PreCompact": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python -X utf8 .claude/hooks/shipkit-precompact-hook.py"
+                    }
+                ]
+            }
+        ]
+    }
+
+def update_hooks(settings_path):
+    """Update hooks section in existing settings.json.
+
+    Replaces the entire hooks section with the canonical config so that
+    new hook types (PostToolUse MC reporter, PreToolUse MC receiver, etc.)
+    are wired in on update — not just on fresh install.
+    """
+    with open(settings_path, 'r', encoding='utf-8') as f:
+        settings = json.load(f)
+
+    settings["hooks"] = _build_hooks_config()
 
     with open(settings_path, 'w', encoding='utf-8') as f:
         json.dump(settings, f, indent=2)

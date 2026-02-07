@@ -93,7 +93,7 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 **The loop works differently than you might expect:**
 
-1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-lint.local.md`. Without this file, the Stop hook won't activate.
+1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-lint.{sid8}.local.md`. Without this file, the Stop hook won't activate.
 
 2. **YOU check if the promise is met** - Run the lint command, check if it passes. The hook does NOT run commands.
 
@@ -114,6 +114,13 @@ The user invokes this skill and walks away. Come back to either success or a cle
    ```
 
 **The pattern is:** Create state file → Fix violations → Run lint → Promise met? Delete file & stop : End response → Hook blocks → Repeat
+
+---
+
+## Session ID
+
+Your session-start context includes `Session ID: {sid8}`.
+Use this 8-character ID in all state file names below. If not found in session context, use `unknown`.
 
 ---
 
@@ -155,7 +162,7 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 ### Step 2: Create State File
 
-**Write to:** `.shipkit/relentless-lint.local.md`
+**Write to:** `.shipkit/relentless-lint.{sid8}.local.md`
 
 ```markdown
 ---
@@ -193,7 +200,7 @@ enabled: true
    - `npx prettier --write .`
 3. Manually fix remaining issues that auto-fix can't handle
 4. Run lint again to check progress
-5. **If lint passes:** Delete `.shipkit/relentless-lint.local.md` and finish
+5. **If lint passes:** Delete `.shipkit/relentless-lint.{sid8}.local.md` and finish
 6. **If lint fails:** End your response normally → hook blocks → you continue
 
 **YOU are responsible for:**
@@ -260,7 +267,7 @@ User: lint relentlessly
 
 Claude:
 1. Detects npm run lint, uses that
-2. Creates .shipkit/relentless-lint.local.md
+2. Creates .shipkit/relentless-lint.{sid8}.local.md
 3. Runs lint, sees 23 violations
 4. Runs `npm run lint -- --fix` (auto-fixes 18)
 5. [Attempts to stop]
@@ -278,7 +285,7 @@ Claude:
 
 ## State File Location
 
-`.shipkit/relentless-lint.local.md`
+`.shipkit/relentless-lint.{sid8}.local.md`
 
 This file:
 - Activates the relentless Stop hook
@@ -328,7 +335,7 @@ Some violations can't be auto-fixed:
 - Source files with violations
 
 **Writes:**
-- `.shipkit/relentless-lint.local.md` (temporary, auto-deleted)
+- `.shipkit/relentless-lint.{sid8}.local.md` (temporary, auto-deleted)
 
 ---
 

@@ -30,6 +30,13 @@ Batch verification with auto-fix — Claude reviews your work across quality dim
 
 ---
 
+## Session ID
+
+Your session-start context includes `Session ID: {sid8}`.
+Use this 8-character ID in all state file names below. If not found in session context, use `unknown`.
+
+---
+
 ## Process
 
 ### Step 1: Detect Scope
@@ -84,7 +91,7 @@ Create the relentless state file to prevent early exit:
 mkdir -p .shipkit
 ```
 
-Write `.shipkit/relentless-verify.local.md` — include dismissed themes in the body so the hook feeds them back on each iteration:
+Write `.shipkit/relentless-verify.{sid8}.local.md` — include dismissed themes in the body so the hook feeds them back on each iteration:
 
 ```markdown
 ---
@@ -274,7 +281,7 @@ After fixing, **re-verify the changed files** (including files you just modified
 1. Re-run verification on all files touched in Step 4
 2. Check: are there any remaining 🔴 Critical or 🟡 Should Fix findings (excluding dismissed themes)?
    - **YES** → Continue fixing. When you try to stop, the hook will block you and send you back.
-   - **NO** → Delete `.shipkit/relentless-verify.local.md` and proceed to final report. Any 🟢 Minor findings are listed in the report but do not block completion.
+   - **NO** → Delete `.shipkit/relentless-verify.{sid8}.local.md` and proceed to final report. Any 🟢 Minor findings are listed in the report but do not block completion.
 
 The relentless hook manages the iteration. You don't need to count loops — just:
 - Fix what you find

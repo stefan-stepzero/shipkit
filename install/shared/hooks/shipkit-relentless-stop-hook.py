@@ -10,20 +10,23 @@ Priority: relentless-state > standby-state > loop-state.
 
 Based on the ralph-wiggum pattern:
 1. Globs for .shipkit/relentless-*.local.md (per-skill state files)
-2. If none found, checks if .shipkit/standby-state.local.md exists (standby daemon)
-3. If none found, globs for .shipkit/*-loop.local.md (dev skill loop files)
+2. If none found, checks if .shipkit/standby-state.*.local.md exists (standby daemon)
+3. If none found, globs for .shipkit/*-loop.*.local.md (dev skill loop files)
 4. If none found, allows stop (quick exit)
 5. If yes, blocks stop and feeds task back to Claude
 
-Each relentless skill has its own state file so they can run in parallel:
-- relentless-build.local.md  (build-relentlessly)
-- relentless-test.local.md   (test-relentlessly)
-- relentless-lint.local.md   (lint-relentlessly)
-- relentless-verify.local.md (verify)
+State files are instance-scoped using the first 8 chars of session_id (sid8):
+- relentless-build.{sid8}.local.md  (build-relentlessly)
+- relentless-test.{sid8}.local.md   (test-relentlessly)
+- relentless-lint.{sid8}.local.md   (lint-relentlessly)
+- relentless-verify.{sid8}.local.md (verify)
+- standby-state.{sid8}.local.md     (standby)
+
+Old-format files (no sid8) are still supported as fallback.
 
 Loop mode state files (dev skills):
-- framework-integrity-loop.local.md  (framework-integrity --loop N)
-- validate-skill-loop.local.md       (validate-lite-skill --loop N)
+- framework-integrity-loop.{sid8}.local.md  (framework-integrity --loop N)
+- validate-skill-loop.{sid8}.local.md       (validate-lite-skill --loop N)
 
 The hook does NOT run commands - it just manages iteration and blocks/allows stop.
 """
@@ -48,12 +51,48 @@ STANDBY_STATE_FILE = "standby-state.local.md"
 LOOP_GLOB = "*-loop.local.md"
 
 
+def is_instance_scoped(path: Path) -> bool:
+    """Check if a state file uses instance-scoped naming (has .{8chars}.local.md suffix)."""
+    return bool(re.match(r'.*\.[a-zA-Z0-9]{8}\.local\.md$', path.name))
+
+
+def find_state_files(shipkit_dir: Path, glob_pattern: str, sid8: str) -> list:
+    """Find state files, preferring instance-scoped matches for this session.
+
+    Returns matches in priority order:
+    1. Instance-scoped files matching this session's sid8
+    2. Old-format files (no session ID segment) as fallback
+    Skips instance-scoped files belonging to OTHER sessions.
+    """
+    all_matches = sorted(shipkit_dir.glob(glob_pattern))
+    own_matches = []
+    old_format = []
+
+    for m in all_matches:
+        if is_instance_scoped(m):
+            # Extract sid8 from filename: e.g. "relentless-build.abc12345.local.md"
+            parts = m.name.rsplit('.local.md', 1)
+            segments = parts[0].rsplit('.', 1) if parts[0] else []
+            file_sid8 = segments[1] if len(segments) >= 2 else ""
+            if file_sid8 == sid8:
+                own_matches.append(m)
+            # Skip other sessions' instance-scoped files
+        else:
+            old_format.append(m)
+
+    return own_matches + old_format
+
+
 def main():
-    # Read hook input from stdin (required but not used for decisions)
+    # Read hook input from stdin
+    hook_input = {}
     try:
         hook_input = json.load(sys.stdin)
     except json.JSONDecodeError:
         pass  # Continue anyway
+
+    session_id = hook_input.get("session_id", "unknown")
+    sid8 = session_id[:8] if session_id != "unknown" else "unknown"
 
     # Find project directory
     project_dir = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
@@ -63,20 +102,26 @@ def main():
     state_file = None
 
     # 1. Check for any relentless-*.local.md files (per-skill state files)
-    relentless_matches = sorted(shipkit_dir.glob(RELENTLESS_GLOB))
+    relentless_matches = find_state_files(shipkit_dir, RELENTLESS_GLOB, sid8)
     if relentless_matches:
         # Pick the first match (alphabetical: build < lint < test < verify)
         state_file = relentless_matches[0]
 
     # 2. Fall back to standby state file
     if state_file is None:
-        candidate = shipkit_dir / STANDBY_STATE_FILE
+        # Try instance-scoped first
+        candidate = shipkit_dir / f"standby-state.{sid8}.local.md"
         if candidate.exists():
             state_file = candidate
+        else:
+            # Fall back to old format
+            candidate = shipkit_dir / STANDBY_STATE_FILE
+            if candidate.exists():
+                state_file = candidate
 
     # 3. Fall back to loop state files (dev skill --loop N)
     if state_file is None:
-        loop_matches = sorted(shipkit_dir.glob(LOOP_GLOB))
+        loop_matches = find_state_files(shipkit_dir, LOOP_GLOB, sid8)
         if loop_matches:
             state_file = loop_matches[0]
 
@@ -104,7 +149,7 @@ def main():
         # Max iterations reached - allow stop, clean up
         cleanup_state_file(state_file)
         skill = state.get("skill", "relentless")
-        is_loop = state_file.name.endswith("-loop.local.md")
+        is_loop = "-loop." in state_file.name and state_file.name.endswith(".local.md")
         if is_loop:
             label = "Loop"
         elif skill == "standby":
@@ -126,7 +171,7 @@ def main():
     task = state.get("task", "Complete the task")
     completion_promise = state.get("completion_promise", "Task completed successfully")
 
-    is_loop = state_file.name.endswith("-loop.local.md")
+    is_loop = "-loop." in state_file.name and state_file.name.endswith(".local.md")
 
     if is_loop:
         reason = build_loop_reason(
@@ -142,7 +187,8 @@ def main():
             iteration=new_iteration,
             max_iterations=max_iterations,
             task=task,
-            completion_promise=completion_promise
+            completion_promise=completion_promise,
+            state_filename=state_file.name
         )
     else:
         reason = build_relentless_reason(
@@ -150,7 +196,8 @@ def main():
             iteration=new_iteration,
             max_iterations=max_iterations,
             task=task,
-            completion_promise=completion_promise
+            completion_promise=completion_promise,
+            state_filename=state_file.name
         )
 
     # Block the stop
@@ -226,18 +273,17 @@ def cleanup_state_file(state_file: Path):
 
 
 def build_relentless_reason(skill: str, iteration: int, max_iterations: int,
-                            task: str, completion_promise: str) -> str:
+                            task: str, completion_promise: str,
+                            state_filename: str) -> str:
     """Build the reason message for relentless skills (build, test, lint, verify)."""
 
-    skill_names = {
-        "build-relentlessly": ("Build", "relentless-build.local.md"),
-        "test-relentlessly": ("Test", "relentless-test.local.md"),
-        "lint-relentlessly": ("Lint", "relentless-lint.local.md"),
-        "verify": ("Verify", "relentless-verify.local.md"),
+    skill_display_names = {
+        "build-relentlessly": "Build",
+        "test-relentlessly": "Test",
+        "lint-relentlessly": "Lint",
+        "verify": "Verify",
     }
-    skill_display, state_filename = skill_names.get(
-        skill, (skill.replace("-", " ").title(), f"relentless-{skill}.local.md")
-    )
+    skill_display = skill_display_names.get(skill, skill.replace("-", " ").title())
 
     return f"""**Relentless Mode: {skill_display} - Iteration {iteration}/{max_iterations}**
 
@@ -260,7 +306,8 @@ Do not give up. Keep working until the completion promise is satisfied or you've
 
 
 def build_standby_reason(iteration: int, max_iterations: int,
-                         task: str, completion_promise: str) -> str:
+                         task: str, completion_promise: str,
+                         state_filename: str) -> str:
     """Build the reason message for standby daemon mode."""
 
     return f"""**Standby Mode - Iteration {iteration}/{max_iterations}**
@@ -273,11 +320,11 @@ You are in standby mode, polling for Mission Control commands.
 **Instructions:**
 1. If a command was injected via additionalContext on the previous tool call, execute it fully
 2. After completing a command, rename the `.inflight` file to `.processed`
-3. After completing a command, edit `.shipkit/standby-state.local.md` to set `idle_count: 0`
-4. If no command was received, edit `.shipkit/standby-state.local.md` to increment `idle_count` by 1
+3. After completing a command, edit `.shipkit/{state_filename}` to set `idle_count: 0`
+4. If no command was received, edit `.shipkit/{state_filename}` to increment `idle_count` by 1
 5. Read `idle_count` from the state file and calculate sleep: min(10 * 2^idle_count, 300) seconds
 6. Run `sleep N` via Bash — no other output during idle polls
-7. If a command contains "shutdown" or "exit standby", delete `.shipkit/standby-state.local.md` and stop
+7. If a command contains "shutdown" or "exit standby", delete `.shipkit/{state_filename}` and stop
 
 Note: You manage `idle_count` yourself. The hook only manages `iteration`.
 Minimize output during idle polls. Produce full output only when executing commands."""

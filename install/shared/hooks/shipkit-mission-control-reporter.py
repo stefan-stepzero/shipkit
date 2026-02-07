@@ -130,7 +130,11 @@ def main():
             event_data["skill"] = tool_input.get("skill", "")
 
     # Detect standby mode from dedicated standby state file
-    standby_file = Path(cwd) / ".shipkit" / "standby-state.local.md"
+    # Try instance-scoped file first, fall back to old format
+    sid8 = session_id[:8] if session_id != "unknown" else "unknown"
+    standby_file = Path(cwd) / ".shipkit" / f"standby-state.{sid8}.local.md"
+    if not standby_file.exists():
+        standby_file = Path(cwd) / ".shipkit" / "standby-state.local.md"
     if standby_file.exists():
         event_data["mode"] = "standby"
 

@@ -9,6 +9,9 @@ CLAUDE.md
 # Shipkit Lite - Scripts only (ignore - framework infrastructure)
 .shipkit/scripts/
 
+# Shipkit per-session state files (temporary, never commit)
+.shipkit/*.local.md
+
 # IMPORTANT: DO NOT IGNORE YOUR WORK PRODUCTS!
 # ✅ .shipkit/ contains YOUR context files (commit these!)
 #

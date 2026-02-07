@@ -324,7 +324,53 @@ def get_smart_recommendation(project_root: Path, counts: dict, has_stack: bool) 
     return "/shipkit-project-status → See full project health"
 
 
+def cleanup_orphan_state_files(shipkit_dir: Path, own_sid8: str):
+    """Remove instance-scoped state files from crashed sessions older than 24h.
+
+    Scans for files matching *.{8-alnum}.local.md pattern, skips files
+    belonging to the current session, and deletes files older than 24 hours.
+    """
+    if not shipkit_dir.exists():
+        return
+
+    pattern = re.compile(r'\.[a-zA-Z0-9]{8}\.local\.md$')
+
+    for f in shipkit_dir.iterdir():
+        if not f.is_file():
+            continue
+        if not pattern.search(f.name):
+            continue
+        # Extract the 8-char session ID from the filename
+        # e.g., "relentless-build.abc12345.local.md" → "abc12345"
+        parts = f.name.rsplit('.local.md', 1)
+        if not parts[0]:
+            continue
+        segments = parts[0].rsplit('.', 1)
+        if len(segments) < 2:
+            continue
+        file_sid8 = segments[1]
+        # Skip our own session
+        if file_sid8 == own_sid8:
+            continue
+        # Delete if older than 24 hours
+        age_days = get_file_age_days(f)
+        if age_days > 1:
+            try:
+                f.unlink()
+            except Exception:
+                pass
+
+
 def main():
+    # Read session_id from stdin (hook events provide JSON on stdin)
+    session_id = "unknown"
+    try:
+        hook_input = json.load(sys.stdin)
+        session_id = hook_input.get("session_id", "unknown")
+    except Exception:
+        pass
+    sid8 = session_id[:8] if session_id != "unknown" else "unknown"
+
     # Find paths
     hook_dir = Path(__file__).parent
 
@@ -371,6 +417,11 @@ def main():
 
     print("# 🚀 Session Start")
     print()
+    print(f"**Session ID:** `{sid8}` — use in state file names: `.shipkit/relentless-{{type}}.{sid8}.local.md`")
+    print()
+
+    # Clean up orphan state files from crashed sessions (>24h old)
+    cleanup_orphan_state_files(shipkit_dir, sid8)
 
     if update_msg:
         print(update_msg)

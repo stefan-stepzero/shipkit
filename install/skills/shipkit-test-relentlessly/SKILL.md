@@ -92,7 +92,7 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 **The loop works differently than you might expect:**
 
-1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-test.local.md`. Without this file, the Stop hook won't activate.
+1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-test.{sid8}.local.md`. Without this file, the Stop hook won't activate.
 
 2. **YOU check if the promise is met** - Run the test command, check if all tests pass. The hook does NOT run commands.
 
@@ -113,6 +113,13 @@ The user invokes this skill and walks away. Come back to either success or a cle
    ```
 
 **The pattern is:** Create state file → Fix tests → Run tests → Promise met? Delete file & stop : End response → Hook blocks → Repeat
+
+---
+
+## Session ID
+
+Your session-start context includes `Session ID: {sid8}`.
+Use this 8-character ID in all state file names below. If not found in session context, use `unknown`.
 
 ---
 
@@ -155,7 +162,7 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 ### Step 2: Create State File
 
-**Write to:** `.shipkit/relentless-test.local.md`
+**Write to:** `.shipkit/relentless-test.{sid8}.local.md`
 
 ```markdown
 ---
@@ -188,7 +195,7 @@ enabled: true
 1. Run the test command to see current failures
 2. Implement or fix code to make tests pass
 3. Run tests again to check progress
-4. **If all tests pass:** Delete `.shipkit/relentless-test.local.md` and finish
+4. **If all tests pass:** Delete `.shipkit/relentless-test.{sid8}.local.md` and finish
 5. **If tests fail:** End your response normally → hook blocks → you continue
 
 **YOU are responsible for:**
@@ -233,7 +240,7 @@ User: test relentlessly - implement the UserService class
 
 Claude:
 1. Detects npm test, uses `npm test`
-2. Creates .shipkit/relentless-test.local.md
+2. Creates .shipkit/relentless-test.{sid8}.local.md
 3. Runs tests, sees 5 failures in user.test.ts
 4. Implements UserService.create() (2 tests pass)
 5. [Attempts to stop]
@@ -262,7 +269,7 @@ This guides which tests to prioritize and how to approach failures.
 
 ## State File Location
 
-`.shipkit/relentless-test.local.md`
+`.shipkit/relentless-test.{sid8}.local.md`
 
 This file:
 - Activates the relentless Stop hook
@@ -300,7 +307,7 @@ build-relentlessly → test-relentlessly → lint-relentlessly
 - `.shipkit/specs/active/*.json` for test strategy (if exists)
 
 **Writes:**
-- `.shipkit/relentless-test.local.md` (temporary, auto-deleted)
+- `.shipkit/relentless-test.{sid8}.local.md` (temporary, auto-deleted)
 
 ---
 

@@ -59,6 +59,13 @@ Turns this Claude Code instance into an AFK daemon. Polls Mission Control for co
 
 ---
 
+## Session ID
+
+Your session-start context includes `Session ID: {sid8}`.
+Use this 8-character ID in all state file names below. If not found in session context, use `unknown`.
+
+---
+
 ## Arguments
 
 ```
@@ -104,7 +111,7 @@ Turns this Claude Code instance into an AFK daemon. Polls Mission Control for co
 ### Shutdown
 
 If a command contains "shutdown", "exit standby", or "stop standby":
-1. Delete `.shipkit/standby-state.local.md`
+1. Delete `.shipkit/standby-state.{sid8}.local.md`
 2. Stop — the hook will allow it since the state file is gone
 
 ---
@@ -155,7 +162,7 @@ Extract `--max N` from input (default: 500).
 
 ### Step 1: Create State File
 
-**Write to:** `.shipkit/standby-state.local.md`
+**Write to:** `.shipkit/standby-state.{sid8}.local.md`
 
 ```markdown
 ---
@@ -183,7 +190,7 @@ Output a brief confirmation:
 Standby mode activated. Polling Mission Control for commands.
 Max iterations: 500 | Backoff: 10s → 300s
 Send commands from the dashboard at http://localhost:7777
-To exit: send "shutdown" from dashboard, or delete .shipkit/standby-state.local.md
+To exit: send "shutdown" from dashboard, or delete .shipkit/standby-state.{sid8}.local.md
 ```
 
 ### Step 3: Begin Polling
@@ -235,10 +242,10 @@ That's it. One Bash call. No other text.
 ## Context Files
 
 **Reads:**
-- `.shipkit/standby-state.local.md` (state tracking)
+- `.shipkit/standby-state.{sid8}.local.md` (state tracking)
 
 **Writes:**
-- `.shipkit/standby-state.local.md` (temporary, deleted on shutdown)
+- `.shipkit/standby-state.{sid8}.local.md` (temporary, deleted on shutdown)
 
 ---
 

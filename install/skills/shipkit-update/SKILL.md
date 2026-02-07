@@ -289,11 +289,16 @@ rm /tmp/shipkit-install.py
 | `permissions.allow` with `Skill(lite-*)` | → Remove (legacy) |
 | `permissions.allow` (other entries) | → **Preserve** (user's custom permissions) |
 | `permissions.deny` | → Merge (keep user's, add Shipkit's) |
-| `hooks.SessionStart` with shipkit paths | → Replace with new |
-| `hooks.SessionStart` (other entries) | → **Preserve** (user's custom hooks) |
-| `hooks.Stop` | → Same logic |
+| `hooks` (entire section) | → **Replace with new template's hooks** |
 | `skills`, `workspace` sections | → Replace with new |
 | Any other keys | → **Preserve** (user's additions) |
+
+**Hooks merge detail:** Replace the entire `hooks` section with the new template. This ensures new hook types (e.g., `PostToolUse`, `PreToolUse`, `PreCompact`) are added when they didn't exist in the old settings. All Shipkit hook types must be present:
+- `SessionStart` — session initialization
+- `PostToolUse` — skill usage tracking + Mission Control reporter (async)
+- `PreToolUse` — Mission Control command receiver
+- `Stop` — auto-detection routing + relentless execution loop
+- `PreCompact` — context preservation before compaction
 
 4. Write valid JSON
 5. Archive has original backup
