@@ -361,28 +361,28 @@ This approach is future-proof — new user content files automatically migrate w
 
 **DON'T migrate (purely auto-generated):**
 ```
-├── schema.md           # Auto-generated from migrations
+├── schema.json         # Auto-generated from migrations
 └── env-requirements.md # Auto-generated from .env files
 ```
 
 **MIGRATE: Everything else in `.shipkit/`**
 
 This includes (but is not limited to):
-- `why.md` - Vision document
+- `why.json` - Vision document (deprecated: `why.md`)
 - `architecture.json` - Architecture decisions
 - `stack.json` - Tech stack (may have manual annotations)
-- `specs/**` - Feature specifications (active and implemented)
-- `plans/**` - Implementation plans
+- `specs/**` - Feature specifications (active and implemented, .json preferred)
+- `plans/**` - Implementation plans (.json preferred)
 - `progress.json` - Session history
 - `archives/**` - Progress archives
 - `codebase-index.json` - Navigation index
 - `product-discovery.json` - User personas and journeys
 - `contracts.json` - Data contracts
-- `implementations.md` - Component/route documentation
+- `implementations.json` - Component/route documentation
 - `user-tasks/**` - User task lists
 - `preflight.json` - Audit reports
 - `audits/**` - Audit history
-- `ux-decisions.md` - UX decision log
+- `ux-decisions.json` - UX decision log (deprecated: `ux-decisions.md`)
 - `communications/**` - Generated HTML reports
 - `status.json` - Health snapshots
 - Any other user-created files
@@ -391,10 +391,100 @@ This includes (but is not limited to):
 
 **Migration process:**
 1. List all files in archived `.shipkit/` context folder
-2. Exclude: `templates/`, `queues/`, `schema.md`, `env-requirements.md`
+2. Exclude: `templates/`, `queues/`, `schema.json`, `env-requirements.md`
 3. Copy everything else to new `.shipkit/`
 4. Report what was migrated
-5. Note that schema.md/env-requirements.md can be regenerated if needed
+5. Note that schema.json/env-requirements.md can be regenerated if needed
+
+---
+
+### Step 8: Cleanup Deprecated File Formats
+
+**Skills now output JSON instead of markdown for structured data.**
+
+After migration, scan for deprecated `.md` files that have been superseded by `.json`:
+
+| Deprecated File | Replacement | Skill That Creates It |
+|-----------------|-------------|----------------------|
+| `architecture.md` | `architecture.json` | `/shipkit-architecture-memory` |
+| `progress.md` | `progress.json` | `/shipkit-work-memory` |
+| `product-discovery.md` | `product-discovery.json` | `/shipkit-product-discovery` |
+| `contracts.md` | `contracts.json` | `/shipkit-data-contracts` |
+| `preflight.md` | `preflight.json` | `/shipkit-preflight` |
+| `scale-readiness.md` | `scale-readiness.json` | `/shipkit-scale-ready` |
+| `prompt-audit.md` | `prompt-audit.json` | `/shipkit-prompt-audit` |
+| `schema.md` | `schema.json` | `/shipkit-project-context` |
+| `implementations.md` | `implementations.json` | (manual documentation) |
+| `specs/active/*.md` | `specs/active/*.json` | `/shipkit-spec` |
+| `plans/active/*.md` | `plans/active/*.json` | `/shipkit-plan` |
+| `why.md` | `why.json` | `/shipkit-why-project` |
+| `ux-decisions.md` | `ux-decisions.json` | `/shipkit-ux-audit` |
+
+**Cleanup process:**
+
+1. Scan `.shipkit/` for deprecated `.md` files from the table above
+2. For root-level files (architecture.md, progress.md, why.md, etc.):
+   - Check if `.json` equivalent already exists
+   - If YES: Archive `.md` to `.shipkit-archive/{timestamp}/deprecated-md/`, remove from `.shipkit/`
+   - If NO: Keep `.md` (will be converted when user runs the skill)
+
+3. For directory-based files (specs/active/, plans/active/):
+   - Scan each directory for `.md` files
+   - For each `.md` file, check if matching `.json` exists (same basename)
+   - If YES: Archive `.md` to `.shipkit-archive/{timestamp}/deprecated-md/{subpath}/`, remove from `.shipkit/`
+   - If NO: Keep `.md` (will be converted when user runs `/shipkit-spec` or `/shipkit-plan`)
+
+4. Report findings:
+```
+Deprecated file formats detected:
+
+Found .md files with .json replacements (archived):
+  ✓ architecture.md → archived (architecture.json exists)
+  ✓ progress.md → archived (progress.json exists)
+  ✓ why.md → archived (why.json exists)
+  ✓ specs/active/user-auth.md → archived (user-auth.json exists)
+  ✓ plans/active/user-auth.md → archived (user-auth.json exists)
+
+Found .md files pending conversion:
+  ⚠ product-discovery.md — run /shipkit-product-discovery to convert
+  ⚠ ux-decisions.md — run /shipkit-ux-audit to convert
+  ⚠ specs/active/payment-flow.md — run /shipkit-spec to convert
+  ⚠ plans/active/api-refactor.md — run /shipkit-plan to convert
+
+These skills now output JSON for mission control integration.
+Run each skill to convert, or keep .md files (they still work).
+```
+
+**Why this matters:**
+- JSON files integrate with mission control dashboard
+- Structured data enables better tooling
+- Mixed formats work but JSON is preferred going forward
+
+---
+
+### Step 9: Update Mission Control Hub (if exists)
+
+The Mission Control hub at `~/.shipkit-mission-control/` is a global install shared across projects. When Shipkit updates, the hub may have stale server/dashboard files.
+
+1. **Check if hub exists:** Look for `~/.shipkit-mission-control/server/index.js`
+   - If NOT found: skip this step (user hasn't set up mission control yet)
+
+2. **Compare versions:**
+   - Read `SERVER_VERSION` from the freshly installed `install/mission-control/server/index.js` (source)
+   - Read `SERVER_VERSION` from `~/.shipkit-mission-control/server/index.js` (hub)
+
+3. **If source version > hub version:**
+   - Stop the Mission Control server if running (kill process on port 7777)
+   - Copy fresh files:
+     - `install/mission-control/server/` → `~/.shipkit-mission-control/server/`
+     - `install/mission-control/dashboard/dist/` → `~/.shipkit-mission-control/dashboard/dist/`
+   - Report: `Mission Control hub: updated {old} → {new}`
+
+4. **If versions match:**
+   - Report: `Mission Control hub: up to date ({version})`
+
+5. **If hub not found:**
+   - Report: `Mission Control hub: not installed (skip)`
 
 ---
 
@@ -433,17 +523,30 @@ Merged intelligently:
 - settings.json: Shipkit entries updated, your custom permissions preserved
 
 Migrated user content:
-- why.md ✓
+- why.json ✓
 - architecture.json ✓
 - stack.json ✓
-- specs/ (3 files) ✓
+- specs/active/ (3 .json files) ✓
+- plans/active/ (2 .json files) ✓
 - product-discovery.json ✓
 - contracts.json ✓
+- ux-decisions.json ✓
 - [... all other user files ...]
 
 Not migrated (purely auto-generated):
-- schema.md, env-requirements.md
+- schema.json, env-requirements.md
   ℹ️  Run /shipkit-project-context to regenerate if needed
+
+Deprecated .md files:
+- architecture.md → archived (replaced by .json)
+- progress.md → archived (replaced by .json)
+- why.md → archived (replaced by .json)
+- specs/active/user-auth.md → archived (replaced by .json)
+- plans/active/user-auth.md → archived (replaced by .json)
+- product-discovery.md ⚠ run /shipkit-product-discovery to convert
+- ux-decisions.md ⚠ run /shipkit-ux-audit to convert
+
+Mission Control hub: updated 1.0.0 → 1.1.0
 
 ⚠ settings.local.json has stale refs (see above)
 
@@ -493,6 +596,7 @@ The installer handles fetching and installing:
 - `.shipkit-archive/{timestamp}/` - Full archive folder
 - `.shipkit-archive/{timestamp}/MANIFEST.md` - What was archived
 - `.shipkit-archive/{timestamp}/context/` - Entire .shipkit/ contents
+- `.shipkit-archive/{timestamp}/deprecated-md/` - Deprecated .md files replaced by .json
 - `.shipkit-archive/{timestamp}/CLAUDE.md.backup` - Original CLAUDE.md
 - `.shipkit-archive/{timestamp}/settings.json.backup` - Original settings
 
@@ -611,6 +715,10 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 - [ ] settings.json merged intelligently (user permissions preserved)
 - [ ] settings.local.json untouched (warning if stale)
 - [ ] User context files migrated (including stack.json)
+- [ ] Deprecated .md files detected and reported
+- [ ] .md files with .json equivalents archived and removed
+- [ ] .md files pending conversion listed with skill to run
+- [ ] Mission Control hub updated if exists and stale
 - [ ] No data loss possible (archive has everything)
 <!-- /SECTION:success-criteria -->
 

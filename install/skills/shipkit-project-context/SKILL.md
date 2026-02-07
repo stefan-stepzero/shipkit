@@ -355,11 +355,11 @@ Standard categories: `framework`, `language`, `database`, `auth`, `payments`, `s
 
 Contains: Required Variables, Optional Variables, Setup Instructions
 
-#### File 3: `.shipkit/schema.md`
+#### File 3: `.shipkit/schema.json`
 
-**Template**: See `references/templates.md` for complete schema.md template
+**Template**: See `references/templates.md` for complete schema.json template
 
-Contains: Tables with Columns/Indexes/Relationships, Relationships Diagram, Migration History
+Contains: Tables with Columns/Indexes/Relationships, Relationships Diagram, Migration History (structured JSON format)
 
 ---
 
@@ -446,7 +446,7 @@ Skills that haven't migrated to JSON yet continue writing markdown. The reporter
 - `/shipkit-project-status` - Uses context to suggest next steps
 - `/shipkit-spec` - References stack.json for technical constraints
 - `/shipkit-plan` - References stack.json for tech choices
-- `implement (no skill needed)` - References stack.json and schema.md while coding
+- `implement (no skill needed)` - References stack.json and schema.json while coding
 
 ### Triggered By
 - `/shipkit-master` - When stack.json missing or stale
@@ -477,7 +477,7 @@ All context files are **completely replaced** on each scan. No history is preser
 **Creates** (first run):
 - `.shipkit/stack.json` (structured JSON artifact)
 - `.shipkit/env-requirements.md`
-- `.shipkit/schema.md`
+- `.shipkit/schema.json`
 
 **Updates** (rescan): Same 3 files (overwrites with fresh data)
 
@@ -571,7 +571,7 @@ Context generation is complete when:
 - [ ] `.shipkit/stack.json` conforms to JSON schema (includes $schema, type, version, lastUpdated, source, summary)
 - [ ] `.shipkit/stack.json` includes availableCLIs array
 - [ ] `.shipkit/env-requirements.md` exists with all env vars from .env.example
-- [ ] `.shipkit/schema.md` exists with tables, columns, relationships (if migrations found)
+- [ ] `.shipkit/schema.json` exists with tables, columns, relationships (if migrations found)
 - [ ] Modification times are current (fresher than source files)
 - [ ] User can see summary of what was detected (including CLI availability)
 <!-- /SECTION:success-criteria -->

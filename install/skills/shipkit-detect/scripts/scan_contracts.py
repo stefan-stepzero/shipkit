@@ -16,11 +16,13 @@ COMMON_TYPES = ['User', 'Post', 'Comment', 'Product', 'Order', 'Session', 'Profi
 
 def find_latest_plan():
     """Find most recently modified plan."""
-    plans_dir = Path('.shipkit/plans')
+    plans_dir = Path('.shipkit/plans/active')
+    if not plans_dir.exists():
+        plans_dir = Path('.shipkit/plans')
     if not plans_dir.exists():
         return None
 
-    plans = list(plans_dir.glob('*.md'))
+    plans = list(plans_dir.glob('*.json'))
     if not plans:
         return None
 

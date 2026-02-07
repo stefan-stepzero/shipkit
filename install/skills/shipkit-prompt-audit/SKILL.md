@@ -125,7 +125,9 @@ For each discovered integration point, trace the data flow:
 | Is the output validated? | Check for schema validation, JSON.parse, type checks | `VALIDATED` / `UNVALIDATED` |
 | Is there error handling? | Check for try/catch, fallback logic | `HANDLED` / `UNHANDLED` |
 
-**Build a topology map:**
+**Build a topology map and serialize it for graph visualization:**
+
+For each multi-stage pipeline, build a `pipelines[]` entry with `stages` (nodes) and `edges` (data flow):
 
 ```
 Pipeline: [name/purpose]
@@ -139,6 +141,15 @@ Pipeline: [name/purpose]
     Output: [validated? schema?]
     Fallback: [yes/no]
 ```
+
+**Capture as graph-ready data:**
+- Each stage becomes a node: `{ id, promptId, provider, purpose, location }`
+- Each data dependency becomes an edge: `{ id, source, target, dataFlow, validated }`
+- Mark `validated: true` if data is schema-checked between stages, `false` otherwise
+- Tag pipeline type: `"chain"` (sequential), `"parallel"` (concurrent stages), `"mixed"` (both)
+- Link `issues[]` to relevant issue IDs from the audit findings
+
+This topology data powers the pipeline flow graph in Mission Control.
 
 **For multi-stage pipelines (3+ stages)**:
 - Identify which stages could run in parallel
@@ -214,6 +225,7 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 - Does each stage receive what it needs from the previous?
 - Are intermediate results type-checked?
 - Could a stage fail silently and corrupt downstream?
+- Do early knowledge-gathering stages ask the right questions for downstream needs?
 
 #### Dimension 5: Cache Boundaries (PA-CAC)
 - Are deterministic prompts (same input = same output) cached?
@@ -236,6 +248,7 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 - Are output format instructions explicit?
 - Are constraints testable (not vague)?
 - Are few-shot examples used where format matters?
+- Does the task verb match the intended cognitive mode? (generate vs evaluate vs research)
 
 #### Dimension 9: Input Safety (PA-INP)
 - Is user input sanitized before injection into prompts?
@@ -280,6 +293,11 @@ The output MUST conform to the schema below. This is a strict contract — missi
 
 ## JSON Schema
 
+**Full schema**: See `references/output-schema.md`
+**Example output**: See `references/example.json`
+
+### Quick Reference
+
 ```json
 {
   "$schema": "shipkit-artifact",
@@ -287,127 +305,41 @@ The output MUST conform to the schema below. This is a strict contract — missi
   "version": "1.0",
   "lastUpdated": "YYYY-MM-DD",
   "source": "shipkit-prompt-audit",
-
   "summary": {
-    "totalPromptsAudited": 12,
-    "totalIssuesFound": 8,
-    "bySeverity": { "critical": 2, "shouldFix": 4, "minor": 2 },
-    "integrationPoints": 12,
-    "providers": ["OpenAI", "Anthropic"],
-    "pipelines": { "singleStage": 8, "multiStage": 2 }
+    "totalPromptsAudited": number,
+    "totalIssuesFound": number,
+    "bySeverity": { "critical", "shouldFix", "minor" },
+    "integrationPoints": number,
+    "providers": ["OpenAI", "Anthropic", ...],
+    "pipelines": { "singleStage", "multiStage" }
   },
-
-  "prompts": [
-    {
-      "id": "pa-001",
-      "location": "src/ai/generate-summary.ts:42",
-      "provider": "OpenAI",
-      "purpose": "Generate article summary from raw text",
-      "pipelineType": "single",
-      "score": 7,
-      "issues": [
-        {
-          "id": "PA-SCH-001",
-          "dimension": "schema-tightness",
-          "severity": "critical",
-          "title": "Unvalidated JSON output used in database write",
-          "evidence": "JSON.parse on line 58 has no try/catch; result inserted into DB on line 62",
-          "impact": "Malformed LLM response causes runtime crash and data corruption",
-          "fix": "Wrap JSON.parse in try/catch, validate against Zod schema before DB insert",
-          "antiPattern": "parse-and-pray"
-        }
-      ]
-    }
-  ],
-
+  "prompts": [{
+    "id", "location", "provider", "purpose", "pipelineType", "score",
+    "issues": [{ "id", "dimension", "severity", "title", "evidence", "impact", "fix", "antiPattern?" }]
+  }],
+  "pipelines": [{
+    "id", "name", "type",
+    "stages": [{ "id", "promptId", "provider", "purpose", "location" }],
+    "edges": [{ "id", "source", "target", "dataFlow", "validated" }],
+    "issues?": ["issue-id-refs"]
+  }],
   "patterns": {
-    "antiPatterns": [
-      {
-        "name": "god-prompt",
-        "instances": 2,
-        "files": ["src/ai/process-all.ts", "src/ai/mega-prompt.ts"],
-        "description": "Single prompt handling multiple unrelated concerns"
-      },
-      {
-        "name": "parse-and-pray",
-        "instances": 3,
-        "files": ["src/ai/generate-summary.ts", "src/ai/classify.ts", "src/ai/extract.ts"],
-        "description": "JSON.parse on LLM output without validation or error handling"
-      }
-    ],
-    "positivePatterns": [
-      {
-        "name": "structured-output",
-        "instances": 4,
-        "description": "Using provider structured output mode with schema"
-      }
-    ]
+    "antiPatterns": [{ "name", "instances", "files", "description" }],
+    "positivePatterns": [{ "name", "instances", "description" }]
   },
-
-  "recommendations": [
-    {
-      "priority": "critical",
-      "title": "Add schema validation to all LLM output parsing",
-      "description": "3 integration points parse LLM JSON without validation. Add Zod schemas and wrap in try/catch.",
-      "affectedFiles": ["src/ai/generate-summary.ts", "src/ai/classify.ts", "src/ai/extract.ts"],
-      "effort": "low"
-    },
-    {
-      "priority": "shouldFix",
-      "title": "Decompose god prompts into focused sub-tasks",
-      "description": "2 prompts handle multiple concerns. Break into single-responsibility prompt chains.",
-      "affectedFiles": ["src/ai/process-all.ts", "src/ai/mega-prompt.ts"],
-      "effort": "medium"
-    }
-  ]
+  "recommendations": [{ "priority", "title", "description", "affectedFiles", "effort" }]
 }
 ```
 
-### Field Reference
+### Key Fields
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `$schema` | string | yes | Always `"shipkit-artifact"` — identifies this as a Shipkit-managed file |
-| `type` | string | yes | Always `"prompt-audit"` — artifact type for routing/rendering |
-| `version` | string | yes | Schema version for forward compatibility |
-| `lastUpdated` | string | yes | ISO date of last modification |
-| `source` | string | yes | Always `"shipkit-prompt-audit"` |
-| `summary` | object | yes | Aggregated counts for dashboard rendering |
-| `summary.totalPromptsAudited` | number | yes | Total LLM integration points scanned |
-| `summary.totalIssuesFound` | number | yes | Total issues across all severities |
-| `summary.bySeverity` | object | yes | Counts by `critical`, `shouldFix`, `minor` |
-| `summary.integrationPoints` | number | yes | Number of LLM call sites discovered |
-| `summary.providers` | string[] | yes | LLM providers detected |
-| `summary.pipelines` | object | yes | Counts by `singleStage`, `multiStage` |
-| `prompts` | array | yes | Per-prompt audit results |
-| `prompts[].id` | string | yes | Unique finding ID (e.g., `"pa-001"`) |
-| `prompts[].location` | string | yes | File path and line number |
-| `prompts[].provider` | string | yes | LLM provider/SDK used |
-| `prompts[].purpose` | string | yes | What this prompt does |
-| `prompts[].pipelineType` | enum | yes | `"single"` \| `"chain"` \| `"parallel"` |
-| `prompts[].score` | number | yes | Quality score 1-10 (10 = no issues) |
-| `prompts[].issues` | array | yes | Issues found for this prompt (empty if clean) |
-| `prompts[].issues[].id` | string | yes | Dimension-prefixed ID (e.g., `"PA-SCH-001"`) |
-| `prompts[].issues[].dimension` | string | yes | Which audit dimension flagged this |
-| `prompts[].issues[].severity` | enum | yes | `"critical"` \| `"shouldFix"` \| `"minor"` |
-| `prompts[].issues[].title` | string | yes | Short description of the issue |
-| `prompts[].issues[].evidence` | string | yes | Tool output that proves this finding |
-| `prompts[].issues[].impact` | string | yes | What happens if not fixed |
-| `prompts[].issues[].fix` | string | yes | How to resolve the issue |
-| `prompts[].issues[].antiPattern` | string | no | Matched anti-pattern name (if applicable) |
-| `patterns` | object | yes | Cross-cutting pattern analysis |
-| `patterns.antiPatterns` | array | yes | Anti-patterns found across prompts |
-| `patterns.positivePatterns` | array | yes | Good patterns observed |
-| `recommendations` | array | yes | Prioritized action items |
-| `recommendations[].priority` | enum | yes | `"critical"` \| `"shouldFix"` \| `"minor"` |
-| `recommendations[].title` | string | yes | Action item title |
-| `recommendations[].description` | string | yes | What to do and why |
-| `recommendations[].affectedFiles` | string[] | yes | Files that need changes |
-| `recommendations[].effort` | enum | yes | `"low"` \| `"medium"` \| `"high"` |
-
-### Summary Object
-
-The `summary` field MUST be kept in sync with the `prompts` array. It exists so the dashboard can render overview cards without iterating the full array. Recompute it every time the file is written.
+| Field | Description |
+|-------|-------------|
+| `prompts[].pipelineType` | `"single"` \| `"chain"` \| `"parallel"` |
+| `prompts[].issues[].severity` | `"critical"` \| `"shouldFix"` \| `"minor"` |
+| `pipelines[].type` | `"chain"` \| `"parallel"` \| `"mixed"` |
+| `pipelines[].edges[].validated` | Whether data between stages is schema-checked |
+| `recommendations[].effort` | `"low"` \| `"medium"` \| `"high"` |
 
 ---
 
@@ -450,29 +382,7 @@ Want me to fix any of these issues?
 
 ## Shipkit Artifact Convention
 
-This skill follows the **Shipkit JSON artifact convention** — a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
-
-**Every JSON artifact MUST include these top-level fields:**
-
-```json
-{
-  "$schema": "shipkit-artifact",
-  "type": "<artifact-type>",
-  "version": "1.0",
-  "lastUpdated": "YYYY-MM-DD",
-  "source": "<skill-name>",
-  "summary": { ... }
-}
-```
-
-- `$schema` — Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
-- `type` — The artifact type (`"prompt-audit"`, `"goals"`, `"spec"`, etc.). Dashboard uses this for rendering.
-- `version` — Schema version. Bump when fields change.
-- `lastUpdated` — When this file was last written.
-- `source` — Which skill wrote this file.
-- `summary` — Aggregated data for dashboard cards. Structure varies by type.
-
-Skills that haven't migrated to JSON yet continue writing markdown. The reporter hook ships both: JSON artifacts get structured dashboard rendering, markdown files fall back to metadata-only (exists, date, size).
+This skill follows the **Shipkit JSON artifact convention**. See `references/output-schema.md` for full documentation.
 
 ---
 

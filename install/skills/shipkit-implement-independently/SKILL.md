@@ -92,13 +92,13 @@ Spawn an autonomous implementation agent in an isolated git worktree. The agent 
 ### Step 1: Parse Input
 
 Extract from user input:
-- **Spec file path**: If user provides `.shipkit/specs/active/*.md` path
+- **Spec file path**: If user provides `.shipkit/specs/active/*.json` path
 - **Task description**: If user provides inline description
 - **Task slug**: Generate from spec name or first few words
 
 **Examples:**
 ```
-/shipkit-implement-independently .shipkit/specs/active/login-form.md
+/shipkit-implement-independently .shipkit/specs/active/login-form.json
 /shipkit-implement-independently add user avatar upload feature
 ```
 
@@ -262,7 +262,7 @@ To cleanup: /shipkit-cleanup-worktrees
 
 ## Context Files This Skill Reads
 
-- `.shipkit/specs/active/*.md` - Spec files (if provided)
+- `.shipkit/specs/active/*.json` - Spec files (if provided)
 - `.shipkit/stack.json` - Project patterns (passed to agent)
 - `.shipkit/architecture.json` - Design decisions (passed to agent)
 
@@ -312,7 +312,7 @@ To cleanup: /shipkit-cleanup-worktrees
 ## Example Session
 
 ```
-User: /shipkit-implement-independently .shipkit/specs/active/user-settings.md
+User: /shipkit-implement-independently .shipkit/specs/active/user-settings.json
 
 Claude:
 1. Captures source branch: feature/dashboard

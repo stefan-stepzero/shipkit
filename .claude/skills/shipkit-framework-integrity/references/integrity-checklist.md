@@ -225,9 +225,9 @@ Required fields for `.shipkit/*.json` files:
 |--------|---------------|
 | `.shipkit/*.json` with convention | ✓ Migrated |
 | `.shipkit/*.md` with structured data | ⚠ Should migrate |
-| `.shipkit/specs/*.md`, `plans/*.md` | ✓ Correct as markdown |
+| `.shipkit/specs/active/*.json`, `plans/active/*.json` | ✓ Migrated to JSON |
 | `.shipkit/architecture.json` | ✓ Migrated to JSON |
-| `.shipkit/why.md` | ✓ Correct as markdown |
+| `.shipkit/why.json` | ✓ Migrated to JSON |
 | No `.shipkit/` output | ⊘ N/A |
 
 ### Reference Implementation

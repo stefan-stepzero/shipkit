@@ -1,0 +1,297 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "spec",
+  "version": "1.0",
+  "lastUpdated": "2025-01-15T14:30:00Z",
+  "source": "shipkit-spec",
+
+  "summary": {
+    "name": "Recipe Sharing",
+    "status": "active",
+    "featureType": "user-facing-ui",
+    "complexity": "medium",
+    "scenarioCount": 3,
+    "acceptanceCriteriaCount": 10,
+    "edgeCasesApplied": ["loading", "error", "empty", "permission", "boundary", "consistency"]
+  },
+
+  "metadata": {
+    "id": "spec-recipe-sharing",
+    "created": "2025-01-15",
+    "updated": "2025-01-15",
+    "author": "shipkit-spec"
+  },
+
+  "problem": {
+    "statement": "Users cannot share their recipes with others without requiring recipients to create an account, limiting organic growth and recipe discovery.",
+    "userStory": {
+      "as": "recipe author",
+      "iWant": "share my recipes publicly via a unique link",
+      "soThat": "others can view them without signing up"
+    }
+  },
+
+  "scenarios": [
+    {
+      "id": "scenario-1",
+      "name": "Generate shareable link",
+      "type": "happy-path",
+      "given": [
+        "User is logged in",
+        "User has created a recipe with at least a title and one ingredient"
+      ],
+      "when": "User clicks 'Share' button on their recipe",
+      "then": [
+        "System generates a unique shareable URL",
+        "URL is copied to clipboard",
+        "Toast notification confirms 'Link copied to clipboard'",
+        "Share modal displays the link with a copy button"
+      ]
+    },
+    {
+      "id": "scenario-2",
+      "name": "View shared recipe as visitor",
+      "type": "happy-path",
+      "given": [
+        "Visitor has a valid share link",
+        "Share link has not expired",
+        "Recipe still exists"
+      ],
+      "when": "Visitor opens the share link in browser",
+      "then": [
+        "Recipe displays in read-only format",
+        "No login prompt is shown",
+        "Recipe metadata (author, date) is visible",
+        "Sign-up CTA is shown at bottom of page"
+      ]
+    },
+    {
+      "id": "scenario-3",
+      "name": "Revoke share link",
+      "type": "reversal",
+      "given": [
+        "User is logged in",
+        "User has previously shared a recipe",
+        "At least one active share link exists"
+      ],
+      "when": "User clicks 'Revoke' on a share link in the share modal",
+      "then": [
+        "Share link is immediately invalidated",
+        "Visitors using that link see 'Recipe no longer available'",
+        "Other share links for same recipe remain active",
+        "Confirmation toast appears"
+      ]
+    }
+  ],
+
+  "edgeCases": {
+    "loading": [
+      "Show spinner in share button while generating link (typically < 500ms)",
+      "Disable share button during link generation to prevent double-clicks",
+      "Show skeleton loader when visitor loads shared recipe",
+      "Handle timeout with retry option if link generation exceeds 5 seconds"
+    ],
+    "error": [
+      "Show error toast if link generation fails with 'Unable to create share link. Please try again.'",
+      "Provide automatic retry (1x) on network failure before showing error",
+      "Log error with context (recipe_id, user_id, timestamp) for debugging",
+      "Show 'Something went wrong' page for server errors when loading shared recipe"
+    ],
+    "empty": [
+      "Disable share button for recipes with no content (title only)",
+      "Show tooltip 'Add ingredients or instructions to share' on disabled share button",
+      "Show 'Recipe was deleted' message if original recipe no longer exists",
+      "Display placeholder content if recipe has title but no instructions"
+    ],
+    "permission": [
+      "Only recipe owner can generate and revoke share links",
+      "Public links are strictly read-only (no editing, forking, or saving)",
+      "Owner can see list of all active share links for their recipe",
+      "Logged-in visitors cannot save shared recipe to their account (this iteration)"
+    ],
+    "boundary": [
+      "Maximum 10 active share links per recipe",
+      "Share links expire after 90 days of inactivity (no views)",
+      "Rate limit: 5 link generations per minute per user",
+      "Share link token: 22 characters, URL-safe base64"
+    ],
+    "consistency": [
+      "Shared view updates immediately when recipe is edited by owner",
+      "Deleted recipes return 'Recipe no longer available' on share link",
+      "Handle race condition: concurrent share link generations return same link",
+      "Cache shared recipe view for 60 seconds (balance freshness vs performance)"
+    ]
+  },
+
+  "acceptanceCriteria": {
+    "mustHave": [
+      "Generate unique, cryptographically secure share URL (22-char token)",
+      "Copy link to clipboard with one click",
+      "Allow viewing recipe without authentication",
+      "Display recipe in clean, read-only format",
+      "Owner can revoke any share link immediately"
+    ],
+    "shouldHave": [
+      "Show view count per share link",
+      "Social media meta tags (Open Graph) for rich previews",
+      "Mobile-responsive share view"
+    ],
+    "wontHave": [
+      "Custom vanity URLs for share links",
+      "Comments or reactions on shared recipes",
+      "PDF export from share view",
+      "Embedding recipes on external sites via iframe"
+    ]
+  },
+
+  "outOfScope": [
+    "Recipe collections/folders sharing (share individual recipes only)",
+    "User profile sharing",
+    "Forking/copying shared recipes to own account",
+    "Analytics dashboard for share performance",
+    "Password-protected share links"
+  ],
+
+  "dependencies": [
+    "Authentication system in place (Supabase Auth)",
+    "Recipe CRUD operations complete (create, read, update, delete)",
+    "Toast notification system available",
+    "Clipboard API support (with fallback for older browsers)"
+  ],
+
+  "technical": {
+    "databaseChanges": [
+      "CREATE TABLE share_links (id uuid PRIMARY KEY, recipe_id uuid REFERENCES recipes(id), token varchar(22) UNIQUE NOT NULL, created_at timestamptz, expires_at timestamptz, view_count int DEFAULT 0, revoked_at timestamptz)",
+      "CREATE INDEX idx_share_links_token ON share_links(token)",
+      "CREATE INDEX idx_share_links_recipe_id ON share_links(recipe_id)",
+      "Add RLS policy: owner can manage their recipe's share links"
+    ],
+    "apiEndpoints": [
+      {
+        "method": "POST",
+        "path": "/api/recipes/{id}/share",
+        "purpose": "Generate new share link for recipe"
+      },
+      {
+        "method": "GET",
+        "path": "/api/share/{token}",
+        "purpose": "Get shared recipe data (public, no auth)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/recipes/{id}/share",
+        "purpose": "List all share links for a recipe (owner only)"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/recipes/{id}/share/{linkId}",
+        "purpose": "Revoke a share link (owner only)"
+      }
+    ],
+    "notes": [
+      "Use nanoid for token generation (22 chars, URL-safe alphabet)",
+      "Implement at edge/CDN level for popular shared recipes",
+      "Rate limiting via Supabase RLS or middleware",
+      "Consider server-side rendering for SEO of shared recipes"
+    ]
+  },
+
+  "testStrategy": {
+    "callFlows": [
+      "Owner -> ShareButton -> POST /api/recipes/{id}/share -> DB insert -> Response -> Clipboard",
+      "Visitor -> ShareURL -> GET /api/share/{token} -> DB lookup -> RecipeData -> RenderView",
+      "Owner -> RevokeButton -> DELETE /api/recipes/{id}/share/{linkId} -> DB update -> Confirmation"
+    ],
+    "coverage": [
+      {
+        "layer": "Business logic",
+        "testType": "Unit",
+        "whatToTest": "Token generation, expiration calculation, permission checks, rate limit logic"
+      },
+      {
+        "layer": "API endpoints",
+        "testType": "Integration",
+        "whatToTest": "Share link CRUD operations, auth checks, rate limiting, error responses"
+      },
+      {
+        "layer": "UI components",
+        "testType": "Component",
+        "whatToTest": "Share modal, copy button interaction, loading/error states, link list display"
+      },
+      {
+        "layer": "Critical paths",
+        "testType": "E2E",
+        "whatToTest": "Full share flow: login -> create recipe -> share -> copy link -> open in incognito -> view recipe"
+      }
+    ],
+    "mocking": {
+      "mock": [
+        "Clipboard API (navigator.clipboard.writeText)",
+        "Analytics/tracking service"
+      ],
+      "testDoubles": [
+        "Database (Supabase local or test container)"
+      ],
+      "real": [
+        "Token generation (nanoid)",
+        "URL construction",
+        "Date/time calculations"
+      ]
+    },
+    "keyTestCases": [
+      {
+        "scenario": "Generate shareable link",
+        "testType": "Integration",
+        "testName": "should generate unique 22-char token when owner shares recipe"
+      },
+      {
+        "scenario": "Generate shareable link",
+        "testType": "Unit",
+        "testName": "should reject share request from non-owner with 403"
+      },
+      {
+        "scenario": "View shared recipe as visitor",
+        "testType": "Integration",
+        "testName": "should return recipe data for valid share token without auth"
+      },
+      {
+        "scenario": "View shared recipe as visitor",
+        "testType": "Integration",
+        "testName": "should return 404 for expired share token"
+      },
+      {
+        "scenario": "View shared recipe as visitor",
+        "testType": "Integration",
+        "testName": "should return 404 for revoked share token"
+      },
+      {
+        "scenario": "Revoke share link",
+        "testType": "Integration",
+        "testName": "should set revoked_at timestamp and invalidate token"
+      },
+      {
+        "scenario": "Rate limiting",
+        "testType": "Integration",
+        "testName": "should return 429 after 5 share attempts in 1 minute"
+      },
+      {
+        "scenario": "Empty recipe",
+        "testType": "Component",
+        "testName": "should disable share button when recipe has no content"
+      }
+    ]
+  },
+
+  "references": {
+    "stack": ".shipkit/stack.json",
+    "schema": ".shipkit/schema.json",
+    "architecture": ".shipkit/architecture.json",
+    "relatedSpecs": []
+  },
+
+  "nextSteps": [
+    "/shipkit-plan to create implementation plan with task breakdown",
+    "/shipkit-prototyping to create UI mockup of share modal (optional)",
+    "/shipkit-architecture-memory to log share link token strategy decision"
+  ]
+}

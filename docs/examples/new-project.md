@@ -32,7 +32,7 @@ python ../shipkit/installers/install.py
 - What does success look like?
 - What constraints do you have?
 
-**Creates:** `.shipkit/why.md`
+**Creates:** `.shipkit/why.json`
 
 ```markdown
 # RecipeShare - Why
@@ -83,7 +83,7 @@ Quick persona capturing goals, pain points, and context.
 - What data do we need to capture?
 - What's the happy path?
 
-**Creates:** `.shipkit/specs/active/save-recipe-from-url.md`
+**Creates:** `.shipkit/specs/active/save-recipe-from-url.json`
 
 ```markdown
 # Save Recipe from URL
@@ -120,7 +120,7 @@ User pastes a URL, app extracts recipe details automatically.
 
 **Reads:** The spec you just created
 
-**Creates:** `.shipkit/plans/save-recipe-from-url-plan.md`
+**Creates:** `.shipkit/plans/active/save-recipe-from-url.json`
 
 ```markdown
 # Implementation Plan: Save Recipe from URL
@@ -257,18 +257,18 @@ After 2 weeks:
 recipeshare/
 ├── CLAUDE.md
 ├── .shipkit/
-│   ├── why.md
-│   ├── stack.md
+│   ├── why.json
+│   ├── stack.json
 │   ├── architecture.json
 │   ├── progress.json
 │   ├── personas/
 │   │   └── home-cook.md
 │   ├── specs/active/
-│   │   ├── save-recipe-from-url.md
-│   │   ├── recipe-list.md
-│   │   └── search-recipes.md
+│   │   ├── save-recipe-from-url.json
+│   │   ├── recipe-list.json
+│   │   └── search-recipes.json
 │   └── plans/
-│       ├── save-recipe-from-url-plan.md
+│       ├── save-recipe-from-url-plan.json
 │       └── ...
 ├── src/
 │   └── ... (your code)

@@ -35,11 +35,11 @@
 ## Pending
 
 - [ ] Lemon Squeezy webhooks
-  - Mentioned in: specs/active/payment-flow.md
+  - Mentioned in: specs/active/payment-flow.json
   - Need: Webhook signature verification pattern
 
 - [ ] Supabase RLS policies
-  - Mentioned in: plans/auth-plan.md
+  - Mentioned in: plans/active/auth.json
   - Need: Current RLS policy patterns for user data
 
 ## Completed

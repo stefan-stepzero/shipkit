@@ -8,7 +8,9 @@ agent: shipkit-product-owner-agent
 
 # shipkit-spec - Lightweight Feature Specification
 
-**Purpose**: Transform feature descriptions into Given/When/Then specifications with comprehensive edge case coverage, creating clear acceptance criteria for implementation without heavyweight documentation overhead.
+**Purpose**: Transform feature descriptions into structured JSON specifications with Given/When/Then scenarios and comprehensive edge case coverage, creating clear acceptance criteria for implementation.
+
+**Output format**: JSON -- structured data readable by Claude, renderable by mission control dashboard, and queryable by other skills.
 
 ---
 
@@ -36,11 +38,11 @@ agent: shipkit-product-owner-agent
 
 **Recommended**:
 - Stack defined: `.shipkit/stack.json` (to understand tech constraints)
-- Schema defined: `.shipkit/schema.md` (to understand data model)
+- Schema defined: `.shipkit/schema.json` (to understand data model)
 
 **Optional but helpful**:
 - Architecture decisions: `.shipkit/architecture.json`
-- Existing specs: `.shipkit/specs/active/*.md` (check for similar patterns)
+- Existing specs: `.shipkit/specs/active/*.json` (check for similar patterns)
 
 **If missing**: Ask user basic questions about tech stack and data instead
 
@@ -94,9 +96,9 @@ options:
 Read these files IN PARALLEL (single message, multiple tool calls):
 
 1. Read: .shipkit/stack.json         # Tech constraints
-2. Read: .shipkit/schema.md        # Data model
+2. Read: .shipkit/schema.json      # Data model
 3. Read: .shipkit/architecture.json  # Past decisions
-4. Glob + Read: .shipkit/specs/active/*.md  # Similar specs
+4. Glob + Read: .shipkit/specs/active/*.json  # Similar specs
 ```
 
 **Why parallel**: All 4 reads are independent - no file depends on another. Parallel reads reduce context loading time by ~40%.
@@ -107,55 +109,97 @@ Read these files IN PARALLEL (single message, multiple tool calls):
 
 ---
 
-### Step 3: Generate Specification
+### Step 3: Explore Affected Code
+
+**Before writing a spec, understand the actual codebase that will change.**
+
+Specs written without reading source code miss existing patterns, hidden constraints, and ripple effects. This step ensures the spec is grounded in reality.
+
+**3a. Identify code areas** — From the feature description + context files, determine:
+- Which files/modules will be directly modified or created?
+- What naming patterns, conventions, or abstractions exist in those areas?
+
+**3b. Launch explore agents** — Use the Task tool with `subagent_type: Explore` to investigate:
+
+```
+Agent 1 - Direct code: "Find and summarize the code directly related to
+[feature area]. Look for existing patterns, data structures, API signatures,
+and component interfaces. Report: what exists today, what patterns are used,
+what constraints the existing code imposes."
+
+Agent 2 - Ripple effects: "Find code that depends on or interacts with
+[feature area]. Look for callers, consumers, imports, tests, shared state,
+and integration points. Report: what other code would be affected by changes,
+what contracts exist that must be preserved."
+```
+
+**Launch both agents in parallel** — they are independent searches.
+
+**3c. Synthesize findings** — Before generating the spec, note:
+- Existing patterns the spec should follow or explicitly deviate from
+- Integration points and contracts the spec must preserve
+- Hidden complexity the user's description didn't mention
+- Test coverage that already exists and would need updating
+
+**If exploration reveals surprises**: Surface them to the user before proceeding. Example: *"The codebase already has a partial implementation of X using pattern Y — should the spec build on that or replace it?"*
+
+**Token budget**: Each explore agent should return a focused summary (~500 tokens). Don't dump raw code into context — summarize patterns and constraints.
+
+**When to skip**: If the feature is entirely greenfield (no existing related code), or the user explicitly says "I know the codebase, just spec it", this step can be abbreviated to a quick Glob search to confirm there's nothing unexpected.
+
+---
+
+### Step 4: Generate Specification
 
 **Create spec file using Write tool**:
 
-**Location**: `.shipkit/specs/active/feature-[feature-name].md`
+**Location**: `.shipkit/specs/active/{feature-name}.json`
 
-**Use kebab-case for filename**: `feature-recipe-sharing.md`, `feature-user-authentication.md`
+**Use kebab-case for filename**: `recipe-sharing.json`, `user-authentication.json`
 
-**Template structure:** See Spec Template Structure section below
+**JSON Schema**: See `references/output-schema.md` for complete schema definition
+
+**Example**: See `references/example.json` for realistic feature spec
 
 ---
 
-### Step 4: Validate Completeness
+### Step 5: Validate Completeness
 
 **Before saving spec, verify**:
 
-- [ ] User story clearly states WHO, WHAT, WHY
-- [ ] At least 2-3 Given/When/Then scenarios
-- [ ] ALL 6 edge case categories applied
+- [ ] User story has `as`, `iWant`, `soThat` fields
+- [ ] At least 2-3 scenarios with Given/When/Then structure
+- [ ] ALL 6 core edge case categories have entries (+ External Service Constraints if feature uses external APIs)
 - [ ] Must Have / Should Have / Won't Have prioritization
 - [ ] Technical notes include database/API changes
-- [ ] Test strategy identifies affected call flows
+- [ ] Test strategy identifies call flows and coverage
 - [ ] Key test cases mapped from scenarios
-- [ ] Next steps suggest appropriate skills
+- [ ] Summary counts match actual array lengths
 
 ---
 
-### Step 5: Save and Suggest Next Step
+### Step 6: Save and Suggest Next Step
 
-**Use Write tool to create**: `.shipkit/specs/active/feature-[feature-name].md`
+**Use Write tool to create**: `.shipkit/specs/active/{feature-name}.json`
 
 **Output to user**:
 ```
 Specification created
 
-Location: .shipkit/specs/active/[feature-name].md
+Location: .shipkit/specs/active/{feature-name}.json
 
 Summary:
   - [X] core scenarios
-  - [Y] edge cases identified
-  - [Z] acceptance criteria
+  - [Y] edge cases identified across 6+ categories
+  - [Z] acceptance criteria (must/should/won't)
   - [N] key test cases mapped
 
 Completeness:
   - User story: done
-  - Given/When/Then: done
-  - Edge cases: done (all 6 categories)
+  - Scenarios (Given/When/Then): done
+  - Edge cases: done (all core categories + external-service if applicable)
   - Acceptance criteria: done
-  - Test strategy: done (call flows, coverage, mocking)
+  - Test strategy: done
 
 ```
 
@@ -165,231 +209,187 @@ Completeness:
 
 Copy and track:
 - [ ] Asked 2-3 clarifying questions
+- [ ] Explored affected code (direct + ripple effects)
+- [ ] Surfaced surprises to user before speccing
 - [ ] Created spec with Given/When/Then scenarios
-- [ ] Applied all 6 edge case categories
+- [ ] Applied all 6 core edge case categories (+ external-service if applicable)
 - [ ] Defined test strategy (call flows, coverage, mocking)
 - [ ] Mapped key test cases from scenarios
-- [ ] Saved to `.shipkit/specs/active/feature-[name].md`
+- [ ] Saved to `.shipkit/specs/active/{name}.json`
 
 ---
 
-## Spec Template Structure
+## JSON Output Structure
 
-**Every spec MUST follow this template**:
+**Every spec MUST follow the Shipkit artifact convention:**
 
-```markdown
-# [Feature Name]
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "spec",
+  "version": "1.0",
+  "lastUpdated": "2025-01-15T10:00:00Z",
+  "source": "shipkit-spec",
 
-**Created**: [YYYY-MM-DD]
-**Status**: Active
+  "summary": {
+    "name": "Feature Name",
+    "status": "active",
+    "featureType": "user-facing-ui",
+    "complexity": "medium",
+    "scenarioCount": 3,
+    "acceptanceCriteriaCount": 10,
+    "edgeCasesApplied": ["loading", "error", "empty", "permission", "boundary", "consistency", "external-service"]
+  },
+
+  "metadata": {
+    "id": "spec-feature-name",
+    "created": "2025-01-15",
+    "updated": "2025-01-15",
+    "author": "shipkit-spec"
+  },
+
+  "problem": {
+    "statement": "Clear problem statement",
+    "userStory": {
+      "as": "user type",
+      "iWant": "to do something",
+      "soThat": "I get some benefit"
+    }
+  },
+
+  "scenarios": [
+    {
+      "id": "scenario-1",
+      "name": "Primary happy path",
+      "type": "happy-path",
+      "given": ["Initial state 1", "Initial state 2"],
+      "when": "User action",
+      "then": ["Expected outcome 1", "Expected outcome 2"]
+    }
+  ],
+
+  "edgeCases": {
+    "loading": ["Loading consideration 1"],
+    "error": ["Error handling 1"],
+    "empty": ["Empty state 1"],
+    "permission": ["Permission check 1"],
+    "boundary": ["Boundary condition 1"],
+    "consistency": ["Data consistency 1"]
+  },
+
+  "acceptanceCriteria": {
+    "mustHave": ["Critical requirement 1"],
+    "shouldHave": ["Nice to have 1"],
+    "wontHave": ["Explicitly excluded 1"]
+  },
+
+  "outOfScope": ["What is NOT included"],
+
+  "dependencies": ["What must be in place first"],
+
+  "technical": {
+    "databaseChanges": ["Table/field additions"],
+    "apiEndpoints": [
+      { "method": "POST", "path": "/api/resource", "purpose": "Create resource" }
+    ],
+    "existingCode": {
+      "directlyAffected": ["src/path/to/file.ts — description of what exists and how it changes"],
+      "rippleEffects": ["src/path/to/consumer.ts — depends on X, must update Y"],
+      "patternsToFollow": ["Existing codebase uses pattern Z for similar features"],
+      "contractsToPreserve": ["API signature of functionA() is consumed by 3 callers"]
+    },
+    "notes": ["Implementation hints"]
+  },
+
+  "testStrategy": {
+    "callFlows": ["User -> Component -> API -> DB -> Response"],
+    "coverage": [
+      { "layer": "Business logic", "testType": "Unit", "whatToTest": "..." }
+    ],
+    "mocking": {
+      "mock": ["External services"],
+      "testDoubles": ["Database"],
+      "real": ["Fast internal services"]
+    },
+    "keyTestCases": [
+      { "scenario": "Happy path", "testType": "Integration", "testName": "should..." }
+    ]
+  },
+
+  "references": {
+    "stack": ".shipkit/stack.json",
+    "schema": ".shipkit/schema.json",
+    "architecture": ".shipkit/architecture.json",
+    "relatedSpecs": []
+  },
+
+  "nextSteps": ["/shipkit-plan to create implementation plan"]
+}
+```
+
+**Full schema**: See `references/output-schema.md`
+**Example**: See `references/example.json`
 
 ---
 
-## User Story
+## Edge Case Categories
 
-As a [user type], I want to [action], so that [benefit].
-
-**Example:**
-As a recipe author, I want to share my recipes publicly via a unique link, so others can view them without signing up.
-
----
-
-## Core Scenarios
-
-### Given/When/Then
-
-**Scenario 1: [Primary happy path]**
-
-**Given**: [Initial state]
-**When**: [User action]
-**Then**:
-- [Expected outcome 1]
-- [Expected outcome 2]
-- [Expected outcome 3]
-
-**Scenario 2: [Alternative flow]**
-
-**Given**: [Different initial state]
-**When**: [User action]
-**Then**:
-- [Expected outcome]
-
-**Scenario 3: [Reversal/undo]**
-
-**Given**: [State after scenario 1]
-**When**: [Reversal action]
-**Then**:
-- [Expected outcome]
-
----
-
-## Edge Cases
-
-**Apply all 6 edge case categories to EVERY feature.**
-
-**Apply all 6 edge case categories:**
-- Loading States (spinners, disable controls, timeout, prevent duplicates)
-- Error States (network, server, validation, permission, not found)
-- Empty/Missing States (no data, no results, deleted items, first-time user)
-- Permission States (unauthenticated, unauthorized, role-based, ownership)
-- Boundary Conditions (min/max values, rate limits, quotas, character limits)
-- Data Consistency (stale data, partial updates, cache invalidation, conflicts)
-
-**See `references/best-practices.md` for frontend and backend quality standards:**
-- Frontend: State management, user feedback, accessibility, performance, security, forms, navigation
-- Backend: Input validation, authentication, error handling, data integrity, security, performance, API design
+**Apply ALL 6 core categories to EVERY feature (+ External Service Constraints when feature involves external APIs):**
 
 ### Loading States
-- [ ] Show spinner/skeleton during initial load
-- [ ] Disable UI controls during async operations
-- [ ] Handle timeout scenarios (>5 seconds)
-- [ ] Prevent duplicate submissions (double-click)
+- Show spinner/skeleton during initial load
+- Disable UI controls during async operations
+- Handle timeout scenarios (>5 seconds)
+- Prevent duplicate submissions (double-click)
 
 ### Error States
-- [ ] Network failure during operation → Show error toast, revert UI state
-- [ ] Server error (500) → Show user-friendly message, log error
-- [ ] Validation errors → Show inline feedback, highlight fields
-- [ ] Permission errors (401/403) → Redirect to login or show access denied
+- Network failure during operation
+- Server error (500)
+- Validation errors
+- Permission errors (401/403)
 
 ### Empty/Missing States
-- [ ] No data available → Show empty state with helpful CTA
-- [ ] Search with no results → Show "no results" with suggestions
-- [ ] Deleted/missing resource → Show "not found" message
-- [ ] First-time user experience → Show onboarding/tutorial
+- No data available
+- Search with no results
+- Deleted/missing resource
+- First-time user experience
 
 ### Permission States
-- [ ] Unauthenticated user access → Redirect to login
-- [ ] Authenticated but unauthorized → Show access denied
-- [ ] Role-based restrictions → Hide unavailable features
-- [ ] Ownership checks → Only owner can edit/delete
+- Unauthenticated user access
+- Authenticated but unauthorized
+- Role-based restrictions
+- Ownership checks
 
 ### Boundary Conditions
-- [ ] Minimum values (0, empty string, null)
-- [ ] Maximum values (string length limits, array size limits)
-- [ ] Rate limits → Show "too many requests" message
-- [ ] Quota/usage limits → Show limit warning, upgrade prompt
-- [ ] Concurrent access → Handle optimistic locking conflicts
+- Minimum values (0, empty string, null)
+- Maximum values (string length, array size)
+- Rate limits
+- Quota/usage limits
 
 ### Data Consistency
-- [ ] Stale data → Refresh on focus/visibility change
-- [ ] Partial updates → Handle partial failures gracefully
-- [ ] Cache invalidation → Clear related caches
-- [ ] Referential integrity → Handle cascading deletes
+- Stale data refresh
+- Partial updates
+- Cache invalidation
+- Concurrent access conflicts
 
-### SaaS-Specific (if applicable)
-- [ ] Multi-tenancy → User ID on every query, RLS policies
-- [ ] Subscription state → Handle active/expired/cancelled
-- [ ] Payment failures → Graceful degradation, retry prompts
-- [ ] Plan limits → Enforce quotas, show upgrade prompts
-- [ ] Trial expiry → Clear messaging, conversion flow
-- [ ] Webhook reliability → Idempotency, retry handling
+### External Service Constraints (when feature uses external APIs)
+- Timeout budget per call and cumulative across chains
+- Resource limits (max tokens, payload size, file size caps)
+- Platform execution limits (serverless duration vs total call time)
+- Cost bounds (per-call cost, per-user quotas, spending alerts)
+- Rate limits from the provider (429 handling, backoff strategy)
+- Service degradation (what happens when the external service is slow or down?)
 
----
-
-## Acceptance Criteria
-
-### Must Have
-✓ [Critical requirement 1]
-✓ [Critical requirement 2]
-✓ [Critical requirement 3]
-✓ All edge cases handled gracefully
-
-### Should Have
-- [Nice to have feature 1]
-- [Nice to have feature 2]
-
-### Won't Have (this iteration)
-- [Explicitly excluded feature 1]
-- [Explicitly excluded feature 2]
-
----
-
-## Technical Notes
-
-**Implementation hints** (inform planning, not requirements):
-- [Technical constraint 1]
-- [Technical constraint 2]
-- [Suggested approach]
-
-**Database changes needed:**
-- [Table/field additions]
-- [Migration notes]
-
-**API endpoints:**
-- [New endpoint 1]
-- [Modified endpoint 2]
-
-**Best practices to apply** (see `references/best-practices.md`):
-- Frontend: [State management, user feedback, accessibility, performance, security, forms, navigation]
-- Backend: [Input validation, auth, error handling, data integrity, security, performance, API design]
-
----
-
-## Test Strategy
-
-**Call flows affected:**
-- [Flow 1: e.g., User → API → Database → Response]
-- [Flow 2: e.g., Webhook → Queue → Processor → Notification]
-- [Flow 3: e.g., UI Component → State → API → Cache]
-
-**Coverage approach:**
-
-| Layer | Test Type | What to Test |
-|-------|-----------|--------------|
-| Business logic | Unit | [Services, utilities, validators] |
-| API endpoints | Integration | [Request/response, auth, errors] |
-| UI components | Component | [Rendering, interactions, states] |
-| Critical paths | E2E | [Only key user journeys - be specific] |
-
-**Mocking strategy:**
-- **Mock:** [External services, payment providers, email, third-party APIs]
-- **Test doubles:** [Database - use test container or in-memory]
-- **Real:** [Internal services that are fast and deterministic]
-
-**Key test cases** (derived from Given/When/Then scenarios):
-
-| Scenario | Test Type | Test Name |
-|----------|-----------|-----------|
-| [Happy path from Scenario 1] | Integration | `should [expected behavior] when [action]` |
-| [Error case from Edge Cases] | Unit | `should handle [error condition]` |
-| [Permission check] | Integration | `should deny access when [unauthorized]` |
-
-**Coverage expectations:**
-- [ ] All Given/When/Then scenarios have corresponding tests
-- [ ] All edge cases have negative tests
-- [ ] Error paths tested (not just happy path)
-- [ ] [Specific coverage target if required, e.g., "80% line coverage on new code"]
-
-**Notes:**
-- [Any testing constraints or considerations]
-- [Existing test patterns to follow in codebase]
-- [Test data setup requirements]
-
----
-
-## Next Steps
-
-**After spec approval:**
-1. Run `/shipkit-plan` to create implementation plan
-2. Or run `/shipkit-prototyping` for UI mockup first (if UI-heavy feature)
-3. Or run `/shipkit-architecture-memory` to log architectural decisions
-
----
-
-## References
-
-- Stack: .shipkit/stack.json
-- Schema: .shipkit/schema.md
-- Architecture: .shipkit/architecture.json
-```
+**See `references/best-practices.md` for frontend and backend quality standards.**
 
 ---
 
 ## What Makes This "Lite"
 
 **Included**:
+- Structured JSON output for dashboard rendering
 - Given/When/Then scenarios (clear, actionable)
-- Comprehensive edge case checklist (6 categories)
+- Comprehensive edge case checklist (6 core + 1 conditional category)
 - Acceptance criteria with prioritization
 - Technical notes for context
 - Test strategy (call flows, coverage, key test cases)
@@ -402,7 +402,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 - Extensive examples library
 - Multi-stakeholder review workflow
 
-**Philosophy**: Clear enough to implement correctly, concise enough to read quickly. Test strategy enables relentless execution.
+**Philosophy**: Clear enough to implement correctly, concise enough to read quickly. JSON format enables dashboard visualization and programmatic access.
 
 ---
 
@@ -410,10 +410,10 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 
 ### Before This Skill
 
-- `/shipkit-project-context` - Generates stack.json and schema.md
+- `/shipkit-project-context` - Generates stack.json and schema.json
   - **When**: Project initialization or when stack/schema missing
   - **Why**: Spec needs tech constraints and data model context
-  - **Trigger**: Missing stack.json or schema.md detected during spec creation
+  - **Trigger**: Missing stack.json or schema.json detected during spec creation
 
 - **User describes feature idea** - Provides initial feature concept
   - **When**: User has new feature to build
@@ -435,7 +435,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 - `/shipkit-architecture-memory` - Logs architectural decisions made during spec
   - **When**: Spec reveals architectural choices (optional step)
   - **Why**: Document tech decisions for future reference
-  - **Trigger**: Spec's Technical Notes section reveals important architectural choice
+  - **Trigger**: Spec's technical notes reveal important architectural choice
 
 ---
 
@@ -443,11 +443,11 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 
 **Recommended** (read if exist):
 - `.shipkit/stack.json` - Tech stack constraints
-- `.shipkit/schema.md` - Data model
+- `.shipkit/schema.json` - Data model
 - `.shipkit/architecture.json` - Past decisions
 
 **Optional** (read if relevant):
-- `.shipkit/specs/active/*.md` - Check for similar specs
+- `.shipkit/specs/active/*.json` - Check for similar specs
 
 **If missing**: Ask user for needed context
 
@@ -458,7 +458,7 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 **Write Strategy: CREATE (with ARCHIVE on completion)**
 
 **Creates**:
-- `.shipkit/specs/active/feature-[feature-name].md` - New specification
+- `.shipkit/specs/active/{feature-name}.json` - New specification
 
 **Update Behavior**:
 - Active specs can be modified during planning/implementation (overwrites previous version)
@@ -466,16 +466,17 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 - No version history maintained in active/ folder
 
 **Archive Behavior** (when feature complete):
-- Moves: `.shipkit/specs/active/feature-[feature-name].md` → `.shipkit/specs/implemented/feature-[feature-name].md`
-- Adds completion metadata (date implemented, who implemented, final notes)
+- Moves: `.shipkit/specs/active/{feature-name}.json` -> `.shipkit/specs/implemented/{feature-name}.json`
+- Updates `status` field from `"active"` to `"implemented"`
+- Adds completion metadata (implemented date)
 - Archived specs become read-only historical records
-- Moving specs: Either manual or via `verify manually` when feature ships
+- Moving specs: Either manual or via `/shipkit-verify` when feature ships
 
 **Why CREATE with ARCHIVE:**
 - Specs are living documents during development (can be refined)
 - Each feature gets its own independent file (not appending to shared file)
 - History preserved by moving completed specs to implemented/ folder
-- Completion metadata captures final state for audit trail
+- JSON format enables dashboard visualization
 
 ---
 
@@ -486,10 +487,11 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 1. User invokes `/shipkit-spec` or describes feature
 2. shipkit-master tells Claude to read this SKILL.md
 3. Claude asks 2-3 clarifying questions
-4. Claude reads stack.json + schema.md (~500 tokens)
+4. Claude reads stack.json + schema.json (~500 tokens)
 5. Claude optionally reads architecture.json if relevant (~300 tokens)
-6. Claude generates spec
-7. Total context loaded: ~1000-1500 tokens (focused)
+6. Claude launches explore agents to examine affected code + ripple effects (~1000 tokens from summaries)
+7. Claude surfaces surprises to user, then generates spec
+8. Total context loaded: ~2000-2500 tokens (focused)
 
 **Not loaded unless needed**:
 - Other specs (unless checking for similar patterns)
@@ -517,20 +519,32 @@ As a recipe author, I want to share my recipes publicly via a unique link, so ot
 ## Success Criteria
 
 Spec is complete when:
-- [ ] User story clearly defined (WHO, WHAT, WHY)
-- [ ] 2-3 Given/When/Then scenarios documented
-- [ ] All 6 edge case categories applied and checked
+- [ ] JSON file conforms to Shipkit artifact convention ($schema, type, version, lastUpdated, source, summary)
+- [ ] Codebase explored: directly affected files and ripple effects identified
+- [ ] Existing patterns and contracts documented in `technical.existingCode`
+- [ ] User story has `as`, `iWant`, `soThat` fields
+- [ ] 2-3 scenarios with Given/When/Then structure
+- [ ] All 6 core edge case categories have entries (+ external-service if applicable)
 - [ ] Acceptance criteria prioritized (Must/Should/Won't)
 - [ ] Technical notes include DB/API changes
 - [ ] Test strategy identifies call flows and coverage approach
-- [ ] Key test cases mapped from Given/When/Then scenarios
-- [ ] File saved to `.shipkit/specs/active/`
+- [ ] Key test cases mapped from scenarios
+- [ ] File saved to `.shipkit/specs/active/{name}.json`
 <!-- /SECTION:success-criteria -->
 ---
 
 ## Reference Documentation
 
 **For detailed patterns and examples:**
+
+- **JSON schema** - `references/output-schema.md`
+  - Complete field reference
+  - Validation rules
+  - Status lifecycle
+
+- **Example spec** - `references/example.json`
+  - Realistic feature specification
+  - All fields populated with sample data
 
 - **Best practices** - `references/best-practices.md`
   - Frontend best practices (state management, user feedback, accessibility, performance, security, forms, navigation)
@@ -539,4 +553,4 @@ Spec is complete when:
 
 ---
 
-**Remember**: This is a lightweight spec for POC/MVP work. Get enough clarity to build correctly, but don't over-specify. Ship, learn, iterate.
+**Remember**: This is a lightweight spec for POC/MVP work. Get enough clarity to build correctly, but don't over-specify. JSON format enables dashboard rendering and programmatic access. Ship, learn, iterate.

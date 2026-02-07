@@ -368,7 +368,7 @@ Task tracking is complete when:
 <!-- /SECTION:success-criteria -->
 ---
 
-## JSON Schema
+## JSON Schema (Quick Reference)
 
 ```json
 {
@@ -377,90 +377,38 @@ Task tracking is complete when:
   "version": "1.0",
   "lastUpdated": "YYYY-MM-DD",
   "source": "shipkit-user-instructions",
-
-  "summary": {
-    "total": 3,
-    "byStatus": { "active": 2, "completed": 1, "deferred": 0 },
-    "byPriority": { "high": 1, "medium": 1, "low": 1 }
-  },
-
-  "tasks": [
-    {
-      "id": "task-slug",
-      "title": "Human-readable task name",
-      "description": "Why this task is necessary",
-      "status": "active",
-      "priority": "high",
-      "steps": [
-        "Specific action 1",
-        "Specific action 2"
-      ],
-      "verification": [
-        "How to verify task is complete"
-      ],
-      "relatedFeature": "Feature name or null",
-      "triggeredBy": "skill-name or manual",
-      "createdAt": "YYYY-MM-DD",
-      "completedAt": null
-    }
-  ]
+  "summary": { "total": 0, "byStatus": {...}, "byPriority": {...} },
+  "tasks": [{ "id": "...", "title": "...", "status": "...", "priority": "...", "steps": [...], ... }]
 }
 ```
 
-### Field Reference
+**Full schema and field reference:** See `references/output-schema.md`
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `$schema` | string | yes | Always `"shipkit-artifact"` — identifies this as a Shipkit-managed file |
-| `type` | string | yes | Always `"user-tasks"` — artifact type for routing/rendering |
-| `version` | string | yes | Schema version for forward compatibility |
-| `lastUpdated` | string | yes | ISO date of last modification |
-| `source` | string | yes | Always `"shipkit-user-instructions"` |
-| `summary` | object | yes | Aggregated counts for dashboard rendering |
-| `tasks` | array | yes | The task entries |
-| `tasks[].id` | string | yes | Slug identifier (kebab-case) |
-| `tasks[].title` | string | yes | Display name |
-| `tasks[].description` | string | yes | Why this task is necessary (1-2 sentences) |
-| `tasks[].status` | enum | yes | `"active"` \| `"in-progress"` \| `"completed"` \| `"deferred"` |
-| `tasks[].priority` | enum | yes | `"high"` \| `"medium"` \| `"low"` |
-| `tasks[].steps` | string[] | yes | Specific actions the user must take |
-| `tasks[].verification` | string[] | yes | How to confirm the task is done |
-| `tasks[].relatedFeature` | string | no | Feature name or `null` |
-| `tasks[].triggeredBy` | string | no | Skill that created this task or `"manual"` |
-| `tasks[].createdAt` | string | yes | ISO date when task was created |
-| `tasks[].completedAt` | string | no | ISO date when task was completed, or `null` |
+**Realistic example:** See `references/example.json`
+
+### Key Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `tasks[].id` | string | Slug identifier (kebab-case) |
+| `tasks[].status` | enum | `"active"`, `"in-progress"`, `"completed"`, `"deferred"` |
+| `tasks[].priority` | enum | `"high"`, `"medium"`, `"low"` |
+| `tasks[].steps` | string[] | Specific actions the user must take |
+| `tasks[].verification` | string[] | How to confirm the task is done |
 
 ### Summary Object
 
-The `summary` field MUST be kept in sync with the `tasks` array. It exists so the dashboard can render overview cards without iterating the full array. Recompute it every time the file is written.
+The `summary` field MUST be kept in sync with the `tasks` array. Recompute it every time the file is written.
 
 ---
 
 ## Shipkit Artifact Convention
 
-This skill follows the **Shipkit JSON artifact convention** — a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
+This skill follows the **Shipkit JSON artifact convention** -- a standard structure for all `.shipkit/*.json` files.
 
-**Every JSON artifact MUST include these top-level fields:**
+**Required envelope fields:** `$schema`, `type`, `version`, `lastUpdated`, `source`, `summary`
 
-```json
-{
-  "$schema": "shipkit-artifact",
-  "type": "<artifact-type>",
-  "version": "1.0",
-  "lastUpdated": "YYYY-MM-DD",
-  "source": "<skill-name>",
-  "summary": { ... }
-}
-```
-
-- `$schema` — Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
-- `type` — The artifact type (`"user-tasks"`, `"goals"`, `"spec"`, etc.). Dashboard uses this for rendering.
-- `version` — Schema version. Bump when fields change.
-- `lastUpdated` — When this file was last written.
-- `source` — Which skill wrote this file.
-- `summary` — Aggregated data for dashboard cards. Structure varies by type.
-
-Skills that haven't migrated to JSON yet continue writing markdown. The reporter hook ships both: JSON artifacts get structured dashboard rendering, markdown files fall back to metadata-only (exists, date, size).
+**Full convention details:** See `references/output-schema.md`
 
 ---
 

@@ -42,165 +42,47 @@ agent: shipkit-architect-agent
 
 **Output file**: `.shipkit/architecture.json`
 
+**Full schema reference**: See `references/output-schema.md`
+**Example output**: See `references/example.json`
+
 This file uses the **Shipkit JSON Artifact Convention** and models the architecture as a **graph** (nodes + edges) suitable for React Flow rendering, plus decision and constraint records.
+
+### Quick Reference
 
 ```json
 {
   "$schema": "shipkit-artifact",
   "type": "architecture",
   "version": "1.0",
-  "lastUpdated": "2025-01-15T10:00:00Z",
+  "lastUpdated": "ISO-8601-timestamp",
   "source": "shipkit-architecture-memory",
-  "summary": {
-    "totalNodes": 12,
-    "totalEdges": 18,
-    "totalDecisions": 5,
-    "totalConstraints": 2,
-    "layers": ["frontend", "api", "database"],
-    "lastDecision": "Chose PostgreSQL over MongoDB for relational data"
-  },
-  "nodes": [
-    {
-      "id": "next-app",
-      "label": "Next.js App",
-      "type": "service",
-      "layer": "frontend",
-      "description": "Main web application",
-      "techStack": ["Next.js 14", "React", "TypeScript"],
-      "status": "active"
-    }
-  ],
-  "edges": [
-    {
-      "id": "edge-1",
-      "source": "next-app",
-      "target": "api-gateway",
-      "label": "REST/GraphQL",
-      "type": "sync",
-      "protocol": "HTTPS"
-    }
-  ],
-  "decisions": [
-    {
-      "id": "dec-1",
-      "title": "Database Selection",
-      "date": "2025-01-10",
-      "status": "decided",
-      "decisionType": "architectural",
-      "chosen": "PostgreSQL",
-      "alternatives": [
-        { "name": "MongoDB", "reason": "Document model poor fit for relational data" },
-        { "name": "DynamoDB", "reason": "Vendor lock-in, complex querying" }
-      ],
-      "rationale": "Relational data model fits our domain better",
-      "affectedNodes": ["database", "api-gateway"],
-      "implications": [
-        "Need migration tooling (Drizzle Kit)",
-        "Schema-first development",
-        "Strong consistency guarantees"
-      ],
-      "supersedes": null,
-      "tradeoffs": "Less flexible schema, but stronger consistency"
-    }
-  ],
-  "constraints": [
-    {
-      "id": "con-1",
-      "description": "Must support 10k concurrent users",
-      "type": "performance",
-      "affectedNodes": ["api-gateway", "database"]
-    }
-  ]
+  "summary": { "totalNodes": N, "totalEdges": N, "totalDecisions": N, ... },
+  "nodes": [{ "id": "node-id", "label": "Name", "type": "service|database|cache|...", "layer": "frontend|api|...", "status": "active|planned|deprecated" }],
+  "edges": [{ "id": "edge-1", "source": "node-a", "target": "node-b", "type": "sync|async|event", "protocol": "HTTPS" }],
+  "decisions": [{ "id": "dec-1", "title": "...", "status": "decided|superseded", "decisionType": "architectural|operational", "chosen": "...", "rationale": "...", "supersedes": null }],
+  "constraints": [{ "id": "con-1", "description": "...", "type": "performance|security|...", "affectedNodes": [...] }]
 }
 ```
-
-### Schema Field Reference
-
-**Top-level (required for all Shipkit JSON artifacts)**:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `$schema` | string | Always `"shipkit-artifact"` |
-| `type` | string | Always `"architecture"` for this skill |
-| `version` | string | Schema version, currently `"1.0"` |
-| `lastUpdated` | string | ISO 8601 timestamp of last modification |
-| `source` | string | Always `"shipkit-architecture-memory"` |
-| `summary` | object | Aggregated data for dashboard cards |
-
-**summary**:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `totalNodes` | number | Count of nodes in the graph |
-| `totalEdges` | number | Count of edges in the graph |
-| `totalDecisions` | number | Count of decisions logged |
-| `totalConstraints` | number | Count of constraints logged |
-| `layers` | string[] | Unique layer names across all nodes |
-| `lastDecision` | string | Title or summary of the most recent decision |
-
-**nodes[] (architecture graph vertices)**:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Unique kebab-case identifier |
-| `label` | string | Human-readable display name |
-| `type` | string | One of: `service`, `database`, `queue`, `cache`, `external`, `library`, `module` |
-| `layer` | string | Logical layer: `frontend`, `api`, `backend`, `database`, `infrastructure`, `external` |
-| `description` | string | What this component does |
-| `techStack` | string[] | Technologies used by this node |
-| `status` | string | One of: `active`, `planned`, `deprecated` |
-
-**edges[] (architecture graph connections)**:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Unique identifier (e.g., `edge-1`) |
-| `source` | string | Source node `id` |
-| `target` | string | Target node `id` |
-| `label` | string | Connection description (e.g., `"REST"`, `"gRPC"`) |
-| `type` | string | One of: `sync`, `async`, `event`, `dependency` |
-| `protocol` | string | Protocol used (e.g., `"HTTPS"`, `"WebSocket"`, `"TCP"`) |
-
-**decisions[] (architectural decision records)**:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Unique identifier (e.g., `dec-1`) |
-| `title` | string | Concise title (5-10 words) |
-| `date` | string | Date in `YYYY-MM-DD` format |
-| `status` | string | One of: `decided`, `superseded`, `deprecated` |
-| `decisionType` | string | One of: `architectural`, `operational` |
-| `chosen` | string | What was chosen — one clear sentence |
-| `alternatives` | object[] | Each with `name` (string) and `reason` (string: why not chosen) |
-| `rationale` | string | Why this was chosen — the reasoning |
-| `affectedNodes` | string[] | Node `id`s affected by this decision |
-| `implications` | string[] | Requirements/constraints created by this decision |
-| `supersedes` | string\|null | `id` of superseded decision, or `null` |
-| `tradeoffs` | string | Key tradeoff summary |
-
-**constraints[] (system constraints)**:
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Unique identifier (e.g., `con-1`) |
-| `description` | string | What the constraint is |
-| `type` | string | One of: `performance`, `security`, `compliance`, `budget`, `timeline`, `technical` |
-| `affectedNodes` | string[] | Node `id`s affected by this constraint |
 
 ### Decision Types
 
 | Type | Definition | Examples |
 |------|------------|----------|
-| **architectural** | Tech choice, pattern selection, structural decision | "Use Server Actions", "Use Drizzle ORM", "Feature folders for components" |
-| **operational** | Runtime behavior, data flow rules, invariants | "Invalidate X when Y changes", "Always validate at boundary", "Cache TTL = 5min" |
-
-**Why type matters**: Architectural decisions affect code structure. Operational decisions affect runtime behavior and must be followed during implementation.
+| **architectural** | Tech choice, pattern selection, structural decision | "Use Server Actions", "Use Drizzle ORM" |
+| **operational** | Runtime behavior, data flow rules, invariants | "Invalidate X when Y changes", "Cache TTL = 5min" |
 
 ### Decision Status Lifecycle
 
 - **decided**: Active decision, still applies
-- **superseded**: Replaced by a newer decision (link via `supersedes` field in the new decision)
-- **deprecated**: No longer recommended, may still exist in codebase but should be migrated
+- **superseded**: Replaced by a newer decision (link via `supersedes` field)
+- **deprecated**: No longer recommended, should be migrated
+
+### ID Generation Rules
+
+- **Decisions**: `dec-[N]` (sequential)
+- **Nodes**: kebab-case descriptive name (e.g., `next-app`, `postgres-db`)
+- **Edges**: `edge-[N]` (sequential)
+- **Constraints**: `con-[N]` (sequential)
 
 ---
 
@@ -276,6 +158,43 @@ Example: Recording "Use Server Actions for mutations"
 ```
 
 **See also:** `shared/references/VERIFICATION-PROTOCOL.md` for standard verification patterns.
+
+---
+
+### Step 1b: Deep Explore of Affected Code Areas
+
+**Beyond keyword grep, understand the actual code the decision affects.**
+
+A grep count tells you how many files mention a pattern, but not whether the code is consistent, what alternatives are mixed in, or what would break if the pattern changes.
+
+**Launch explore agents** — Use the Task tool with `subagent_type: Explore`:
+
+```
+Agent 1 - Current state of affected area: "Explore the codebase areas
+related to [decision topic]. Look for: how [pattern/technology] is
+currently used, what conventions exist, whether usage is consistent
+or fragmented, and what the code structure looks like in affected areas.
+Report: current state summary, consistency level, notable deviations."
+
+Agent 2 - Impact and dependencies: "Find code that would be affected
+if [decision] is applied. Look for: files that use the old/alternative
+pattern, downstream consumers, tests that depend on current behavior,
+configuration that references the pattern. Report: blast radius of
+the decision, contracts that must be preserved, migration scope."
+```
+
+**Launch both agents in parallel** — they are independent searches.
+
+**Feed findings into decision entry** — Use exploration results to populate:
+- `implications` — grounded in actual code impact, not hypothetical
+- `affectedNodes` — based on real files/modules found
+- Pattern usage counts — exact files, not just grep hits
+
+**If exploration reveals inconsistency**: Surface to user. Example: *"The codebase currently mixes Server Actions and API routes — 3 files use one pattern, 5 use the other. Should this decision standardize on one approach?"*
+
+**Token budget**: Each explore agent should return a focused summary (~500 tokens).
+
+**When to skip**: If the decision is purely about a new technology/pattern not yet present in the codebase (nothing to explore).
 
 ---
 
@@ -518,6 +437,8 @@ IF decision is simple (single pattern choice):
 
 Copy and track:
 - [ ] Identified the decision context
+- [ ] Explored affected code areas (current state + blast radius)
+- [ ] Implications grounded in actual codebase findings
 - [ ] Documented rationale and alternatives considered
 - [ ] Updated `.shipkit/architecture.json` with decision entry
 - [ ] Added/updated graph nodes and edges if applicable
@@ -646,206 +567,11 @@ New decision: "Use Zod for runtime validation"
 
 ## Decision Entry Examples
 
-### Example 1: Simple Pattern Choice (Architectural)
-
-This decision adds one entry to `decisions`:
-
-```json
-{
-  "id": "dec-3",
-  "title": "Server Actions for Mutations",
-  "date": "2025-01-15",
-  "status": "decided",
-  "decisionType": "architectural",
-  "chosen": "Use Server Actions instead of API routes for all data mutations",
-  "alternatives": [
-    { "name": "API routes", "reason": "More boilerplate, separate files, manual revalidation" },
-    { "name": "tRPC", "reason": "Additional dependency, steeper learning curve" }
-  ],
-  "rationale": "Co-location with components, automatic revalidation, simpler error handling",
-  "affectedNodes": ["next-app"],
-  "implications": [
-    "Requires Next.js 14+",
-    "Server components by default",
-    "Simpler form handling with useFormState",
-    "Cannot use from client-side JavaScript outside React components"
-  ],
-  "supersedes": null,
-  "tradeoffs": "Tighter coupling to Next.js framework, but significant DX improvement"
-}
-```
-
-### Example 2: Technology Change (with Supersession)
-
-Old decision gets its status updated:
-
-```json
-{
-  "id": "dec-1",
-  "title": "Use Prisma for Database Access",
-  "date": "2025-01-10",
-  "status": "superseded",
-  "decisionType": "architectural",
-  "chosen": "Use Prisma ORM for all database access",
-  "alternatives": [
-    { "name": "Raw SQL", "reason": "No type safety" },
-    { "name": "Drizzle", "reason": "Less mature at the time" }
-  ],
-  "rationale": "Strong TypeScript support and auto-generated client",
-  "affectedNodes": ["api-gateway", "postgres-db"],
-  "implications": ["Prisma schema as source of truth", "Auto-generated migrations"],
-  "supersedes": null,
-  "tradeoffs": "Heavier runtime, but great DX"
-}
-```
-
-New decision references the old one:
-
-```json
-{
-  "id": "dec-4",
-  "title": "Switch to Drizzle ORM",
-  "date": "2025-01-20",
-  "status": "decided",
-  "decisionType": "architectural",
-  "chosen": "Replace Prisma with Drizzle ORM for database access",
-  "alternatives": [
-    { "name": "Keep Prisma", "reason": "Good docs but migrations too magical, type inference issues" },
-    { "name": "Raw SQL", "reason": "Too verbose, no type safety" }
-  ],
-  "rationale": "Better TypeScript inference, lighter runtime, SQL-first approach matches team preference",
-  "affectedNodes": ["api-gateway", "postgres-db"],
-  "implications": [
-    "Migration from Prisma schema to Drizzle schema required",
-    "All existing database queries need rewrite",
-    "Smaller bundle size",
-    "Better control over generated SQL"
-  ],
-  "supersedes": "dec-1",
-  "tradeoffs": "Migration effort required, but long-term maintenance improvement"
-}
-```
-
-### Example 3: Decision That Adds Nodes and Edges
-
-When a decision introduces new architecture components, update the graph:
-
-New node:
-
-```json
-{
-  "id": "redis-cache",
-  "label": "Redis Cache",
-  "type": "cache",
-  "layer": "infrastructure",
-  "description": "Session and query result caching layer",
-  "techStack": ["Redis 7", "ioredis"],
-  "status": "active"
-}
-```
-
-New edge:
-
-```json
-{
-  "id": "edge-5",
-  "source": "api-gateway",
-  "target": "redis-cache",
-  "label": "Cache reads/writes",
-  "type": "sync",
-  "protocol": "TCP"
-}
-```
-
-New decision:
-
-```json
-{
-  "id": "dec-5",
-  "title": "Add Redis Caching Layer",
-  "date": "2025-01-25",
-  "status": "decided",
-  "decisionType": "architectural",
-  "chosen": "Use Redis as a caching layer between API gateway and database",
-  "alternatives": [
-    { "name": "In-memory cache", "reason": "Lost on restart, not shared across instances" },
-    { "name": "No caching", "reason": "Database queries too slow for 10k concurrent users" }
-  ],
-  "rationale": "Need sub-10ms response times for frequently accessed data; Redis provides shared cache across instances",
-  "affectedNodes": ["api-gateway", "redis-cache", "postgres-db"],
-  "implications": [
-    "Cache invalidation strategy needed",
-    "Redis infrastructure provisioning required",
-    "Connection pooling configuration"
-  ],
-  "supersedes": null,
-  "tradeoffs": "Additional infrastructure complexity, but necessary for performance targets"
-}
-```
-
-New constraint (if applicable):
-
-```json
-{
-  "id": "con-1",
-  "description": "Must support 10k concurrent users with sub-100ms API response times",
-  "type": "performance",
-  "affectedNodes": ["api-gateway", "redis-cache", "postgres-db"]
-}
-```
-
-### Example 4: Operational Rule (Cache Invalidation)
-
-```json
-{
-  "id": "dec-6",
-  "title": "Cart Invalidation on Product Update",
-  "date": "2025-01-28",
-  "status": "decided",
-  "decisionType": "operational",
-  "chosen": "Invalidate all cart queries when any product price or availability changes",
-  "alternatives": [
-    { "name": "Per-product invalidation", "reason": "Complex to track which carts contain which products" },
-    { "name": "Time-based cache expiry", "reason": "5-min delay unacceptable for price changes" },
-    { "name": "No caching", "reason": "Too slow for cart operations" }
-  ],
-  "rationale": "Carts display product prices and stock status. Stale data causes checkout failures and user confusion.",
-  "affectedNodes": ["redis-cache", "api-gateway"],
-  "implications": [
-    "revalidateTag('cart') must be called in product update handlers",
-    "Cart queries use tags: ['cart', 'products']",
-    "Slightly more cache misses but guaranteed consistency"
-  ],
-  "supersedes": null,
-  "tradeoffs": "More cache misses, but data consistency guaranteed"
-}
-```
-
-### Example 5: Operational Rule (Validation Invariant)
-
-```json
-{
-  "id": "dec-7",
-  "title": "Validate at API Boundary Only",
-  "date": "2025-01-30",
-  "status": "decided",
-  "decisionType": "operational",
-  "chosen": "Input validation happens at API route entry points only, not in internal functions",
-  "alternatives": [
-    { "name": "Validate everywhere", "reason": "Redundant, slower, inconsistent error messages" },
-    { "name": "Validate at DB layer", "reason": "Too late, poor error messages" }
-  ],
-  "rationale": "Single validation point prevents inconsistent error handling. Internal functions trust already-validated data.",
-  "affectedNodes": ["api-gateway"],
-  "implications": [
-    "All API routes use Zod schemas",
-    "Internal service functions accept typed parameters without re-validation",
-    "Never pass raw user input to internal functions"
-  ],
-  "supersedes": null,
-  "tradeoffs": "Risk of invalid data if validation is bypassed, but simpler and faster internal code"
-}
-```
+**See `references/example.json` for complete examples** including:
+- Architectural decisions (tech choices, patterns)
+- Operational decisions (runtime behavior, invariants)
+- Decisions with supersession
+- Decisions that add nodes/edges/constraints
 
 ---
 
@@ -867,11 +593,12 @@ New constraint (if applicable):
 ## Success Criteria
 
 Decision is logged when:
+- [ ] Affected code areas explored (current state, consistency, blast radius)
 - [ ] Decision entry added to `decisions` array in architecture.json
 - [ ] Includes `chosen` statement
 - [ ] Includes `rationale` (WHY)
 - [ ] Includes `alternatives` considered
-- [ ] Includes `implications`
+- [ ] Includes `implications` (grounded in codebase findings)
 - [ ] `supersedes` field set correctly (decision id or null)
 - [ ] No contradictions with existing decisions (or user confirmed supersession)
 - [ ] Graph nodes/edges updated if architecture components changed

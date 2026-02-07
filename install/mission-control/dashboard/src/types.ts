@@ -9,6 +9,23 @@ export interface Instance {
   toolCount: number
   skills: string[]
   status: 'active' | 'stale' | 'stopped'
+  mode?: 'standby' | null
+}
+
+export interface QueueItem {
+  commandId: string
+  status: 'pending' | 'inflight' | 'processed'
+  prompt: string
+  source: string
+  timestamp: number
+}
+
+export interface QueueStatus {
+  sessionId: string
+  pending: QueueItem[]
+  inflight: QueueItem[]
+  processed: QueueItem[]
+  total: number
 }
 
 export interface Event {
@@ -126,4 +143,41 @@ export interface ContractsArtifact extends ArtifactData {
     type: string
     label: string
   }>
+}
+
+// Routing
+export type AppRoute =
+  | { view: 'portfolio' }
+  | { view: 'project'; projectPath: string }
+
+// Foundational artifact types for coverage display
+export const FOUNDATIONAL_ARTIFACTS = ['goals', 'spec', 'plan', 'preflight', 'architecture'] as const
+
+// All known artifact types
+export const ALL_ARTIFACT_TYPES = [
+  'goals', 'project-status', 'architecture', 'data-contracts', 'product-discovery',
+  'work-memory', 'codebase-index', 'preflight', 'scale-readiness', 'prompt-audit',
+  'user-tasks', 'test-coverage', 'spec', 'plan', 'bug-spec', 'ux-decisions', 'project-why'
+] as const
+
+export type ArtifactType = typeof ALL_ARTIFACT_TYPES[number]
+
+export const ARTIFACT_TYPE_ICONS: Record<string, string> = {
+  goals: '\uD83C\uDFAF',
+  'project-status': '\uD83D\uDCCA',
+  architecture: '\uD83C\uDFD7\uFE0F',
+  'data-contracts': '\uD83D\uDD17',
+  'product-discovery': '\uD83D\uDC65',
+  'work-memory': '\uD83D\uDCDD',
+  'codebase-index': '\uD83D\uDCC2',
+  preflight: '\uD83D\uDE80',
+  'scale-readiness': '\uD83D\uDCC8',
+  'prompt-audit': '\uD83D\uDD0D',
+  'user-tasks': '\u2705',
+  'test-coverage': '\uD83E\uDDEA',
+  spec: '\uD83D\uDCC4',
+  plan: '\uD83D\uDCCB',
+  'bug-spec': '\uD83D\uDC1B',
+  'ux-decisions': '\uD83C\uDFA8',
+  'project-why': '\uD83E\uDD14',
 }

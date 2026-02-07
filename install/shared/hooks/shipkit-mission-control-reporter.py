@@ -40,7 +40,7 @@ def collect_artifacts(cwd: str) -> dict | None:
         pass
 
     artifacts = {}
-    for json_file in shipkit_dir.glob("*.json"):
+    for json_file in shipkit_dir.rglob("*.json"):
         # Skip internal files
         if json_file.name.startswith(".") or json_file.name == "skill-usage.json":
             continue
@@ -51,7 +51,9 @@ def collect_artifacts(cwd: str) -> dict | None:
             data = json.loads(json_file.read_text())
             # Only ship files that follow the shipkit-artifact convention
             if data.get("$schema") == "shipkit-artifact":
-                artifacts[json_file.name] = data
+                # Use relative path from .shipkit/ as key to preserve subdirectory context
+                rel_key = str(json_file.relative_to(shipkit_dir))
+                artifacts[rel_key] = data
         except Exception:
             continue
 
@@ -126,6 +128,11 @@ def main():
         tool_input = hook_input.get("tool_input", {})
         if isinstance(tool_input, dict):
             event_data["skill"] = tool_input.get("skill", "")
+
+    # Detect standby mode from dedicated standby state file
+    standby_file = Path(cwd) / ".shipkit" / "standby-state.local.md"
+    if standby_file.exists():
+        event_data["mode"] = "standby"
 
     # Only report if server is already running (passive mode)
     # User must explicitly start server via /mission-control start

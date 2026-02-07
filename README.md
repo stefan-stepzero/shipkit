@@ -2,14 +2,14 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**35 skills** organized for streamlined workflow:
+**37 skills** organized for streamlined workflow:
 - **Core Workflow** (5) - Orchestration, status, and context management
 - **Discovery & Planning** (9) - Product discovery, goals, specification, and bug triage
 - **Implementation** (3) - Architecture, contracts, and integrations
 - **Execution** (6) - Test case generation, relentless build/test/lint, parallel implementation
 - **Quality & Documentation** (8) - Testing, UX, production readiness, prompt architecture, and documentation
 - **Ecosystem** (2) - Get skills and MCPs
-- **System** (2) - Auto-triggered detection and updates
+- **System** (4) - Detection, updates, mission control, and standby mode
 
 Plus **9 agent personas** that specialize behaviors for different workflow stages.
 
@@ -17,7 +17,7 @@ Plus **9 agent personas** that specialize behaviors for different workflow stage
 
 ## What's Inside
 
-### Skills (35 total)
+### Skills (37 total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -62,9 +62,11 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-communications` - Communication and formatting
 - `shipkit-work-memory` - Session memory and context
 
-**System Skills (4 skills):**
+**System Skills (6 skills):**
 - `shipkit-detect` - Pattern detection and queue creation (auto-triggered)
 - `shipkit-update` - Install or update Shipkit from GitHub
+- `shipkit-mission-control` - Monitor and command multiple instances from web dashboard
+- `shipkit-standby` - AFK daemon mode with Mission Control polling and backoff
 - `shipkit-get-skills` - Discover and install Claude Code skills
 - `shipkit-get-mcps` - Discover and install MCP servers
 
@@ -162,7 +164,7 @@ Your project context is stored in:
 ├── plans/               # Implementation plans
 ├── architecture.json    # Architecture decisions
 ├── stack.json           # Technology stack
-├── implementations.md   # What's been built
+├── implementations.json   # What's been built
 └── contracts.json       # Data contracts
 ```
 

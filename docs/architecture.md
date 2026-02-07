@@ -74,20 +74,20 @@ Every skill must pass one criterion: does it do something Claude can't do well w
 **Persistent context files:**
 ```
 .shipkit/
-├── why.md              # Vision, problem, solution, success criteria
-├── stack.md            # Framework, database, deployment choices
-├── architecture.md     # Append-only decision log with rationale
+├── why.json            # Vision, problem, solution, success criteria
+├── stack.json          # Framework, database, deployment choices
+├── architecture.json   # Append-only decision log with rationale
 ├── schema.md           # Data model
-├── progress.md         # Session summaries (48-hour window, auto-archives)
+├── progress.json       # Session summaries (48-hour window, auto-archives)
 ├── specs/active/       # Feature specs with Given/When/Then
 ├── plans/              # Implementation plans
-└── data-contracts.md   # Data shapes across layers
+└── contracts.json      # Data shapes across layers
 ```
 
 ## Key Findings
 
 ### 1. Context Over Defaults Works
-Claude has strong implicit preferences from training (modular architecture, TypeScript strict mode, comprehensive error handling). When `why.md` says "MVP in 2 weeks, solo dev," skills that check context first produce simpler, more appropriate solutions.
+Claude has strong implicit preferences from training (modular architecture, TypeScript strict mode, comprehensive error handling). When `why.json` says "MVP in 2 weeks, solo dev," skills that check context first produce simpler, more appropriate solutions.
 
 **Before context:** "I'll create separate components for each widget with a shared state management layer..."
 

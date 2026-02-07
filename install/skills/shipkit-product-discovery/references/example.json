@@ -1,0 +1,283 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "product-discovery",
+  "version": "1.0",
+  "lastUpdated": "2025-01-15T14:30:00Z",
+  "source": "shipkit-product-discovery",
+  "summary": {
+    "totalPersonas": 3,
+    "totalJourneys": 3,
+    "totalPainPoints": 6,
+    "totalOpportunities": 4,
+    "primaryPersona": "Solo Founder",
+    "topPainPoint": "Losing context between coding sessions"
+  },
+  "personas": [
+    {
+      "id": "persona-1",
+      "name": "Solo Founder",
+      "role": "Technical founder building MVP",
+      "goals": [
+        "Ship MVP within 4 weeks",
+        "Validate idea with early users",
+        "Keep momentum despite limited time"
+      ],
+      "frustrations": [
+        "Forgetting where I left off yesterday",
+        "Spending time on boilerplate instead of features",
+        "Making inconsistent decisions across sessions"
+      ],
+      "techComfort": "high",
+      "context": "Works on side project evenings and weekends, 10-15 hours/week",
+      "isPrimary": true
+    },
+    {
+      "id": "persona-2",
+      "name": "Agency Developer",
+      "role": "Full-stack developer at digital agency",
+      "goals": [
+        "Deliver client projects on time",
+        "Maintain quality across multiple projects",
+        "Onboard teammates to projects quickly"
+      ],
+      "frustrations": [
+        "Context switching between client projects",
+        "Documenting decisions for teammates",
+        "Remembering project-specific conventions"
+      ],
+      "techComfort": "high",
+      "context": "Works on 2-3 client projects simultaneously, needs fast context switching",
+      "isPrimary": false
+    },
+    {
+      "id": "persona-3",
+      "name": "Junior Developer",
+      "role": "Early-career developer learning best practices",
+      "goals": [
+        "Learn professional development workflows",
+        "Build portfolio projects",
+        "Avoid common mistakes"
+      ],
+      "frustrations": [
+        "Not knowing the 'right' way to structure projects",
+        "Missing important production considerations",
+        "Getting stuck without guidance"
+      ],
+      "techComfort": "medium",
+      "context": "Building personal projects to learn, benefits from guardrails and templates",
+      "isPrimary": false
+    }
+  ],
+  "painPoints": [
+    {
+      "id": "pain-1",
+      "description": "Losing context between coding sessions",
+      "severity": "critical",
+      "affectedPersonas": ["persona-1", "persona-2"],
+      "currentWorkaround": "Manual notes in README or Notion, often outdated",
+      "frequency": "every session"
+    },
+    {
+      "id": "pain-2",
+      "description": "Forgetting why past decisions were made",
+      "severity": "high",
+      "affectedPersonas": ["persona-1", "persona-2", "persona-3"],
+      "currentWorkaround": "Git commit messages, but often not detailed enough",
+      "frequency": "weekly"
+    },
+    {
+      "id": "pain-3",
+      "description": "Missing production checklist items before launch",
+      "severity": "high",
+      "affectedPersonas": ["persona-1", "persona-3"],
+      "currentWorkaround": "Ad-hoc Googling, learning from mistakes",
+      "frequency": "per project"
+    },
+    {
+      "id": "pain-4",
+      "description": "Inconsistent project structure across projects",
+      "severity": "medium",
+      "affectedPersonas": ["persona-2"],
+      "currentWorkaround": "Company boilerplate, but not always maintained",
+      "frequency": "per project"
+    },
+    {
+      "id": "pain-5",
+      "description": "Spending time on boilerplate instead of features",
+      "severity": "medium",
+      "affectedPersonas": ["persona-1", "persona-3"],
+      "currentWorkaround": "Copy from previous projects, often brings old bugs",
+      "frequency": "per project"
+    },
+    {
+      "id": "pain-6",
+      "description": "Difficulty onboarding teammates to project decisions",
+      "severity": "medium",
+      "affectedPersonas": ["persona-2"],
+      "currentWorkaround": "Verbal explanations, repeated for each new person",
+      "frequency": "per teammate"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "journey-1",
+      "name": "Starting a New Project",
+      "persona": "persona-1",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "Create new repo and initialize framework",
+          "emotion": "excited",
+          "painPoints": [],
+          "touchpoints": ["CLI", "GitHub"]
+        },
+        {
+          "id": "step-2",
+          "action": "Choose tech stack components",
+          "emotion": "neutral",
+          "painPoints": ["pain-5"],
+          "touchpoints": ["Package managers", "Documentation"]
+        },
+        {
+          "id": "step-3",
+          "action": "Set up project structure and configuration",
+          "emotion": "frustrated",
+          "painPoints": ["pain-4", "pain-5"],
+          "touchpoints": ["IDE", "Config files"]
+        },
+        {
+          "id": "step-4",
+          "action": "Document initial decisions",
+          "emotion": "neutral",
+          "painPoints": ["pain-2"],
+          "touchpoints": ["README", "Notes app"]
+        },
+        {
+          "id": "step-5",
+          "action": "Start building first feature",
+          "emotion": "excited",
+          "painPoints": [],
+          "touchpoints": ["IDE", "Browser"]
+        }
+      ]
+    },
+    {
+      "id": "journey-2",
+      "name": "Resuming Work After Break",
+      "persona": "persona-1",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "Open project and try to remember where I was",
+          "emotion": "confused",
+          "painPoints": ["pain-1"],
+          "touchpoints": ["IDE", "Git log"]
+        },
+        {
+          "id": "step-2",
+          "action": "Review recent commits and changes",
+          "emotion": "neutral",
+          "painPoints": ["pain-1", "pain-2"],
+          "touchpoints": ["Git", "IDE"]
+        },
+        {
+          "id": "step-3",
+          "action": "Check notes or README for context",
+          "emotion": "frustrated",
+          "painPoints": ["pain-1"],
+          "touchpoints": ["README", "Notes app"]
+        },
+        {
+          "id": "step-4",
+          "action": "Reconstruct mental model of current state",
+          "emotion": "frustrated",
+          "painPoints": ["pain-1", "pain-2"],
+          "touchpoints": ["Codebase", "Tests"]
+        },
+        {
+          "id": "step-5",
+          "action": "Finally resume productive work",
+          "emotion": "neutral",
+          "painPoints": [],
+          "touchpoints": ["IDE"]
+        }
+      ]
+    },
+    {
+      "id": "journey-3",
+      "name": "Preparing for Production Launch",
+      "persona": "persona-1",
+      "steps": [
+        {
+          "id": "step-1",
+          "action": "Realize it's time to ship",
+          "emotion": "excited",
+          "painPoints": [],
+          "touchpoints": ["Calendar", "Stakeholders"]
+        },
+        {
+          "id": "step-2",
+          "action": "Search for production checklist",
+          "emotion": "neutral",
+          "painPoints": ["pain-3"],
+          "touchpoints": ["Google", "Blog posts"]
+        },
+        {
+          "id": "step-3",
+          "action": "Discover missing security/infrastructure items",
+          "emotion": "frustrated",
+          "painPoints": ["pain-3"],
+          "touchpoints": ["Checklist", "Codebase"]
+        },
+        {
+          "id": "step-4",
+          "action": "Rush to implement critical items",
+          "emotion": "frustrated",
+          "painPoints": ["pain-3"],
+          "touchpoints": ["IDE", "Documentation"]
+        },
+        {
+          "id": "step-5",
+          "action": "Deploy with uncertainty about readiness",
+          "emotion": "neutral",
+          "painPoints": ["pain-3"],
+          "touchpoints": ["Deployment platform"]
+        }
+      ]
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp-1",
+      "description": "Auto-capture session progress and resume context",
+      "addressesPainPoints": ["pain-1"],
+      "impactedPersonas": ["persona-1", "persona-2"],
+      "effort": "medium",
+      "impact": "high"
+    },
+    {
+      "id": "opp-2",
+      "description": "Structured decision logging with rationale",
+      "addressesPainPoints": ["pain-2", "pain-6"],
+      "impactedPersonas": ["persona-1", "persona-2", "persona-3"],
+      "effort": "low",
+      "impact": "high"
+    },
+    {
+      "id": "opp-3",
+      "description": "Context-aware production readiness checklist",
+      "addressesPainPoints": ["pain-3"],
+      "impactedPersonas": ["persona-1", "persona-3"],
+      "effort": "medium",
+      "impact": "high"
+    },
+    {
+      "id": "opp-4",
+      "description": "Project templates with best practices built-in",
+      "addressesPainPoints": ["pain-4", "pain-5"],
+      "impactedPersonas": ["persona-1", "persona-2", "persona-3"],
+      "effort": "high",
+      "impact": "medium"
+    }
+  ]
+}

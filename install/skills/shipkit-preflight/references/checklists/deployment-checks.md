@@ -76,6 +76,22 @@ Platform-specific checks for common deployment targets.
 **Fail impact**: Scheduled tasks don't run
 **Severity**: 🟡 Warning (if applicable)
 
+### DEPLOY-VERCEL-006: External Service Routes Have maxDuration
+**Check**: Routes calling external services export `maxDuration` matching plan
+**Scan for**:
+```
+# Find routes with external calls
+Grep: pattern="openai|anthropic|gemini|stripe|fetch\("
+      glob="**/app/**/route.{ts,js}"
+
+# Check those same files for maxDuration
+Grep: pattern="export.*maxDuration"
+      glob="**/app/**/route.{ts,js}"
+```
+**Pass criteria**: Every route with external service calls exports `maxDuration`
+**Fail impact**: Route killed at 10s (Hobby) or 60s (Pro) mid-LLM-call
+**Severity**: 🔴 Blocker
+
 ---
 
 ## AWS Specific

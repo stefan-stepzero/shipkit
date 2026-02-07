@@ -45,6 +45,7 @@ Follow-up skill can process queue
 | `contracts` | shipkit-plan | Plan for data structures (types, interfaces, schemas) | `define-data-contracts.md` | shipkit-data-contracts |
 | `changes` | (after implementation) | Recently modified components/routes | `components-to-document.md`, `routes-to-document.md` | (documentation - natural capability) |
 | `ux-gaps` | shipkit-verify | Interactive components needing UX review | `ux-audit-needed.md` | shipkit-ux-audit |
+| `ext-boundaries` | shipkit-verify | External service calls missing operational boundaries (timeouts, limits) | `ext-boundary-review.md` | shipkit-preflight (review) |
 
 ---
 
@@ -68,7 +69,7 @@ Follow-up skill can process queue
 
 ## Pending
 - [ ] Supabase
-  - Mentioned in: specs/active/auth-flow.md
+  - Mentioned in: specs/active/auth-flow.json
   - Keywords: supabase, auth, rls
   - Need: Current auth patterns, RLS examples
 ```
@@ -93,7 +94,7 @@ Follow-up skill can process queue
 
 ## Pending
 - [ ] User
-  - Mentioned in: plans/auth-implementation.md
+  - Mentioned in: plans/active/auth-implementation.json
   - Layers: Database → API → Frontend
   - Need: Consistent shape across all layers
 ```
@@ -133,6 +134,41 @@ Follow-up skill can process queue
 
 ---
 
+## Mode: `ext-boundaries`
+
+**Scans source code for external service integrations missing operational boundaries.**
+
+**Services detected:**
+- AI/LLM: OpenAI, Anthropic, Google AI (Gemini), Replicate
+- Payment: Stripe
+- Email: Resend
+- Database: Supabase
+- Generic: Any `fetch()` to external URLs
+
+**Boundary signals checked per file:**
+- Timeout configuration (`timeout`, `AbortController`, `signal:`)
+- Resource limits (`maxTokens`, `maxOutputTokens`, `max_tokens`)
+- SDK-specific config (`maxNetworkRetries`, `idempotencyKey`)
+
+**Creates:** `.shipkit/.queues/ext-boundary-review.md`
+
+**Queue format:**
+```markdown
+# External Service Boundary Review
+
+## Pending
+
+### openai
+- [ ] `src/lib/ai.ts` — No boundaries
+  - Missing: timeout, maxTokens, AbortController
+
+### fetch-external
+- [ ] `src/api/weather/route.ts` — No boundaries
+  - Missing: timeout, AbortController, signal:
+```
+
+---
+
 ## Invocation
 
 **Via router hook (automatic):**
@@ -146,6 +182,7 @@ python scripts/detect.py --mode=services
 python scripts/detect.py --mode=contracts
 python scripts/detect.py --mode=changes
 python scripts/detect.py --mode=ux-gaps
+python scripts/detect.py --mode=ext-boundaries
 ```
 
 ---
@@ -181,6 +218,7 @@ To add a new detection type:
    # In after-skill-router.py
    TRIGGERS = {
        "shipkit-spec": "services",
+       "shipkit-verify": "ext-boundaries",
        "shipkit-new-skill": "new-mode",  # Add here
    }
    ```
@@ -201,10 +239,11 @@ This folder is:
 
 | Mode | Reads |
 |------|-------|
-| services | `.shipkit/specs/active/*.md` |
-| contracts | `.shipkit/plans/*.md` |
+| services | `.shipkit/specs/active/*.json` |
+| contracts | `.shipkit/plans/active/*.json` |
 | changes | `src/components/**`, `src/app/**` (file modification times) |
 | ux-gaps | `src/components/**` (interactive patterns) |
+| ext-boundaries | `src/**/*.{ts,js}`, `app/**/*.{ts,js}`, `lib/**/*.{ts,js}` (external SDK usage) |
 
 ---
 
@@ -216,6 +255,7 @@ This folder is:
 | contracts | `.shipkit/.queues/define-data-contracts.md` |
 | changes | `.shipkit/.queues/components-to-document.md`, `routes-to-document.md` |
 | ux-gaps | `.shipkit/.queues/ux-audit-needed.md` |
+| ext-boundaries | `.shipkit/.queues/ext-boundary-review.md` |
 
 ---
 

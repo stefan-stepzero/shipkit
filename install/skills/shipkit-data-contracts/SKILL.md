@@ -19,7 +19,7 @@ description: "Use when validating data shapes across layers or checking type ali
 - "Check if types match database"
 
 **Auto-suggest contexts**:
-- After `/shipkit-project-context` generates schema.md (suggest: "Define types?")
+- After `/shipkit-project-context` generates schema.json (suggest: "Define types?")
 - During `implement (no skill needed)` when user creates components with data props
 - During `implement (no skill needed)` when user creates Server Actions with parameters
 - When type errors occur during implementation
@@ -30,7 +30,7 @@ description: "Use when validating data shapes across layers or checking type ali
 ## Prerequisites
 
 **Optional but helpful**:
-- Database schema: `.shipkit/schema.md` (from shipkit-project-context)
+- Database schema: `.shipkit/schema.json` (from shipkit-project-context)
 - Existing contracts: `.shipkit/contracts.json` (from previous runs of this skill)
 
 **Can run standalone**: Yes - creates `contracts.json` if it doesn't exist
@@ -39,186 +39,47 @@ description: "Use when validating data shapes across layers or checking type ali
 
 ## Output Schema: `.shipkit/contracts.json`
 
+**Full schema reference**: See `references/output-schema.md`
+**Example output**: See `references/example.json`
+
 This skill writes a **single JSON artifact** following the Shipkit JSON Artifact Convention. The schema is an entity-relationship graph designed for ER diagram rendering and dashboard summaries.
 
-### Full Schema Reference
+### Quick Reference
 
 ```json
 {
   "$schema": "shipkit-artifact",
   "type": "data-contracts",
   "version": "1.0",
-  "lastUpdated": "2025-01-15T10:00:00Z",
+  "lastUpdated": "ISO-8601-timestamp",
   "source": "shipkit-data-contracts",
-  "summary": {
-    "totalEntities": 8,
-    "totalRelationships": 12,
-    "totalValidationRules": 15,
-    "domains": ["users", "products", "orders"],
-    "lastChange": "Added Order entity with Product relationship"
-  },
-  "entities": [
-    {
-      "id": "user",
-      "name": "User",
-      "domain": "users",
-      "description": "Application user account",
-      "fields": [
-        {
-          "name": "id",
-          "type": "string",
-          "format": "uuid",
-          "required": true,
-          "description": "Unique identifier"
-        },
-        {
-          "name": "email",
-          "type": "string",
-          "format": "email",
-          "required": true,
-          "unique": true,
-          "validation": "RFC 5322 email format"
-        },
-        {
-          "name": "name",
-          "type": "string",
-          "required": true,
-          "description": "Display name"
-        },
-        {
-          "name": "created_at",
-          "type": "string",
-          "format": "datetime",
-          "required": true,
-          "description": "ISO 8601 creation timestamp"
-        },
-        {
-          "name": "updated_at",
-          "type": "string",
-          "format": "datetime",
-          "required": true,
-          "description": "ISO 8601 last update timestamp"
-        }
-      ],
-      "source": "database"
-    }
-  ],
-  "relationships": [
-    {
-      "id": "rel-1",
-      "source": "user",
-      "target": "order",
-      "type": "one-to-many",
-      "label": "places",
-      "foreignKey": "user_id",
-      "cascade": "restrict"
-    }
-  ],
-  "validationRules": [
-    {
-      "id": "val-1",
-      "entity": "user",
-      "field": "email",
-      "rule": "unique",
-      "errorMessage": "Email already registered",
-      "scope": "global"
-    }
-  ],
-  "apiContracts": [
-    {
-      "id": "api-1",
-      "endpoint": "/api/users",
-      "method": "POST",
-      "requestEntity": "user",
-      "responseEntity": "user",
-      "requiredFields": ["email", "name"],
-      "authentication": "required"
-    }
-  ]
+  "summary": { "totalEntities": N, "totalRelationships": N, "totalValidationRules": N, "domains": [...], "lastChange": "..." },
+  "entities": [{ "id": "user", "name": "User", "domain": "users", "fields": [...], "source": "database" }],
+  "relationships": [{ "id": "rel-1", "source": "user", "target": "order", "type": "one-to-many", "label": "places" }],
+  "validationRules": [{ "id": "val-1", "entity": "user", "field": "email", "rule": "unique", "errorMessage": "..." }],
+  "apiContracts": [{ "id": "api-1", "endpoint": "/api/users", "method": "POST", "requestEntity": "user" }]
 }
 ```
 
-### Required Top-Level Fields (Shipkit JSON Artifact Convention)
+### Key Conventions
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `$schema` | `"shipkit-artifact"` | Always this literal value |
-| `type` | `"data-contracts"` | Artifact type identifier |
-| `version` | `string` | Schema version (currently `"1.0"`) |
-| `lastUpdated` | `string` | ISO 8601 datetime of last modification |
-| `source` | `"shipkit-data-contracts"` | Skill that wrote this file |
-| `summary` | `object` | Aggregated data for dashboard cards |
+- **Entity `id`**: lowercase singular (e.g., `"user"`, `"order"`)
+- **Entity `name`**: PascalCase (e.g., `"User"`, `"Order"`)
+- **Field `name`**: snake_case (matches database columns)
+- **Relationship `id`**: `"rel-{source}-{target}"` for clarity
+- **Relationship `label`**: verb that reads naturally ("User **creates** Recipe")
 
-### Summary Object
+### Validation Rule Types
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `totalEntities` | `number` | Count of entities in the `entities` array |
-| `totalRelationships` | `number` | Count of items in the `relationships` array |
-| `totalValidationRules` | `number` | Count of items in the `validationRules` array |
-| `domains` | `string[]` | Unique domain names across all entities |
-| `lastChange` | `string` | Human-readable description of most recent change |
-
-### Entity Object
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | yes | Unique entity identifier (lowercase, e.g., `"user"`) |
-| `name` | `string` | yes | Display name (PascalCase, e.g., `"User"`) |
-| `domain` | `string` | yes | Domain grouping (e.g., `"users"`, `"products"`) |
-| `description` | `string` | yes | What this entity represents |
-| `fields` | `Field[]` | yes | Array of field definitions |
-| `source` | `string` | no | Where entity originates (`"database"`, `"api"`, `"derived"`) |
-
-### Field Object
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | `string` | yes | Field name (snake_case, matches database columns) |
-| `type` | `string` | yes | Data type (`"string"`, `"number"`, `"boolean"`, `"object"`, `"array"`) |
-| `format` | `string` | no | Format hint (`"uuid"`, `"email"`, `"datetime"`, `"url"`, `"uri"`) |
-| `required` | `boolean` | yes | Whether this field is required |
-| `unique` | `boolean` | no | Whether this field must be unique |
-| `description` | `string` | no | Field description |
-| `validation` | `string` | no | Human-readable validation rule summary |
-| `default` | `any` | no | Default value if not provided |
-| `nullable` | `boolean` | no | Whether this field can be null (default: false) |
-
-### Relationship Object
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | yes | Unique relationship identifier (e.g., `"rel-1"`) |
-| `source` | `string` | yes | Source entity id |
-| `target` | `string` | yes | Target entity id |
-| `type` | `string` | yes | Cardinality: `"one-to-one"`, `"one-to-many"`, `"many-to-many"` |
-| `label` | `string` | yes | Relationship verb (e.g., `"places"`, `"contains"`, `"belongs to"`) |
-| `foreignKey` | `string` | no | Foreign key field name |
-| `cascade` | `string` | no | Cascade behavior: `"cascade"`, `"restrict"`, `"set-null"` |
-
-### Validation Rule Object
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | yes | Unique rule identifier (e.g., `"val-1"`) |
-| `entity` | `string` | yes | Entity id this rule applies to |
-| `field` | `string` | yes | Field name this rule applies to |
-| `rule` | `string` | yes | Rule type (`"unique"`, `"min"`, `"max"`, `"pattern"`, `"custom"`) |
-| `errorMessage` | `string` | yes | User-facing error message |
-| `scope` | `string` | no | Rule scope: `"global"`, `"per-tenant"` |
-| `params` | `object` | no | Rule parameters (e.g., `{"min": 3, "max": 100}` for length rules) |
-
-### API Contract Object
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | `string` | yes | Unique contract identifier (e.g., `"api-1"`) |
-| `endpoint` | `string` | yes | API endpoint path |
-| `method` | `string` | yes | HTTP method (`"GET"`, `"POST"`, `"PUT"`, `"PATCH"`, `"DELETE"`) |
-| `requestEntity` | `string` | no | Entity id for request body |
-| `responseEntity` | `string` | no | Entity id for response body |
-| `requiredFields` | `string[]` | no | Fields required in request (subset of entity fields) |
-| `authentication` | `string` | no | Auth requirement: `"required"`, `"optional"`, `"none"` |
+| Rule | Description | Params |
+|------|-------------|--------|
+| `unique` | Value must be unique | - |
+| `min` | Minimum value/length | `{"min": 8}` |
+| `max` | Maximum value/length | `{"max": 100}` |
+| `pattern` | Regex pattern match | `{"pattern": "..."}` |
+| `range` | Value in range | `{"min": 1, "max": 10}` |
+| `enum` | Value in list | `{"values": [...]}` |
+| `custom` | Custom validation | `{"fn": "..."}` |
 
 ---
 
@@ -244,7 +105,7 @@ Read file (if exists): `.shipkit/.queues/define-data-contracts.md`
 ### Step 1: (Manual Mode) Read Existing Context
 
 **Read existing definitions before asking questions**:
-- `.shipkit/schema.md` - Database schema (if exists)
+- `.shipkit/schema.json` - Database schema (if exists)
 - `.shipkit/contracts.json` - Existing contracts (if exists)
 
 **If contracts.json doesn't exist**: Continue to questions (will create it)
@@ -265,8 +126,8 @@ Read file (if exists): `.shipkit/.queues/define-data-contracts.md`
 
 ### Step 3: Check Database Alignment
 
-**If schema.md exists, check for alignment**:
-1. Read schema.md to see database table structures
+**If schema.json exists, check for alignment**:
+1. Read schema.json to see database table structures
 2. Compare requested entity fields with database columns
 3. Detect mismatches: Fields in entity but not in database, different data types, missing nullable annotations
 
@@ -281,8 +142,8 @@ Before defining any entity, verify claims with tool calls:
 
 | Claim | Required Verification |
 |-------|----------------------|
-| "schema.md exists" | `Read: file_path=".shipkit/schema.md"` succeeds |
-| "Table X has columns" | Parse schema.md content, extract column definitions |
+| "schema.json exists" | `Read: file_path=".shipkit/schema.json"` succeeds |
+| "Table X has columns" | Parse schema.json content, extract column definitions |
 | "Entity aligns with schema" | Compare field names (case-sensitive) between entity and schema |
 | "Existing type at path" | `Glob: pattern="**/types/*"` AND `Grep: pattern="type TypeName"` |
 
@@ -306,7 +167,7 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 2. SCHEMA ALIGNMENT AGENT (subagent_type: "Explore")
    Prompt: "Check alignment between TypeScript types and database schema.
-   Read .shipkit/schema.md (or prisma/schema.prisma).
+   Read .shipkit/schema.json (or prisma/schema.prisma).
    Compare field names, types, and nullability.
    Report:
    - Fields in type but not in database
@@ -333,7 +194,7 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 **Verification sequence:**
 
 ```
-1. If schema.md exists:
+1. If schema.json exists:
    - Read and parse table definitions
    - Extract column names and types
 2. Before creating new entity:
@@ -446,10 +307,10 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 ### Step 9: Detect Schema Mismatches
 
-**Compare entities in contracts.json with schema.md** (if schema.md exists):
+**Compare entities in contracts.json with schema.json** (if schema.json exists):
 
 For each field in each entity:
-1. Check if corresponding column exists in schema.md
+1. Check if corresponding column exists in schema.json
 2. Check if data types are compatible (string -> TEXT/VARCHAR/UUID, number -> INTEGER/BIGINT, etc.)
 3. Check nullable alignment
 
@@ -479,7 +340,7 @@ For each field in each entity:
 
 **Creates if missing**: `.shipkit/contracts.json` (with proper structure and all required top-level fields)
 
-**Never modifies**: schema.md, stack.json, architecture.json (read-only)
+**Never modifies**: schema.json, stack.json, architecture.json (read-only)
 
 ---
 
@@ -538,7 +399,7 @@ Copy and track:
 ## Integration with Other Skills
 
 **Before shipkit-data-contracts**:
-- `/shipkit-project-context` - Generates schema.md for alignment checking
+- `/shipkit-project-context` - Generates schema.json for alignment checking
 - `/shipkit-spec` - Defines data requirements
 - `/shipkit-plan` - Identifies needed types
 
@@ -553,7 +414,7 @@ Copy and track:
 ## Context Files This Skill Reads
 
 **Primary**:
-- `.shipkit/schema.md` - Database schema (from shipkit-project-context)
+- `.shipkit/schema.json` - Database schema (from shipkit-project-context)
 - `.shipkit/contracts.json` - Existing entity-relationship contracts (from previous runs)
 
 ---
@@ -565,7 +426,7 @@ Copy and track:
 
 **Creates if missing**: `.shipkit/contracts.json` (with full Shipkit JSON Artifact Convention structure)
 
-**Never modifies**: schema.md, stack.json, architecture.json (read-only)
+**Never modifies**: schema.json, stack.json, architecture.json (read-only)
 
 ---
 
@@ -575,7 +436,7 @@ Copy and track:
 
 1. User invokes `/shipkit-data-contracts`
 2. Claude reads this SKILL.md
-3. Claude reads `.shipkit/schema.md` (if exists) - ~500-1000 tokens
+3. Claude reads `.shipkit/schema.json` (if exists) - ~500-1000 tokens
 4. Claude reads `.shipkit/contracts.json` (if exists) - ~500-2000 tokens
 5. Claude asks clarifying questions
 6. Claude generates entities, relationships, and validation rules
@@ -606,7 +467,7 @@ Contracts are defined when:
 - [ ] Relationships added to contracts.json `relationships` array (if applicable)
 - [ ] Validation rules added to contracts.json `validationRules` array (if applicable)
 - [ ] API contracts added to contracts.json `apiContracts` array (if applicable)
-- [ ] Schema alignment checked (if schema.md exists)
+- [ ] Schema alignment checked (if schema.json exists)
 - [ ] Migration suggested (if mismatch detected)
 - [ ] `summary` object recalculated with accurate counts
 - [ ] `lastUpdated` timestamp set to current time

@@ -1,6 +1,7 @@
 ---
 name: shipkit-framework-integrity
 description: Validates Shipkit framework integrity before release. Checks for broken references, manifest/disk sync, installer validity, hook references, cross-skill dependencies, documentation accuracy, and Claude Code changelog compatibility. Auto-fetches latest changelog and flags deprecated patterns, unknown hook events, and feature adoption gaps. Uses caching to skip unchanged files. Use when preparing releases or after refactoring.
+argument-hint: "[--full] [--quick] [--fix] [--json] [--loop N]"
 ---
 
 # shipkit-framework-integrity - Framework Integrity Checker
@@ -560,9 +561,9 @@ If mismatch:
 |---------------|---------------|
 | `.shipkit/*.json` with `$schema: "shipkit-artifact"` in SKILL.md | ✓ JSON artifact |
 | `.shipkit/*.md` with structured/countable data | ⚠ Migration candidate |
-| `.shipkit/specs/*.md`, `.shipkit/plans/*.md` | ✓ Correct as markdown |
+| `.shipkit/specs/active/*.json`, `.shipkit/plans/active/*.json` | ✓ Migrated to JSON |
 | `.shipkit/architecture.json` | ✓ Migrated to JSON |
-| `.shipkit/why.md` | ✓ Correct as markdown |
+| `.shipkit/why.json` | ✓ Migrated to JSON |
 | No `.shipkit/` output (NONE strategy) | ⊘ N/A |
 
 **Report format**:
@@ -870,7 +871,35 @@ Options:
   --quick       Only check manifest sync and counts (fastest)
   --fix         Attempt to auto-fix simple issues
   --json        Output results as JSON
+  --loop N      Run up to N iterations, re-checking after fixes (default: 3 if no N)
 ```
+
+---
+
+## Loop Mode
+
+When invoked with `--loop N`, the skill runs iteratively — checking, fixing, and re-checking — until either zero errors/warnings remain or N iterations are exhausted.
+
+**State file**: `.shipkit/framework-integrity-loop.local.md`
+
+**Default completion promise**: "Framework integrity check reports zero errors and zero warnings"
+
+**How it works**:
+1. Parse `--loop N` from arguments (default N=3 if omitted)
+2. Create state file with frontmatter (skill, iteration, max_iterations, completion_promise)
+3. Run the normal integrity check
+4. Update the Progress section in the state file with findings and fixes applied
+5. If zero errors and zero warnings → delete state file, report success, stop
+6. If issues remain → end response; the relentless stop hook blocks exit and re-prompts
+
+**Example**:
+```
+/shipkit-framework-integrity --loop 3 --fix
+```
+
+This runs up to 3 iterations of check-fix-recheck. Combines with `--fix` for automated repair across passes (e.g., pass 1 fixes manifest sync, pass 2 fixes references revealed by the sync fix).
+
+**Shared reference**: See `.claude/skills/_shared/loop-mode-reference.md` for state file format and protocol details.
 
 ---
 
@@ -935,11 +964,12 @@ Options:
 **Write Strategy: STATE FILE ONLY**
 
 - `.claude/skills/shipkit-framework-integrity/.integrity-state.json` — Caching state
+- `.shipkit/framework-integrity-loop.local.md` — Loop mode state (only when `--loop N` used, deleted on completion)
 
 This skill:
-- Does NOT modify source files
+- Does NOT modify source files (unless `--fix` is used)
 - Reports issues found
-- User must fix issues manually
+- User must fix issues manually (unless `--fix`)
 
 ---
 

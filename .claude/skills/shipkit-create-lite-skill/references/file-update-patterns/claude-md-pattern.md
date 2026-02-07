@@ -35,19 +35,19 @@
 **Example existing entries**:
 ```markdown
 **Feature Development:**
-- `/shipkit-spec` - Write spec → `specs/active/[name].md`
-- `/shipkit-architecture-memory` - Log decision → append to `architecture.md`
-- `/shipkit-plan` - Create plan → `plans/[name].md`
+- `/shipkit-spec` - Write spec → `specs/active/[name].json`
+- `/shipkit-architecture-memory` - Log decision → append to `architecture.json`
+- `/shipkit-plan` - Create plan → `plans/active/[name].json`
 - `/shipkit-implement` - Build feature with TDD guidance
 ```
 
 **Add new entry** (in alphabetical order within section):
 ```markdown
 **Feature Development:**
-- `/shipkit-architecture-memory` - Log decision → append to `architecture.md`
+- `/shipkit-architecture-memory` - Log decision → append to `architecture.json`
 - `/shipkit-NEW-SKILL` - {purpose} → `{output_path}`  <!-- NEW -->
-- `/shipkit-plan` - Create plan → `plans/[name].md`
-- `/shipkit-spec` - Write spec → `specs/active/[name].md`
+- `/shipkit-plan` - Create plan → `plans/active/[name].json`
+- `/shipkit-spec` - Write spec → `specs/active/[name].json`
 - `/shipkit-implement` - Build feature with TDD guidance
 ```
 
@@ -59,18 +59,18 @@
 
 **OVERWRITE**:
 ```markdown
-- `/shipkit-why-project` - Define vision → `.shipkit/why.md`
+- `/shipkit-why-project` - Define vision → `.shipkit/why.json`
 ```
 
 **APPEND**:
 ```markdown
-- `/shipkit-architecture-memory` - Log decision → append to `architecture.md`
+- `/shipkit-architecture-memory` - Log decision → append to `architecture.json`
 ```
 
 **MULTIPLE**:
 ```markdown
-- `/shipkit-spec` - Write spec → `specs/active/[name].md`
-- `/shipkit-plan` - Create plan → `plans/[name].md`
+- `/shipkit-spec` - Write spec → `specs/active/[name].json`
+- `/shipkit-plan` - Create plan → `plans/active/[name].json`
 ```
 
 **NONE** (no file output):
@@ -97,13 +97,13 @@
 
 **Category**: 1 (Meta/Infrastructure)
 **Output**: OVERWRITE
-**Path**: `.shipkit/project-overview.md`
+**Path**: `.shipkit/project-overview.json`
 
 **Add to Project Setup section**:
 ```markdown
 **Project Setup:**
-- `/shipkit-project-context` - Scan codebase, create stack.md
-- `/shipkit-project-overview` - Generate overview → `.shipkit/project-overview.md`  <!-- NEW -->
+- `/shipkit-project-context` - Scan codebase, create stack.json
+- `/shipkit-project-overview` - Generate overview → `.shipkit/project-overview.json`  <!-- NEW -->
 - `/shipkit-project-status` - Health check, show gaps
 - `/shipkit-why-project` - Define strategic vision (who/why/where)
 ```
@@ -114,15 +114,15 @@
 
 **Category**: 2 (Decision & Design)
 **Output**: MULTIPLE
-**Path**: `.shipkit/decisions/[decision].md`
+**Path**: `.shipkit/decisions/[decision].json`
 
 **Add to Feature Development section**:
 ```markdown
 **Feature Development:**
-- `/shipkit-architecture-memory` - Log decision → append to `architecture.md`
-- `/shipkit-decision-log` - Record decision → `decisions/[decision].md`  <!-- NEW -->
-- `/shipkit-plan` - Create plan → `plans/[name].md`
-- `/shipkit-spec` - Write spec → `specs/active/[name].md`
+- `/shipkit-architecture-memory` - Log decision → append to `architecture.json`
+- `/shipkit-decision-log` - Record decision → `decisions/[decision].json`  <!-- NEW -->
+- `/shipkit-plan` - Create plan → `plans/active/[name].json`
+- `/shipkit-spec` - Write spec → `specs/active/[name].json`
 ```
 
 ---
@@ -131,16 +131,16 @@
 
 **Category**: 4 (Documentation)
 **Output**: APPEND
-**Path**: `.shipkit/api-docs.md`
+**Path**: `.shipkit/api-docs.json`
 
 **Add to Documentation section**:
 ```markdown
 **Documentation:**
-- `/shipkit-api-docs` - Document API → append to `api-docs.md`  <!-- NEW -->
-- `/shipkit-component-knowledge` - Document components → append to `implementations.md`
+- `/shipkit-api-docs` - Document API → append to `api-docs.json`  <!-- NEW -->
+- `/shipkit-component-knowledge` - Document components → append to `implementations.json`
 - `/shipkit-communications` - Create visual HTML from any lite content
-- `/shipkit-document-artifact` - Create standalone doc → `docs/[category]/[name].md`
-- `/shipkit-route-knowledge` - Document routes → append to `implementations.md`
+- `/shipkit-document-artifact` - Create standalone doc → `docs/[category]/[name].json`
+- `/shipkit-route-knowledge` - Document routes → append to `implementations.json`
 ```
 
 ---
@@ -155,8 +155,8 @@
 **Quality & Process:**
 - `/shipkit-quality-confidence` - Pre-ship checks
 - `/shipkit-security-review` - Security audit  <!-- NEW, no file output -->
-- `/shipkit-user-instructions` - Track manual tasks → `user-tasks/active.md`
-- `/shipkit-work-memory` - Log session → append to `progress.md`
+- `/shipkit-user-instructions` - Track manual tasks → `user-tasks/active.json`
+- `/shipkit-work-memory` - Log session → append to `progress.json`
 ```
 
 ---

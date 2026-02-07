@@ -67,7 +67,7 @@ Open Claude Code in your project directory. The session hook will automatically 
 /shipkit-why-project
 ```
 
-This skill asks clarifying questions and creates `.shipkit/why.md` — the foundation for all future decisions.
+This skill asks clarifying questions and creates `.shipkit/why.json` — the foundation for all future decisions.
 
 ### 3. Scan Your Codebase (if existing project)
 
@@ -149,7 +149,7 @@ All project context lives here:
 
 | File | Purpose |
 |------|---------|
-| `why.md` | Vision, constraints, approach |
+| `why.json` | Vision, constraints, approach |
 | `stack.json` | Tech choices (auto-scanned) |
 | `architecture.json` | Decisions log (append-only) |
 | `progress.json` | Session continuity |

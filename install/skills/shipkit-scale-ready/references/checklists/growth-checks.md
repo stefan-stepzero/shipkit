@@ -329,6 +329,58 @@ Grep: pattern="maxRetries|retryDelay|deadLetter"
 **Fail impact**: Lost jobs, inconsistent state
 **Severity**: 🟡 Warning (if using queues)
 
+### REL-SCALE-006: Streaming Endpoints Have Keepalive
+**Check**: SSE/streaming endpoints send periodic keepalive signals to prevent idle timeout
+**Pattern**: Heartbeat comment, empty SSE event, or progress ping every 10-15s between long operations
+**Scan for**:
+```
+# Find streaming endpoints
+Grep: pattern="ReadableStream|TextEncoder|text/event-stream|Server-Sent"
+      glob="**/*.{ts,js}"
+
+# Check for keepalive/heartbeat logic
+Grep: pattern="keepalive|heartbeat|ping|:.*\\\\n\\\\n"
+      glob="**/*.{ts,js}"
+```
+**Pass criteria**: Streaming responses send data at least every 15s during processing
+**Fail impact**: Platform or proxy kills "idle" connection during long generation; user gets partial response
+**Severity**: 🟡 Warning (serverless) / 🟢 Info (long-running)
+
+### REL-SCALE-007: Multi-Step Pipelines Track Cumulative Timeout
+**Check**: Sequential external call chains (LLM pipelines, multi-step workflows) track total elapsed time and can bail early
+**Pattern**: Wrapper that sums individual call times, aborts if approaching platform limit, returns partial results
+**Scan for**:
+```
+# Find sequential external call patterns
+Grep: pattern="await.*await.*await|for.*await.*generate|sequential.*call|pipeline|chain"
+      glob="**/*.{ts,js}"
+      multiline: true
+
+# Check for cumulative timeout tracking
+Grep: pattern="elapsed|totalTime|remainingTime|deadline|Date\.now.*start"
+      glob="**/*.{ts,js}"
+```
+**Pass criteria**: Pipelines with 3+ sequential external calls track cumulative time
+**Fail impact**: 5th call in a chain times out, wasting all work from calls 1-4
+**Severity**: 🟡 Warning
+
+### REL-SCALE-008: External Service Cost Bounds
+**Check**: External services with per-call costs have usage monitoring or caps
+**Pattern**: Token tracking on LLM calls, API call counters, spending alerts, per-user quotas
+**Scan for**:
+```
+# Token/usage tracking
+Grep: pattern="usage|totalTokens|promptTokens|completionTokens|cost"
+      glob="**/*.{ts,js}"
+
+# Rate/quota limiting
+Grep: pattern="quota|rateLimit|dailyLimit|monthlyLimit|usageLimit"
+      glob="**/*.{ts,js}"
+```
+**Pass criteria**: Pay-per-call services have visibility into spend or hard caps
+**Fail impact**: Runaway costs from bugs, abuse, or unexpected traffic
+**Severity**: 🟡 Warning
+
 ---
 
 ## Operational Readiness

@@ -1,0 +1,104 @@
+{
+  "generated": "2025-01-27",
+
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "test": "vitest",
+    "test:e2e": "playwright test"
+  },
+
+  "recentlyActive": [
+    "src/app/api/payments/route.ts",
+    "src/components/Checkout.tsx",
+    "src/lib/auth.ts",
+    "prisma/schema.prisma",
+    "src/app/dashboard/page.tsx",
+    "src/components/ui/Button.tsx",
+    "src/app/api/webhooks/route.ts",
+    "src/lib/db.ts"
+  ],
+
+  "directories": [
+    "src/app",
+    "src/components",
+    "src/lib",
+    "src/hooks",
+    "src/utils",
+    "prisma",
+    "public"
+  ],
+
+  "configFiles": [
+    "next.config.js",
+    "tsconfig.json",
+    "tailwind.config.js",
+    "prisma/schema.prisma",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    ".env.local",
+    ".env.example"
+  ],
+
+  "framework": "next.js (app router)",
+
+  "entryPoints": {
+    "app": "src/app/page.tsx",
+    "layout": "src/app/layout.tsx",
+    "api": "src/app/api/",
+    "database": "prisma/schema.prisma",
+    "middleware": "src/middleware.ts"
+  },
+
+  "concepts": {
+    "auth": [
+      "src/lib/auth.ts",
+      "src/middleware.ts",
+      "src/app/api/auth/[...nextauth]/route.ts",
+      "src/components/auth/LoginForm.tsx",
+      "src/components/auth/SignupForm.tsx"
+    ],
+    "database": [
+      "src/lib/db.ts",
+      "prisma/schema.prisma",
+      "src/lib/queries.ts"
+    ],
+    "payments": [
+      "src/lib/stripe.ts",
+      "src/app/api/payments/route.ts",
+      "src/app/api/webhooks/stripe/route.ts",
+      "src/components/Checkout.tsx",
+      "src/components/PricingTable.tsx"
+    ],
+    "api": [
+      "src/app/api/"
+    ],
+    "components": [
+      "src/components/ui/",
+      "src/components/layout/"
+    ],
+    "email": [
+      "src/lib/email.ts",
+      "src/emails/"
+    ]
+  },
+
+  "coreFiles": [
+    "src/lib/db.ts",
+    "src/lib/auth.ts",
+    "src/lib/utils.ts",
+    "src/components/ui/Button.tsx",
+    "src/components/ui/Input.tsx"
+  ],
+
+  "skip": [
+    "src/legacy/",
+    "src/__snapshots__/",
+    "node_modules/",
+    ".next/"
+  ]
+}

@@ -18,6 +18,7 @@ from scan_services import scan as scan_services, create_queue as create_services
 from scan_contracts import scan as scan_contracts, create_queue as create_contracts_queue
 from scan_changes import scan as scan_changes, create_queue as create_changes_queue
 from scan_ux_gaps import scan as scan_ux_gaps, create_queue as create_ux_gaps_queue
+from scan_ext_boundaries import scan as scan_ext_boundaries, create_queue as create_ext_boundaries_queue
 
 
 MODES = {
@@ -25,6 +26,7 @@ MODES = {
     "contracts": (scan_contracts, create_contracts_queue),
     "changes": (scan_changes, create_changes_queue),
     "ux-gaps": (scan_ux_gaps, create_ux_gaps_queue),
+    "ext-boundaries": (scan_ext_boundaries, create_ext_boundaries_queue),
 }
 
 

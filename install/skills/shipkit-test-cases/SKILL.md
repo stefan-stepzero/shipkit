@@ -398,73 +398,15 @@ This flags technical debt while still providing a workable (if fragile) selector
   "version": "1.0",
   "lastUpdated": "YYYY-MM-DD",
   "source": "shipkit-test-cases",
-  "summary": {
-    "totalCases": 15,
-    "filesWithCases": 8,
-    "totalSourceFiles": 12,
-    "coverageScore": 67,
-    "byPriority": {
-      "core": 6,
-      "edge": 7,
-      "regression": 2
-    },
-    "byStatus": {
-      "verified": 5,
-      "pending": 7,
-      "stale": 2,
-      "orphaned": 1
-    }
-  },
-  "cases": [
-    {
-      "id": "AUTH-01",
-      "name": "Valid login returns token",
-      "priority": "core",
-      "status": "verified",
-      "sourceFile": "src/api/auth/login.ts",
-      "linkedSpec": ".shipkit/specs/auth.md",
-      "codeModified": "2024-01-15",
-      "lastVerified": "2024-01-21"
-    },
-    {
-      "id": "AUTH-02",
-      "name": "Invalid password rejected",
-      "priority": "core",
-      "status": "stale",
-      "sourceFile": "src/api/auth/login.ts",
-      "linkedSpec": ".shipkit/specs/auth.md",
-      "codeModified": "2024-01-20",
-      "lastVerified": "2024-01-15"
-    }
-  ],
-  "gaps": [
-    {
-      "file": "src/api/billing/refund.ts",
-      "reason": "no coverage",
-      "priority": "core"
-    },
-    {
-      "file": "src/services/notifications.ts",
-      "reason": "no coverage",
-      "priority": "edge"
-    }
-  ],
-  "staleCases": [
-    {
-      "caseId": "AUTH-02",
-      "sourceFile": "src/api/auth/login.ts",
-      "codeModified": "2024-01-20",
-      "lastVerified": "2024-01-15"
-    }
-  ],
-  "orphanedCases": [
-    {
-      "caseId": "BILLING-03",
-      "originalFile": "src/api/billing/old.ts"
-    }
-  ]
+  "summary": { "totalCases": 0, "filesWithCases": 0, "coverageScore": 0, "byPriority": {...}, "byStatus": {...} },
+  "cases": [{ "id": "...", "name": "...", "priority": "...", "status": "...", "sourceFile": "...", ... }],
+  "gaps": [{ "file": "...", "reason": "...", "priority": "..." }],
+  "staleCases": [{ "caseId": "...", "sourceFile": "...", ... }],
+  "orphanedCases": [{ "caseId": "...", "originalFile": "..." }]
 }
 ```
+
+**Full schema and examples:** See `references/output-schema.md` and `references/example.json`
 
 ---
 
@@ -569,7 +511,7 @@ This makes test execution **change-aware**.
   - **When:** Feature requirements defined
   - **Why:** Specs provide acceptance criteria to derive test cases
 
-- `/shipkit-project-context` — Creates stack.md for tech understanding
+- `/shipkit-project-context` — Creates stack.json for tech understanding
   - **When:** Project initialization
   - **Why:** Helps understand what testing patterns apply
 
@@ -628,27 +570,13 @@ This makes test execution **change-aware**.
 
 ## Shipkit Artifact Convention
 
-The `coverage.json` file follows the **Shipkit Artifact Convention** -- a standard envelope for structured data files produced by Shipkit skills. This enables programmatic consumption by other skills and tooling.
+The `coverage.json` file follows the **Shipkit Artifact Convention** -- a standard envelope for structured data files produced by Shipkit skills.
 
-**Required envelope fields:**
+**Required envelope fields:** `$schema`, `type`, `version`, `lastUpdated`, `source`
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `$schema` | string | Always `"shipkit-artifact"` |
-| `type` | string | Artifact type identifier (this skill: `"test-coverage"`) |
-| `version` | string | Schema version for forward compatibility (currently `"1.0"`) |
-| `lastUpdated` | string | ISO date (`YYYY-MM-DD`) of last generation |
-| `source` | string | Skill that produced the artifact (`"shipkit-test-cases"`) |
+**Coverage-specific payload:** `summary`, `cases`, `gaps`, `staleCases`, `orphanedCases`
 
-**Coverage-specific payload:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `summary` | object | Aggregate metrics: `totalCases`, `filesWithCases`, `totalSourceFiles`, `coverageScore` (0-100), `byPriority` counts, `byStatus` counts |
-| `cases` | array | Each entry: `id`, `name`, `priority` (core/edge/regression), `status` (verified/pending/stale/orphaned), `sourceFile`, `linkedSpec`, `codeModified`, `lastVerified` |
-| `gaps` | array | Untested areas: `file`, `reason`, `priority` |
-| `staleCases` | array | Cases needing re-verification: `caseId`, `sourceFile`, `codeModified`, `lastVerified` |
-| `orphanedCases` | array | Cases whose source was deleted: `caseId`, `originalFile` |
+**Full schema reference:** See `references/output-schema.md`
 
 **Why JSON for coverage data:**
 - Other skills (e.g., `shipkit-verify`, `shipkit-preflight`) can parse coverage programmatically

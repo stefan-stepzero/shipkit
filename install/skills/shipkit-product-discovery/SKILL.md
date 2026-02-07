@@ -27,7 +27,7 @@ agent: shipkit-product-owner-agent
 ## Prerequisites
 
 **Optional**:
-- `.shipkit/why.md` (Vision helps guide persona creation)
+- `.shipkit/why.json` (Vision helps guide persona creation)
 - `.shipkit/stack.json` (Technical constraints inform feasibility)
 
 **If missing**: Generate personas and stories based on user input alone
@@ -94,7 +94,7 @@ options:
 ### Step 2: Read Existing Context
 
 **Read these files** (if exist):
-- `.shipkit/why.md` - Vision context
+- `.shipkit/why.json` - Vision context
 - `.shipkit/stack.json` - Technical constraints
 
 **Token budget**: Keep context reading under 1000 tokens.
@@ -115,9 +115,9 @@ options:
 
 ---
 
-## Product Discovery JSON Schema
+## Product Discovery JSON Schema (Quick Reference)
 
-The output MUST conform to the Shipkit JSON Artifact Convention. All `.shipkit/*.json` files require the standard envelope fields (`$schema`, `type`, `version`, `lastUpdated`, `source`, `summary`).
+The output MUST conform to the Shipkit JSON Artifact Convention.
 
 ```json
 {
@@ -126,149 +126,17 @@ The output MUST conform to the Shipkit JSON Artifact Convention. All `.shipkit/*
   "version": "1.0",
   "lastUpdated": "2025-01-15T10:00:00Z",
   "source": "shipkit-product-discovery",
-  "summary": {
-    "totalPersonas": 3,
-    "totalJourneys": 4,
-    "totalPainPoints": 8,
-    "totalOpportunities": 2,
-    "primaryPersona": "Solo Developer",
-    "topPainPoint": "Context loss between sessions"
-  },
-  "personas": [
-    {
-      "id": "persona-1",
-      "name": "Solo Developer",
-      "role": "Full-stack developer",
-      "goals": ["Ship MVP fast", "Avoid context loss"],
-      "frustrations": ["Starting over each session", "Forgetting decisions"],
-      "techComfort": "high",
-      "context": "Works alone on side projects, evenings and weekends",
-      "isPrimary": true
-    }
-  ],
-  "painPoints": [
-    {
-      "id": "pain-1",
-      "description": "Context loss between sessions",
-      "severity": "critical",
-      "affectedPersonas": ["persona-1"],
-      "currentWorkaround": "Manual notes in README",
-      "frequency": "every session"
-    }
-  ],
-  "journeys": [
-    {
-      "id": "journey-1",
-      "name": "New Project Setup",
-      "persona": "persona-1",
-      "steps": [
-        {
-          "id": "step-1",
-          "action": "Initialize project",
-          "emotion": "excited",
-          "painPoints": [],
-          "touchpoints": ["CLI"]
-        },
-        {
-          "id": "step-2",
-          "action": "Configure stack",
-          "emotion": "neutral",
-          "painPoints": ["pain-1"],
-          "touchpoints": ["CLI", ".shipkit/"]
-        }
-      ]
-    }
-  ],
-  "opportunities": [
-    {
-      "id": "opp-1",
-      "description": "Auto-detect project context on session start",
-      "addressesPainPoints": ["pain-1"],
-      "impactedPersonas": ["persona-1"],
-      "effort": "medium",
-      "impact": "high"
-    }
-  ]
+  "summary": { "totalPersonas", "totalJourneys", "totalPainPoints", "totalOpportunities", "primaryPersona", "topPainPoint" },
+  "personas": [{ "id", "name", "role", "goals", "frustrations", "techComfort", "context", "isPrimary" }],
+  "painPoints": [{ "id", "description", "severity", "affectedPersonas", "currentWorkaround", "frequency" }],
+  "journeys": [{ "id", "name", "persona", "steps": [{ "id", "action", "emotion", "painPoints", "touchpoints" }] }],
+  "opportunities": [{ "id", "description", "addressesPainPoints", "impactedPersonas", "effort", "impact" }]
 }
 ```
 
-### Schema Field Reference
+**Full schema and field reference**: See `references/output-schema.md`
 
-**Envelope fields** (required on every Shipkit JSON artifact):
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `$schema` | string | Always `"shipkit-artifact"` |
-| `type` | string | `"product-discovery"` for this skill |
-| `version` | string | Schema version, currently `"1.0"` |
-| `lastUpdated` | string | ISO 8601 timestamp |
-| `source` | string | `"shipkit-product-discovery"` |
-| `summary` | object | Aggregated counts for dashboard cards |
-
-**`summary` fields:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `totalPersonas` | number | Count of personas |
-| `totalJourneys` | number | Count of journeys |
-| `totalPainPoints` | number | Count of pain points |
-| `totalOpportunities` | number | Count of opportunities |
-| `primaryPersona` | string | Name of the primary persona |
-| `topPainPoint` | string | Most critical pain point description |
-
-**`personas[]` fields:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Stable ID: `persona-{n}` |
-| `name` | string | Persona name or archetype |
-| `role` | string | Role or job title |
-| `goals` | string[] | What they want to achieve |
-| `frustrations` | string[] | Current pain points (human-readable) |
-| `techComfort` | string | `"high"`, `"medium"`, or `"low"` |
-| `context` | string | When/where they use the product |
-| `isPrimary` | boolean | `true` for the primary persona |
-
-**`painPoints[]` fields:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Stable ID: `pain-{n}` |
-| `description` | string | Pain point description |
-| `severity` | string | `"critical"`, `"high"`, `"medium"`, or `"low"` |
-| `affectedPersonas` | string[] | Array of persona IDs |
-| `currentWorkaround` | string | How users cope today |
-| `frequency` | string | How often this occurs |
-
-**`journeys[]` fields:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Stable ID: `journey-{n}` |
-| `name` | string | Journey name |
-| `persona` | string | Persona ID this journey belongs to |
-| `steps` | object[] | Ordered steps in the journey |
-
-**`journeys[].steps[]` fields:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Stable ID: `step-{n}` (unique within journey) |
-| `action` | string | What the user does |
-| `emotion` | string | `"excited"`, `"neutral"`, `"frustrated"`, `"confused"`, `"satisfied"` |
-| `painPoints` | string[] | Array of pain point IDs encountered at this step |
-| `touchpoints` | string[] | Interfaces/channels involved |
-
-**`opportunities[]` fields:**
-
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | string | Stable ID: `opp-{n}` |
-| `description` | string | Opportunity description |
-| `addressesPainPoints` | string[] | Array of pain point IDs this addresses |
-| `impactedPersonas` | string[] | Array of persona IDs who benefit |
-| `effort` | string | `"low"`, `"medium"`, or `"high"` |
-| `impact` | string | `"low"`, `"medium"`, or `"high"` |
+**Realistic example**: See `references/example.json`
 
 ### Graph Relationships
 
@@ -345,7 +213,7 @@ Copy and track:
 ## Context Files This Skill Reads
 
 **Optional** (read if exist):
-- `.shipkit/why.md` - Understand project vision
+- `.shipkit/why.json` - Understand project vision
 - `.shipkit/stack.json` - Understand technical constraints
 
 ---
@@ -369,7 +237,7 @@ Copy and track:
 1. User invokes `/shipkit-product-discovery`
 2. Check if file exists (Quick Exit Check)
 3. If regenerating: Ask 2 questions
-4. Read why.md, stack.json (~1000 tokens)
+4. Read why.json, stack.json (~1000 tokens)
 5. Generate Product Discovery JSON artifact
 6. Total context loaded: ~1500 tokens
 

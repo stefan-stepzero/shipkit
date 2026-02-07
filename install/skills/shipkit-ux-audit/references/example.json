@@ -1,0 +1,146 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "ux-decisions",
+  "version": "1.0",
+  "lastUpdated": "2025-01-15",
+  "source": "shipkit-ux-audit",
+  "summary": {
+    "totalDecisions": 4,
+    "totalGaps": 2,
+    "byCategory": {
+      "form": 2,
+      "modal": 1,
+      "toggle": 0,
+      "list": 1,
+      "button": 0,
+      "navigation": 0,
+      "feedback": 0,
+      "other": 0
+    },
+    "byPersona": {
+      "general": 2,
+      "adhd-friendly": 1,
+      "elderly": 0,
+      "mobile-first": 1,
+      "low-bandwidth": 0,
+      "accessibility-first": 0
+    }
+  },
+  "decisions": [
+    {
+      "id": "UX-001",
+      "component": "LoginForm",
+      "category": "form",
+      "pattern": "inline validation with debounce",
+      "decision": "Use real-time email validation with 300ms debounce, password strength indicator, and clear error states",
+      "rationale": "Immediate feedback reduces form abandonment. Debounce prevents excessive validation calls during typing.",
+      "accessibility": [
+        "aria-invalid on error fields",
+        "aria-describedby linking errors to inputs",
+        "Focus moves to first error on submit"
+      ],
+      "existingMatch": null,
+      "persona": "general",
+      "checklist": [
+        "Email validated on blur and 300ms debounce",
+        "Password strength shows weak/medium/strong",
+        "Error messages appear below fields",
+        "Submit button disabled during validation"
+      ],
+      "date": "2025-01-10"
+    },
+    {
+      "id": "UX-002",
+      "component": "ConfirmDeleteModal",
+      "category": "modal",
+      "pattern": "destructive action confirmation",
+      "decision": "Two-step confirmation with red CTA, escape to close, focus trap, and explicit action naming",
+      "rationale": "Destructive actions need friction. Explicit naming ('Delete Project') prevents accidental clicks on generic 'OK' buttons.",
+      "accessibility": [
+        "role='dialog' with aria-modal='true'",
+        "Focus trapped inside modal",
+        "Escape key closes modal",
+        "Focus returns to trigger on close"
+      ],
+      "existingMatch": null,
+      "persona": "general",
+      "checklist": [
+        "Modal title clearly states action",
+        "Red/danger styling on destructive button",
+        "Button text matches action (e.g., 'Delete Project')",
+        "Secondary cancel button always present"
+      ],
+      "date": "2025-01-11"
+    },
+    {
+      "id": "UX-003",
+      "component": "TaskList",
+      "category": "list",
+      "pattern": "optimistic updates with undo",
+      "decision": "Complete/delete actions update UI immediately with 5-second undo toast",
+      "rationale": "ADHD users benefit from immediate feedback. Undo option prevents anxiety about accidental actions.",
+      "accessibility": [
+        "Toast announces action via aria-live",
+        "Undo button keyboard accessible",
+        "Completed items visually distinct but not removed immediately"
+      ],
+      "existingMatch": null,
+      "persona": "adhd-friendly",
+      "checklist": [
+        "Actions update UI instantly",
+        "Toast appears with undo option",
+        "5-second window for undo",
+        "Server sync happens after undo window"
+      ],
+      "date": "2025-01-12"
+    },
+    {
+      "id": "UX-004",
+      "component": "SearchInput",
+      "category": "form",
+      "pattern": "mobile-first search with clear button",
+      "decision": "44px touch target, prominent clear button, search on submit not on type, keyboard dismiss on submit",
+      "rationale": "Mobile users need larger touch targets. Search on submit saves bandwidth and gives user control.",
+      "accessibility": [
+        "Clear button has aria-label",
+        "Search input has role='searchbox'",
+        "Results announced via aria-live region"
+      ],
+      "existingMatch": "LoginForm input styling",
+      "persona": "mobile-first",
+      "checklist": [
+        "Input height minimum 44px",
+        "Clear button appears when input has value",
+        "Search triggers on Enter/submit, not on type",
+        "Keyboard dismisses after search"
+      ],
+      "date": "2025-01-15"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "GAP-001",
+      "component": "SettingsPage",
+      "missingPatterns": [
+        "toggle feedback states",
+        "auto-save indication",
+        "change confirmation for critical settings"
+      ],
+      "priority": "high",
+      "notes": "Settings page has bare toggles with no feedback. Users don't know if changes are saved.",
+      "identifiedDate": "2025-01-14"
+    },
+    {
+      "id": "GAP-002",
+      "component": "DataTable",
+      "missingPatterns": [
+        "empty state",
+        "loading skeleton",
+        "pagination accessibility"
+      ],
+      "priority": "medium",
+      "notes": "Table shows blank when loading and when empty. No way to distinguish states.",
+      "identifiedDate": "2025-01-15"
+    }
+  ]
+}

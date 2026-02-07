@@ -65,7 +65,7 @@ Complete reference for all 23 Shipkit skills.
 
 **Example output:**
 ```
-✅ why.md exists
+✅ why.json exists
 ✅ stack.json exists
 ⚠️ No active specs
 ⚠️ architecture.json has no entries
@@ -135,7 +135,7 @@ Suggested: Create a spec with /shipkit-spec
 - What constraints exist?
 
 **Reads:** Nothing
-**Writes:** `.shipkit/why.md`
+**Writes:** `.shipkit/why.json`
 
 ---
 
@@ -148,7 +148,7 @@ Suggested: Create a spec with /shipkit-spec
 - Planning user-facing features
 - Want structured user research
 
-**Reads:** `.shipkit/why.md`
+**Reads:** `.shipkit/why.json`
 **Writes:** `.shipkit/personas/*.md`
 
 ---
@@ -162,8 +162,8 @@ Suggested: Create a spec with /shipkit-spec
 - Need to clarify requirements
 - Want documented acceptance criteria
 
-**Reads:** `.shipkit/why.md`, `.shipkit/stack.json`
-**Writes:** `.shipkit/specs/active/*.md`
+**Reads:** `.shipkit/why.json`, `.shipkit/stack.json`
+**Writes:** `.shipkit/specs/active/*.json`
 
 **Spec includes:**
 - Overview
@@ -182,8 +182,8 @@ Suggested: Create a spec with /shipkit-spec
 - Before starting implementation
 - Need task breakdown
 
-**Reads:** `.shipkit/specs/active/*.md`
-**Writes:** `.shipkit/plans/*.md`
+**Reads:** `.shipkit/specs/active/*.json`
+**Writes:** `.shipkit/plans/active/*.json`
 
 ---
 
@@ -211,7 +211,7 @@ Suggested: Create a spec with /shipkit-spec
 - Want to preserve learnings
 
 **Reads:** `.shipkit-mockups/*/iterations.md`
-**Writes:** Updates `.shipkit/specs/active/*.md`
+**Writes:** Updates `.shipkit/specs/active/*.json`
 
 ---
 
@@ -253,7 +253,7 @@ Suggested: Create a spec with /shipkit-spec
 - Creating database schemas
 - Need consistent types
 
-**Reads:** `.shipkit/specs/active/*.md`
+**Reads:** `.shipkit/specs/active/*.json`
 **Writes:** `.shipkit/contracts.json`
 
 ---

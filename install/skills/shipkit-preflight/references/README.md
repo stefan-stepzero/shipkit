@@ -15,7 +15,7 @@ Comprehensive production readiness checklists for SaaS applications.
 
 ## How Checklists Are Used
 
-1. Skill reads context (stack.md, why.md, architecture.json)
+1. Skill reads context (stack.json, why.json, architecture.json)
 2. Determines which checklist sections apply
 3. Scans codebase for evidence of each check
 4. Generates prioritized audit report

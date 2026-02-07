@@ -1,0 +1,474 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "scale-readiness",
+  "version": "1.0",
+  "lastUpdated": "2026-02-07",
+  "source": "shipkit-scale-ready",
+
+  "summary": {
+    "overallStatus": "needs-work",
+    "tier": "growth",
+    "commit": "e639c71",
+    "stack": "Next.js + Postgres + Redis",
+    "counts": { "pass": 22, "warning": 8, "fail": 3, "na": 2, "human-verify": 5 },
+    "categoryScores": {
+      "security": { "pass": 4, "warning": 1, "fail": 0, "na": 0, "human-verify": 0 },
+      "database": { "pass": 4, "warning": 0, "fail": 0, "na": 0, "human-verify": 1 },
+      "observability": { "pass": 4, "warning": 1, "fail": 1, "na": 0, "human-verify": 0 },
+      "performance": { "pass": 4, "warning": 2, "fail": 0, "na": 0, "human-verify": 0 },
+      "reliability": { "pass": 3, "warning": 1, "fail": 1, "na": 1, "human-verify": 0 },
+      "operations": { "pass": 2, "warning": 2, "fail": 0, "na": 0, "human-verify": 2 },
+      "code-maturity": { "pass": 4, "warning": 1, "fail": 1, "na": 0, "human-verify": 0 },
+      "compliance": { "pass": 0, "warning": 0, "fail": 0, "na": 0, "human-verify": 2 }
+    }
+  },
+
+  "categories": [
+    {
+      "id": "security",
+      "name": "Security Hardening",
+      "tier": "growth",
+      "checks": [
+        {
+          "id": "SEC-SCALE-001",
+          "name": "Security headers configured (CSP, HSTS, X-Frame)",
+          "status": "pass",
+          "severity": "high",
+          "details": "Helmet middleware configured with strict CSP policy",
+          "evidence": "src/middleware.ts:14",
+          "recommendation": null
+        },
+        {
+          "id": "SEC-SCALE-002",
+          "name": "Session expiry and refresh configured",
+          "status": "warning",
+          "severity": "medium",
+          "details": "Session expiry set to 30 days - consider reducing for sensitive apps",
+          "evidence": "src/auth/config.ts:8",
+          "recommendation": "Reduce session expiry to 24h and implement refresh token rotation"
+        },
+        {
+          "id": "SEC-SCALE-003",
+          "name": "Admin routes extra-protected",
+          "status": "pass",
+          "severity": "high",
+          "details": "Admin routes require both authentication and admin role check",
+          "evidence": "src/app/admin/layout.tsx:12",
+          "recommendation": null
+        },
+        {
+          "id": "SEC-SCALE-004",
+          "name": "Sensitive actions require re-auth",
+          "status": "pass",
+          "severity": "medium",
+          "details": "Password confirmation required for account deletion and email change",
+          "evidence": "src/app/settings/actions.ts:45",
+          "recommendation": null
+        },
+        {
+          "id": "SEC-SCALE-005",
+          "name": "API keys scoped and rotatable",
+          "status": "pass",
+          "severity": "high",
+          "details": "API keys stored with scopes and expiry; rotation endpoint exists",
+          "evidence": "src/lib/api-keys.ts:22",
+          "recommendation": null
+        }
+      ]
+    },
+    {
+      "id": "database",
+      "name": "Database Optimization",
+      "tier": "growth",
+      "checks": [
+        {
+          "id": "DB-SCALE-001",
+          "name": "Indexes on query patterns",
+          "status": "pass",
+          "severity": "high",
+          "details": "Indexes exist for all foreign keys and frequently queried columns",
+          "evidence": "prisma/migrations/20260201_add_indexes/migration.sql",
+          "recommendation": null
+        },
+        {
+          "id": "DB-SCALE-002",
+          "name": "No N+1 query patterns",
+          "status": "pass",
+          "severity": "high",
+          "details": "All list queries use includes/joins; no fetch inside map patterns found",
+          "evidence": null,
+          "recommendation": null
+        },
+        {
+          "id": "DB-SCALE-003",
+          "name": "Connection pooling configured",
+          "status": "pass",
+          "severity": "high",
+          "details": "PgBouncer configured with pool_mode=transaction",
+          "evidence": "docker-compose.yml:45",
+          "recommendation": null
+        },
+        {
+          "id": "DB-SCALE-004",
+          "name": "Slow query logging enabled",
+          "status": "pass",
+          "severity": "medium",
+          "details": "log_min_duration_statement set to 1000ms",
+          "evidence": "docker/postgres.conf:12",
+          "recommendation": null
+        },
+        {
+          "id": "DB-SCALE-005",
+          "name": "Backup tested (not just configured)",
+          "status": "human-verify",
+          "severity": "critical",
+          "details": "Backup cron job exists but restore has not been tested",
+          "evidence": "scripts/backup.sh",
+          "recommendation": "Schedule quarterly restore drills; document restore procedure"
+        }
+      ]
+    },
+    {
+      "id": "observability",
+      "name": "Observability",
+      "tier": "growth",
+      "checks": [
+        {
+          "id": "OBS-SCALE-001",
+          "name": "Structured logging (not console.log)",
+          "status": "pass",
+          "severity": "high",
+          "details": "Pino logger used throughout; no console.log in src/",
+          "evidence": "src/lib/logger.ts",
+          "recommendation": null
+        },
+        {
+          "id": "OBS-SCALE-002",
+          "name": "Log levels configured (debug off in prod)",
+          "status": "pass",
+          "severity": "medium",
+          "details": "LOG_LEVEL env var controls level; production defaults to 'info'",
+          "evidence": "src/lib/logger.ts:8",
+          "recommendation": null
+        },
+        {
+          "id": "OBS-SCALE-003",
+          "name": "Request ID / correlation ID",
+          "status": "pass",
+          "severity": "medium",
+          "details": "x-request-id header propagated through middleware",
+          "evidence": "src/middleware.ts:28",
+          "recommendation": null
+        },
+        {
+          "id": "OBS-SCALE-004",
+          "name": "Error tracking captures context",
+          "status": "pass",
+          "severity": "high",
+          "details": "Sentry configured with user context and custom tags",
+          "evidence": "src/lib/sentry.ts:15",
+          "recommendation": null
+        },
+        {
+          "id": "OBS-SCALE-005",
+          "name": "Alerting on error spike",
+          "status": "fail",
+          "severity": "high",
+          "details": "Sentry configured but no alert rules defined",
+          "evidence": null,
+          "recommendation": "Configure Sentry alerts: error rate > 5% triggers PagerDuty"
+        },
+        {
+          "id": "OBS-SCALE-006",
+          "name": "Health endpoint returns useful info",
+          "status": "warning",
+          "severity": "medium",
+          "details": "Health endpoint exists but only returns {status: 'ok'}",
+          "evidence": "src/app/api/health/route.ts",
+          "recommendation": "Add database connectivity check and dependency status to health endpoint"
+        }
+      ]
+    },
+    {
+      "id": "performance",
+      "name": "Performance",
+      "tier": "growth",
+      "checks": [
+        {
+          "id": "PERF-SCALE-001",
+          "name": "Core Web Vitals passing",
+          "status": "pass",
+          "severity": "medium",
+          "details": "LCP < 2.5s, FID < 100ms, CLS < 0.1 per Lighthouse",
+          "evidence": null,
+          "recommendation": null
+        },
+        {
+          "id": "PERF-SCALE-002",
+          "name": "Bundle size optimized",
+          "status": "warning",
+          "severity": "medium",
+          "details": "Main bundle is 450KB gzipped; could be reduced",
+          "evidence": ".next/analyze/client.html",
+          "recommendation": "Review bundle analyzer output; consider dynamic imports for large libraries"
+        },
+        {
+          "id": "PERF-SCALE-003",
+          "name": "Code splitting / lazy loading",
+          "status": "pass",
+          "severity": "medium",
+          "details": "Dynamic imports used for modals, charts, and admin pages",
+          "evidence": "src/components/charts/index.ts:3",
+          "recommendation": null
+        },
+        {
+          "id": "PERF-SCALE-004",
+          "name": "Images optimized",
+          "status": "pass",
+          "severity": "medium",
+          "details": "next/image used for all images with proper sizing",
+          "evidence": null,
+          "recommendation": null
+        },
+        {
+          "id": "PERF-SCALE-005",
+          "name": "Caching headers on static assets",
+          "status": "pass",
+          "severity": "medium",
+          "details": "Vercel edge caching configured; immutable headers on hashed assets",
+          "evidence": "vercel.json:12",
+          "recommendation": null
+        },
+        {
+          "id": "PERF-SCALE-006",
+          "name": "API response caching where appropriate",
+          "status": "warning",
+          "severity": "low",
+          "details": "Redis available but not used for API response caching",
+          "evidence": null,
+          "recommendation": "Add Redis caching for expensive/stable queries (e.g., product catalog)"
+        }
+      ]
+    },
+    {
+      "id": "reliability",
+      "name": "Reliability",
+      "tier": "growth",
+      "checks": [
+        {
+          "id": "REL-SCALE-001",
+          "name": "Timeouts on all external calls",
+          "status": "fail",
+          "severity": "critical",
+          "details": "No timeout configured on Stripe API calls - production outage risk",
+          "evidence": "src/lib/stripe.ts:42",
+          "recommendation": "Add 10s timeout to all Stripe SDK calls with graceful error handling"
+        },
+        {
+          "id": "REL-SCALE-002",
+          "name": "Retry with exponential backoff",
+          "status": "pass",
+          "severity": "high",
+          "details": "Retry logic with backoff on email sends and webhook deliveries",
+          "evidence": "src/lib/email.ts:28",
+          "recommendation": null
+        },
+        {
+          "id": "REL-SCALE-003",
+          "name": "Graceful degradation / fallbacks",
+          "status": "pass",
+          "severity": "medium",
+          "details": "Feature flags allow disabling non-critical features; fallback UI exists",
+          "evidence": "src/components/features/FeatureFlag.tsx",
+          "recommendation": null
+        },
+        {
+          "id": "REL-SCALE-004",
+          "name": "Idempotency on critical operations",
+          "status": "warning",
+          "severity": "high",
+          "details": "Payment webhooks use idempotency keys but order creation does not",
+          "evidence": "src/app/api/webhooks/stripe/route.ts:15",
+          "recommendation": "Add idempotency key to order creation to prevent duplicate orders"
+        },
+        {
+          "id": "REL-SCALE-005",
+          "name": "Queue jobs are retriable",
+          "status": "na",
+          "severity": "medium",
+          "details": "No background job queue in use",
+          "evidence": null,
+          "recommendation": null
+        }
+      ]
+    },
+    {
+      "id": "operations",
+      "name": "Operational Readiness",
+      "tier": "growth",
+      "checks": [
+        {
+          "id": "OPS-SCALE-001",
+          "name": "Runbooks exist for common issues",
+          "status": "warning",
+          "severity": "medium",
+          "details": "Only deployment runbook exists; no incident response docs",
+          "evidence": "docs/runbooks/deploy.md",
+          "recommendation": "Create runbooks for: database issues, high error rates, payment failures"
+        },
+        {
+          "id": "OPS-SCALE-002",
+          "name": "Rollback procedure documented",
+          "status": "pass",
+          "severity": "high",
+          "details": "Rollback procedure in deployment runbook with Vercel instructions",
+          "evidence": "docs/runbooks/deploy.md:45",
+          "recommendation": null
+        },
+        {
+          "id": "OPS-SCALE-003",
+          "name": "Zero-downtime deployment",
+          "status": "pass",
+          "severity": "high",
+          "details": "Vercel handles zero-downtime deployments automatically",
+          "evidence": null,
+          "recommendation": null
+        },
+        {
+          "id": "OPS-SCALE-004",
+          "name": "Staging environment exists",
+          "status": "human-verify",
+          "severity": "high",
+          "details": "Preview deployments exist but dedicated staging environment not confirmed",
+          "evidence": null,
+          "recommendation": "Confirm staging environment with production-like data exists"
+        },
+        {
+          "id": "OPS-SCALE-005",
+          "name": "Feature flags for gradual rollout",
+          "status": "warning",
+          "severity": "medium",
+          "details": "Feature flag system exists but percentage rollout not implemented",
+          "evidence": "src/lib/features.ts",
+          "recommendation": "Add percentage-based rollout support to feature flag system"
+        }
+      ]
+    },
+    {
+      "id": "code-maturity",
+      "name": "Code Maturity",
+      "tier": "growth",
+      "checks": [
+        {
+          "id": "CODE-SCALE-001",
+          "name": "Test coverage on critical paths",
+          "status": "pass",
+          "severity": "high",
+          "details": "Payment, auth, and order flows have 85%+ coverage",
+          "evidence": "coverage/lcov-report/index.html",
+          "recommendation": null
+        },
+        {
+          "id": "CODE-SCALE-002",
+          "name": "No duplicate components",
+          "status": "pass",
+          "severity": "medium",
+          "details": "No duplicate component basenames found",
+          "evidence": null,
+          "recommendation": null
+        },
+        {
+          "id": "CODE-SCALE-003",
+          "name": "Shared components used",
+          "status": "pass",
+          "severity": "medium",
+          "details": "Components import from @/components/ui consistently",
+          "evidence": null,
+          "recommendation": null
+        },
+        {
+          "id": "CODE-SCALE-004",
+          "name": "Types centralized",
+          "status": "pass",
+          "severity": "low",
+          "details": "Types defined in src/types/ and imported consistently",
+          "evidence": "src/types/index.ts",
+          "recommendation": null
+        },
+        {
+          "id": "CODE-SCALE-005",
+          "name": "No TODO/FIXME on core flows",
+          "status": "warning",
+          "severity": "medium",
+          "details": "2 TODOs found in payment flow",
+          "evidence": "src/lib/stripe.ts:67, src/app/checkout/page.tsx:34",
+          "recommendation": "Address TODOs in payment flow before scaling"
+        },
+        {
+          "id": "CODE-SCALE-006",
+          "name": "Dependencies vulnerability-free",
+          "status": "fail",
+          "severity": "high",
+          "details": "npm audit found 3 high-severity vulnerabilities",
+          "evidence": "npm audit output",
+          "recommendation": "Run npm audit fix --force and review breaking changes"
+        }
+      ]
+    },
+    {
+      "id": "compliance",
+      "name": "Compliance",
+      "tier": "enterprise",
+      "checks": [
+        {
+          "id": "COMP-ENT-001",
+          "name": "GDPR data export works",
+          "status": "human-verify",
+          "severity": "high",
+          "details": "Export endpoint exists but needs manual testing",
+          "evidence": "src/app/api/user/export/route.ts",
+          "recommendation": "Test export endpoint returns all user data in portable format"
+        },
+        {
+          "id": "COMP-ENT-002",
+          "name": "GDPR deletion works",
+          "status": "human-verify",
+          "severity": "high",
+          "details": "Deletion endpoint exists but cascade behavior not verified",
+          "evidence": "src/app/api/user/delete/route.ts",
+          "recommendation": "Verify deletion removes all user data including logs and backups"
+        }
+      ]
+    }
+  ],
+
+  "blockers": [
+    {
+      "checkId": "REL-SCALE-001",
+      "category": "reliability",
+      "name": "Timeouts on all external calls",
+      "severity": "critical",
+      "details": "No timeout configured on Stripe API calls - production outage risk",
+      "evidence": "src/lib/stripe.ts:42",
+      "recommendation": "Add 10s timeout to all Stripe SDK calls with graceful error handling"
+    },
+    {
+      "checkId": "OBS-SCALE-005",
+      "category": "observability",
+      "name": "Alerting on error spike",
+      "severity": "high",
+      "details": "Sentry configured but no alert rules defined",
+      "evidence": null,
+      "recommendation": "Configure Sentry alerts: error rate > 5% triggers PagerDuty"
+    },
+    {
+      "checkId": "CODE-SCALE-006",
+      "category": "code-maturity",
+      "name": "Dependencies vulnerability-free",
+      "severity": "high",
+      "details": "npm audit found 3 high-severity vulnerabilities",
+      "evidence": "npm audit output",
+      "recommendation": "Run npm audit fix --force and review breaking changes"
+    }
+  ]
+}

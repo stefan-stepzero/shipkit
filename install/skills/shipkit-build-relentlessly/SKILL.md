@@ -91,7 +91,7 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 **The loop works differently than you might expect:**
 
-1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-state.local.md`. Without this file, the Stop hook won't activate.
+1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-build.local.md`. Without this file, the Stop hook won't activate.
 
 2. **YOU check if the promise is met** - Run the build command, check if it passes. The hook does NOT run commands.
 
@@ -153,7 +153,7 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 ### Step 2: Create State File
 
-**Write to:** `.shipkit/relentless-state.local.md`
+**Write to:** `.shipkit/relentless-build.local.md`
 
 ```markdown
 ---
@@ -186,7 +186,7 @@ enabled: true
 1. Run the build command to see current errors
 2. Fix errors systematically
 3. Run build again to check progress
-4. **If build passes:** Delete `.shipkit/relentless-state.local.md` and finish
+4. **If build passes:** Delete `.shipkit/relentless-build.local.md` and finish
 5. **If build fails:** End your response normally → hook blocks → you continue
 
 **When the hook blocks, you'll see your task and completion_promise again.**
@@ -232,7 +232,7 @@ User: build relentlessly - migrate this JS project to TypeScript
 
 Claude:
 1. Detects tsconfig.json, uses `npx tsc --noEmit`
-2. Creates .shipkit/relentless-state.local.md
+2. Creates .shipkit/relentless-build.local.md
 3. Runs tsc, sees 47 type errors
 4. Fixes errors in src/utils/*.ts (12 errors)
 5. [Attempts to stop]
@@ -250,7 +250,7 @@ Claude:
 
 ## State File Location
 
-`.shipkit/relentless-state.local.md`
+`.shipkit/relentless-build.local.md`
 
 This file:
 - Activates the relentless Stop hook
@@ -265,7 +265,7 @@ This file:
 ## Integration with Other Skills
 
 **Before:**
-- Feature spec may exist (`.shipkit/specs/active/*.md`)
+- Feature spec may exist (`.shipkit/specs/active/*.json`)
 - Not required - build-relentlessly works standalone
 
 **After:**
@@ -286,7 +286,7 @@ build-relentlessly → test-relentlessly → lint-relentlessly
 - Source files with errors
 
 **Writes:**
-- `.shipkit/relentless-state.local.md` (temporary, auto-deleted)
+- `.shipkit/relentless-build.local.md` (temporary, auto-deleted)
 
 ---
 

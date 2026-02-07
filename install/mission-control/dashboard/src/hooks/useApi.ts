@@ -11,7 +11,7 @@ interface DashboardData {
   error: string | null
 }
 
-export function useDashboardData(refreshInterval = 2000): DashboardData {
+export function useDashboardData(refreshInterval = 3000): DashboardData {
   const [stats, setStats] = useState<Stats | null>(null)
   const [instances, setInstances] = useState<Instance[]>([])
   const [events, setEvents] = useState<Event[]>([])
@@ -33,7 +33,7 @@ export function useDashboardData(refreshInterval = 2000): DashboardData {
       setCodebases(c)
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch data')
+      setError(err instanceof Error ? err.message : 'Failed to connect to Mission Control server')
     } finally {
       setLoading(false)
     }

@@ -186,7 +186,7 @@ Skills should check prerequisites before running:
 ## Prerequisites
 
 **Required:**
-- `.shipkit/why.md` - Vision must be defined first
+- `.shipkit/why.json` - Vision must be defined first
 
 **If missing:**
 Run `/shipkit-why-project` first to define project vision.
@@ -202,7 +202,7 @@ Document what the skill reads and writes:
 
 | File | Purpose |
 |------|---------|
-| `.shipkit/why.md` | Understand project constraints |
+| `.shipkit/why.json` | Understand project constraints |
 | `.shipkit/stack.json` | Know what technologies are in use |
 ```
 
@@ -213,7 +213,7 @@ Document what the skill reads and writes:
 | File | Strategy | Purpose |
 |------|----------|---------|
 | `.shipkit/architecture.json` | APPEND | Add decision without overwriting history |
-| `.shipkit/specs/active/*.md` | CREATE | New spec file per feature |
+| `.shipkit/specs/active/*.json` | CREATE | New spec file per feature |
 ```
 
 Write strategies:

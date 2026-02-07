@@ -41,7 +41,7 @@ Grep: pattern="<\\w+Provider"
       output_mode="content"
 ```
 
-**Example output for stack.md**:
+**Example output for stack.json**:
 ```markdown
 ## Provider Hierarchy
 
@@ -83,7 +83,7 @@ Grep: pattern="export (async function|const) (GET|POST|PUT|DELETE|PATCH)"
       output_mode="files_with_matches"
 ```
 
-**Example output for stack.md**:
+**Example output for stack.json**:
 ```markdown
 ## API Patterns
 
@@ -124,7 +124,7 @@ Glob: pattern="**/components/**/*.test.{ts,tsx}"
 Glob: pattern="**/components/**/*.module.css"
 ```
 
-**Example output for stack.md**:
+**Example output for stack.json**:
 ```markdown
 ## Component Conventions
 
@@ -168,7 +168,7 @@ Grep: pattern="from ['\"]@/"
       output_mode="count"
 ```
 
-**Example output for stack.md**:
+**Example output for stack.json**:
 ```markdown
 ## Import Aliases
 

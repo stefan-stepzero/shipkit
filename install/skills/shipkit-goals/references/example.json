@@ -1,0 +1,86 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "goals",
+  "version": "1.0",
+  "lastUpdated": "2025-01-15",
+  "source": "shipkit-goals",
+
+  "summary": {
+    "total": 5,
+    "byPriority": { "p0": 2, "p1": 2, "p2": 1 },
+    "byStatus": { "not-started": 1, "in-progress": 2, "achieved": 1, "deferred": 1 }
+  },
+
+  "goals": [
+    {
+      "id": "launch-mvp",
+      "name": "Launch MVP",
+      "priority": "p0",
+      "status": "achieved",
+      "objective": "Ship a working product that solves the core problem",
+      "successCriteria": [
+        "Core user flow works end-to-end",
+        "Deployed to production environment",
+        "Basic error handling in place"
+      ],
+      "linkedSpecs": ["specs/active/core-flow.json", "specs/active/deployment.json"],
+      "notes": "Completed 2025-01-10"
+    },
+    {
+      "id": "beta-users",
+      "name": "Acquire 10 Beta Users",
+      "priority": "p0",
+      "status": "in-progress",
+      "objective": "Get real users testing the product and providing feedback",
+      "successCriteria": [
+        "10 users signed up",
+        "At least 5 have completed core flow",
+        "Collected feedback from at least 3 users"
+      ],
+      "linkedSpecs": ["specs/active/onboarding.json"],
+      "notes": "Currently at 7 users"
+    },
+    {
+      "id": "payment-integration",
+      "name": "Integrate Payment Processing",
+      "priority": "p1",
+      "status": "in-progress",
+      "objective": "Enable users to pay for premium features",
+      "successCriteria": [
+        "Stripe integration complete",
+        "Subscription flow works",
+        "Invoice generation automated"
+      ],
+      "linkedSpecs": ["specs/active/payments.json"],
+      "notes": null
+    },
+    {
+      "id": "mobile-responsive",
+      "name": "Mobile-Responsive Design",
+      "priority": "p1",
+      "status": "not-started",
+      "objective": "Ensure product works well on mobile devices",
+      "successCriteria": [
+        "All pages render correctly on mobile",
+        "Touch interactions work properly",
+        "Performance acceptable on 3G connections"
+      ],
+      "linkedSpecs": [],
+      "notes": "Blocked until core features stable"
+    },
+    {
+      "id": "analytics-dashboard",
+      "name": "Admin Analytics Dashboard",
+      "priority": "p2",
+      "status": "deferred",
+      "objective": "Provide admins visibility into usage metrics",
+      "successCriteria": [
+        "Daily active users visible",
+        "Feature usage breakdown",
+        "Error rate monitoring"
+      ],
+      "linkedSpecs": [],
+      "notes": "Deferred to v2 - focus on user-facing features first"
+    }
+  ]
+}

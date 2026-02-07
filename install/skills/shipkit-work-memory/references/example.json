@@ -1,0 +1,261 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "work-memory",
+  "version": "1.0",
+  "lastUpdated": "2025-01-15T16:30:00Z",
+  "source": "shipkit-work-memory",
+  "summary": {
+    "totalSessions": 5,
+    "currentPhase": "implementation",
+    "lastSessionDate": "2025-01-15",
+    "activeWorkstream": "User authentication",
+    "blockers": 0,
+    "momentum": "high"
+  },
+  "sessions": [
+    {
+      "id": "session-1",
+      "date": "2025-01-10",
+      "duration": "3h",
+      "workstream": "Project setup",
+      "phase": "setup",
+      "accomplished": [
+        "Initialized Next.js 14 project",
+        "Set up Supabase connection",
+        "Configured Prisma schema"
+      ],
+      "filesModified": [
+        "package.json",
+        "prisma/schema.prisma",
+        "src/lib/supabase.ts"
+      ],
+      "decisions": [
+        {
+          "decision": "Use Supabase for auth and database",
+          "rationale": "Built-in auth, RLS, and free tier sufficient for MVP"
+        },
+        {
+          "decision": "Prisma as ORM layer",
+          "rationale": "Type-safe queries, good migration story"
+        }
+      ],
+      "gotchas": [],
+      "blockers": [],
+      "nextSteps": [
+        "Create user model",
+        "Set up auth routes"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "session-2",
+      "date": "2025-01-11",
+      "duration": "2h",
+      "workstream": "User authentication",
+      "phase": "implementation",
+      "accomplished": [
+        "Created User model in Prisma",
+        "Set up Supabase auth helpers",
+        "Added sign-up page"
+      ],
+      "filesModified": [
+        "prisma/schema.prisma",
+        "src/lib/auth.ts",
+        "src/app/signup/page.tsx"
+      ],
+      "decisions": [
+        {
+          "decision": "Email + password auth for MVP",
+          "rationale": "Simplest to implement, OAuth can come later"
+        }
+      ],
+      "gotchas": [
+        "Supabase client must be created fresh per request in server components"
+      ],
+      "blockers": [],
+      "nextSteps": [
+        "Add login page",
+        "Create auth middleware"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "session-3",
+      "date": "2025-01-12",
+      "duration": "2.5h",
+      "workstream": "User authentication",
+      "phase": "implementation",
+      "accomplished": [
+        "Added login page with form validation",
+        "Created auth middleware for protected routes",
+        "Set up session handling with cookies"
+      ],
+      "filesModified": [
+        "src/app/login/page.tsx",
+        "src/middleware.ts",
+        "src/lib/session.ts"
+      ],
+      "decisions": [
+        {
+          "decision": "Use HTTP-only cookies for session",
+          "rationale": "More secure than localStorage, protects against XSS"
+        }
+      ],
+      "gotchas": [
+        "Middleware runs on edge runtime - can't use Prisma directly",
+        "Must verify token in API routes, not just middleware"
+      ],
+      "blockers": [],
+      "nextSteps": [
+        "Add password reset flow",
+        "Create user profile page"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "session-4",
+      "date": "2025-01-14",
+      "duration": "1.5h",
+      "workstream": "User authentication",
+      "phase": "implementation",
+      "accomplished": [
+        "Added password reset email flow",
+        "Created reset password page",
+        "Fixed token expiry issue"
+      ],
+      "filesModified": [
+        "src/app/forgot-password/page.tsx",
+        "src/app/reset-password/page.tsx",
+        "src/lib/email.ts",
+        "src/lib/tokens.ts"
+      ],
+      "decisions": [
+        {
+          "decision": "Use Resend for transactional emails",
+          "rationale": "Simple API, good free tier, React email templates"
+        }
+      ],
+      "gotchas": [
+        "Reset tokens were expiring too quickly - increased to 1 hour"
+      ],
+      "blockers": [],
+      "nextSteps": [
+        "Add user profile page",
+        "Implement account settings"
+      ],
+      "status": "complete"
+    },
+    {
+      "id": "session-5",
+      "date": "2025-01-15",
+      "duration": "2h",
+      "workstream": "User authentication",
+      "phase": "implementation",
+      "accomplished": [
+        "Created user profile page",
+        "Added avatar upload with Supabase storage",
+        "Implemented account settings form"
+      ],
+      "filesModified": [
+        "src/app/profile/page.tsx",
+        "src/app/settings/page.tsx",
+        "src/components/avatar-upload.tsx",
+        "src/lib/storage.ts"
+      ],
+      "decisions": [
+        {
+          "decision": "Use Supabase storage for user avatars",
+          "rationale": "Already using Supabase, simplifies architecture"
+        }
+      ],
+      "gotchas": [
+        "Supabase storage requires RLS policies on buckets",
+        "Avatar URL needs to be refreshed after upload"
+      ],
+      "blockers": [],
+      "nextSteps": [
+        "Add email change flow",
+        "Implement account deletion"
+      ],
+      "status": "in-progress"
+    }
+  ],
+  "workstreams": [
+    {
+      "id": "ws-1",
+      "name": "Project setup",
+      "status": "complete",
+      "startDate": "2025-01-10",
+      "sessions": ["session-1"],
+      "completionEstimate": "100%"
+    },
+    {
+      "id": "ws-2",
+      "name": "User authentication",
+      "status": "in-progress",
+      "startDate": "2025-01-11",
+      "sessions": ["session-2", "session-3", "session-4", "session-5"],
+      "completionEstimate": "85%"
+    }
+  ],
+  "resumePoint": {
+    "lastSession": "session-5",
+    "immediateNextStep": "Add email change flow with verification",
+    "context": "User profile and settings pages are done. Need email change with verification email before auth is complete.",
+    "openFiles": [
+      "src/app/settings/page.tsx",
+      "src/lib/email.ts"
+    ],
+    "relatedArtifacts": [
+      "architecture.json",
+      "contracts.json"
+    ]
+  },
+  "timeline": [
+    {
+      "date": "2025-01-10",
+      "event": "Project initialized with Next.js + Supabase + Prisma",
+      "type": "milestone"
+    },
+    {
+      "date": "2025-01-10",
+      "event": "Decided: Supabase for auth and database",
+      "type": "decision"
+    },
+    {
+      "date": "2025-01-11",
+      "event": "Started user authentication workstream",
+      "type": "milestone"
+    },
+    {
+      "date": "2025-01-11",
+      "event": "Decided: Email + password auth for MVP",
+      "type": "decision"
+    },
+    {
+      "date": "2025-01-12",
+      "event": "Decided: HTTP-only cookies for session storage",
+      "type": "decision"
+    },
+    {
+      "date": "2025-01-12",
+      "event": "Auth middleware and session handling complete",
+      "type": "milestone"
+    },
+    {
+      "date": "2025-01-14",
+      "event": "Decided: Resend for transactional emails",
+      "type": "decision"
+    },
+    {
+      "date": "2025-01-14",
+      "event": "Password reset flow complete",
+      "type": "milestone"
+    },
+    {
+      "date": "2025-01-15",
+      "event": "User profile and settings pages complete",
+      "type": "milestone"
+    }
+  ]
+}

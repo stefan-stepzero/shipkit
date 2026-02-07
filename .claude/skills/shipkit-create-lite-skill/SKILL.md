@@ -156,15 +156,15 @@ Choose 1, 2, or 3:
 How does this skill write output?
 
 1. OVERWRITE - Creates/replaces a single file each time
-   Examples: goals.json, why.md, latest.html
+   Examples: goals.json, why.json, latest.html
    → Will apply Quick Exit Check + File Exists Workflow patterns
 
 2. APPEND - Adds entries to an ongoing file
-   Examples: architecture.md, implementations.md
+   Examples: architecture.json, implementations.json
    → Will apply Duplicate Detection pattern
 
 3. MULTIPLE - Creates a separate file per invocation
-   Examples: specs/active/[feature].md, plans/[feature]-plan.md
+   Examples: specs/active/[feature].json, plans/active/[feature].json
    → Will apply Quick Exit Check pattern
 
 4. NONE - No file output (guidance/reporting only)
@@ -227,9 +227,8 @@ Examples (JSON artifacts):
 - .shipkit/goals.json
 - .shipkit/project-health.json
 
-Examples (Markdown):
-- .shipkit/specs/active/[feature].md
-- .shipkit/architecture.json
+Examples (Markdown - narrative content only):
+- .shipkit/specs/active/[feature].json (now JSON)
 - .shipkit/communications/latest.html
 
 → [user input]
@@ -291,7 +290,7 @@ Does this skill require other files to exist first?
 
 Examples:
 - shipkit-plan requires shipkit-spec (hard requirement)
-- shipkit-spec optionally uses stack.md (soft requirement)
+- shipkit-spec optionally uses stack.json (soft requirement)
 - shipkit-project-status has no requirements
 
 Options:

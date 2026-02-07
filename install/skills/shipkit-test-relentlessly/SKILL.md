@@ -92,7 +92,7 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 **The loop works differently than you might expect:**
 
-1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-state.local.md`. Without this file, the Stop hook won't activate.
+1. **CREATE STATE FILE FIRST** - Before ANY other work, create `.shipkit/relentless-test.local.md`. Without this file, the Stop hook won't activate.
 
 2. **YOU check if the promise is met** - Run the test command, check if all tests pass. The hook does NOT run commands.
 
@@ -155,7 +155,7 @@ The user invokes this skill and walks away. Come back to either success or a cle
 
 ### Step 2: Create State File
 
-**Write to:** `.shipkit/relentless-state.local.md`
+**Write to:** `.shipkit/relentless-test.local.md`
 
 ```markdown
 ---
@@ -188,7 +188,7 @@ enabled: true
 1. Run the test command to see current failures
 2. Implement or fix code to make tests pass
 3. Run tests again to check progress
-4. **If all tests pass:** Delete `.shipkit/relentless-state.local.md` and finish
+4. **If all tests pass:** Delete `.shipkit/relentless-test.local.md` and finish
 5. **If tests fail:** End your response normally → hook blocks → you continue
 
 **YOU are responsible for:**
@@ -233,7 +233,7 @@ User: test relentlessly - implement the UserService class
 
 Claude:
 1. Detects npm test, uses `npm test`
-2. Creates .shipkit/relentless-state.local.md
+2. Creates .shipkit/relentless-test.local.md
 3. Runs tests, sees 5 failures in user.test.ts
 4. Implements UserService.create() (2 tests pass)
 5. [Attempts to stop]
@@ -251,7 +251,7 @@ Claude:
 
 ## Test Strategy Integration
 
-If a spec exists at `.shipkit/specs/active/*.md`, check its **Test Strategy** section for:
+If a spec exists at `.shipkit/specs/active/*.json`, check its **Test Strategy** section for:
 - Which test types to focus on (unit, integration, e2e)
 - Key test cases expected
 - Mocking strategy
@@ -262,7 +262,7 @@ This guides which tests to prioritize and how to approach failures.
 
 ## State File Location
 
-`.shipkit/relentless-state.local.md`
+`.shipkit/relentless-test.local.md`
 
 This file:
 - Activates the relentless Stop hook
@@ -297,10 +297,10 @@ build-relentlessly → test-relentlessly → lint-relentlessly
 - Test configuration (package.json, pytest.ini, etc.)
 - Test files to understand what's being tested
 - Source files to implement/fix
-- `.shipkit/specs/active/*.md` for test strategy (if exists)
+- `.shipkit/specs/active/*.json` for test strategy (if exists)
 
 **Writes:**
-- `.shipkit/relentless-state.local.md` (temporary, auto-deleted)
+- `.shipkit/relentless-test.local.md` (temporary, auto-deleted)
 
 ---
 

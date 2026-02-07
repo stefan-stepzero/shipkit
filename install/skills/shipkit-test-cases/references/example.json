@@ -1,0 +1,218 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "test-coverage",
+  "version": "1.0",
+  "lastUpdated": "2024-01-21",
+  "source": "shipkit-test-cases",
+  "summary": {
+    "totalCases": 15,
+    "filesWithCases": 8,
+    "totalSourceFiles": 12,
+    "coverageScore": 67,
+    "byPriority": {
+      "core": 6,
+      "edge": 7,
+      "regression": 2
+    },
+    "byStatus": {
+      "verified": 5,
+      "pending": 7,
+      "stale": 2,
+      "orphaned": 1
+    }
+  },
+  "cases": [
+    {
+      "id": "AUTH-01",
+      "name": "Valid login returns token",
+      "priority": "core",
+      "status": "verified",
+      "sourceFile": "src/api/auth/login.ts",
+      "linkedSpec": ".shipkit/specs/active/auth.json",
+      "codeModified": "2024-01-15",
+      "lastVerified": "2024-01-21"
+    },
+    {
+      "id": "AUTH-02",
+      "name": "Invalid password rejected",
+      "priority": "core",
+      "status": "stale",
+      "sourceFile": "src/api/auth/login.ts",
+      "linkedSpec": ".shipkit/specs/active/auth.json",
+      "codeModified": "2024-01-20",
+      "lastVerified": "2024-01-15"
+    },
+    {
+      "id": "AUTH-03",
+      "name": "Expired token refresh",
+      "priority": "core",
+      "status": "pending",
+      "sourceFile": "src/api/auth/refresh.ts",
+      "linkedSpec": ".shipkit/specs/active/auth.json",
+      "codeModified": "2024-01-18",
+      "lastVerified": null
+    },
+    {
+      "id": "AUTH-E01",
+      "name": "Malformed email format rejected",
+      "priority": "edge",
+      "status": "verified",
+      "sourceFile": "src/api/auth/login.ts",
+      "linkedSpec": null,
+      "codeModified": "2024-01-15",
+      "lastVerified": "2024-01-21"
+    },
+    {
+      "id": "AUTH-E02",
+      "name": "Rate limiting after 5 attempts",
+      "priority": "edge",
+      "status": "pending",
+      "sourceFile": "src/api/auth/login.ts",
+      "linkedSpec": null,
+      "codeModified": "2024-01-15",
+      "lastVerified": null
+    },
+    {
+      "id": "BILLING-01",
+      "name": "Subscription creation succeeds",
+      "priority": "core",
+      "status": "verified",
+      "sourceFile": "src/api/billing/subscription.ts",
+      "linkedSpec": ".shipkit/specs/active/billing.json",
+      "codeModified": "2024-01-10",
+      "lastVerified": "2024-01-19"
+    },
+    {
+      "id": "BILLING-02",
+      "name": "Payment webhook processed",
+      "priority": "core",
+      "status": "stale",
+      "sourceFile": "src/api/billing/webhook.ts",
+      "linkedSpec": ".shipkit/specs/active/billing.json",
+      "codeModified": "2024-01-20",
+      "lastVerified": "2024-01-12"
+    },
+    {
+      "id": "BILLING-03",
+      "name": "Refund processed correctly",
+      "priority": "core",
+      "status": "orphaned",
+      "sourceFile": "src/api/billing/old.ts",
+      "linkedSpec": ".shipkit/specs/active/billing.json",
+      "codeModified": "2024-01-05",
+      "lastVerified": "2024-01-08"
+    },
+    {
+      "id": "BILLING-E01",
+      "name": "Invalid card number rejected",
+      "priority": "edge",
+      "status": "pending",
+      "sourceFile": "src/api/billing/payment.ts",
+      "linkedSpec": null,
+      "codeModified": "2024-01-18",
+      "lastVerified": null
+    },
+    {
+      "id": "BILLING-E02",
+      "name": "Expired card handled gracefully",
+      "priority": "edge",
+      "status": "verified",
+      "sourceFile": "src/api/billing/payment.ts",
+      "linkedSpec": null,
+      "codeModified": "2024-01-10",
+      "lastVerified": "2024-01-19"
+    },
+    {
+      "id": "UI-01",
+      "name": "Login form submits correctly",
+      "priority": "core",
+      "status": "pending",
+      "sourceFile": "src/components/auth/LoginForm.tsx",
+      "linkedSpec": null,
+      "codeModified": "2024-01-17",
+      "lastVerified": null
+    },
+    {
+      "id": "UI-E01",
+      "name": "Form validation shows errors",
+      "priority": "edge",
+      "status": "pending",
+      "sourceFile": "src/components/auth/LoginForm.tsx",
+      "linkedSpec": null,
+      "codeModified": "2024-01-17",
+      "lastVerified": null
+    },
+    {
+      "id": "UI-E02",
+      "name": "Loading state during submission",
+      "priority": "edge",
+      "status": "verified",
+      "sourceFile": "src/components/auth/LoginForm.tsx",
+      "linkedSpec": null,
+      "codeModified": "2024-01-12",
+      "lastVerified": "2024-01-19"
+    },
+    {
+      "id": "AUTH-R01",
+      "name": "Rate limiting prevents brute force",
+      "priority": "regression",
+      "status": "pending",
+      "sourceFile": "src/api/auth/login.ts",
+      "linkedSpec": null,
+      "codeModified": "2024-01-15",
+      "lastVerified": null
+    },
+    {
+      "id": "BILLING-R01",
+      "name": "Duplicate webhook idempotency",
+      "priority": "regression",
+      "status": "verified",
+      "sourceFile": "src/api/billing/webhook.ts",
+      "linkedSpec": null,
+      "codeModified": "2024-01-08",
+      "lastVerified": "2024-01-19"
+    }
+  ],
+  "gaps": [
+    {
+      "file": "src/api/billing/refund.ts",
+      "reason": "no coverage",
+      "priority": "core"
+    },
+    {
+      "file": "src/services/notifications.ts",
+      "reason": "no coverage",
+      "priority": "edge"
+    },
+    {
+      "file": "src/lib/analytics.ts",
+      "reason": "no coverage",
+      "priority": "edge"
+    },
+    {
+      "file": "src/utils/format.ts",
+      "reason": "no coverage",
+      "priority": "edge"
+    }
+  ],
+  "staleCases": [
+    {
+      "caseId": "AUTH-02",
+      "sourceFile": "src/api/auth/login.ts",
+      "codeModified": "2024-01-20",
+      "lastVerified": "2024-01-15"
+    },
+    {
+      "caseId": "BILLING-02",
+      "sourceFile": "src/api/billing/webhook.ts",
+      "codeModified": "2024-01-20",
+      "lastVerified": "2024-01-12"
+    }
+  ],
+  "orphanedCases": [
+    {
+      "caseId": "BILLING-03",
+      "originalFile": "src/api/billing/old.ts"
+    }
+  ]
+}

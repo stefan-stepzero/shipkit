@@ -184,7 +184,7 @@ def count_active_items(project_root: Path) -> dict:
     # Count active specs
     specs_dir = project_root / '.shipkit' / 'specs' / 'active'
     if specs_dir.exists():
-        specs = list(specs_dir.glob('*.md'))
+        specs = list(specs_dir.glob('*.json'))
         counts['specs'] = len(specs)
         if specs:
             oldest = max(get_file_age_days(s) for s in specs)
@@ -193,18 +193,23 @@ def count_active_items(project_root: Path) -> dict:
     # Count active plans
     plans_dir = project_root / '.shipkit' / 'plans' / 'active'
     if plans_dir.exists():
-        plans = list(plans_dir.glob('*.md'))
+        plans = list(plans_dir.glob('*.json'))
         counts['plans'] = len(plans)
         if plans:
             oldest = max(get_file_age_days(p) for p in plans)
             counts['oldest_plan_days'] = oldest
 
     # Count user tasks
-    tasks_file = project_root / '.shipkit' / 'user-tasks' / 'active.md'
+    tasks_file = project_root / '.shipkit' / 'user-tasks.json'
     if tasks_file.exists():
         content = tasks_file.read_text(encoding='utf-8')
-        # Count uncompleted tasks (lines with [ ])
-        counts['user_tasks'] = content.count('[ ]')
+        # Count uncompleted tasks from JSON
+        import json
+        try:
+            data = json.loads(content)
+            counts['user_tasks'] = len([t for t in data.get('tasks', []) if t.get('status') == 'active'])
+        except json.JSONDecodeError:
+            counts['user_tasks'] = 0
 
     return counts
 
@@ -446,8 +451,8 @@ def main():
     print("---")
     print()
 
-    # Load why.md (vision - usually stable)
-    why_file = shipkit_dir / 'why.md'
+    # Load why.json (vision - usually stable)
+    why_file = shipkit_dir / 'why.json'
     if why_file.exists():
         print("# Project Vision")
         print()
@@ -656,10 +661,10 @@ def main():
 
     # Check each context file
     context_files = [
-        ('why.md', 'Before product decisions'),
+        ('why.json', 'Before product decisions'),
         ('stack.json', 'Before implementing (check patterns)'),
         ('architecture.json', 'Before design decisions'),
-        ('schema.md', 'Before database work'),
+        ('schema.json', 'Before database work'),
         ('codebase-index.json', 'For navigation'),
     ]
 
@@ -670,7 +675,7 @@ def main():
             status = format_age(age)
         else:
             status = "Missing"
-            read_when = f"Create: `/shipkit-project-context`" if filename in ['stack.json', 'schema.md'] else f"Create when needed"
+            read_when = f"Create: `/shipkit-project-context`" if filename in ['stack.json', 'schema.json'] else f"Create when needed"
 
         print(f"| `{filename}` | {status} | {read_when} |")
 

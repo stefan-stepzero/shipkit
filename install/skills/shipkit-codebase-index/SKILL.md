@@ -209,44 +209,22 @@ I'll use this index to navigate faster.
 
 ```json
 {
-  "generated": "2025-01-27",
-
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build"
-  },
-
-  "recentlyActive": [
-    "src/app/api/payments/route.ts",
-    "src/components/Checkout.tsx"
-  ],
-
-  "directories": [
-    "src/app", "src/components", "src/lib", "prisma"
-  ],
-
-  "configFiles": [
-    "next.config.js", "tsconfig.json", "prisma/schema.prisma"
-  ],
-
+  "generated": "YYYY-MM-DD",
+  "scripts": { "<name>": "<command>" },
+  "recentlyActive": ["path/to/file.ts"],
+  "directories": ["src/app", "src/components"],
+  "configFiles": ["next.config.js", "tsconfig.json"],
   "framework": "next.js (app router)",
-
-  "entryPoints": {
-    "app": "src/app/page.tsx",
-    "api": "src/app/api/",
-    "database": "prisma/schema.prisma"
-  },
-
-  "concepts": {
-    "auth": ["src/lib/auth.ts", "src/middleware.ts"],
-    "database": ["src/lib/db.ts", "prisma/schema.prisma"]
-  },
-
-  "coreFiles": ["src/lib/db.ts", "src/lib/auth.ts"],
-
+  "entryPoints": { "app": "...", "api": "...", "database": "..." },
+  "concepts": { "auth": [...], "database": [...] },
+  "coreFiles": ["src/lib/db.ts"],
   "skip": ["src/legacy/"]
 }
 ```
+
+**Full schema reference:** See `references/output-schema.md`
+
+**Realistic example:** See `references/example.json`
 
 ---
 

@@ -32,13 +32,13 @@ All project context lives in `.shipkit/`:
 
 | File | Purpose |
 |------|---------|
-| `why.md` | Vision, constraints, approach |
-| `stack.md` | Tech choices (auto-scanned) |
+| `why.json` | Vision, constraints, approach |
+| `stack.json` | Tech choices (auto-scanned) |
 | `architecture.json` | Decisions log (append-only) |
 | `progress.json` | Session continuity |
 | `codebase-index.json` | Navigation index (concept → files) |
-| `specs/active/` | Feature specs |
-| `plans/active/` | Implementation plans |
+| `specs/active/*.json` | Feature specs |
+| `plans/active/*.json` | Implementation plans |
 
 **Always check context before making architectural decisions.**
 
@@ -114,6 +114,7 @@ If `.shipkit/codebase-index.json` exists:
 | Install or update Shipkit | `/shipkit-update` |
 | Find and install community skills | `/shipkit-get-skills` |
 | Find and install MCP servers | `/shipkit-get-mcps` |
+| AFK daemon / standby mode | `/shipkit-standby` |
 
 **No skill needed for:** implementing, debugging, testing, refactoring, documenting code.
 

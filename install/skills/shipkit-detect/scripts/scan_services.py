@@ -36,7 +36,7 @@ def find_latest_spec():
     if not specs_dir.exists():
         return None
 
-    specs = list(specs_dir.glob('*.md'))
+    specs = list(specs_dir.glob('*.json'))
     if not specs:
         return None
 

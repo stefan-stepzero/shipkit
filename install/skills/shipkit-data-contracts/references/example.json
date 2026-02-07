@@ -1,0 +1,302 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "data-contracts",
+  "version": "1.0",
+  "lastUpdated": "2025-01-20T09:15:00Z",
+  "source": "shipkit-data-contracts",
+  "summary": {
+    "totalEntities": 4,
+    "totalRelationships": 3,
+    "totalValidationRules": 5,
+    "domains": ["users", "recipes"],
+    "lastChange": "Added Recipe and Ingredient entities with validation rules"
+  },
+  "entities": [
+    {
+      "id": "user",
+      "name": "User",
+      "domain": "users",
+      "description": "Application user account",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "Primary key"
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "format": "email",
+          "required": true,
+          "unique": true,
+          "validation": "RFC 5322 email format"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Display name"
+        },
+        {
+          "name": "created_at",
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "description": "ISO 8601 creation timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "description": "ISO 8601 last update timestamp"
+        }
+      ],
+      "source": "database"
+    },
+    {
+      "id": "recipe",
+      "name": "Recipe",
+      "domain": "recipes",
+      "description": "A cooking recipe with ingredients and steps",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "Primary key"
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true,
+          "description": "Recipe title"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": false,
+          "nullable": true,
+          "description": "Brief recipe description"
+        },
+        {
+          "name": "prep_time_minutes",
+          "type": "number",
+          "required": true,
+          "description": "Preparation time in minutes"
+        },
+        {
+          "name": "cook_time_minutes",
+          "type": "number",
+          "required": true,
+          "description": "Cooking time in minutes"
+        },
+        {
+          "name": "servings",
+          "type": "number",
+          "required": true,
+          "default": 4,
+          "description": "Number of servings"
+        },
+        {
+          "name": "user_id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "Author foreign key"
+        },
+        {
+          "name": "created_at",
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "description": "Creation timestamp"
+        },
+        {
+          "name": "updated_at",
+          "type": "string",
+          "format": "datetime",
+          "required": true,
+          "description": "Last update timestamp"
+        }
+      ],
+      "source": "database"
+    },
+    {
+      "id": "ingredient",
+      "name": "Ingredient",
+      "domain": "recipes",
+      "description": "An ingredient used in a recipe",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "Primary key"
+        },
+        {
+          "name": "recipe_id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "Recipe foreign key"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": true,
+          "description": "Ingredient name"
+        },
+        {
+          "name": "quantity",
+          "type": "string",
+          "required": true,
+          "description": "Amount with unit (e.g., '2 cups')"
+        },
+        {
+          "name": "optional",
+          "type": "boolean",
+          "required": true,
+          "default": false,
+          "description": "Whether ingredient is optional"
+        }
+      ],
+      "source": "database"
+    },
+    {
+      "id": "recipe-step",
+      "name": "RecipeStep",
+      "domain": "recipes",
+      "description": "A step in recipe instructions",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "Primary key"
+        },
+        {
+          "name": "recipe_id",
+          "type": "string",
+          "format": "uuid",
+          "required": true,
+          "description": "Recipe foreign key"
+        },
+        {
+          "name": "step_number",
+          "type": "number",
+          "required": true,
+          "description": "Order of the step (1-indexed)"
+        },
+        {
+          "name": "instruction",
+          "type": "string",
+          "required": true,
+          "description": "Step instruction text"
+        }
+      ],
+      "source": "database"
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-user-recipe",
+      "source": "user",
+      "target": "recipe",
+      "type": "one-to-many",
+      "label": "creates",
+      "foreignKey": "user_id",
+      "cascade": "cascade"
+    },
+    {
+      "id": "rel-recipe-ingredient",
+      "source": "recipe",
+      "target": "ingredient",
+      "type": "one-to-many",
+      "label": "contains",
+      "foreignKey": "recipe_id",
+      "cascade": "cascade"
+    },
+    {
+      "id": "rel-recipe-step",
+      "source": "recipe",
+      "target": "recipe-step",
+      "type": "one-to-many",
+      "label": "has",
+      "foreignKey": "recipe_id",
+      "cascade": "cascade"
+    }
+  ],
+  "validationRules": [
+    {
+      "id": "val-user-email-unique",
+      "entity": "user",
+      "field": "email",
+      "rule": "unique",
+      "errorMessage": "Email already registered",
+      "scope": "global"
+    },
+    {
+      "id": "val-recipe-title-length",
+      "entity": "recipe",
+      "field": "title",
+      "rule": "max",
+      "errorMessage": "Title must be 100 characters or less",
+      "params": { "max": 100 }
+    },
+    {
+      "id": "val-recipe-prep-time",
+      "entity": "recipe",
+      "field": "prep_time_minutes",
+      "rule": "min",
+      "errorMessage": "Prep time must be at least 1 minute",
+      "params": { "min": 1 }
+    },
+    {
+      "id": "val-recipe-servings",
+      "entity": "recipe",
+      "field": "servings",
+      "rule": "range",
+      "errorMessage": "Servings must be between 1 and 100",
+      "params": { "min": 1, "max": 100 }
+    },
+    {
+      "id": "val-step-number",
+      "entity": "recipe-step",
+      "field": "step_number",
+      "rule": "min",
+      "errorMessage": "Step number must be at least 1",
+      "params": { "min": 1 }
+    }
+  ],
+  "apiContracts": [
+    {
+      "id": "api-create-recipe",
+      "endpoint": "/api/recipes",
+      "method": "POST",
+      "requestEntity": "recipe",
+      "responseEntity": "recipe",
+      "requiredFields": ["title", "prep_time_minutes", "cook_time_minutes"],
+      "authentication": "required"
+    },
+    {
+      "id": "api-get-recipe",
+      "endpoint": "/api/recipes/:id",
+      "method": "GET",
+      "responseEntity": "recipe",
+      "authentication": "optional"
+    },
+    {
+      "id": "api-list-user-recipes",
+      "endpoint": "/api/users/:userId/recipes",
+      "method": "GET",
+      "responseEntity": "recipe",
+      "authentication": "optional"
+    }
+  ]
+}

@@ -53,6 +53,9 @@ archive/
 # Old test files
 tests/archive/
 
+# Mission Control test/dev data (not for distribution)
+install/mission-control/.shipkit/
+
 # Deprecated folders (superseded by docs/generated/ and scripts/)
 exported/
 help/

@@ -36,7 +36,11 @@ agent: shipkit-researcher-agent
 **Recommended**:
 - Stack defined: `.shipkit/stack.json` (tech context)
 - Codebase indexed: `.shipkit/codebase-index.json` (faster investigation)
-- Existing specs: `.shipkit/specs/active/*.md` (avoid duplicates)
+- Existing specs: `.shipkit/specs/active/*.json` (avoid duplicates)
+
+**Schema Reference**:
+- `references/output-schema.md` - Complete JSON schema definition
+- `references/example.json` - Realistic bug spec example
 
 ---
 
@@ -197,96 +201,125 @@ ROOT CAUSE: Race condition between parent re-render and async response
 
 **For each investigated bug, create spec file:**
 
-**Location**: `.shipkit/specs/active/bug-[brief-name].md`
+**Location**: `.shipkit/specs/active/bug-[brief-name].json`
 
-**Template**:
+**Schema**: See `references/output-schema.md` for complete field reference.
 
-```markdown
-# Bug: [Brief Description]
+**Template Structure**:
 
-**Created**: [YYYY-MM-DD]
-**Status**: Active
-**Severity**: [Critical/High/Medium/Low]
-**Source**: [User testing / Beta / Bug report]
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "bug-spec",
+  "version": "1.0",
+  "lastUpdated": "[ISO 8601 timestamp]",
+  "source": "shipkit-feedback-bug",
 
----
+  "summary": {
+    "name": "[Brief Description]",
+    "status": "active",
+    "severity": "[critical/high/medium/low]",
+    "feedbackSource": "[user-testing/beta/bug-report/general]",
+    "rootCauseType": "[logic-error/race-condition/missing-validation/state-management/integration/environment]",
+    "affectedComponentCount": 0,
+    "hasBlastRadius": false
+  },
 
-## Problem
+  "metadata": {
+    "id": "bug-[brief-name]",
+    "created": "[YYYY-MM-DD]",
+    "updated": "[YYYY-MM-DD]",
+    "author": "shipkit-feedback-bug",
+    "feedbackDate": "[YYYY-MM-DD]"
+  },
 
-[Clear description of what's broken]
+  "originalFeedback": {
+    "quote": "[Original user quote]",
+    "source": "[Same as summary.feedbackSource]",
+    "reporter": "[Who reported it]"
+  },
 
-**Reported as**: "[Original user quote]"
+  "problem": {
+    "statement": "[Clear description of what's broken]",
+    "expectedBehavior": "[What should happen]",
+    "actualBehavior": "[What happens instead]"
+  },
 
----
+  "reproduction": {
+    "confirmed": "[YYYY-MM-DD]",
+    "steps": [
+      "[Step 1]",
+      "[Step 2]",
+      "[Step 3]"
+    ],
+    "environment": {
+      "browser": "[Browser if relevant]",
+      "os": "[OS if relevant]",
+      "prerequisites": ["[Required preconditions]"]
+    },
+    "minimumRepro": "[Simplest case that triggers bug]"
+  },
 
-## Reproduction
+  "investigation": {
+    "codePath": {
+      "entry": "[Where it starts]",
+      "failurePoint": "[Where it goes wrong]",
+      "relevantFiles": ["[file:line references]"]
+    },
+    "rootCause": {
+      "fiveWhys": [
+        { "level": 1, "symptom": "[Symptom]", "because": "[Why]" },
+        { "level": 2, "symptom": "[That]", "because": "[Why]" },
+        { "level": 3, "symptom": "[That]", "because": "[Root cause]" }
+      ],
+      "conclusion": "[Final root cause statement]",
+      "type": "[Same as summary.rootCauseType]"
+    },
+    "blastRadius": {
+      "description": "[Summary of impact or 'Isolated to this component']",
+      "affectedComponents": [
+        { "file": "[path]", "risk": "[high/medium/low]", "samePattern": true }
+      ]
+    }
+  },
 
-**Confirmed**: [date]
+  "fix": {
+    "approach": "[How to fix it]",
+    "acceptanceCriteria": [
+      "[Specific criterion]",
+      "No regression in related functionality",
+      "Blast radius addressed (if applicable)"
+    ]
+  },
 
-**Steps**:
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
+  "learnings": {
+    "patternToAvoid": "[What caused this]",
+    "patternToUse": "[Better approach]",
+    "architectureMemoryWorthy": false
+  },
 
-**Environment**: [Browser/OS/state if relevant]
+  "resolution": {
+    "status": "open",
+    "fixedIn": null,
+    "verifiedBy": null,
+    "verifiedDate": null
+  },
 
-**Minimum repro**: [Simplest case that triggers bug]
+  "references": {
+    "stack": ".shipkit/stack.json",
+    "codebaseIndex": ".shipkit/codebase-index.json",
+    "relatedSpecs": [],
+    "relatedBugs": []
+  },
 
----
-
-## Expected vs Actual
-
-**Expected**: [What should happen]
-
-**Actual**: [What happens instead]
-
----
-
-## Investigation Findings
-
-### Code Path
-- Entry: [where it starts]
-- Failure point: [where it goes wrong]
-- Relevant files: [file:line references]
-
-### Root Cause (5 Whys)
-1. [Symptom] → because
-2. [That] → because
-3. [That] → because
-4. **Root**: [Actual cause]
-
-### Blast Radius
-- [Other affected code/features]
-- [Or "Isolated to this component"]
-
----
-
-## Fix
-
-### Approach
-[How to fix it]
-
-### Acceptance Criteria
-- [ ] [Specific criterion]
-- [ ] No regression in related functionality
-- [ ] Blast radius addressed (if applicable)
-
----
-
-## Learnings
-
-**Pattern to avoid**: [What caused this]
-
-**Pattern to use**: [Better approach]
-
----
-
-## Resolution
-
-**Status**: Open
-**Fixed in**: [version/commit - when resolved]
-**Verified**: [/shipkit-verify or manual - when done]
+  "nextSteps": [
+    "[Suggested next actions]",
+    "/shipkit-verify after implementation"
+  ]
+}
 ```
+
+**See `references/example.json` for a complete realistic example.**
 
 ---
 
@@ -299,8 +332,8 @@ Bugs (X) - Investigated & Spec'd:
 ┌─────────────────────────────────┬──────────┬─────────────────────────────┐
 │ Spec                            │ Severity │ Root Cause                  │
 ├─────────────────────────────────┼──────────┼─────────────────────────────┤
-│ bug-save-button.md              │ High     │ Race condition in async     │
-│ bug-login-timeout.md            │ Medium   │ Missing error handler       │
+│ bug-save-button.json            │ High     │ Race condition in async     │
+│ bug-login-timeout.json          │ Medium   │ Missing error handler       │
 └─────────────────────────────────┴──────────┴─────────────────────────────┘
 
 Feature Requests (Y) - Route to /shipkit-spec:
@@ -324,24 +357,97 @@ Next Steps:
 
 ## Bug Spec Template (Minimal)
 
-For obvious bugs that don't need deep investigation:
+For obvious bugs that don't need deep investigation, use the same JSON schema but with minimal fields:
 
-```markdown
-# Bug: [Brief Description]
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "bug-spec",
+  "version": "1.0",
+  "lastUpdated": "[ISO 8601 timestamp]",
+  "source": "shipkit-feedback-bug",
 
-**Status**: Active | **Severity**: [Level] | **Source**: [Source]
+  "summary": {
+    "name": "[Brief Description]",
+    "status": "active",
+    "severity": "[level]",
+    "feedbackSource": "[source]",
+    "rootCauseType": "[type]",
+    "affectedComponentCount": 0,
+    "hasBlastRadius": false
+  },
 
-## Problem
-[What's broken]
+  "metadata": {
+    "id": "bug-[name]",
+    "created": "[YYYY-MM-DD]",
+    "updated": "[YYYY-MM-DD]",
+    "author": "shipkit-feedback-bug",
+    "feedbackDate": "[YYYY-MM-DD]"
+  },
 
-## Reproduction
-1. [Steps]
+  "originalFeedback": {
+    "quote": "[Original report]",
+    "source": "[source]"
+  },
 
-## Root Cause
-[Why it happens - even simple bugs should have this]
+  "problem": {
+    "statement": "[What's broken]",
+    "expectedBehavior": "[Expected]",
+    "actualBehavior": "[Actual]"
+  },
 
-## Fix When
-- [ ] [Acceptance criterion]
+  "reproduction": {
+    "confirmed": "[YYYY-MM-DD]",
+    "steps": ["[Steps]"],
+    "minimumRepro": "[Minimum repro]"
+  },
+
+  "investigation": {
+    "codePath": {
+      "entry": "[Entry point]",
+      "failurePoint": "[Failure point]",
+      "relevantFiles": []
+    },
+    "rootCause": {
+      "fiveWhys": [
+        { "level": 1, "symptom": "[Symptom]", "because": "[Root cause]" }
+      ],
+      "conclusion": "[Why it happens - even simple bugs should have this]",
+      "type": "[type]"
+    },
+    "blastRadius": {
+      "description": "Isolated to this component",
+      "affectedComponents": []
+    }
+  },
+
+  "fix": {
+    "approach": "[How to fix]",
+    "acceptanceCriteria": ["[Acceptance criterion]"]
+  },
+
+  "learnings": {
+    "patternToAvoid": "[Pattern]",
+    "patternToUse": "[Better pattern]",
+    "architectureMemoryWorthy": false
+  },
+
+  "resolution": {
+    "status": "open",
+    "fixedIn": null,
+    "verifiedBy": null,
+    "verifiedDate": null
+  },
+
+  "references": {
+    "stack": ".shipkit/stack.json",
+    "codebaseIndex": ".shipkit/codebase-index.json",
+    "relatedSpecs": [],
+    "relatedBugs": []
+  },
+
+  "nextSteps": ["/shipkit-verify after fix"]
+}
 ```
 
 ---
@@ -364,7 +470,7 @@ For obvious bugs that don't need deep investigation:
 
 - `.shipkit/stack.json` - Tech context for investigation
 - `.shipkit/codebase-index.json` - Navigate codebase efficiently
-- `.shipkit/specs/active/*.md` - Check for duplicates
+- `.shipkit/specs/active/*.json` - Check for duplicates
 
 ---
 
@@ -373,11 +479,11 @@ For obvious bugs that don't need deep investigation:
 **Write Strategy: CREATE**
 
 **Creates**:
-- `.shipkit/specs/active/bug-[name].md` - Investigated bug spec per confirmed bug
+- `.shipkit/specs/active/bug-[name].json` - Investigated bug spec per confirmed bug (see `references/output-schema.md`)
 
 **Lifecycle**:
 - Active bugs live in `specs/active/`
-- When fixed, move to `specs/implemented/` with resolution notes
+- When fixed, update `resolution.status` to `"resolved"` and move to `specs/implemented/`
 
 ---
 

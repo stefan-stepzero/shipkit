@@ -16,6 +16,7 @@ const path = require('path');
 const url = require('url');
 
 const PORT = process.env.MISSION_CONTROL_PORT || 7777;
+const SERVER_VERSION = '1.1.0';
 
 // Hub paths - server runs from ~/.shipkit-mission-control/server/
 const HUB_ROOT = path.join(__dirname, '..');
@@ -45,6 +46,7 @@ const events = []; // Recent events (capped at 1000)
 const codebases = new Map(); // projectPath -> codebase analytics
 const MAX_EVENTS = 1000;
 const INSTANCE_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+const STALE_REMOVE_TIMEOUT = 60 * 60 * 1000; // 1 hour
 
 // Skill relationship knowledge for recommendations
 const SKILL_KNOWLEDGE = {
@@ -97,6 +99,63 @@ const SKILL_KNOWLEDGE = {
     "shipkit-preflight": {
         staleAfterDays: 7,
         category: "quality"
+    },
+    "shipkit-goals": {
+        suggests: ["shipkit-spec", "shipkit-plan"],
+        staleAfterDays: 14,
+        category: "planning"
+    },
+    "shipkit-why-project": {
+        suggests: ["shipkit-goals", "shipkit-product-discovery"],
+        staleAfterDays: 30,
+        category: "discovery"
+    },
+    "shipkit-product-discovery": {
+        suggests: ["shipkit-spec", "shipkit-ux-audit"],
+        staleAfterDays: 30,
+        category: "discovery"
+    },
+    "shipkit-feedback-bug": {
+        suggests: ["shipkit-plan", "shipkit-test-cases"],
+        staleAfterDays: 7,
+        category: "quality"
+    },
+    "shipkit-prompt-audit": {
+        suggests: ["shipkit-verify"],
+        staleAfterDays: 14,
+        category: "quality"
+    },
+    "shipkit-scale-ready": {
+        suggests: ["shipkit-preflight"],
+        staleAfterDays: 14,
+        category: "quality"
+    },
+    "shipkit-ux-audit": {
+        suggests: ["shipkit-spec"],
+        staleAfterDays: 14,
+        category: "quality"
+    },
+    "shipkit-user-instructions": {
+        staleAfterDays: 3,
+        category: "knowledge"
+    },
+    "shipkit-test-cases": {
+        suggests: ["shipkit-test-relentlessly"],
+        staleAfterDays: 7,
+        category: "quality"
+    },
+    "shipkit-codebase-index": {
+        suggests: ["shipkit-project-context"],
+        staleAfterDays: 7,
+        category: "discovery"
+    },
+    "shipkit-lint-relentlessly": {
+        suggests: ["shipkit-verify"],
+        category: "execution"
+    },
+    "shipkit-implement-independently": {
+        suggests: ["shipkit-verify", "shipkit-test-relentlessly"],
+        category: "execution"
     }
 };
 
@@ -180,11 +239,18 @@ function updateInstance(eventData) {
     // Determine status
     if (event === 'Stop') {
         existing.status = 'stopped';
+        existing.mode = null;
     } else if (event === 'SessionStart') {
         existing.status = 'active';
         existing.toolCount = 0;
+        existing.mode = null;
     } else {
         existing.status = 'active';
+    }
+
+    // Track mode from reporter (e.g. "standby")
+    if (eventData.mode) {
+        existing.mode = eventData.mode;
     }
 
     instances.set(sessionId, existing);
@@ -254,10 +320,21 @@ function updateCodebaseArtifacts(projectPath, artifacts) {
 
     // Merge new artifacts (keyed by filename, e.g. "goals.json")
     for (const [filename, data] of Object.entries(artifacts)) {
+        // Lightweight validation - warn on missing required fields
+        const warnings = [];
+        if (!data.type) warnings.push('missing type');
+        if (!data.version) warnings.push('missing version');
+        if (!data.summary) warnings.push('missing summary');
+
         codebase.artifacts[filename] = {
             ...data,
-            _receivedAt: Date.now()
+            _receivedAt: Date.now(),
+            ...(warnings.length > 0 && { _validationWarnings: warnings })
         };
+
+        if (warnings.length > 0) {
+            console.warn(`Artifact ${filename}: ${warnings.join(', ')}`);
+        }
     }
 
     persistCodebase(codebase);
@@ -401,7 +478,10 @@ function addEvent(eventData) {
 function cleanupInstances() {
     const now = Date.now();
     for (const [sessionId, instance] of instances) {
-        if (now - (instance.lastSeen * 1000) > INSTANCE_TIMEOUT) {
+        const lastSeenMs = instance.lastSeen * 1000;
+        if (now - lastSeenMs > STALE_REMOVE_TIMEOUT) {
+            instances.delete(sessionId);
+        } else if (now - lastSeenMs > INSTANCE_TIMEOUT) {
             instance.status = 'stale';
         }
     }
@@ -411,12 +491,70 @@ function cleanupInstances() {
 setInterval(cleanupInstances, 60000);
 
 /**
+ * Clean up processed command files older than 1 hour
+ */
+const PROCESSED_MAX_AGE = 60 * 60 * 1000; // 1 hour
+
+function cleanupProcessedCommands() {
+    try {
+        if (!fs.existsSync(INBOX_DIR)) return;
+
+        const sessionDirs = fs.readdirSync(INBOX_DIR, { withFileTypes: true });
+        for (const entry of sessionDirs) {
+            if (!entry.isDirectory()) continue;
+
+            const sessionDir = path.join(INBOX_DIR, entry.name);
+            const files = fs.readdirSync(sessionDir);
+
+            for (const file of files) {
+                if (!file.endsWith('.processed')) continue;
+
+                const filePath = path.join(sessionDir, file);
+                try {
+                    const stat = fs.statSync(filePath);
+                    if (Date.now() - stat.mtimeMs > PROCESSED_MAX_AGE) {
+                        fs.unlinkSync(filePath);
+                    }
+                } catch (e) {
+                    // Best effort cleanup
+                }
+            }
+
+            // Remove empty session directories
+            try {
+                const remaining = fs.readdirSync(sessionDir);
+                if (remaining.length === 0) {
+                    fs.rmdirSync(sessionDir);
+                }
+            } catch (e) {
+                // Best effort
+            }
+        }
+    } catch (e) {
+        // Best effort cleanup
+    }
+}
+
+// Run processed cleanup every 10 minutes
+setInterval(cleanupProcessedCommands, 10 * 60 * 1000);
+
+/**
  * Parse JSON body from request
  */
 function parseBody(req) {
     return new Promise((resolve, reject) => {
         let body = '';
-        req.on('data', chunk => body += chunk);
+        let size = 0;
+        const MAX_BODY = 1024 * 1024; // 1MB
+        req.on('data', chunk => {
+            size += chunk.length;
+            if (size > MAX_BODY) {
+                reject(new Error('Body too large'));
+                req.destroy();
+                return;
+            }
+            body += chunk;
+        });
         req.on('end', () => {
             try {
                 resolve(body ? JSON.parse(body) : {});
@@ -471,13 +609,17 @@ async function handleRequest(req, res) {
     try {
         // Health check
         if (pathname === '/health') {
-            sendJson(res, { status: 'ok', uptime: process.uptime() });
+            sendJson(res, { status: 'ok', version: SERVER_VERSION, uptime: process.uptime() });
             return;
         }
 
         // Static files from Vite build (CSS, JS, assets)
         if (pathname.startsWith('/assets/') || pathname === '/vite.svg') {
-            const filePath = path.join(DASHBOARD_DIR, pathname);
+            const filePath = path.resolve(DASHBOARD_DIR, '.' + pathname);
+            if (!filePath.startsWith(path.resolve(DASHBOARD_DIR))) {
+                sendJson(res, { error: 'Forbidden' }, 403);
+                return;
+            }
             if (fs.existsSync(filePath)) {
                 const ext = path.extname(filePath);
                 const mime = MIME_TYPES[ext] || 'application/octet-stream';
@@ -543,16 +685,82 @@ async function handleRequest(req, res) {
                 return;
             }
 
-            // Write command to inbox file
-            const commandFile = path.join(INBOX_DIR, `${sessionId}.json`);
+            // Write command to queue directory: inbox/{sessionId}/{timestamp}.json
+            const sessionDir = path.join(INBOX_DIR, sessionId);
+            if (!fs.existsSync(sessionDir)) {
+                fs.mkdirSync(sessionDir, { recursive: true });
+            }
+
+            const timestamp = Date.now();
+            const commandFile = path.join(sessionDir, `${timestamp}.json`);
             const command = {
                 prompt,
                 source: source || 'Mission Control Dashboard',
-                timestamp: Date.now()
+                timestamp
             };
 
             fs.writeFileSync(commandFile, JSON.stringify(command, null, 2));
-            sendJson(res, { queued: true, sessionId });
+            sendJson(res, { queued: true, sessionId, commandId: String(timestamp) });
+            return;
+        }
+
+        // API: Get command queue for a session
+        if (pathname.startsWith('/api/queue/') && req.method === 'GET') {
+            const sessionId = decodeURIComponent(pathname.replace('/api/queue/', ''));
+            const sessionDir = path.join(INBOX_DIR, sessionId);
+
+            const queue = { pending: [], inflight: [], processed: [] };
+
+            if (fs.existsSync(sessionDir) && fs.statSync(sessionDir).isDirectory()) {
+                try {
+                    const files = fs.readdirSync(sessionDir).sort();
+                    for (const file of files) {
+                        const filePath = path.join(sessionDir, file);
+                        let status, commandId;
+
+                        if (file.endsWith('.json')) {
+                            status = 'pending';
+                            commandId = file.replace('.json', '');
+                        } else if (file.endsWith('.inflight')) {
+                            status = 'inflight';
+                            commandId = file.replace('.inflight', '');
+                        } else if (file.endsWith('.processed')) {
+                            status = 'processed';
+                            commandId = file.replace('.processed', '');
+                        } else {
+                            continue;
+                        }
+
+                        // Read command content
+                        let prompt = '', source = '';
+                        try {
+                            const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+                            prompt = data.prompt || '';
+                            source = data.source || '';
+                        } catch (e) {
+                            // File might be empty or corrupt
+                        }
+
+                        const item = {
+                            commandId,
+                            status,
+                            prompt: prompt.substring(0, 200),
+                            source,
+                            timestamp: parseInt(commandId) || 0
+                        };
+
+                        queue[status].push(item);
+                    }
+                } catch (e) {
+                    // Best effort
+                }
+            }
+
+            sendJson(res, {
+                sessionId,
+                ...queue,
+                total: queue.pending.length + queue.inflight.length + queue.processed.length
+            });
             return;
         }
 
@@ -648,6 +856,8 @@ async function handleRequest(req, res) {
                 source: source || 'claude-analysis',
                 analyzedAt: analyzedAt || new Date().toISOString()
             };
+
+            persistCodebase(codebase);
 
             sendJson(res, { updated: true, projectPath });
             return;
@@ -801,7 +1011,7 @@ function getEmbeddedDashboard() {
 
             container.innerHTML = instances.map(i => \`
                 <div class="instance-card \${i.status}">
-                    <div class="instance-name">\${i.project}</div>
+                    <div class="instance-name">\${i.project}\${i.mode === 'standby' ? ' <span style="color:#fb923c;font-size:11px;background:rgba(251,146,60,0.2);padding:2px 6px;border-radius:3px;margin-left:8px">STANDBY</span>' : ''}</div>
                     <div class="instance-path">\${i.projectPath}</div>
                     <div class="instance-meta">
                         <span>Tools: \${i.toolCount}</span>
@@ -809,7 +1019,7 @@ function getEmbeddedDashboard() {
                         <span>Status: \${i.status}</span>
                     </div>
                     <div class="instance-actions">
-                        <button class="btn" onclick="openInject('\${i.sessionId}', '\${i.project}')">Inject Prompt</button>
+                        <button class="btn" onclick="openInject('\${i.sessionId}', '\${i.project}')">Send Command</button>
                     </div>
                 </div>
             \`).join('');
@@ -876,13 +1086,14 @@ function getEmbeddedDashboard() {
 </html>`;
 }
 
-// Start server - bind to 0.0.0.0 for local network access
+// Start server - bind to localhost by default for security
+// Set MISSION_CONTROL_HOST=0.0.0.0 to allow network access
 const server = http.createServer(handleRequest);
-const HOST = process.env.MISSION_CONTROL_HOST || '0.0.0.0';
+const HOST = process.env.MISSION_CONTROL_HOST || '127.0.0.1';
 
 server.listen(PORT, HOST, () => {
     const networkIP = getLocalIP();
-    console.log(`Mission Control server running`);
+    console.log(`Mission Control v${SERVER_VERSION} running`);
     console.log(`  Local:   http://localhost:${PORT}/`);
     if (networkIP) {
         console.log(`  Network: http://${networkIP}:${PORT}/`);

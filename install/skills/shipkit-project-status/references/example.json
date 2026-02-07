@@ -1,0 +1,132 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "project-status",
+  "version": "1.0",
+  "lastUpdated": "2026-02-07",
+  "source": "shipkit-project-status",
+
+  "summary": {
+    "healthScore": 72,
+    "totalSpecs": 2,
+    "totalPlans": 0,
+    "totalTasks": 5,
+    "gapsFound": 4,
+    "coreFilesPresent": 3,
+    "coreFilesTotal": 4
+  },
+
+  "coreContext": [
+    {
+      "file": "stack.json",
+      "exists": true,
+      "freshness": "aging",
+      "lastModified": "2026-02-05",
+      "sizeBytes": 1240,
+      "notes": "package.json modified more recently"
+    },
+    {
+      "file": "architecture.json",
+      "exists": true,
+      "freshness": "fresh",
+      "lastModified": "2026-02-06",
+      "sizeBytes": 3420,
+      "itemCount": 12,
+      "notes": "12 decisions logged"
+    },
+    {
+      "file": "implementations.json",
+      "exists": true,
+      "freshness": "fresh",
+      "lastModified": "2026-02-07",
+      "sizeBytes": 5100,
+      "itemCount": 23,
+      "notes": "23 components documented"
+    },
+    {
+      "file": "progress.json",
+      "exists": false,
+      "freshness": "missing",
+      "notes": "No session history tracked"
+    }
+  ],
+
+  "workflow": {
+    "specs": {
+      "activeCount": 2,
+      "files": ["specs/active/recipe-sharing.json", "specs/active/user-profile.json"]
+    },
+    "plans": {
+      "count": 0,
+      "files": []
+    },
+    "tasks": {
+      "activeCount": 5,
+      "completedCount": 3
+    }
+  },
+
+  "gaps": [
+    {
+      "id": "stale-stack",
+      "severity": "warning",
+      "category": "freshness",
+      "description": "stack.json is stale (2 days old, package.json modified since)",
+      "suggestedAction": "/shipkit-project-context"
+    },
+    {
+      "id": "missing-progress",
+      "severity": "info",
+      "category": "missing",
+      "description": "progress.json does not exist - no session history tracked",
+      "suggestedAction": "/shipkit-work-memory"
+    },
+    {
+      "id": "undocumented-auth",
+      "severity": "warning",
+      "category": "undocumented",
+      "description": "src/lib/auth.ts (347 lines) not documented in implementations.json",
+      "file": "src/lib/auth.ts",
+      "lineCount": 347,
+      "suggestedAction": "Document component manually"
+    },
+    {
+      "id": "specs-without-plans",
+      "severity": "critical",
+      "category": "workflow-gap",
+      "description": "2 active specs have no corresponding plans",
+      "suggestedAction": "/shipkit-plan"
+    }
+  ],
+
+  "skillUsage": {
+    "totalInvocations": 47,
+    "mostUsed": [
+      { "skill": "shipkit-spec", "count": 12 },
+      { "skill": "shipkit-plan", "count": 8 },
+      { "skill": "shipkit-project-context", "count": 6 }
+    ],
+    "neverUsed": ["shipkit-ux-audit", "shipkit-data-contracts"],
+    "stale": [
+      { "skill": "shipkit-verify", "daysSinceUse": 21, "count": 2 },
+      { "skill": "shipkit-preflight", "daysSinceUse": 18, "count": 1 }
+    ]
+  },
+
+  "recommendations": [
+    {
+      "priority": 1,
+      "action": "/shipkit-project-context",
+      "reason": "Stack context is stale - package.json modified more recently"
+    },
+    {
+      "priority": 2,
+      "action": "/shipkit-plan",
+      "reason": "Active specs (recipe-sharing, user-profile) have no plans"
+    },
+    {
+      "priority": 3,
+      "action": "Document components manually",
+      "reason": "1 large file (>200 LOC) is undocumented"
+    }
+  ]
+}

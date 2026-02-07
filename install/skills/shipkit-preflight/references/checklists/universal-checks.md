@@ -238,6 +238,87 @@ Grep: pattern="error.*userId|error.*requestId|logError"
 
 ---
 
+## External Service Boundaries
+
+When a project integrates external services (LLM APIs, payment providers, storage, email, auth), the operational boundaries of those integrations must be explicitly configured. Without this, the app works in dev but fails unpredictably in production under real latency, load, and platform constraints.
+
+### UNI-EXT-001: External Calls Have Timeout Config
+**Check**: Every external API/SDK call has an explicit timeout
+**Pattern**: HTTP clients configured with timeout, or AbortController/signal used
+**Scan for**:
+```
+# Find external SDK usage
+Grep: pattern="openai|anthropic|gemini|stripe|supabase|resend|sendgrid|clerk|replicate|fetch\("
+      glob="**/src/**/*.{ts,js}"
+
+# Check for timeout configuration nearby
+Grep: pattern="timeout:|timeout=|AbortController|signal:|maxDuration"
+      glob="**/src/**/*.{ts,js}"
+```
+**Pass criteria**: Every file with external calls also has timeout config
+**Fail impact**: Hung call blocks serverless function until platform kills it; user sees blank screen
+**Severity**: 🔴 Blocker (serverless) / 🟡 Warning (long-running server)
+
+### UNI-EXT-002: Resource Limits Configured on External Calls
+**Check**: External calls that generate or return variable-size data have explicit limits
+**Pattern**: LLM calls have `maxTokens`/`maxOutputTokens`/`max_tokens`; file uploads have size limits; pagination on list endpoints
+**Scan for**:
+```
+# LLM token limits
+Grep: pattern="maxTokens|maxOutputTokens|max_tokens|max_completion_tokens"
+      glob="**/*.{ts,js}"
+
+# File upload limits
+Grep: pattern="maxFileSize|fileSizeLimit|sizeLimit|maxBodyLength"
+      glob="**/*.{ts,js}"
+```
+**Pass criteria**: Calls that produce unbounded output have explicit caps
+**Fail impact**: Runaway costs, slow responses, memory exhaustion
+**Severity**: 🟡 Warning
+
+### UNI-EXT-003: Platform Execution Limits Configured
+**Check**: Serverless routes that call external services export platform-appropriate duration limits
+**Pattern**: `export const maxDuration` on Vercel; timeout config on AWS Lambda; Railway timeout setting
+**Scan for**:
+```
+# Vercel maxDuration
+Grep: pattern="export.*maxDuration"
+      glob="**/app/**/route.{ts,js}"
+
+# Check which routes have external calls but no maxDuration
+# (cross-reference UNI-EXT-001 results with route files)
+```
+**Pass criteria**: Routes with external calls have explicit execution duration matching platform plan
+**Fail impact**: Function killed at default timeout (10s Hobby, 60s Pro on Vercel) mid-operation
+**Severity**: 🔴 Blocker (serverless)
+
+**Platform reference** (verify against current docs):
+| Platform | Default | Configurable Max |
+|----------|---------|-----------------|
+| Vercel Hobby | 10s serverless, 30s streaming | 60s (Pro) / 300s streaming |
+| AWS Lambda | 3s | 900s |
+| Cloudflare Workers | 30s | 30s (standard) |
+| Railway | 60s | Configurable |
+
+### UNI-EXT-004: Failure Modes Handled for Each External Service
+**Check**: Each external service has explicit error handling for its failure modes
+**Pattern**: Network timeout → user feedback; rate limit (429) → backoff; auth failure → clear error; service down → graceful degradation
+**Scan for**:
+```
+# External service error handling
+Grep: pattern="429|rate.?limit|too.?many.?requests|ECONNREFUSED|ETIMEDOUT"
+      glob="**/*.{ts,js}"
+
+# Catch blocks near external calls
+Grep: pattern="catch.*{[^}]*(timeout|rate|limit|unavailable)"
+      glob="**/*.{ts,js}"
+```
+**Pass criteria**: External call error paths produce user-visible feedback, not silent failures
+**Fail impact**: User sees broken UI or infinite spinner; no error context for debugging
+**Severity**: 🟡 Warning
+
+---
+
 ## Code Structure & Reuse
 
 ### UNI-REUSE-001: No Duplicate Component Names

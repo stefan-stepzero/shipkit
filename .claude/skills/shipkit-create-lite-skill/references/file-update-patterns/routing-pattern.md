@@ -62,7 +62,7 @@
 
 **Specify context files to load**:
 - What files should Claude read when this skill is invoked?
-- Examples: `stack.md`, `specs/active/*.md`, `architecture.md`, etc.
+- Examples: `stack.json`, `specs/active/*.json`, `architecture.json`, etc.
 
 ---
 
@@ -81,10 +81,10 @@
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
-| "Spec", "Specification", "Requirements", "Feature spec" | `/shipkit-spec` | stack.md, schema.md |
-| "Log decision", "Architectural choice", "Decision record" | `/shipkit-architecture-memory` | architecture.md |
-| "User stories", "Requirements", "Acceptance criteria" | `/shipkit-user-stories` | specs/active/*.md, why.md |  <-- NEW
-| "UX check", "Consistent UI", "UX patterns" | `/shipkit-ux-coherence` | implementations.md |
+| "Spec", "Specification", "Requirements", "Feature spec" | `/shipkit-spec` | stack.json, schema.json |
+| "Log decision", "Architectural choice", "Decision record" | `/shipkit-architecture-memory` | architecture.json |
+| "User stories", "Requirements", "Acceptance criteria" | `/shipkit-user-stories` | specs/active/*.json, why.json |  <-- NEW
+| "UX check", "Consistent UI", "UX patterns" | `/shipkit-ux-coherence` | implementations.json |
 ```
 
 ---
@@ -102,9 +102,9 @@
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
-| "API docs", "Document endpoints", "API reference" | `/shipkit-api-documentation` | implementations.md, routes/*.ts |  <-- NEW
-| "Document component", "Component docs", "How this works" | `/shipkit-component-knowledge` | implementations.md |
-| "Document route", "Route docs", "Endpoint docs" | `/shipkit-route-knowledge` | implementations.md, routes/*.ts |
+| "API docs", "Document endpoints", "API reference" | `/shipkit-api-documentation` | implementations.json, routes/*.ts |  <-- NEW
+| "Document component", "Component docs", "How this works" | `/shipkit-component-knowledge` | implementations.json |
+| "Document route", "Route docs", "Endpoint docs" | `/shipkit-route-knowledge` | implementations.json, routes/*.ts |
 ```
 
 ---
@@ -142,9 +142,9 @@
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
-| "Create plan", "Implementation plan", "How to build" | `/shipkit-plan` | specs/active/*.md, stack.md |
-| "Refactor", "Improve code", "Clean up" | `/shipkit-refactor` | architecture.md, implementations.md |  <-- NEW
-| "Implement", "Build feature", "Code this", "Start coding" | `/shipkit-implement` | plans/*.md, specs/active/*.md |
+| "Create plan", "Implementation plan", "How to build" | `/shipkit-plan` | specs/active/*.json, stack.json |
+| "Refactor", "Improve code", "Clean up" | `/shipkit-refactor` | architecture.json, implementations.json |  <-- NEW
+| "Implement", "Build feature", "Code this", "Start coding" | `/shipkit-implement` | plans/active/*.json, specs/active/*.json |
 ```
 
 ---
@@ -162,8 +162,8 @@
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
-| "Review code", "Check quality", "Code feedback" | `/shipkit-code-review` | git diff, architecture.md |  <-- NEW
-| "Quality check", "Ready to ship?", "Pre-launch" | `/shipkit-quality-confidence` | specs/active/*.md, implementations.md |
+| "Review code", "Check quality", "Code feedback" | `/shipkit-code-review` | git diff, architecture.json |  <-- NEW
+| "Quality check", "Ready to ship?", "Pre-launch" | `/shipkit-quality-confidence` | specs/active/*.json, implementations.json |
 | "Debug", "Fix bug", "Something's wrong" | `/shipkit-debug-systematically` | None (systematic process) |
 ```
 
@@ -174,15 +174,15 @@
 **Common patterns**:
 
 **Always read if exists**:
-- `stack.md` - Tech stack context
-- `architecture.md` - Past decisions
+- `stack.json` - Tech stack context
+- `architecture.json` - Past decisions
 
 **Skill-specific**:
-- Spec skills → Read `specs/active/*.md`
-- Plan skills → Read `specs/active/*.md`, `stack.md`
-- Implement skills → Read `plans/*.md`, `specs/active/*.md`
-- Documentation skills → Read `implementations.md`
-- UX skills → Read `implementations.md`, `specs/active/*.md`
+- Spec skills → Read `specs/active/*.json`
+- Plan skills → Read `specs/active/*.json`, `stack.json`
+- Implement skills → Read `plans/active/*.json`, `specs/active/*.json`
+- Documentation skills → Read `implementations.json`
+- UX skills → Read `implementations.json`, `specs/active/*.json`
 
 **None**:
 - Process/methodology skills (implement, debug)
@@ -216,10 +216,10 @@
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
-| "Spec", "Specification", "Requirements" | `/shipkit-spec` | stack.md, schema.md |
-| "Log decision", "Architectural choice" | `/shipkit-architecture-memory` | architecture.md |
-| "UX check", "Consistent UI" | `/shipkit-ux-coherence` | implementations.md |
-| "Types", "Schema", "Data model" | `/shipkit-data-consistency` | types.md, schema.md |
+| "Spec", "Specification", "Requirements" | `/shipkit-spec` | stack.json, schema.json |
+| "Log decision", "Architectural choice" | `/shipkit-architecture-memory` | architecture.json |
+| "UX check", "Consistent UI" | `/shipkit-ux-coherence` | implementations.json |
+| "Types", "Schema", "Data model" | `/shipkit-data-consistency` | types.json, schema.json |
 ```
 
 **After** (adding shipkit-user-stories):
@@ -228,11 +228,11 @@
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
-| "Spec", "Specification", "Requirements" | `/shipkit-spec` | stack.md, schema.md |
-| "Log decision", "Architectural choice" | `/shipkit-architecture-memory` | architecture.md |
-| "User stories", "Requirements list", "Acceptance criteria" | `/shipkit-user-stories` | specs/active/*.md, why.md |  <-- NEW
-| "UX check", "Consistent UI" | `/shipkit-ux-coherence` | implementations.md |
-| "Types", "Schema", "Data model" | `/shipkit-data-consistency` | types.md, schema.md |
+| "Spec", "Specification", "Requirements" | `/shipkit-spec` | stack.json, schema.json |
+| "Log decision", "Architectural choice" | `/shipkit-architecture-memory` | architecture.json |
+| "User stories", "Requirements list", "Acceptance criteria" | `/shipkit-user-stories` | specs/active/*.json, why.json |  <-- NEW
+| "UX check", "Consistent UI" | `/shipkit-ux-coherence` | implementations.json |
+| "Types", "Schema", "Data model" | `/shipkit-data-consistency` | types.json, schema.json |
 ```
 
 ---

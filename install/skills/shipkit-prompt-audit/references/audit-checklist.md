@@ -118,6 +118,13 @@ Detailed checks per dimension with IDs, severity, scan methods, and pass criteri
 **Fail**: `any` types between stages, or type assertions without validation
 **Fix**: Use typed interfaces for inter-stage data
 
+### PA-CHN-004: Upstream Knowledge Gap
+**Severity**: Should Fix (Critical for recommendation/advisory pipelines)
+**Scan**: In multi-stage pipelines, identify the earliest "context gathering" or "intelligence" stage. Check what questions it asks vs. what downstream stages need. Look for downstream negative constraints ("don't recommend X", "exclude Y") — these often indicate the upstream stage failed to surface that knowledge.
+**Pass**: Early knowledge stages ask for current conditions, constraints, and risks — not just attractions/features/content. Downstream stages don't need compensating negative constraints.
+**Fail**: Early stage asks for "best X" or "popular Y" (generation framing) instead of "current conditions, closures, risks for Y" (research framing). Downstream stages have bolted-on exclusions to compensate.
+**Fix**: Reframe the upstream knowledge stage to ask the right questions. "What are current conditions and constraints?" instead of "What are the best features?" A small reframe at the source eliminates fragile downstream patches.
+
 ---
 
 ## Dimension 5: Cache Boundaries (PA-CAC)
@@ -225,6 +232,13 @@ Detailed checks per dimension with IDs, severity, scan methods, and pass criteri
 **Pass**: Complex formats have 1-2 examples
 **Fail**: Expects complex nested JSON with no example
 **Fix**: Add a few-shot example showing expected output shape
+
+### PA-CON-003: Task Frame Mode Mismatch
+**Severity**: Should Fix (Critical for real-world recommendation pipelines)
+**Scan**: Read each prompt's primary task verb. Classify as generation ("generate", "create", "suggest", "list"), evaluation ("evaluate", "review", "check", "verify", "assess"), or research ("research", "investigate", "what are current conditions"). Then determine: does the cognitive mode match what the pipeline needs from this stage?
+**Pass**: Task verb aligns with intended stage purpose — generation stages generate, evaluation stages evaluate, research stages research
+**Fail**: A stage meant to gather current knowledge uses generation framing ("generate a summary of destinations") instead of research framing ("research current conditions and constraints for this destination")
+**Fix**: Reframe the task verb to activate the appropriate cognitive mode. Generation mode completes patterns from training data. Evaluation mode activates critical analysis. Research mode activates knowledge retrieval. A small verb change upstream often eliminates the need for downstream constraints.
 
 ---
 

@@ -26,6 +26,15 @@ const ENTITY_COLORS: Record<string, string> = {
   default: '#888',
 }
 
+const PROVIDER_COLORS: Record<string, string> = {
+  OpenAI: '#10a37f',
+  Anthropic: '#d4a574',
+  Gemini: '#4285f4',
+  LangChain: '#1c3c3c',
+  'Vercel AI': '#000',
+  default: '#888',
+}
+
 interface ArtifactGraphProps {
   data: ArtifactData
 }
@@ -39,6 +48,8 @@ export function ArtifactGraph({ data }: ArtifactGraphProps) {
         return buildContractsGraph(data)
       case 'product-discovery':
         return buildDiscoveryGraph(data)
+      case 'prompt-audit':
+        return buildPromptAuditGraph(data)
       default:
         return { nodes: [], edges: [] }
     }
@@ -337,4 +348,193 @@ function buildDiscoveryGraph(data: ArtifactData): { nodes: Node[]; edges: Edge[]
   })
 
   return { nodes, edges }
+}
+
+function buildPromptAuditGraph(data: ArtifactData): { nodes: Node[]; edges: Edge[] } {
+  const pipelines = (data as Record<string, unknown>).pipelines as Array<{
+    id: string; name: string; type: string
+    stages: Array<{ id: string; promptId: string; provider: string; purpose: string; location: string }>
+    edges: Array<{ id: string; source: string; target: string; dataFlow: string; validated: boolean }>
+    issues?: string[]
+  }> | undefined
+
+  const prompts = (data as Record<string, unknown>).prompts as Array<{
+    id: string; location: string; provider: string; purpose: string; pipelineType: string; score: number
+    issues: Array<{ id: string; severity: string }>
+  }> | undefined
+
+  if (!pipelines?.length && !prompts?.length) return { nodes: [], edges: [] }
+
+  const nodes: Node[] = []
+  const edges: Edge[] = []
+
+  // Collect prompt IDs referenced by pipeline stages
+  const pipelinePromptIds = new Set<string>()
+  pipelines?.forEach(p => p.stages.forEach(s => pipelinePromptIds.add(s.promptId)))
+
+  // Render each pipeline as connected stages
+  let pipelineOffsetY = 0
+  pipelines?.forEach((pipeline) => {
+    const hasIssues = pipeline.issues && pipeline.issues.length > 0
+    const pipelineColor = hasIssues ? '#fb923c' : '#4ade80'
+
+    // Pipeline label node
+    nodes.push({
+      id: `${pipeline.id}-label`,
+      position: { x: 0, y: pipelineOffsetY },
+      data: {
+        label: (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontWeight: 700, color: pipelineColor, fontSize: 13 }}>{pipeline.name}</div>
+            <div style={{ fontSize: 10, color: '#888', marginTop: 2 }}>{pipeline.type} pipeline</div>
+          </div>
+        ),
+      },
+      style: {
+        border: `1px dashed ${pipelineColor}60`,
+        borderRadius: 8,
+        padding: 10,
+        background: `${pipelineColor}08`,
+        minWidth: 180,
+      },
+      selectable: false,
+      draggable: true,
+    })
+
+    // Stage nodes
+    const stageY = pipelineOffsetY + 80
+    pipeline.stages.forEach((stage, si) => {
+      const providerColor = PROVIDER_COLORS[stage.provider] || PROVIDER_COLORS.default
+      const scoreInfo = getPromptScore(prompts, stage.promptId)
+
+      nodes.push({
+        id: stage.id,
+        position: { x: si * 240 + 40, y: stageY },
+        data: {
+          label: (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontWeight: 600, color: providerColor, fontSize: 12 }}>{stage.purpose}</div>
+              <div style={{ fontSize: 10, color: '#888', marginTop: 4 }}>{stage.provider}</div>
+              <div style={{ fontSize: 9, color: '#666', marginTop: 2, fontFamily: 'monospace' }}>{stage.location}</div>
+              {scoreInfo && (
+                <div style={{ fontSize: 10, color: scoreInfo.color, marginTop: 4, fontWeight: 600 }}>
+                  score: {scoreInfo.score}
+                </div>
+              )}
+            </div>
+          ),
+        },
+        style: {
+          border: `2px solid ${providerColor}`,
+          borderRadius: 12,
+          padding: 12,
+          background: '#1a1a2e',
+          minWidth: 180,
+        },
+      })
+    })
+
+    // Data flow edges — green if validated, red+animated if not
+    pipeline.edges.forEach(e => {
+      const edgeColor = e.validated ? '#4ade80' : '#f87171'
+      edges.push({
+        id: e.id,
+        source: e.source,
+        target: e.target,
+        label: `${e.dataFlow}${e.validated ? ' \u2713' : ' \u26A0'}`,
+        animated: !e.validated,
+        style: { stroke: edgeColor },
+        labelStyle: { fill: edgeColor, fontSize: 10 },
+      })
+    })
+
+    // Dashed connector from pipeline label to first stage
+    if (pipeline.stages.length > 0) {
+      edges.push({
+        id: `${pipeline.id}-start`,
+        source: `${pipeline.id}-label`,
+        target: pipeline.stages[0].id,
+        style: { stroke: '#444', strokeDasharray: '4 4' },
+      })
+    }
+
+    pipelineOffsetY += 240
+  })
+
+  // Standalone single-stage prompts not part of any pipeline
+  const standalonePrompts = prompts?.filter(p => p.pipelineType === 'single' && !pipelinePromptIds.has(p.id)) || []
+  if (standalonePrompts.length > 0) {
+    nodes.push({
+      id: 'standalone-label',
+      position: { x: 0, y: pipelineOffsetY },
+      data: {
+        label: (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontWeight: 700, color: '#888', fontSize: 13 }}>Standalone Prompts</div>
+            <div style={{ fontSize: 10, color: '#666', marginTop: 2 }}>{standalonePrompts.length} single-stage</div>
+          </div>
+        ),
+      },
+      style: {
+        border: '1px dashed #44444460',
+        borderRadius: 8,
+        padding: 10,
+        background: '#88880808',
+        minWidth: 180,
+      },
+      selectable: false,
+      draggable: true,
+    })
+
+    standalonePrompts.forEach((prompt, pi) => {
+      const providerColor = PROVIDER_COLORS[prompt.provider] || PROVIDER_COLORS.default
+      const hasCritical = prompt.issues.some(i => i.severity === 'critical')
+      const borderColor = hasCritical ? '#f87171' : providerColor
+
+      nodes.push({
+        id: `standalone-${prompt.id}`,
+        position: { x: pi * 220 + 40, y: pipelineOffsetY + 80 },
+        data: {
+          label: (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontWeight: 600, color: providerColor, fontSize: 12 }}>{prompt.purpose}</div>
+              <div style={{ fontSize: 10, color: '#888', marginTop: 4 }}>{prompt.provider}</div>
+              <div style={{ fontSize: 9, color: '#666', marginTop: 2, fontFamily: 'monospace' }}>{prompt.location}</div>
+              <div style={{
+                fontSize: 10, marginTop: 4, fontWeight: 600,
+                color: prompt.score >= 8 ? '#4ade80' : prompt.score >= 5 ? '#fb923c' : '#f87171',
+              }}>
+                score: {prompt.score}
+              </div>
+              {prompt.issues.length > 0 && (
+                <div style={{ fontSize: 9, color: '#f87171', marginTop: 2 }}>
+                  {prompt.issues.length} issue{prompt.issues.length > 1 ? 's' : ''}
+                </div>
+              )}
+            </div>
+          ),
+        },
+        style: {
+          border: `2px solid ${borderColor}`,
+          borderRadius: 12,
+          padding: 12,
+          background: '#1a1a2e',
+          minWidth: 160,
+        },
+      })
+    })
+  }
+
+  return { nodes, edges }
+}
+
+/** Look up a prompt's score by ID for coloring stage nodes */
+function getPromptScore(
+  prompts: Array<{ id: string; score: number }> | undefined,
+  promptId: string
+): { score: number; color: string } | null {
+  const prompt = prompts?.find(p => p.id === promptId)
+  if (!prompt) return null
+  const color = prompt.score >= 8 ? '#4ade80' : prompt.score >= 5 ? '#fb923c' : '#f87171'
+  return { score: prompt.score, color }
 }

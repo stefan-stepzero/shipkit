@@ -1,0 +1,190 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "architecture",
+  "version": "1.0",
+  "lastUpdated": "2025-01-25T14:30:00Z",
+  "source": "shipkit-architecture-memory",
+  "summary": {
+    "totalNodes": 5,
+    "totalEdges": 4,
+    "totalDecisions": 4,
+    "totalConstraints": 1,
+    "layers": ["frontend", "api", "database", "infrastructure"],
+    "lastDecision": "Add Redis Caching Layer"
+  },
+  "nodes": [
+    {
+      "id": "next-app",
+      "label": "Next.js App",
+      "type": "service",
+      "layer": "frontend",
+      "description": "Main web application with App Router",
+      "techStack": ["Next.js 14", "React 18", "TypeScript"],
+      "status": "active"
+    },
+    {
+      "id": "api-gateway",
+      "label": "API Gateway",
+      "type": "service",
+      "layer": "api",
+      "description": "Server Actions and API routes",
+      "techStack": ["Next.js Server Actions", "Zod"],
+      "status": "active"
+    },
+    {
+      "id": "postgres-db",
+      "label": "PostgreSQL Database",
+      "type": "database",
+      "layer": "database",
+      "description": "Primary data store",
+      "techStack": ["PostgreSQL 15", "Drizzle ORM"],
+      "status": "active"
+    },
+    {
+      "id": "redis-cache",
+      "label": "Redis Cache",
+      "type": "cache",
+      "layer": "infrastructure",
+      "description": "Session and query result caching layer",
+      "techStack": ["Redis 7", "ioredis"],
+      "status": "active"
+    },
+    {
+      "id": "auth-provider",
+      "label": "Auth Provider",
+      "type": "external",
+      "layer": "external",
+      "description": "Authentication service",
+      "techStack": ["NextAuth.js", "OAuth 2.0"],
+      "status": "active"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "source": "next-app",
+      "target": "api-gateway",
+      "label": "Server Actions",
+      "type": "sync",
+      "protocol": "Internal"
+    },
+    {
+      "id": "edge-2",
+      "source": "api-gateway",
+      "target": "postgres-db",
+      "label": "Drizzle queries",
+      "type": "sync",
+      "protocol": "TCP"
+    },
+    {
+      "id": "edge-3",
+      "source": "api-gateway",
+      "target": "redis-cache",
+      "label": "Cache reads/writes",
+      "type": "sync",
+      "protocol": "TCP"
+    },
+    {
+      "id": "edge-4",
+      "source": "next-app",
+      "target": "auth-provider",
+      "label": "OAuth flow",
+      "type": "sync",
+      "protocol": "HTTPS"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dec-1",
+      "title": "Use PostgreSQL for Primary Database",
+      "date": "2025-01-10",
+      "status": "decided",
+      "decisionType": "architectural",
+      "chosen": "PostgreSQL as primary relational database",
+      "alternatives": [
+        { "name": "MongoDB", "reason": "Document model poor fit for relational data" },
+        { "name": "MySQL", "reason": "PostgreSQL has better JSON support and extensions" }
+      ],
+      "rationale": "Relational data model fits our domain. Strong consistency and ACID compliance required.",
+      "affectedNodes": ["postgres-db", "api-gateway"],
+      "implications": [
+        "Need migration tooling (Drizzle Kit)",
+        "Schema-first development approach",
+        "Strong consistency guarantees available"
+      ],
+      "supersedes": null,
+      "tradeoffs": "Less flexible schema evolution, but stronger data integrity"
+    },
+    {
+      "id": "dec-2",
+      "title": "Server Actions for Mutations",
+      "date": "2025-01-12",
+      "status": "decided",
+      "decisionType": "architectural",
+      "chosen": "Use Server Actions instead of API routes for all data mutations",
+      "alternatives": [
+        { "name": "API routes", "reason": "More boilerplate, separate files, manual revalidation" },
+        { "name": "tRPC", "reason": "Additional dependency, steeper learning curve" }
+      ],
+      "rationale": "Co-location with components, automatic revalidation, simpler error handling",
+      "affectedNodes": ["next-app", "api-gateway"],
+      "implications": [
+        "Requires Next.js 14+",
+        "Server components by default",
+        "Simpler form handling with useFormState"
+      ],
+      "supersedes": null,
+      "tradeoffs": "Tighter coupling to Next.js framework, but significant DX improvement"
+    },
+    {
+      "id": "dec-3",
+      "title": "Validate at API Boundary Only",
+      "date": "2025-01-15",
+      "status": "decided",
+      "decisionType": "operational",
+      "chosen": "Input validation happens at API route entry points only, not in internal functions",
+      "alternatives": [
+        { "name": "Validate everywhere", "reason": "Redundant, slower, inconsistent error messages" },
+        { "name": "Validate at DB layer", "reason": "Too late, poor error messages" }
+      ],
+      "rationale": "Single validation point prevents inconsistent error handling. Internal functions trust already-validated data.",
+      "affectedNodes": ["api-gateway"],
+      "implications": [
+        "All API routes use Zod schemas",
+        "Internal service functions accept typed parameters without re-validation",
+        "Never pass raw user input to internal functions"
+      ],
+      "supersedes": null,
+      "tradeoffs": "Risk of invalid data if validation is bypassed, but simpler and faster internal code"
+    },
+    {
+      "id": "dec-4",
+      "title": "Add Redis Caching Layer",
+      "date": "2025-01-25",
+      "status": "decided",
+      "decisionType": "architectural",
+      "chosen": "Use Redis as a caching layer between API gateway and database",
+      "alternatives": [
+        { "name": "In-memory cache", "reason": "Lost on restart, not shared across instances" },
+        { "name": "No caching", "reason": "Database queries too slow for performance target" }
+      ],
+      "rationale": "Need sub-100ms response times for frequently accessed data. Redis provides shared cache across instances.",
+      "affectedNodes": ["api-gateway", "redis-cache", "postgres-db"],
+      "implications": [
+        "Cache invalidation strategy needed",
+        "Redis infrastructure provisioning required",
+        "Connection pooling configuration"
+      ],
+      "supersedes": null,
+      "tradeoffs": "Additional infrastructure complexity, but necessary for performance targets"
+    }
+  ],
+  "constraints": [
+    {
+      "id": "con-1",
+      "description": "Must support 10k concurrent users with sub-100ms API response times",
+      "type": "performance",
+      "affectedNodes": ["api-gateway", "redis-cache", "postgres-db"]
+    }
+  ]
+}

@@ -72,13 +72,25 @@ mkdir -p ~/.shipkit-mission-control/.shipkit/mission-control/codebases
 mkdir -p ~/.shipkit-mission-control/.shipkit/mission-control/inbox
 ```
 
-### Step 2: Ensure Server and Dashboard Files Exist
+### Step 2: Ensure Server Files Are Current
 
-Check if `~/.shipkit-mission-control/server/index.js` exists.
+The server is versioned via `SERVER_VERSION` in `index.js`. Compare source vs hub to decide whether to copy.
 
-If NOT, copy from Shipkit install location:
-- `install/mission-control/server/` → `~/.shipkit-mission-control/server/`
-- `install/mission-control/dashboard/dist/` → `~/.shipkit-mission-control/dashboard/dist/`
+1. **Read source version:** Extract the `SERVER_VERSION` value from `install/mission-control/server/index.js` in the Shipkit repo.
+
+2. **If hub doesn't exist** (`~/.shipkit-mission-control/server/index.js` missing):
+   - Copy everything fresh (current behavior):
+     - `install/mission-control/server/` → `~/.shipkit-mission-control/server/`
+     - `install/mission-control/dashboard/dist/` → `~/.shipkit-mission-control/dashboard/dist/`
+
+3. **If hub exists**, check the installed version:
+   - Try `GET http://localhost:7777/health` — if server is running, read `version` from response JSON.
+   - If server is not running, read `~/.shipkit-mission-control/server/index.js` directly and extract `SERVER_VERSION`.
+   - **If source version > hub version:**
+     - Stop the server if it's running (kill process on port 7777).
+     - Copy fresh files from `install/mission-control/server/` and `install/mission-control/dashboard/dist/` to the hub, overwriting.
+     - Log: `Mission Control hub updated: {old} → {new}`
+   - **If versions match:** Skip copy, proceed to next step.
 
 The dashboard is a React + Vite app. The pre-built `dist/` folder is included in Shipkit. For development:
 ```bash
@@ -93,7 +105,7 @@ If `~/.shipkit-mission-control/.shipkit/mission-control/config.json` doesn't exi
 ```json
 {
   "port": 7777,
-  "host": "0.0.0.0",
+  "host": "127.0.0.1",
   "createdAt": "<current timestamp>",
   "version": "1.0.0"
 }
@@ -107,7 +119,7 @@ Check if Mission Control server is already running:
 curl -s http://localhost:7777/health
 ```
 
-If response is `{"status":"ok"}`, server is running. Skip to Step 6.
+If response includes `"status":"ok"`, server is running. Skip to Step 6.
 
 ### Step 5: Start Server
 
@@ -214,10 +226,10 @@ This returns all tracked codebases with their skill usage data.
 For each codebase in the response:
 
 1. **Read the .shipkit/ context files** (if accessible):
-   - `.shipkit/vision.md` - Project goals
-   - `.shipkit/specs/` - Active specifications
-   - `.shipkit/plans/` - Implementation plans
-   - `.shipkit/implementations.md` - What's been built
+   - `.shipkit/why.json` - Project vision and goals
+   - `.shipkit/specs/active/*.json` - Active specifications
+   - `.shipkit/plans/active/*.json` - Implementation plans
+   - `.shipkit/implementations.json` - What's been built
 
 2. **Analyze skill usage patterns**:
    - Which skills have been used recently?
@@ -352,7 +364,7 @@ lsof -ti:7777 | xargs kill -9
 ### Server won't start
 - Check if port 7777 is in use: `netstat -an | grep 7777`
 - Check Node.js is installed: `node --version`
-- Check server files exist: `~/.claude/mission-control/server/index.js`
+- Check server files exist: `~/.shipkit-mission-control/server/index.js`
 
 ### No instances showing
 - Hooks may not be installed - run `/shipkit-update`
@@ -360,7 +372,7 @@ lsof -ti:7777 | xargs kill -9
 - Verify session has `session_id` in hook input
 
 ### Commands not being received
-- Check inbox file exists: `~/.claude/mission-control/inbox/{session_id}.json`
+- Check inbox file exists: `~/.shipkit-mission-control/.shipkit/mission-control/inbox/{session_id}.json`
 - Verify PreToolUse hook is configured in settings
 
 ---

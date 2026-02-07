@@ -1,25 +1,30 @@
 import { useState } from 'react'
 import type { Codebase, ArtifactData } from '../types'
+import { ARTIFACT_TYPE_ICONS } from '../types'
 import { ArtifactGraph } from './ArtifactGraph'
+import { ArtifactStructuredView } from './ArtifactRenderers'
 
-const ARTIFACT_ICONS: Record<string, string> = {
-  goals: '\uD83C\uDFAF',
-  status: '\uD83D\uDCCA',
-  architecture: '\uD83C\uDFD7\uFE0F',
-  'data-contracts': '\uD83D\uDD17',
-  'product-discovery': '\uD83D\uDC65',
-  'work-memory': '\uD83D\uDCDD',
-  'codebase-index': '\uD83D\uDCC2',
-  stack: '\uD83E\uDDF1',
-  preflight: '\uD83D\uDE80',
-  'scale-readiness': '\uD83D\uDCC8',
-  'prompt-audit': '\uD83D\uDD0D',
-  'user-tasks': '\u2705',
-  coverage: '\uD83E\uDDEA',
+function formatSummaryValue(value: unknown): string {
+  if (value === null || value === undefined) return '\u2014'
+  if (typeof value === 'object') return JSON.stringify(value)
+  return String(value)
 }
 
 // Artifacts that have graph visualization support
-const GRAPH_ARTIFACTS = new Set(['architecture', 'data-contracts', 'product-discovery'])
+const GRAPH_ARTIFACTS = new Set(['architecture', 'data-contracts', 'product-discovery', 'prompt-audit'])
+const STRUCTURED_ARTIFACTS = new Set([
+  'goals', 'preflight', 'project-status', 'plan', 'spec', 'test-coverage',
+  'work-memory', 'scale-readiness', 'bug-spec', 'prompt-audit', 'ux-decisions',
+  'user-tasks', 'project-why', 'codebase-index'
+])
+
+const STALE_THRESHOLD_MS = 7 * 24 * 60 * 60 * 1000 // 7 days
+
+function isStale(lastUpdated: string): boolean {
+  const parsed = Date.parse(lastUpdated)
+  if (isNaN(parsed)) return false
+  return Date.now() - parsed > STALE_THRESHOLD_MS
+}
 
 interface ArtifactsViewProps {
   codebases: Codebase[]
@@ -38,52 +43,70 @@ export function ArtifactsView({ codebases }: ArtifactsViewProps) {
 
   if (codebasesWithArtifacts.length === 0) {
     return (
-      <div className="container-full">
-        <div className="panel">
-          <div className="panel-header">
-            <h2>Artifacts</h2>
-          </div>
-          <div className="panel-body">
-            <div className="empty">
-              <div className="empty-icon">{'\uD83D\uDCE6'}</div>
-              <div className="empty-title">No artifacts received yet</div>
-              <div>
-                Run Shipkit skills in a project to generate .shipkit/*.json artifacts.
-                <br />
-                The reporter hook will automatically send them here.
-              </div>
-            </div>
-          </div>
+      <div className="empty-state">
+        <div className="empty-state-icon">{'\uD83D\uDCE6'}</div>
+        <div className="empty-state-title">No artifacts received yet</div>
+        <div className="empty-state-text">
+          Run Shipkit skills in a project to generate .shipkit/*.json artifacts.
+          The reporter hook will automatically send them here.
         </div>
       </div>
     )
   }
 
+  if (selectedArtifact) {
+    return (
+      <ArtifactDetail
+        codebase={selectedArtifact.codebase}
+        filename={selectedArtifact.filename}
+        data={selectedArtifact.data}
+        onBack={() => setSelectedArtifact(null)}
+      />
+    )
+  }
+
+  // Single codebase (typical case) — show artifact grid directly
+  if (codebasesWithArtifacts.length === 1) {
+    const cb = codebasesWithArtifacts[0]
+    const sortedArtifacts = getSortedArtifacts(cb)
+
+    return (
+      <div className="artifact-grid">
+        {sortedArtifacts.map(([filename, data]) => (
+          <ArtifactCard
+            key={filename}
+            filename={filename}
+            data={data}
+            hasGraph={GRAPH_ARTIFACTS.has(data.type)}
+            stale={isStale(data.lastUpdated)}
+            onClick={() => setSelectedArtifact({
+              codebase: cb.projectName,
+              filename,
+              data,
+            })}
+          />
+        ))}
+      </div>
+    )
+  }
+
+  // Multiple codebases (edge case) — show minimal codebase headers
   return (
-    <div className="container-full">
-      {selectedArtifact ? (
-        <ArtifactDetail
-          codebase={selectedArtifact.codebase}
-          filename={selectedArtifact.filename}
-          data={selectedArtifact.data}
-          onBack={() => setSelectedArtifact(null)}
-        />
-      ) : (
-        codebasesWithArtifacts.map(cb => (
-          <div key={cb.projectPath} style={{ marginBottom: 24 }}>
-            <h2 style={{ fontSize: 18, marginBottom: 12, color: 'var(--text)' }}>
-              {cb.projectName}
-              <span style={{ fontSize: 12, color: 'var(--text-dim)', marginLeft: 12, fontWeight: 'normal' }}>
-                {cb.projectPath}
-              </span>
-            </h2>
+    <div>
+      {codebasesWithArtifacts.map(cb => {
+        const sortedArtifacts = getSortedArtifacts(cb)
+
+        return (
+          <div key={cb.projectPath} className="artifact-codebase-group">
+            <h3 className="artifact-codebase-header">{cb.projectName}</h3>
             <div className="artifact-grid">
-              {Object.entries(cb.artifacts!).map(([filename, data]) => (
+              {sortedArtifacts.map(([filename, data]) => (
                 <ArtifactCard
                   key={filename}
                   filename={filename}
                   data={data}
                   hasGraph={GRAPH_ARTIFACTS.has(data.type)}
+                  stale={isStale(data.lastUpdated)}
                   onClick={() => setSelectedArtifact({
                     codebase: cb.projectName,
                     filename,
@@ -93,37 +116,55 @@ export function ArtifactsView({ codebases }: ArtifactsViewProps) {
               ))}
             </div>
           </div>
-        ))
-      )}
+        )
+      })}
     </div>
   )
+}
+
+/** Sort artifacts by lastUpdated (most recent first), with unparseable dates last. */
+function getSortedArtifacts(cb: Codebase): [string, ArtifactData][] {
+  return Object.entries(cb.artifacts!).sort(([, a], [, b]) => {
+    const aTime = Date.parse(a.lastUpdated)
+    const bTime = Date.parse(b.lastUpdated)
+    if (isNaN(aTime) && isNaN(bTime)) return 0
+    if (isNaN(aTime)) return 1
+    if (isNaN(bTime)) return -1
+    return bTime - aTime
+  })
 }
 
 function ArtifactCard({
   filename,
   data,
   hasGraph,
+  stale,
   onClick,
 }: {
   filename: string
   data: ArtifactData
   hasGraph: boolean
+  stale: boolean
   onClick: () => void
 }) {
-  const icon = ARTIFACT_ICONS[data.type] || '\uD83D\uDCC4'
+  const icon = ARTIFACT_TYPE_ICONS[data.type] || '\uD83D\uDCC4'
   const summary = data.summary || {}
   const summaryEntries = Object.entries(summary).slice(0, 3)
 
   return (
     <div className="artifact-card" onClick={onClick}>
       <div className="artifact-card-header">
-        <span style={{ fontSize: 24 }}>{icon}</span>
-        <div style={{ display: 'flex', gap: 6 }}>
-          <span className="artifact-card-type">{data.type}</span>
+        <span className="artifact-card-icon">{icon}</span>
+        <div className="artifact-card-badges">
+          <span className="badge">{data.type}</span>
           {hasGraph && (
-            <span className="artifact-card-type" style={{ background: 'rgba(74, 222, 128, 0.2)', color: 'var(--accent-green)' }}>
-              graph
-            </span>
+            <span className="badge badge-graph">graph</span>
+          )}
+          {!hasGraph && STRUCTURED_ARTIFACTS.has(data.type) && (
+            <span className="badge badge-view">view</span>
+          )}
+          {stale && (
+            <span className="badge badge-stale">stale</span>
           )}
         </div>
       </div>
@@ -131,15 +172,15 @@ function ArtifactCard({
       <div className="artifact-card-summary">
         {summaryEntries.map(([key, value]) => (
           <div key={key}>
-            <span style={{ color: 'var(--text-dim)' }}>{key}:</span>{' '}
-            {String(value)}
+            <span className="artifact-card-summary-key">{key}:</span>{' '}
+            {formatSummaryValue(value)}
           </div>
         ))}
       </div>
       <div className="artifact-card-meta">
-        <span>v{data.version}</span>
-        <span>{data.lastUpdated}</span>
-        <span>via {data.source}</span>
+        {data.version && <span>v{data.version}</span>}
+        {data.lastUpdated && <span>{data.lastUpdated}</span>}
+        {data.source && <span>via {data.source}</span>}
       </div>
     </div>
   )
@@ -156,73 +197,85 @@ function ArtifactDetail({
   data: ArtifactData
   onBack: () => void
 }) {
-  const [showJson, setShowJson] = useState(false)
   const hasGraph = GRAPH_ARTIFACTS.has(data.type)
+  const hasStructured = STRUCTURED_ARTIFACTS.has(data.type)
+  const hasBothViews = hasGraph && hasStructured
+  const hasRichView = hasGraph || hasStructured
+  const [activeView, setActiveView] = useState<'graph' | 'structured' | 'json'>(
+    hasGraph ? 'graph' : hasStructured ? 'structured' : 'json'
+  )
 
   return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+    <div className="artifact-detail">
+      <div className="artifact-detail-header">
         <button className="btn btn-secondary" onClick={onBack}>
           {'\u2190'} Back
         </button>
-        <div>
-          <h2 style={{ fontSize: 20 }}>{filename}</h2>
-          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+        <div className="artifact-detail-title">
+          <h2>{filename}</h2>
+          <span className="artifact-detail-meta">
             {codebase} &middot; {data.type} &middot; v{data.version}
           </span>
         </div>
-        <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
+        <div className="artifact-detail-toggle">
           {hasGraph && (
             <button
-              className={`btn ${showJson ? 'btn-secondary' : ''}`}
-              onClick={() => setShowJson(false)}
+              className={`btn ${activeView === 'graph' ? '' : 'btn-secondary'}`}
+              onClick={() => setActiveView('graph')}
             >
               Graph
             </button>
           )}
+          {hasBothViews && (
+            <button
+              className={`btn ${activeView === 'structured' ? '' : 'btn-secondary'}`}
+              onClick={() => setActiveView('structured')}
+            >
+              View
+            </button>
+          )}
+          {!hasGraph && hasStructured && (
+            <button
+              className={`btn ${activeView === 'structured' ? '' : 'btn-secondary'}`}
+              onClick={() => setActiveView('structured')}
+            >
+              View
+            </button>
+          )}
           <button
-            className={`btn ${showJson || !hasGraph ? '' : 'btn-secondary'}`}
-            onClick={() => setShowJson(true)}
+            className={`btn ${activeView === 'json' || !hasRichView ? '' : 'btn-secondary'}`}
+            onClick={() => setActiveView('json')}
           >
             JSON
           </button>
         </div>
       </div>
 
-      {/* Summary cards */}
+      {/* Summary stat cards */}
       {data.summary && (
-        <div style={{ display: 'flex', gap: 16, marginBottom: 24, flexWrap: 'wrap' }}>
+        <div className="artifact-detail-summary">
           {Object.entries(data.summary).map(([key, value]) => (
             <div key={key} className="stat">
-              <div className="stat-value" style={{ fontSize: 20 }}>
-                {String(value)}
-              </div>
+              <div className="stat-value">{formatSummaryValue(value)}</div>
               <div className="stat-label">{key}</div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Graph or JSON view */}
-      {showJson || !hasGraph ? (
+      {/* Graph, Structured, or JSON view */}
+      {activeView === 'json' || !hasRichView ? (
         <div className="panel">
           <div className="panel-body">
-            <pre style={{
-              background: 'var(--bg-card)',
-              padding: 16,
-              borderRadius: 8,
-              overflow: 'auto',
-              maxHeight: 600,
-              fontSize: 13,
-              lineHeight: 1.5,
-              color: 'var(--accent-green)',
-            }}>
+            <pre className="artifact-json">
               {JSON.stringify(data, null, 2)}
             </pre>
           </div>
         </div>
-      ) : (
+      ) : activeView === 'graph' && hasGraph ? (
         <ArtifactGraph data={data} />
+      ) : (
+        <ArtifactStructuredView data={data} />
       )}
     </div>
   )

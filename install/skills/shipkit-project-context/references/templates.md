@@ -1,10 +1,10 @@
 # Templates for Project Context Files
 
-Output templates for stack.md, env-requirements.md, and schema.md.
+Output templates for stack.json, env-requirements.md, and schema.json.
 
 ---
 
-## stack.md Template
+## stack.json Template
 
 ```markdown
 # Tech Stack
@@ -139,61 +139,58 @@ Output templates for stack.md, env-requirements.md, and schema.md.
 
 ---
 
-## schema.md Template
+## schema.json Template
 
-```markdown
-# Database Schema
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "schema",
+  "version": "1.0",
+  "lastUpdated": "YYYY-MM-DD",
+  "source": "shipkit-project-context",
 
-**Generated**: [YYYY-MM-DD]
-**Source**: [supabase/migrations/*.sql | prisma/schema.prisma | drizzle/schema.ts]
+  "summary": {
+    "tableCount": 3,
+    "migrationCount": 3,
+    "lastMigration": "20240201_add_subscriptions.sql",
+    "schemaSource": "supabase/migrations/*.sql"
+  },
 
-## Tables
+  "tables": [
+    {
+      "name": "users",
+      "columns": [
+        { "name": "id", "type": "uuid", "constraints": ["PK", "default uuid_generate_v4()"] },
+        { "name": "email", "type": "text", "constraints": ["NOT NULL", "UNIQUE"] },
+        { "name": "created_at", "type": "timestamptz", "constraints": ["NOT NULL", "default now()"] }
+      ],
+      "indexes": [
+        { "name": "users_email_idx", "columns": ["email"] }
+      ]
+    },
+    {
+      "name": "profiles",
+      "columns": [
+        { "name": "id", "type": "uuid", "constraints": ["PK", "FK → users.id"] },
+        { "name": "full_name", "type": "text", "constraints": [] },
+        { "name": "avatar_url", "type": "text", "constraints": [] }
+      ],
+      "indexes": []
+    }
+  ],
 
-### users
+  "relationships": [
+    { "from": "profiles.id", "to": "users.id", "type": "1:1" },
+    { "from": "users.id", "to": "subscriptions.user_id", "type": "1:*" },
+    { "from": "subscriptions.product_id", "to": "products.id", "type": "*:1" }
+  ],
 
-| Column | Type | Constraints |
-|--------|------|-------------|
-| id | uuid | PK, default uuid_generate_v4() |
-| email | text | NOT NULL, UNIQUE |
-| created_at | timestamptz | NOT NULL, default now() |
-
-**Indexes**: `users_email_idx` on (email)
-
----
-
-### profiles
-
-| Column | Type | Constraints |
-|--------|------|-------------|
-| id | uuid | PK, FK → users.id |
-| full_name | text | — |
-| avatar_url | text | — |
-
-**Relationships**:
-- `id` → `users.id` (1:1)
-
----
-
-### [other tables...]
-
-## Relationships Diagram
-
-```
-users 1──1 profiles
-users 1──* subscriptions
-subscriptions *──1 products
-```
-
-## Migration History
-
-| # | File | Description |
-|---|------|-------------|
-| 1 | `20240101_init.sql` | Initial schema |
-| 2 | `20240115_add_profiles.sql` | Add profiles table |
-| 3 | `20240201_add_subscriptions.sql` | Add subscription tables |
-
-**Total migrations**: [count]
-**Last migration**: [filename]
+  "migrations": [
+    { "order": 1, "file": "20240101_init.sql", "description": "Initial schema" },
+    { "order": 2, "file": "20240115_add_profiles.sql", "description": "Add profiles table" },
+    { "order": 3, "file": "20240201_add_subscriptions.sql", "description": "Add subscription tables" }
+  ]
+}
 ```
 
 ---
@@ -232,7 +229,7 @@ Don't fill with placeholder content.
 
 ### Working Patterns Are Key
 
-The Working Patterns section is the most valuable part of stack.md. It tells Claude:
+The Working Patterns section is the most valuable part of stack.json. It tells Claude:
 - What order to wrap providers
 - How to structure new API routes
 - How to name and organize components

@@ -39,7 +39,7 @@ agent: shipkit-researcher-agent
 
 **Optional but helpful**:
 - Architecture decisions: `.shipkit/architecture.json`
-- Implementation docs: `.shipkit/implementations.md`
+- Implementation docs: `.shipkit/implementations.json`
 
 ---
 
@@ -76,7 +76,7 @@ For each pending service in the queue:
 **Why parallel**: Each service fetch is independent - WebFetch calls can run concurrently.
 
 **After agents return**:
-1. Save each service's patterns to `references/[service]-patterns.md`
+1. Save each service's patterns to `references/[service]-patterns.json`
 2. Move all items from Pending to Completed in queue atomically
 3. Skip Step 1 questions (services already identified)
 
@@ -147,7 +147,7 @@ Before claiming any service state, verify with tool calls:
 | Claim | Required Verification |
 |-------|----------------------|
 | "Service in stack.json" | `Grep: pattern="service-name" path=".shipkit/stack.json"` returns match |
-| "Patterns file fresh" | `Read: references/[service]-patterns.md`, parse "Last Updated" as ISO 8601 |
+| "Patterns file fresh" | `Read: references/[service]-patterns.json`, parse "Last Updated" as ISO 8601 |
 | "7 days since update" | Compare parsed date to current date mathematically |
 | "WebFetch succeeded" | Check response contains expected sections (Red Flags, Best Practices) |
 
@@ -160,7 +160,7 @@ Before claiming any service state, verify with tool calls:
    - If matches → proceed with confidence
 
 2. Freshness check:
-   - Read: file_path="references/[service]-patterns.md"
+   - Read: file_path="references/[service]-patterns.json"
    - Extract "Last Updated" timestamp
    - Parse as ISO 8601 (expect YYYY-MM-DDTHH:MM:SSZ)
    - If unparseable → treat as stale, trigger refresh
@@ -189,11 +189,49 @@ Before claiming any service state, verify with tool calls:
 
 ---
 
-### Step 3: Fetch or Load Service Documentation
+### Step 3: Explore Existing Integration Code
+
+**Before fetching external docs, understand how this service is already used in the codebase.**
+
+Fetching generic patterns without knowing existing usage leads to recommendations that conflict with established code or miss project-specific conventions.
+
+**Launch explore agents** — Use the Task tool with `subagent_type: Explore`:
+
+```
+Agent 1 - Existing integration: "Find all existing code that integrates
+with [service]. Look for: API calls, SDK usage, webhook handlers,
+configuration files, environment variables, middleware. Report: what
+integration patterns are already established, what conventions are used
+(error handling, auth, retries), and what files would be affected by changes."
+
+Agent 2 - Ripple effects: "Find code that depends on or consumes data from
+the [service] integration. Look for: components that display service data,
+routes that call service functions, tests that mock the service, types/interfaces
+for service responses. Report: what code would break if the integration
+changes, what contracts exist."
+```
+
+**Launch both agents in parallel** — they are independent searches.
+
+**Synthesize findings** — Before applying external patterns, note:
+- Existing integration patterns that are working (don't recommend replacing them unless flawed)
+- Conventions already established (error handling style, auth flow, naming)
+- Security patterns already in place vs missing
+- Test coverage of existing integration code
+
+**If exploration reveals existing patterns**: Tailor fetched documentation to gaps only. Example: *"Webhook signature validation is already implemented correctly, but API key rotation handling is missing."*
+
+**Token budget**: Each explore agent should return a focused summary (~500 tokens).
+
+**When to skip**: If this is a brand new integration with no existing code for the service.
+
+---
+
+### Step 4: Fetch or Load Service Documentation
 
 **Check documentation freshness before loading**:
 
-1. **Check if reference file exists**: `references/[service]-patterns.md`
+1. **Check if reference file exists**: `references/[service]-patterns.json`
 2. **Check timestamp**: Look for "Last Updated" metadata in file
 3. **Determine if refresh needed**:
    - File doesn't exist → Fetch fresh
@@ -264,15 +302,15 @@ Format as:
 [Extracted patterns from WebFetch]
 ```
 
-**Use Write tool** to save: `references/[service]-patterns.md`
+**Use Write tool** to save: `references/[service]-patterns.json`
 
 ---
 
-### Step 4: Load and Apply Patterns
+### Step 5: Load and Apply Patterns
 
 **After ensuring fresh documentation**, load relevant patterns:
 
-Read `references/[service]-patterns.md` and extract:
+Read `references/[service]-patterns.json` and extract:
 - Red Flags matching the current integration type
 - Security best practices
 - Verification checklist
@@ -379,14 +417,14 @@ Read `references/[service]-patterns.md` and extract:
 **Optional:**
 - `.shipkit/.queues/fetch-integration-docs.md` - Queue of services needing docs
 - `.shipkit/architecture.json` - Architecture decisions affecting integration
-- `references/[service]-patterns.md` - Cached integration patterns (if fresh)
+- `references/[service]-patterns.json` - Cached integration patterns (if fresh)
 
 ---
 
 ## Context Files This Skill Writes
 
 **Creates/Updates:**
-- `references/[service]-patterns.md` - Cached integration patterns per service
+- `references/[service]-patterns.json` - Cached integration patterns per service
   - **Write Strategy:** REPLACE (refreshed when >7 days old)
 
 **Queue Processing:**
@@ -400,9 +438,11 @@ Read `references/[service]-patterns.md` and extract:
 
 Integration Docs is complete when:
 - [ ] Service identified and verified in stack.json
+- [ ] Existing integration code explored (patterns, ripple effects)
+- [ ] Recommendations tailored to gaps (not conflicting with working patterns)
 - [ ] Documentation freshness checked (<7 days = use cached)
 - [ ] Fresh patterns fetched via WebFetch (if needed)
-- [ ] Patterns saved to `references/[service]-patterns.md`
+- [ ] Patterns saved to `references/[service]-patterns.json`
 - [ ] Red flags and best practices extracted for user's integration type
 - [ ] Queue item moved from Pending to Completed (if queue-driven)
 <!-- /SECTION:success-criteria -->

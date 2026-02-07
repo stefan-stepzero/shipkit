@@ -407,7 +407,7 @@
             <h1>⚡ Shipkit <span style="font-size: 0.5em; opacity: 0.8;">v1.7.0</span></h1>
             <div class="stats">
                 <div class="stat">
-                    <span class="stat-number">36</span>
+                    <span class="stat-number">37</span>
                     <span class="stat-label">Skills</span>
                 </div>
                 <div class="stat">
@@ -490,7 +490,7 @@
                         <tr>
                             <td class="trigger">Define project vision & goals</td>
                             <td><span class="skill">/shipkit-why-project</span></td>
-                            <td class="creates">why.md</td>
+                            <td class="creates">why.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Set objectives & priorities</td>
@@ -536,17 +536,17 @@
                         <tr>
                             <td class="trigger">Create Given/When/Then spec</td>
                             <td><span class="skill">/shipkit-spec</span></td>
-                            <td class="creates">specs/active/feature-[name].md</td>
+                            <td class="creates">specs/active/feature-[name].json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Process feedback into investigated bug specs</td>
                             <td><span class="skill">/shipkit-feedback-bug</span></td>
-                            <td class="creates">specs/active/bug-[name].md</td>
+                            <td class="creates">specs/active/bug-[name].json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Plan implementation steps</td>
                             <td><span class="skill">/shipkit-plan</span></td>
-                            <td class="creates">plans/active/[name]-plan.md</td>
+                            <td class="creates">plans/active/[name].json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Create quick UI mockup</td>
@@ -623,7 +623,7 @@
                         <tr>
                             <td class="trigger">Audit UX patterns</td>
                             <td><span class="skill">/shipkit-ux-audit</span></td>
-                            <td class="creates">ux-decisions.md</td>
+                            <td class="creates">ux-decisions.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Track manual tasks for user</td>
@@ -702,7 +702,7 @@
 
         <!-- ALL SKILLS TAB -->
         <div id="skills" class="tab-content">
-            <h2 class="section-header">All 36 Skills by Category</h2>
+            <h2 class="section-header">All 37 Skills by Category</h2>
 
             <div class="skill-groups">
                 <div class="skill-group">
@@ -772,6 +772,7 @@
                         <li><span class="name">/shipkit-detect</span> <span class="desc">— Auto-triggered scanner that creates work queues after skill completion. Not user-invocable.</span></li>
                         <li><span class="name">/shipkit-update</span> <span class="desc">— Install or update Shipkit from GitHub. Archives existing install, merges user content.</span></li>
                         <li><span class="name">/shipkit-mission-control</span> <span class="desc">— Monitor and command multiple Claude Code instances from a web dashboard. Mobile-friendly.</span></li>
+                        <li><span class="name">/shipkit-standby</span> <span class="desc">— AFK daemon mode. Polls Mission Control for commands with exponential backoff.</span></li>
                         <li><span class="name">/shipkit-get-skills</span> <span class="desc">— Search and install skills from skills.sh marketplace. Extend Claude capabilities.</span></li>
                         <li><span class="name">/shipkit-get-mcps</span> <span class="desc">— Search and install MCP servers to add new tools and integrations.</span></li>
                     </ul>
@@ -805,7 +806,7 @@
                 </div>
                 <div class="principle">
                     <h3>2. Context Over Defaults</h3>
-                    <p>Check .shipkit/ before assuming. why.md says "MVP in 2 weeks"? Keep it simple. Don't apply "best practices" blindly.</p>
+                    <p>Check .shipkit/ before assuming. why.json says "MVP in 2 weeks"? Keep it simple. Don't apply "best practices" blindly.</p>
                 </div>
                 <div class="principle">
                     <h3>3. Solo Dev Patterns</h3>
@@ -825,7 +826,7 @@
                 </div>
                 <div class="principle">
                     <h3>7. Shipping > Perfecting</h3>
-                    <p>Launch with known limitations. Document them in progress.md. Real feedback beats hypothetical requirements.</p>
+                    <p>Launch with known limitations. Document them in progress.json. Real feedback beats hypothetical requirements.</p>
                 </div>
             </div>
 
@@ -877,7 +878,7 @@
             <h2 class="section-header" style="margin-top: 40px;">File Structure</h2>
             <div style="background: #1e293b; color: #e2e8f0; padding: 25px; border-radius: 12px; font-family: 'Courier New', monospace; font-size: 0.95em; line-height: 1.8;">
 <pre>.shipkit/
-├── why.md                 # Project vision
+├── why.json               # Project vision
 ├── stack.json             # Tech stack (auto-scanned)
 ├── architecture.json      # Decisions log
 ├── contracts.json         # Data contracts
@@ -927,7 +928,7 @@
         </div>
 
         <footer>
-            <p>Shipkit v1.7.0 • 36 Skills • 9 Agents • 7 Principles</p>
+            <p>Shipkit v1.7.0 • 37 Skills • 9 Agents • 7 Principles</p>
             <p style="margin-top: 10px;">Production-ready MVPs for SaaS applications</p>
         </footer>
     </div>

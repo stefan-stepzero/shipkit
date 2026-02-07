@@ -1,0 +1,268 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "prompt-audit",
+  "version": "1.0",
+  "lastUpdated": "2026-02-07",
+  "source": "shipkit-prompt-audit",
+
+  "summary": {
+    "totalPromptsAudited": 12,
+    "totalIssuesFound": 8,
+    "bySeverity": { "critical": 2, "shouldFix": 4, "minor": 2 },
+    "integrationPoints": 12,
+    "providers": ["OpenAI", "Anthropic"],
+    "pipelines": { "singleStage": 8, "multiStage": 2 }
+  },
+
+  "prompts": [
+    {
+      "id": "pa-001",
+      "location": "src/ai/generate-summary.ts:42",
+      "provider": "OpenAI",
+      "purpose": "Generate article summary from raw text",
+      "pipelineType": "single",
+      "score": 7,
+      "issues": [
+        {
+          "id": "PA-SCH-001",
+          "dimension": "schema-tightness",
+          "severity": "critical",
+          "title": "Unvalidated JSON output used in database write",
+          "evidence": "JSON.parse on line 58 has no try/catch; result inserted into DB on line 62",
+          "impact": "Malformed LLM response causes runtime crash and data corruption",
+          "fix": "Wrap JSON.parse in try/catch, validate against Zod schema before DB insert",
+          "antiPattern": "parse-and-pray"
+        }
+      ]
+    },
+    {
+      "id": "pa-002",
+      "location": "src/ai/classify-intent.ts:28",
+      "provider": "Anthropic",
+      "purpose": "Classify user intent from message",
+      "pipelineType": "single",
+      "score": 9,
+      "issues": []
+    },
+    {
+      "id": "pa-003",
+      "location": "src/ai/content-pipeline.ts:15",
+      "provider": "OpenAI",
+      "purpose": "Multi-stage content generation pipeline",
+      "pipelineType": "chain",
+      "score": 5,
+      "issues": [
+        {
+          "id": "PA-DEC-001",
+          "dimension": "decomposition",
+          "severity": "shouldFix",
+          "title": "God Prompt handling multiple concerns",
+          "evidence": "Single prompt at line 15 handles: tone analysis, content generation, formatting, and SEO optimization",
+          "impact": "Hard to debug, tune, or reuse individual capabilities",
+          "fix": "Break into 4 focused prompts: analyze-tone -> generate-content -> format -> optimize-seo",
+          "antiPattern": "god-prompt"
+        },
+        {
+          "id": "PA-PAR-001",
+          "dimension": "parallelization",
+          "severity": "shouldFix",
+          "title": "Independent stages running sequentially",
+          "evidence": "tone analysis and SEO keyword extraction have no data dependency but run sequentially",
+          "impact": "Unnecessary latency - 2x slower than needed",
+          "fix": "Run tone analysis and SEO extraction in Promise.all, then generate content"
+        }
+      ]
+    },
+    {
+      "id": "pa-004",
+      "location": "src/ai/extract-entities.ts:22",
+      "provider": "OpenAI",
+      "purpose": "Extract named entities from text",
+      "pipelineType": "single",
+      "score": 6,
+      "issues": [
+        {
+          "id": "PA-SCH-002",
+          "dimension": "schema-tightness",
+          "severity": "critical",
+          "title": "No schema validation on extracted entities",
+          "evidence": "JSON.parse at line 45 with no validation; entities array assumed to have name/type fields",
+          "impact": "Missing or malformed fields cause downstream TypeError",
+          "fix": "Add Zod schema: z.array(z.object({ name: z.string(), type: z.enum(['person', 'org', 'location']) }))",
+          "antiPattern": "parse-and-pray"
+        }
+      ]
+    },
+    {
+      "id": "pa-005",
+      "location": "src/ai/chat-handler.ts:88",
+      "provider": "Anthropic",
+      "purpose": "Handle conversational AI responses",
+      "pipelineType": "single",
+      "score": 8,
+      "issues": [
+        {
+          "id": "PA-FBK-001",
+          "dimension": "fallback-paths",
+          "severity": "shouldFix",
+          "title": "No fallback on API failure",
+          "evidence": "No try/catch around messages.create call; no fallback response defined",
+          "impact": "API outage causes user-facing error instead of graceful degradation",
+          "fix": "Add try/catch with fallback: 'I'm having trouble responding right now. Please try again.'"
+        }
+      ]
+    },
+    {
+      "id": "pa-006",
+      "location": "src/ai/translate.ts:12",
+      "provider": "OpenAI",
+      "purpose": "Translate content to target language",
+      "pipelineType": "single",
+      "score": 10,
+      "issues": []
+    },
+    {
+      "id": "pa-007",
+      "location": "src/ai/moderation.ts:33",
+      "provider": "OpenAI",
+      "purpose": "Content moderation and safety check",
+      "pipelineType": "single",
+      "score": 9,
+      "issues": [
+        {
+          "id": "PA-CTX-001",
+          "dimension": "context-efficiency",
+          "severity": "minor",
+          "title": "Verbose system prompt could be shortened",
+          "evidence": "System prompt is 800 tokens; core instructions are ~200 tokens",
+          "impact": "Slightly higher cost and latency than necessary",
+          "fix": "Trim examples and repetitive instructions; consider few-shot instead of verbose rules"
+        }
+      ]
+    },
+    {
+      "id": "pa-008",
+      "location": "src/ai/product-description.ts:55",
+      "provider": "OpenAI",
+      "purpose": "Generate product descriptions from specs",
+      "pipelineType": "single",
+      "score": 7,
+      "issues": [
+        {
+          "id": "PA-CON-001",
+          "dimension": "constraint-precision",
+          "severity": "shouldFix",
+          "title": "Vague output format instructions",
+          "evidence": "Prompt says 'write a compelling description' with no length/format constraints",
+          "impact": "Inconsistent output lengths; sometimes too short, sometimes too long",
+          "fix": "Add explicit constraints: 'Write 2-3 sentences. Include key features. End with call-to-action.'"
+        }
+      ]
+    }
+  ],
+
+  "pipelines": [
+    {
+      "id": "pipeline-001",
+      "name": "Content Generation Pipeline",
+      "type": "chain",
+      "stages": [
+        { "id": "stage-001", "promptId": "pa-003", "provider": "OpenAI", "purpose": "Analyze tone", "location": "src/ai/content-pipeline.ts:15" },
+        { "id": "stage-002", "promptId": "pa-003", "provider": "OpenAI", "purpose": "Extract SEO keywords", "location": "src/ai/content-pipeline.ts:45" },
+        { "id": "stage-003", "promptId": "pa-003", "provider": "OpenAI", "purpose": "Generate content", "location": "src/ai/content-pipeline.ts:72" },
+        { "id": "stage-004", "promptId": "pa-003", "provider": "OpenAI", "purpose": "Format output", "location": "src/ai/content-pipeline.ts:98" }
+      ],
+      "edges": [
+        { "id": "edge-001", "source": "stage-001", "target": "stage-003", "dataFlow": "tone analysis", "validated": false },
+        { "id": "edge-002", "source": "stage-002", "target": "stage-003", "dataFlow": "keywords", "validated": false },
+        { "id": "edge-003", "source": "stage-003", "target": "stage-004", "dataFlow": "raw content", "validated": true }
+      ],
+      "issues": ["PA-DEC-001", "PA-PAR-001"]
+    },
+    {
+      "id": "pipeline-002",
+      "name": "Moderation + Chat Pipeline",
+      "type": "chain",
+      "stages": [
+        { "id": "stage-005", "promptId": "pa-007", "provider": "OpenAI", "purpose": "Content moderation", "location": "src/ai/moderation.ts:33" },
+        { "id": "stage-006", "promptId": "pa-005", "provider": "Anthropic", "purpose": "Generate chat response", "location": "src/ai/chat-handler.ts:88" }
+      ],
+      "edges": [
+        { "id": "edge-004", "source": "stage-005", "target": "stage-006", "dataFlow": "moderation pass/fail", "validated": true }
+      ],
+      "issues": ["PA-FBK-001"]
+    }
+  ],
+
+  "patterns": {
+    "antiPatterns": [
+      {
+        "name": "god-prompt",
+        "instances": 1,
+        "files": ["src/ai/content-pipeline.ts"],
+        "description": "Single prompt handling multiple unrelated concerns"
+      },
+      {
+        "name": "parse-and-pray",
+        "instances": 2,
+        "files": ["src/ai/generate-summary.ts", "src/ai/extract-entities.ts"],
+        "description": "JSON.parse on LLM output without validation or error handling"
+      }
+    ],
+    "positivePatterns": [
+      {
+        "name": "structured-output",
+        "instances": 3,
+        "description": "Using provider structured output mode with schema"
+      },
+      {
+        "name": "input-sanitization",
+        "instances": 5,
+        "description": "User input properly sanitized before prompt injection"
+      },
+      {
+        "name": "retry-with-backoff",
+        "instances": 4,
+        "description": "API calls wrapped with exponential backoff retry"
+      }
+    ]
+  },
+
+  "recommendations": [
+    {
+      "priority": "critical",
+      "title": "Add schema validation to all LLM output parsing",
+      "description": "2 integration points parse LLM JSON without validation. Add Zod schemas and wrap in try/catch.",
+      "affectedFiles": ["src/ai/generate-summary.ts", "src/ai/extract-entities.ts"],
+      "effort": "low"
+    },
+    {
+      "priority": "shouldFix",
+      "title": "Decompose god prompts into focused sub-tasks",
+      "description": "1 prompt handles multiple concerns. Break into single-responsibility prompt chains.",
+      "affectedFiles": ["src/ai/content-pipeline.ts"],
+      "effort": "medium"
+    },
+    {
+      "priority": "shouldFix",
+      "title": "Add fallback responses for API failures",
+      "description": "Chat handler has no graceful degradation on API failure.",
+      "affectedFiles": ["src/ai/chat-handler.ts"],
+      "effort": "low"
+    },
+    {
+      "priority": "shouldFix",
+      "title": "Parallelize independent pipeline stages",
+      "description": "Content pipeline runs independent stages sequentially. Use Promise.all for 2x speedup.",
+      "affectedFiles": ["src/ai/content-pipeline.ts"],
+      "effort": "low"
+    },
+    {
+      "priority": "minor",
+      "title": "Tighten output format constraints",
+      "description": "Product description prompt lacks specific length/format requirements.",
+      "affectedFiles": ["src/ai/product-description.ts"],
+      "effort": "low"
+    }
+  ]
+}

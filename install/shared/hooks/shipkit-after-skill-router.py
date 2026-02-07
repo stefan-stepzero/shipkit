@@ -21,6 +21,7 @@ from pathlib import Path
 SKILL_TO_MODE = {
     "shipkit-spec": "services",           # After spec → detect external services
     "shipkit-plan": "contracts",          # After plan → detect data structures
+    "shipkit-verify": "ext-boundaries",   # After verify → detect missing operational boundaries
 }
 
 

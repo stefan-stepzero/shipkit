@@ -36,12 +36,12 @@
 ## Pending
 
 - [ ] User
-  - Mentioned in: plans/auth-implementation.md
+  - Mentioned in: plans/active/auth-implementation.json
   - Layers: Database (users table) → API (GET /api/users/:id) → Frontend (User interface)
   - Contract needed: Define shape across all layers, prevent type mismatches
 
 - [ ] Post
-  - Mentioned in: plans/content-management.md
+  - Mentioned in: plans/active/content-management.json
   - Layers: Database (posts table) → API (POST /api/posts, GET /api/posts) → Frontend (Post interface)
   - Contract needed: Ensure metadata field is consistently typed
 

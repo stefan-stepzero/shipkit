@@ -82,7 +82,7 @@ Create the relentless state file to prevent early exit:
 mkdir -p .shipkit
 ```
 
-Write `.shipkit/relentless-state.local.md` — include dismissed themes in the body so the hook feeds them back on each iteration:
+Write `.shipkit/relentless-verify.local.md` — include dismissed themes in the body so the hook feeds them back on each iteration:
 
 ```markdown
 ---
@@ -140,6 +140,7 @@ Return: pattern type → list of affected files (both changed and ripple)."
 | Error Handling | `try\s*{\|\.catch\(` | Grep async code for consistency |
 | Validation | `zod\|schema\.parse` | Grep all form/input handlers |
 | Data Fetching | `fetch\(\|useSWR\|useQuery` | Grep all data fetching code |
+| External Service | `openai\|anthropic\|gemini\|stripe\|fetch\(` | Grep all files with external calls, check for timeout/limits |
 
 **Expansion logic:**
 
@@ -271,7 +272,7 @@ After fixing, **re-verify the changed files** (including files you just modified
 1. Re-run verification on all files touched in Step 4
 2. Check: are there any remaining 🔴 Critical or 🟡 Should Fix findings (excluding dismissed themes)?
    - **YES** → Continue fixing. When you try to stop, the hook will block you and send you back.
-   - **NO** → Delete `.shipkit/relentless-state.local.md` and proceed to final report. Any 🟢 Minor findings are listed in the report but do not block completion.
+   - **NO** → Delete `.shipkit/relentless-verify.local.md` and proceed to final report. Any 🟢 Minor findings are listed in the report but do not block completion.
 
 The relentless hook manages the iteration. You don't need to count loops — just:
 - Fix what you find
@@ -357,6 +358,14 @@ The relentless hook manages the iteration. You don't need to count loops — jus
 - Works locally but will break in prod
 - Docker/CI config not updated for new deps
 - Missing feature flags for WIP features
+
+### 10.5. External Service Boundaries
+- External API calls without timeout config
+- LLM/AI calls without token/output limits
+- Serverless routes with external calls missing `maxDuration` export
+- Streaming endpoints without keepalive signals
+- Sequential external call chains without cumulative timeout tracking
+- Pay-per-call services without cost visibility (token tracking, usage counters)
 
 ### 11. API Contract
 - Breaking changes to existing endpoints
@@ -545,9 +554,11 @@ Not all dimensions every time. Emphasize based on what changed:
 |------------|-----------|
 | Auth/middleware | Security, Error Resilience |
 | UI components | UX Completeness, Performance, Edge Cases |
-| API routes | API Contract, Security, Error Resilience |
+| API routes | API Contract, Security, Error Resilience, External Service Boundaries |
 | Database/models | Database Integrity, State & Data |
 | Config/env files | Environment & Config |
+| External service integration | External Service Boundaries, Error Resilience |
+| LLM/AI features | External Service Boundaries, Performance, Error Resilience |
 | Refactoring | Structural Integrity, Maintainability |
 | New feature | Spec Alignment, all dimensions lightly |
 

@@ -37,13 +37,13 @@ argument-hint: "<component or feature>"
 ## Prerequisites
 
 **Recommended (spec-first workflow):**
-- `.shipkit/specs/active/[feature].md` - Feature spec provides context
+- `.shipkit/specs/active/[feature].json` - Feature spec provides context
   - **Workflow:** Create spec first with `/shipkit-spec`, then prototype from it
   - **Why:** Spec clarifies requirements before exploring UI solutions
   - **Warning if missing:** Skill will prompt to create spec first
 
 **Optional (enhances prototyping):**
-- `.shipkit/why.md` - Vision informs design choices (brand, audience)
+- `.shipkit/why.json` - Vision informs design choices (brand, audience)
 
 **Not required:**
 - No implementation needed
@@ -107,7 +107,7 @@ WORKS BY DOUBLE-CLICKING THE FILE.
 
 **Check if spec exists:**
 ```bash
-ls .shipkit/specs/active/*.md 2>/dev/null
+ls .shipkit/specs/active/*.json 2>/dev/null
 ```
 
 **If NO spec found:**
@@ -161,8 +161,8 @@ c) Reference a spec (Claude reads spec and generates from it)
 ```
 
 **Read context if available:**
-- `.shipkit/specs/active/[feature].md` - Read spec for requirements
-- `.shipkit/why.md` - Understand brand/audience for design choices
+- `.shipkit/specs/active/[feature].json` - Read spec for requirements
+- `.shipkit/why.json` - Understand brand/audience for design choices
 
 **Token budget:** Keep context reading under 1000 tokens
 
@@ -416,9 +416,9 @@ Specifically:
 ## Context Files This Skill Reads
 
 **Optional (enhances prototyping):**
-- `.shipkit/specs/active/[feature].md` - Feature context
-- `.shipkit/why.md` - Vision and brand direction
-- `.shipkit/implementations.md` - Existing component patterns to reuse
+- `.shipkit/specs/active/[feature].json` - Feature context
+- `.shipkit/why.json` - Vision and brand direction
+- `.shipkit/implementations.json` - Existing component patterns to reuse
 
 **User-provided:**
 - Existing mockup files (.html, .zip) if importing

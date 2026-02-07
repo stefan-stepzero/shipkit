@@ -1,0 +1,518 @@
+{
+  "$schema": "https://shipkit.io/schemas/plan.json",
+  "type": "plan",
+  "version": "1.0.0",
+  "lastUpdated": "2024-01-15T14:30:00Z",
+  "source": "shipkit-plan",
+  "plan": {
+    "id": "plan-user-authentication",
+    "name": "User Authentication",
+    "status": "ready",
+    "specId": "spec-user-authentication",
+    "created": "2024-01-15T14:30:00Z",
+    "updated": "2024-01-15T14:30:00Z",
+    "overview": {
+      "goal": "Implement JWT-based authentication with login, registration, and protected routes",
+      "complexity": "medium"
+    },
+    "summary": {
+      "phaseCount": 3,
+      "taskCount": 9,
+      "completionPercentage": 0,
+      "filesCreated": 7,
+      "filesModified": 3
+    },
+    "codebasePatterns": [
+      {
+        "concern": "state",
+        "currentPattern": "Zustand",
+        "sourceFile": "src/stores/appStore.ts",
+        "planWillUse": "Zustand"
+      },
+      {
+        "concern": "data-fetching",
+        "currentPattern": "SWR",
+        "sourceFile": "src/hooks/useProducts.ts",
+        "planWillUse": "SWR"
+      },
+      {
+        "concern": "error-handling",
+        "currentPattern": "ErrorBoundary",
+        "sourceFile": "src/components/ErrorBoundary.tsx",
+        "planWillUse": "ErrorBoundary"
+      },
+      {
+        "concern": "auth",
+        "currentPattern": "None (new)",
+        "sourceFile": "",
+        "planWillUse": "JWT middleware"
+      }
+    ],
+    "phases": [
+      {
+        "id": "phase-1",
+        "name": "Auth Foundation",
+        "gate": {
+          "condition": "Auth store exists with login/logout actions, token persists in localStorage",
+          "verification": "Manual: Check localStorage has 'auth-token' after mock login"
+        },
+        "tasks": [
+          {
+            "id": "1.1",
+            "description": "Create auth types (User, AuthState, LoginCredentials, RegisterData)",
+            "status": "pending",
+            "dependencies": [],
+            "creates": {
+              "artifact": "src/types/auth.ts",
+              "type": "type"
+            },
+            "consumedBy": {
+              "reference": "1.2",
+              "type": "task"
+            },
+            "files": {
+              "create": ["src/types/auth.ts"]
+            },
+            "acceptanceCriteria": [
+              "User type has id, email, name fields",
+              "AuthState has user, token, isAuthenticated",
+              "LoginCredentials has email, password",
+              "RegisterData extends LoginCredentials with name"
+            ],
+            "estimatedHours": 0.5
+          },
+          {
+            "id": "1.2",
+            "description": "Create Zustand auth store with login, logout, setUser actions",
+            "status": "pending",
+            "dependencies": ["1.1"],
+            "creates": {
+              "artifact": "src/stores/authStore.ts",
+              "type": "file"
+            },
+            "consumedBy": {
+              "reference": "2.1",
+              "type": "task"
+            },
+            "files": {
+              "create": ["src/stores/authStore.ts"]
+            },
+            "acceptanceCriteria": [
+              "Uses Zustand pattern from appStore.ts",
+              "Persists token to localStorage",
+              "Clears token on logout"
+            ],
+            "estimatedHours": 1
+          },
+          {
+            "id": "1.3",
+            "description": "Create JWT token utilities (decode, isExpired, getPayload)",
+            "status": "pending",
+            "dependencies": [],
+            "creates": {
+              "artifact": "src/utils/token.ts",
+              "type": "function"
+            },
+            "consumedBy": {
+              "reference": "src/stores/authStore.ts:checkAuth",
+              "type": "file"
+            },
+            "files": {
+              "create": ["src/utils/token.ts"]
+            },
+            "acceptanceCriteria": [
+              "decode() extracts payload without verification",
+              "isExpired() checks exp claim",
+              "getPayload() returns typed payload"
+            ],
+            "estimatedHours": 0.5
+          }
+        ]
+      },
+      {
+        "id": "phase-2",
+        "name": "Auth UI Components",
+        "gate": {
+          "condition": "Login form renders at /login, submits credentials, shows validation errors",
+          "verification": "Manual: Navigate to /login, submit empty form, see validation errors"
+        },
+        "tasks": [
+          {
+            "id": "2.1",
+            "description": "Create LoginForm component with email/password fields and submit handler",
+            "status": "pending",
+            "dependencies": ["1.2"],
+            "creates": {
+              "artifact": "src/components/auth/LoginForm.tsx",
+              "type": "component"
+            },
+            "consumedBy": {
+              "reference": "2.3",
+              "type": "task"
+            },
+            "files": {
+              "create": ["src/components/auth/LoginForm.tsx"]
+            },
+            "acceptanceCriteria": [
+              "Uses existing form patterns",
+              "Calls authStore.login on submit",
+              "Shows loading state during submission",
+              "Displays error message on failure"
+            ],
+            "estimatedHours": 1.5
+          },
+          {
+            "id": "2.2",
+            "description": "Create RegisterForm component with name/email/password/confirm fields",
+            "status": "pending",
+            "dependencies": ["1.2"],
+            "creates": {
+              "artifact": "src/components/auth/RegisterForm.tsx",
+              "type": "component"
+            },
+            "consumedBy": {
+              "reference": "2.3",
+              "type": "task"
+            },
+            "files": {
+              "create": ["src/components/auth/RegisterForm.tsx"]
+            },
+            "acceptanceCriteria": [
+              "Password confirmation validation",
+              "Calls authStore.register on submit",
+              "Redirects to login on success"
+            ],
+            "estimatedHours": 1.5
+          },
+          {
+            "id": "2.3",
+            "description": "Create /login and /register pages using form components",
+            "status": "pending",
+            "dependencies": ["2.1", "2.2"],
+            "creates": {
+              "artifact": "src/pages/auth/",
+              "type": "file"
+            },
+            "consumedBy": {
+              "reference": "entry-point",
+              "type": "entry-point"
+            },
+            "files": {
+              "create": [
+                "src/pages/auth/login.tsx",
+                "src/pages/auth/register.tsx"
+              ]
+            },
+            "acceptanceCriteria": [
+              "Pages render respective forms",
+              "Link between login and register",
+              "Redirect to dashboard after successful auth"
+            ],
+            "estimatedHours": 1
+          }
+        ]
+      },
+      {
+        "id": "phase-3",
+        "name": "Protected Routes",
+        "gate": {
+          "condition": "Unauthenticated users redirected from /dashboard to /login, authenticated users see dashboard",
+          "verification": "Command: Clear localStorage, navigate to /dashboard, verify redirect to /login"
+        },
+        "tasks": [
+          {
+            "id": "3.1",
+            "description": "Create ProtectedRoute component that checks auth and redirects",
+            "status": "pending",
+            "dependencies": ["1.2"],
+            "creates": {
+              "artifact": "src/components/auth/ProtectedRoute.tsx",
+              "type": "component"
+            },
+            "consumedBy": {
+              "reference": "3.2",
+              "type": "task"
+            },
+            "files": {
+              "create": ["src/components/auth/ProtectedRoute.tsx"]
+            },
+            "acceptanceCriteria": [
+              "Checks authStore.isAuthenticated",
+              "Redirects to /login if not authenticated",
+              "Renders children if authenticated"
+            ],
+            "estimatedHours": 0.5
+          },
+          {
+            "id": "3.2",
+            "description": "Wrap dashboard routes with ProtectedRoute",
+            "status": "pending",
+            "dependencies": ["3.1"],
+            "creates": {
+              "artifact": "Protected route configuration",
+              "type": "config"
+            },
+            "consumedBy": {
+              "reference": "entry-point",
+              "type": "entry-point"
+            },
+            "files": {
+              "modify": ["src/App.tsx"]
+            },
+            "acceptanceCriteria": [
+              "/dashboard/* routes wrapped",
+              "Existing public routes unchanged"
+            ],
+            "estimatedHours": 0.5
+          },
+          {
+            "id": "3.3",
+            "description": "Add logout button to dashboard header",
+            "status": "pending",
+            "dependencies": ["1.2"],
+            "creates": {
+              "artifact": "Logout button in header",
+              "type": "component"
+            },
+            "consumedBy": {
+              "reference": "entry-point",
+              "type": "entry-point"
+            },
+            "files": {
+              "modify": ["src/components/Header.tsx"]
+            },
+            "acceptanceCriteria": [
+              "Logout button visible when authenticated",
+              "Calls authStore.logout on click",
+              "Redirects to /login after logout"
+            ],
+            "estimatedHours": 0.5
+          }
+        ]
+      }
+    ],
+    "consumptionMap": [
+      {
+        "artifact": "src/types/auth.ts",
+        "type": "type",
+        "consumedBy": "src/stores/authStore.ts",
+        "verified": true
+      },
+      {
+        "artifact": "src/stores/authStore.ts",
+        "type": "file",
+        "consumedBy": "Multiple components (LoginForm, RegisterForm, ProtectedRoute)",
+        "verified": true
+      },
+      {
+        "artifact": "src/utils/token.ts",
+        "type": "function",
+        "consumedBy": "src/stores/authStore.ts",
+        "verified": true
+      },
+      {
+        "artifact": "src/components/auth/LoginForm.tsx",
+        "type": "component",
+        "consumedBy": "src/pages/auth/login.tsx",
+        "verified": true
+      },
+      {
+        "artifact": "src/components/auth/RegisterForm.tsx",
+        "type": "component",
+        "consumedBy": "src/pages/auth/register.tsx",
+        "verified": true
+      },
+      {
+        "artifact": "src/pages/auth/login.tsx",
+        "type": "file",
+        "consumedBy": "Entry point (route)",
+        "verified": true
+      },
+      {
+        "artifact": "src/pages/auth/register.tsx",
+        "type": "file",
+        "consumedBy": "Entry point (route)",
+        "verified": true
+      },
+      {
+        "artifact": "src/components/auth/ProtectedRoute.tsx",
+        "type": "component",
+        "consumedBy": "src/App.tsx",
+        "verified": true
+      }
+    ],
+    "specCoverage": [
+      {
+        "requirement": "Users can register with email and password",
+        "taskIds": ["1.1", "2.2", "2.3"],
+        "covered": true
+      },
+      {
+        "requirement": "Users can login with email and password",
+        "taskIds": ["1.1", "1.2", "2.1", "2.3"],
+        "covered": true
+      },
+      {
+        "requirement": "JWT tokens are used for session management",
+        "taskIds": ["1.2", "1.3"],
+        "covered": true
+      },
+      {
+        "requirement": "Protected routes require authentication",
+        "taskIds": ["3.1", "3.2"],
+        "covered": true
+      },
+      {
+        "requirement": "Users can logout",
+        "taskIds": ["1.2", "3.3"],
+        "covered": true
+      }
+    ],
+    "files": {
+      "create": [
+        {
+          "path": "src/types/auth.ts",
+          "purpose": "TypeScript types for auth system"
+        },
+        {
+          "path": "src/stores/authStore.ts",
+          "purpose": "Zustand store for auth state"
+        },
+        {
+          "path": "src/utils/token.ts",
+          "purpose": "JWT token utilities"
+        },
+        {
+          "path": "src/components/auth/LoginForm.tsx",
+          "purpose": "Login form component"
+        },
+        {
+          "path": "src/components/auth/RegisterForm.tsx",
+          "purpose": "Registration form component"
+        },
+        {
+          "path": "src/pages/auth/login.tsx",
+          "purpose": "Login page"
+        },
+        {
+          "path": "src/pages/auth/register.tsx",
+          "purpose": "Registration page"
+        }
+      ],
+      "modify": [
+        {
+          "path": "src/App.tsx",
+          "changes": "Add ProtectedRoute wrapper to dashboard routes"
+        },
+        {
+          "path": "src/components/Header.tsx",
+          "changes": "Add logout button"
+        }
+      ]
+    },
+    "permissions": {
+      "createFiles": [
+        "src/types/auth.ts",
+        "src/stores/authStore.ts",
+        "src/utils/token.ts",
+        "src/components/auth/LoginForm.tsx",
+        "src/components/auth/RegisterForm.tsx",
+        "src/components/auth/ProtectedRoute.tsx",
+        "src/pages/auth/login.tsx",
+        "src/pages/auth/register.tsx"
+      ],
+      "modifyFiles": [
+        "src/App.tsx",
+        "src/components/Header.tsx"
+      ],
+      "commands": [
+        "npm run dev",
+        "npm run test",
+        "npm run lint"
+      ],
+      "database": [],
+      "dependencies": []
+    },
+    "decisions": [
+      {
+        "decision": "Use Zustand for auth state instead of React Context",
+        "rationale": "Codebase already uses Zustand for app state (appStore.ts), maintaining consistency",
+        "alternatives": ["React Context + useReducer", "Redux Toolkit"]
+      },
+      {
+        "decision": "Store JWT in localStorage rather than httpOnly cookie",
+        "rationale": "Simpler implementation for MVP, can upgrade to httpOnly cookie in production hardening phase",
+        "alternatives": ["httpOnly cookie", "sessionStorage"]
+      }
+    ],
+    "risks": [
+      {
+        "risk": "JWT stored in localStorage is vulnerable to XSS",
+        "likelihood": "low",
+        "impact": "high",
+        "mitigation": "Ensure Content Security Policy is configured, sanitize all user input, upgrade to httpOnly cookie before production"
+      },
+      {
+        "risk": "Token expiration handling may cause poor UX",
+        "likelihood": "medium",
+        "impact": "medium",
+        "mitigation": "Implement token refresh before expiration, show friendly message on session timeout"
+      }
+    ],
+    "openQuestions": [
+      {
+        "question": "Should we implement 'Remember Me' functionality?",
+        "impact": "Affects token expiration time and storage strategy",
+        "resolution": "can-proceed",
+        "owner": "Product Owner"
+      },
+      {
+        "question": "What is the password complexity requirement?",
+        "impact": "Affects registration form validation",
+        "resolution": "can-proceed",
+        "owner": "Product Owner"
+      }
+    ],
+    "validation": {
+      "consumption": {
+        "creates": 8,
+        "consumed": 8,
+        "orphans": 0,
+        "passed": true
+      },
+      "granularity": {
+        "totalSteps": 9,
+        "oversized": 0,
+        "passed": true
+      },
+      "existence": {
+        "references": 4,
+        "verified": 4,
+        "passed": true
+      },
+      "phaseGates": {
+        "totalPhases": 3,
+        "testableGates": 3,
+        "passed": true
+      },
+      "specCoverage": {
+        "totalRequirements": 5,
+        "mapped": 5,
+        "passed": true
+      },
+      "patternAlignment": {
+        "aligned": true,
+        "divergences": 0,
+        "justified": true,
+        "passed": true
+      },
+      "permissions": {
+        "newFiles": 8,
+        "modifiedFiles": 2,
+        "commands": 3,
+        "passed": true
+      },
+      "status": "valid"
+    }
+  }
+}

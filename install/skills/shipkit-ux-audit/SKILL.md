@@ -40,7 +40,7 @@ allowed-tools:
 ## Prerequisites
 
 **Optional but helpful**:
-- Existing patterns documented: `.shipkit/implementations.md`
+- Existing patterns documented: `.shipkit/implementations.json`
 - Architecture decisions: `.shipkit/architecture.json`
 - Stack info: `.shipkit/stack.json`
 
@@ -85,7 +85,7 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 
 3. **Is this a new pattern or matching existing?**
    - "Have you built similar UI before in this project?"
-   - Will check implementations.md to verify
+   - Will check implementations.json to verify
 
 **Why ask**: Tailor guidance to actual needs, not generic advice.
 
@@ -97,53 +97,95 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 
 ```bash
 # Existing UI patterns (if file exists)
-.shipkit/implementations.md
+.shipkit/implementations.json
 
 # Architecture decisions about UX (if file exists)
 .shipkit/architecture.json
 
 # Tech stack (to know UI framework constraints)
 .shipkit/stack.json
+
+# Previous UX decisions (if file exists)
+.shipkit/ux-decisions.json
 ```
 
 **Verification before claiming patterns:**
 
 | Claim | Required Verification |
 |-------|----------------------|
-| "Similar pattern exists" | `Grep: pattern="[component type]" path="implementations.md"` returns matches |
+| "Similar pattern exists" | `Grep: pattern="[component type]" path="implementations.json"` returns matches |
 | "No existing pattern" | Grep returns 0 matches for component type AND related keywords |
-| "Established UX decision" | `Grep: pattern="[pattern name]" path="architecture.json"` returns match |
+| "Established UX decision" | Check `ux-decisions.json` decisions array for similar component |
 
-**Never claim** "no similar component" without actually grepping implementations.md.
+**Never claim** "no similar component" without actually grepping implementations.json.
 
 **Auto-detect**:
-- Similar components in implementations.md
-- Established UX patterns in architecture.json
+- Similar components in implementations.json
+- Previous UX decisions in ux-decisions.json
 - UI framework from stack.json (React, Vue, Svelte, etc.)
 
 **Token budget**: Keep context reading under 1500 tokens.
 
 ---
 
-### Step 3: Generate UX Guidance
+### Step 3: Explore Actual UI Components
 
-**Provide terminal output AND log to `.shipkit/ux-decisions.md`**.
+**Before generating guidance, examine the real code — not just JSON metadata.**
+
+UX decisions based on `.shipkit/` context files alone miss actual component patterns, inconsistencies between components, and accessibility gaps that only show up in source code.
+
+**Launch explore agents** — Use the Task tool with `subagent_type: Explore`:
+
+```
+Agent 1 - Component patterns: "Find UI components related to [component type]
+in the codebase. Look for: existing component implementations, state management
+patterns (loading/error/empty states), form handling patterns, modal patterns,
+and shared UI utilities. Report: what patterns are established, which components
+handle states well vs poorly, what UI library/primitives are in use."
+
+Agent 2 - Consistency and gaps: "Scan all UI components for consistency in
+UX patterns. Look for: components missing loading states, inconsistent error
+handling, missing accessibility attributes (aria-*, role, tabIndex), hardcoded
+strings that should be accessible, missing keyboard handlers, touch target sizes.
+Report: which components follow good patterns, which have gaps, and what the
+most common UX debt is."
+```
+
+**Launch both agents in parallel** — they are independent scans.
+
+**Synthesize findings** — Before generating UX guidance, note:
+- Established patterns to reference (e.g., "your existing modals use X pattern — follow that")
+- Inconsistencies to flag (e.g., "3 forms validate inline, 2 don't — which is the standard?")
+- Accessibility gaps in existing code that should be fixed alongside the new work
+- UI library capabilities that inform what patterns are practical
+
+**If exploration reveals inconsistencies**: Surface to user. Example: *"Your existing components handle loading states inconsistently — ListPage uses skeletons but DetailPage shows nothing. Should we standardize?"*
+
+**Token budget**: Each explore agent should return a focused summary (~500 tokens).
+
+**When to skip**: If providing guidance for a brand new project with no existing UI code.
+
+---
+
+### Step 4: Generate UX Guidance
+
+**Provide terminal output AND log to `.shipkit/ux-decisions.json`**.
 
 **Terminal output template**:
 
 ```
-🎨 UX Guidance: [Component Name]
+UX Guidance: [Component Name]
 
 **Recommended Pattern**: [Pattern name and type]
 
 **Why**: [1-2 sentence rationale based on principles below]
 
 **Implementation Checklist**:
-✓ [Specific implementation detail 1]
-✓ [Specific implementation detail 2]
-✓ [Specific implementation detail 3]
-✓ [Accessibility requirement 1]
-✓ [Accessibility requirement 2]
+- [Specific implementation detail 1]
+- [Specific implementation detail 2]
+- [Specific implementation detail 3]
+- [Accessibility requirement 1]
+- [Accessibility requirement 2]
 
 **Accessibility Notes**:
 - [WCAG requirement 1]
@@ -151,14 +193,13 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 - [Keyboard interaction]
 - [Screen reader consideration]
 
-**[IF pattern exists in implementations.md]**
-**Existing Pattern Match**: [ComponentName] in implementations.md
+**[IF pattern exists in implementations.json or ux-decisions.json]**
+**Existing Pattern Match**: [ComponentName]
 - Reuse: [specific pattern to follow]
-- Location: [file path from implementations.md]
+- Location: [file path or decision ID]
 
 **[IF new pattern being established]**
 **New Pattern**: This establishes a new pattern for your project
-- Consider logging to architecture.json if this becomes standard
 
 **Next Steps**:
 - [Specific action 1]
@@ -168,49 +209,88 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 
 ---
 
-### Step 4: Log UX Decision
+### Step 5: Log UX Decision to JSON
 
-**After providing terminal guidance, append decision to `.shipkit/ux-decisions.md`**:
+**After providing terminal guidance, update `.shipkit/ux-decisions.json`**:
 
-```markdown
-## [Component Name] - [Current Date]
-
-**Component Type**: [Form/Modal/Toggle/List/Button/etc]
-**Pattern**: [Specific pattern recommended]
-**Rationale**: [Why this pattern was chosen - 1-2 sentences]
-**Accessibility**: [Key WCAG requirements applied]
-**Existing Match**: [Reference to similar component in implementations.md, if found]
-**User Persona Adaptation**: [ADHD/Elderly/Mobile/etc, if user specified]
-
-**Implementation Checklist**:
-- [ ] [Key requirement 1]
-- [ ] [Key requirement 2]
-- [ ] [Accessibility requirement]
-
----
+**If file doesn't exist**, create with initial structure:
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "ux-decisions",
+  "version": "1.0",
+  "lastUpdated": "{current date}",
+  "source": "shipkit-ux-audit",
+  "summary": {
+    "totalDecisions": 0,
+    "totalGaps": 0,
+    "byCategory": {
+      "form": 0, "modal": 0, "toggle": 0, "list": 0,
+      "button": 0, "navigation": 0, "feedback": 0, "other": 0
+    },
+    "byPersona": {
+      "general": 0, "adhd-friendly": 0, "elderly": 0,
+      "mobile-first": 0, "low-bandwidth": 0, "accessibility-first": 0
+    }
+  },
+  "decisions": [],
+  "gaps": []
+}
 ```
 
-**File operation**:
-- If `.shipkit/ux-decisions.md` doesn't exist, create with header:
-  ```markdown
-  # UX Decisions Log
+**Add decision to array**:
+```json
+{
+  "id": "UX-{next sequential number}",
+  "component": "{Component name}",
+  "category": "{form|modal|toggle|list|button|navigation|feedback|other}",
+  "pattern": "{Specific pattern applied}",
+  "decision": "{What was decided}",
+  "rationale": "{Why this pattern - 1-2 sentences}",
+  "accessibility": ["{WCAG requirements}"],
+  "existingMatch": "{Reference or null}",
+  "persona": "{general|adhd-friendly|elderly|mobile-first|low-bandwidth|accessibility-first}",
+  "checklist": ["{Implementation requirements}"],
+  "date": "{YYYY-MM-DD}"
+}
+```
 
-  This file tracks all UX guidance provided for components. Each entry documents the pattern chosen, rationale, and accessibility requirements.
+**Update summary counts** after adding decision.
 
-  ---
-  ```
-- Then append the new decision entry
-- Each entry is separated by `---`
-
-**Why log this?**
-- Creates historical record of UX patterns
-- Other skills can reference established patterns
-- Ensures consistency across components
-- Provides audit trail for UX decisions
+**Why log as JSON?**
+- Enables programmatic queries (e.g., "all form decisions")
+- Consistency checks across components
+- Dashboard/reporting integration
+- Other skills can reference patterns by ID
 
 ---
 
-### Step 5: Apply Progressive Disclosure
+### Step 6: Identify and Log Gaps
+
+**When auditing existing UI**, if patterns are missing:
+
+**Add to gaps array**:
+```json
+{
+  "id": "GAP-{next sequential number}",
+  "component": "{Component or area}",
+  "missingPatterns": ["{patterns needed}"],
+  "priority": "{high|medium|low}",
+  "notes": "{additional context or null}",
+  "identifiedDate": "{YYYY-MM-DD}"
+}
+```
+
+**Update `summary.totalGaps`** count.
+
+**Priority guidelines**:
+- `high`: Accessibility violations, security concerns, major usability issues
+- `medium`: Missing feedback states, inconsistent patterns
+- `low`: Polish items, nice-to-haves
+
+---
+
+### Step 7: Apply Progressive Disclosure
 
 **Only share relevant principles** - Don't dump entire UX knowledge base.
 
@@ -242,36 +322,38 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 
 ---
 
-## Step 6: Suggest Next Steps
+## Step 8: Suggest Next Steps
 
 ---
 
 ## Completion Checklist
 
 Copy and track:
-- [ ] Reviewed implemented components
+- [ ] Explored actual UI components (patterns + consistency gaps)
+- [ ] Reviewed implemented components against findings
 - [ ] Checked against UX pattern checklist
-- [ ] Documented gaps and recommendations
+- [ ] Documented decisions in ux-decisions.json
+- [ ] Logged gaps with priorities
 
 ---
 
 ## What Makes This "Lite"
 
 **Included**:
-- ✅ General UX best practices (inline in SKILL.md)
-- ✅ Common pattern guidance (forms, modals, toggles, lists, buttons)
-- ✅ WCAG 2.1 AA accessibility basics
-- ✅ Progressive disclosure (only relevant principles)
-- ✅ Reads existing patterns from implementations.md
-- ✅ Adapts to user personas (ADHD, elderly, etc. if specified)
+- General UX best practices (inline in SKILL.md)
+- Common pattern guidance (forms, modals, toggles, lists, buttons)
+- WCAG 2.1 AA accessibility basics
+- Progressive disclosure (only relevant principles)
+- Reads existing patterns from implementations.json
+- Adapts to user personas (ADHD, elderly, etc. if specified)
+- JSON output for programmatic consumption
 
 **Not included** (vs full ux-coherence):
-- ❌ No references/ folder (all guidance inline)
-- ❌ No comprehensive UX library
-- ❌ No design system templates
-- ❌ No detailed research methodologies
-- ❌ No usability testing frameworks
-- ❌ No analytics integration
+- No comprehensive UX library
+- No design system templates
+- No detailed research methodologies
+- No usability testing frameworks
+- No analytics integration
 
 **Philosophy**: Provide good-enough UX guidance for POC/MVP, not comprehensive design system.
 
@@ -311,16 +393,17 @@ Copy and track:
 - `document components manually` - Documents components
   - **When**: Component built and needs documentation
   - **Why**: Document UX decisions made for component
-  - **Trigger**: Component complete, add to implementations.md
+  - **Trigger**: Component complete, add to implementations.json
 
 ---
 
 ## Context Files This Skill Reads
 
 **Optionally reads**:
-- `.shipkit/implementations.md` - Existing UI components/patterns
-- `.shipkit/architecture.json` - Past UX decisions
+- `.shipkit/implementations.json` - Existing UI components/patterns
+- `.shipkit/architecture.json` - Past architectural decisions
 - `.shipkit/stack.json` - UI framework info
+- `.shipkit/ux-decisions.json` - Previous UX decisions
 
 **Never reads**:
 - Specs, plans, tasks (not relevant for UX guidance)
@@ -330,38 +413,21 @@ Copy and track:
 ## Context Files This Skill Writes
 
 **Writes to**:
-- `.shipkit/ux-decisions.md` - Logs each UX decision with pattern, rationale, and accessibility requirements
+- `.shipkit/ux-decisions.json` - Logs each UX decision with pattern, rationale, and accessibility requirements
 
-**Write Strategy**: **APPEND** - Each UX decision is added to the end of the file, preserving full history.
+**Write Strategy**: **READ-MODIFY-WRITE**
+- Read existing file (or create if missing)
+- Append new decision to `decisions` array
+- Append new gaps to `gaps` array (if auditing)
+- Update `summary` counts
+- Update `lastUpdated` timestamp
+- Write complete file back
 
-**Why APPEND?**
-- Historical record of UX patterns matters for consistency tracking
-- Can reference past decisions to ensure new components follow established patterns
-- Provides audit trail of why certain UX choices were made
-- Each decision is independent and additive, never conflicts
-- Other skills (like `implement (no skill needed)`) can read to understand established UX patterns
-
-**Entry Format**:
-```markdown
-## [Component Name] - [Date]
-
-**Component Type**: [Form/Modal/Toggle/List/Button/etc]
-**Pattern**: [Specific pattern recommended]
-**Rationale**: [Why this pattern was chosen]
-**Accessibility**: [Key WCAG requirements applied]
-**Existing Match**: [Reference to similar component in implementations.md, if any]
-**User Persona Adaptation**: [ADHD/Elderly/Mobile/etc, if specified]
-
-**Implementation Checklist**:
-- [ ] [Key requirement 1]
-- [ ] [Key requirement 2]
-- [ ] [Accessibility requirement]
-
----
-```
-
-**Also suggests writing to**:
-- `.shipkit/architecture.json` (via `/shipkit-architecture-memory`) - If UX decision becomes architectural pattern
+**Why JSON?**
+- Enables queries like "show all modal decisions"
+- Supports gap tracking and resolution
+- Dashboard integration for UX coverage
+- Other skills can reference decisions by ID
 
 ---
 
@@ -371,10 +437,10 @@ Copy and track:
 
 1. User invokes `/shipkit-ux-audit`
 2. Claude asks what component user is building
-3. Claude optionally reads implementations.md (if exists) to check for similar patterns
-4. Claude optionally reads architecture.json (if exists) for established UX decisions
+3. Claude reads ux-decisions.json (if exists) for existing decisions
+4. Claude optionally reads implementations.json for similar patterns
 5. Claude provides terminal guidance
-6. Claude appends UX decision to `.shipkit/ux-decisions.md` (APPEND mode)
+6. Claude updates `.shipkit/ux-decisions.json`
 7. Total context: ~500-1500 tokens (focused)
 
 **Not loaded**:
@@ -401,21 +467,24 @@ Copy and track:
 
 Guidance is complete when:
 - [ ] User's component type identified
+- [ ] Actual UI components explored for existing patterns and gaps
 - [ ] Relevant UX principles shared (not all principles)
 - [ ] Specific implementation checklist provided
 - [ ] Accessibility requirements included
 - [ ] Existing patterns referenced (if applicable)
-- [ ] UX decision logged to `.shipkit/ux-decisions.md` (APPEND mode)
+- [ ] UX decision logged to `.shipkit/ux-decisions.json`
+- [ ] Summary counts updated
+- [ ] Gaps identified and logged (if auditing existing UI)
 - [ ] Next steps suggested (implement or log architectural decision)
 <!-- /SECTION:success-criteria -->
 ---
 
 ## Common Scenarios
 
-- **Reusing existing patterns** - Check implementations.md first, reference existing components
-- **Creating new patterns** - Provide guidance, suggest logging to architecture.json
+- **Reusing existing patterns** - Check ux-decisions.json and implementations.json first, reference by ID
+- **Creating new patterns** - Provide guidance, log decision with new ID
 - **Accessibility-focused requests** - Apply persona adaptations (see below)
-- **Reviewing existing UI** - Audit against pattern checklists above
+- **Reviewing existing UI** - Audit against pattern checklists, log gaps
 
 ---
 
@@ -427,7 +496,7 @@ Guidance is complete when:
 - "Toast with undo for 5 seconds" (not "allow reversal")
 
 **Reference existing patterns**:
-- Check implementations.md first
+- Check ux-decisions.json for decisions by component type
 - Reuse patterns when applicable
 - Only create new patterns when necessary
 
@@ -465,6 +534,7 @@ Guidance is complete when:
 
 ---
 
----
-
 **Remember**: Good UX is invisible. Users shouldn't think about the interface - it should just work. When in doubt, choose the pattern that requires the least cognitive load and follows existing conventions.
+
+**Schema reference**: See `references/output-schema.md` for complete JSON schema.
+**Example**: See `references/example.json` for a sample output.

@@ -10,9 +10,9 @@
 |------|----------|-----------------|-----------|
 | `.shipkit/stack.json` | > 7 days old OR older than `package.json` | `package.json` mtime | Stack should reflect current dependencies |
 | `.shipkit/architecture.json` | > 14 days old OR major structural changes | `src/` directory mtime | Architecture evolves slower than code |
-| `.shipkit/why.md` | > 30 days old | None (absolute) | Vision rarely changes |
-| `.shipkit/specs/*.md` | > 7 days AND feature not shipped | Git history | Specs shouldn't linger unimplemented |
-| `.shipkit/plans/*.md` | > 3 days AND plan not started | None (absolute) | Plans should be executed promptly |
+| `.shipkit/why.json` | > 30 days old | None (absolute) | Vision rarely changes |
+| `.shipkit/specs/active/*.json` | > 7 days AND feature not shipped | Git history | Specs shouldn't linger unimplemented |
+| `.shipkit/plans/active/*.json` | > 3 days AND plan not started | None (absolute) | Plans should be executed promptly |
 
 ---
 
@@ -39,7 +39,7 @@ def is_file_stale(file_path: str) -> tuple[bool, str]:
     elif "architecture.json" in file_path:
         threshold_days = 14
         compare_file = None
-    elif "why.md" in file_path:
+    elif "why.json" in file_path:
         threshold_days = 30
         compare_file = None
     elif "/specs/" in file_path:
@@ -124,7 +124,7 @@ $days = $age.Days
 **Session Start**: Always check core context files
 - `.shipkit/stack.json`
 - `.shipkit/architecture.json`
-- `.shipkit/why.md`
+- `.shipkit/why.json`
 
 **Before Skill Execution**: Check skill-specific files
 - `/shipkit-spec` → Check existing specs in `.shipkit/specs/`
@@ -146,13 +146,13 @@ Session Start: shipkit-master loaded
 Context Freshness:
   ✓ stack.json (2 days)
   ⚠ architecture.json (12 days - consider updating)
-  ✓ why.md (5 days)
+  ✓ why.json (5 days)
 
 Active Work:
-  ✓ specs/auth-flow.md (1 day)
-  ✗ plans/refactor-api.md (5 days - STALE, not started?)
+  ✓ specs/auth-flow.json (1 day)
+  ✗ plans/refactor-api.json (5 days - STALE, not started?)
 
 Suggestions:
   → architecture.json is aging. Run /shipkit-project-context to refresh.
-  → plans/refactor-api.md may be abandoned. Archive or execute?
+  → plans/refactor-api.json may be abandoned. Archive or execute?
 ```

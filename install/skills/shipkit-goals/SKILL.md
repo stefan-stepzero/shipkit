@@ -1,13 +1,13 @@
 ---
 name: shipkit-goals
-description: "Capture structured project goals that bridge why.md vision to concrete specs. Triggers: 'set goals', 'project goals', 'objectives', 'priorities'."
+description: "Capture structured project goals that bridge why.json vision to concrete specs. Triggers: 'set goals', 'project goals', 'objectives', 'priorities'."
 argument-hint: "[goal topic]"
 agent: shipkit-product-owner-agent
 ---
 
 # shipkit-goals - Project Goals & Objectives
 
-**Purpose**: Capture structured, trackable project goals that bridge `.shipkit/why.md` vision to concrete specs — with priorities, status, and success criteria.
+**Purpose**: Capture structured, trackable project goals that bridge `.shipkit/why.json` vision to concrete specs — with priorities, status, and success criteria.
 
 **What it does**: Asks the user to define objectives, priorities, and success criteria. Generates `.shipkit/goals.json` with structured goals that persist across sessions and feed into mission control.
 
@@ -33,7 +33,7 @@ agent: shipkit-product-owner-agent
 ## Prerequisites
 
 **Optional**:
-- `.shipkit/why.md` (provides vision context — goals are more grounded with it)
+- `.shipkit/why.json` (provides vision context — goals are more grounded with it)
 - `.shipkit/stack.json` (helps frame technically feasible goals)
 
 **If missing**: Skill still works — will ask user to describe vision inline instead.
@@ -78,7 +78,7 @@ agent: shipkit-product-owner-agent
 
 ```bash
 # Vision context
-.shipkit/why.md
+.shipkit/why.json
 
 # Technical context
 .shipkit/stack.json
@@ -87,11 +87,48 @@ agent: shipkit-product-owner-agent
 .shipkit/specs/active/
 ```
 
-**If why.md doesn't exist**: Ask user to briefly describe what the project is for (2-3 sentences).
+**If why.json doesn't exist**: Ask user to briefly describe what the project is for (2-3 sentences).
 
 ---
 
-### Step 2: Ask Clarifying Questions
+### Step 2: Explore Current Codebase State
+
+**Before asking about goals, understand what exists.**
+
+Goals written without knowing what's already built miss partial implementations, existing momentum, and real constraints. This step grounds goal-setting in the project's actual state.
+
+**Launch explore agents** — Use the Task tool with `subagent_type: Explore`:
+
+```
+Agent 1 - Project maturity: "Survey the codebase to understand current
+project maturity. Look for: which features are implemented vs stubbed,
+what areas have tests vs none, what's production-ready vs prototype.
+Report: a brief summary of what exists, what's partial, and what's missing."
+
+Agent 2 - Patterns and debt: "Scan the codebase for technical patterns,
+TODO/FIXME/HACK comments, and areas of technical debt. Look for: recurring
+patterns that indicate architectural direction, areas marked for improvement,
+and partially implemented features. Report: key patterns in use, notable
+debt areas, and any in-progress work."
+```
+
+**Launch both agents in parallel** — they are independent scans.
+
+**Synthesize into goal context** — Before asking the user about goals, note:
+- Features already built (don't set goals for completed work)
+- Partial implementations that need finishing (natural goal candidates)
+- Technical debt that might block other goals
+- Existing momentum (what direction is the code already heading?)
+
+**If exploration reveals important findings**: Share with user during questioning. Example: *"I can see authentication is partially implemented and there are several TODO markers around payments — should these be explicit goals?"*
+
+**Token budget**: Each explore agent should return a focused summary (~500 tokens).
+
+**When to skip**: If the project is brand new (no source files beyond scaffolding), skip exploration and proceed directly to questions.
+
+---
+
+### Step 3: Ask Clarifying Questions
 
 **Ask user 2-3 questions based on context:**
 
@@ -111,7 +148,7 @@ agent: shipkit-product-owner-agent
 
 ---
 
-### Step 3: Generate Goals JSON
+### Step 4: Generate Goals JSON
 
 **Create file using Write tool**: `.shipkit/goals.json`
 
@@ -121,6 +158,11 @@ The output MUST conform to the schema below. This is a strict contract — missi
 
 ## JSON Schema
 
+**Full schema reference**: See `references/output-schema.md`
+**Example output**: See `references/example.json`
+
+### Quick Reference
+
 ```json
 {
   "$schema": "shipkit-artifact",
@@ -128,58 +170,29 @@ The output MUST conform to the schema below. This is a strict contract — missi
   "version": "1.0",
   "lastUpdated": "YYYY-MM-DD",
   "source": "shipkit-goals",
-
-  "summary": {
-    "total": 5,
-    "byPriority": { "p0": 2, "p1": 2, "p2": 1 },
-    "byStatus": { "not-started": 2, "in-progress": 2, "achieved": 1, "deferred": 0 }
-  },
-
+  "summary": { "total": N, "byPriority": {...}, "byStatus": {...} },
   "goals": [
     {
       "id": "goal-slug",
-      "name": "Human-readable goal name",
-      "priority": "p0",
-      "status": "in-progress",
+      "name": "Goal Name",
+      "priority": "p0|p1|p2",
+      "status": "not-started|in-progress|achieved|deferred",
       "objective": "What we're trying to achieve",
-      "successCriteria": [
-        "Measurable criterion 1",
-        "Measurable criterion 2"
-      ],
-      "linkedSpecs": ["specs/active/feature-x.md"],
-      "notes": "Optional context"
+      "successCriteria": ["Criterion 1", "Criterion 2"],
+      "linkedSpecs": ["specs/active/feature.json"],
+      "notes": "Optional"
     }
   ]
 }
 ```
 
-### Field Reference
+**Key fields**: `id` (kebab-case slug), `priority` (p0/p1/p2), `status` (tracking), `successCriteria` (measurable).
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `$schema` | string | yes | Always `"shipkit-artifact"` — identifies this as a Shipkit-managed file |
-| `type` | string | yes | Always `"goals"` — artifact type for routing/rendering |
-| `version` | string | yes | Schema version for forward compatibility |
-| `lastUpdated` | string | yes | ISO date of last modification |
-| `source` | string | yes | Skill that created/updated this file |
-| `summary` | object | yes | Aggregated counts for dashboard rendering |
-| `goals` | array | yes | The actual goals |
-| `goals[].id` | string | yes | Slug identifier (kebab-case) |
-| `goals[].name` | string | yes | Display name |
-| `goals[].priority` | enum | yes | `"p0"` \| `"p1"` \| `"p2"` |
-| `goals[].status` | enum | yes | `"not-started"` \| `"in-progress"` \| `"achieved"` \| `"deferred"` |
-| `goals[].objective` | string | yes | What we're trying to achieve |
-| `goals[].successCriteria` | string[] | yes | How we know it's done |
-| `goals[].linkedSpecs` | string[] | no | Paths to related spec files |
-| `goals[].notes` | string | no | Additional context |
-
-### Summary Object
-
-The `summary` field MUST be kept in sync with the `goals` array. It exists so the dashboard can render overview cards without iterating the full array. Recompute it every time the file is written.
+**Summary**: Recompute `summary` counts every time the file is written.
 
 ---
 
-### Step 4: Save and Suggest Next Step
+### Step 5: Save and Suggest Next Step
 
 **Use Write tool to create/overwrite**: `.shipkit/goals.json`
 
@@ -205,32 +218,6 @@ Ready to spec your top-priority goal?
 
 ---
 
-## Shipkit Artifact Convention
-
-This skill follows the **Shipkit JSON artifact convention** — a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
-
-**Every JSON artifact MUST include these top-level fields:**
-
-```json
-{
-  "$schema": "shipkit-artifact",
-  "type": "<artifact-type>",
-  "version": "1.0",
-  "lastUpdated": "YYYY-MM-DD",
-  "source": "<skill-name>",
-  "summary": { ... }
-}
-```
-
-- `$schema` — Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
-- `type` — The artifact type (`"goals"`, `"spec"`, `"plan"`, etc.). Dashboard uses this for rendering.
-- `version` — Schema version. Bump when fields change.
-- `lastUpdated` — When this file was last written.
-- `source` — Which skill wrote this file.
-- `summary` — Aggregated data for dashboard cards. Structure varies by type.
-
-Skills that haven't migrated to JSON yet continue writing markdown. The reporter hook ships both: JSON artifacts get structured dashboard rendering, markdown files fall back to metadata-only (exists, date, size).
-
 ---
 
 ## When This Skill Integrates with Others
@@ -254,9 +241,9 @@ Skills that haven't migrated to JSON yet continue writing markdown. The reporter
 ## Context Files This Skill Reads
 
 **Optional** (read if exist):
-- `.shipkit/why.md` - Project vision context
+- `.shipkit/why.json` - Project vision context
 - `.shipkit/stack.json` - Technical context
-- `.shipkit/specs/active/*.md` - Existing specs to link
+- `.shipkit/specs/active/*.json` - Existing specs to link
 
 **If missing**: Asks user for inline context instead.
 
@@ -283,9 +270,11 @@ Skills that haven't migrated to JSON yet continue writing markdown. The reporter
 
 ## Success Criteria
 
+- [ ] Codebase explored for current state, partial implementations, and debt
 - [ ] Goals are structured with priority levels (P0/P1/P2)
 - [ ] Each goal has measurable success criteria
-- [ ] Goals connect to why.md vision
+- [ ] Goals connect to why.json vision
+- [ ] Goals reflect actual codebase state (not duplicating completed work)
 - [ ] Status tracking enables cross-session updates
 - [ ] Output conforms to JSON schema above
 - [ ] Summary field is accurate
@@ -303,7 +292,7 @@ User: "Set goals for this project"
 
 Claude:
 1. Check .shipkit/goals.json (doesn't exist)
-2. Read .shipkit/why.md for vision context
+2. Read .shipkit/why.json for vision context
 3. Ask: "What are the 3-5 most important objectives?"
    User: "Launch MVP, get 10 beta users, integrate payments"
 4. Ask: "Which matters most if you could only do one?"

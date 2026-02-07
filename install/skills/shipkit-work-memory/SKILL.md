@@ -39,13 +39,9 @@ argument-hint: "[checkpoint name]"
 
 ---
 
-## JSON Schema
+## JSON Schema (Quick Reference)
 
 **This skill outputs `.shipkit/progress.json` using the Shipkit JSON Artifact Convention.**
-
-All `.shipkit/*.json` files MUST include the artifact envelope fields: `$schema`, `type`, `version`, `lastUpdated`, `source`, and `summary`.
-
-### Full Schema
 
 ```json
 {
@@ -54,129 +50,17 @@ All `.shipkit/*.json` files MUST include the artifact envelope fields: `$schema`
   "version": "1.0",
   "lastUpdated": "2025-01-15T10:00:00Z",
   "source": "shipkit-work-memory",
-  "summary": {
-    "totalSessions": 12,
-    "currentPhase": "implementation",
-    "lastSessionDate": "2025-01-15",
-    "activeWorkstream": "Authentication flow",
-    "blockers": 1,
-    "momentum": "high"
-  },
-  "sessions": [
-    {
-      "id": "session-12",
-      "date": "2025-01-15",
-      "duration": "2h",
-      "workstream": "Authentication flow",
-      "phase": "implementation",
-      "accomplished": [
-        "Implemented JWT token refresh",
-        "Added middleware for protected routes"
-      ],
-      "filesModified": [
-        "src/middleware/auth.ts",
-        "src/routes/api/auth.ts"
-      ],
-      "decisions": [
-        {
-          "decision": "Use HTTP-only cookies for token storage",
-          "rationale": "More secure than localStorage"
-        }
-      ],
-      "gotchas": [
-        "Prisma must import from @/lib/prisma"
-      ],
-      "blockers": [],
-      "nextSteps": [
-        "Add rate limiting to auth endpoints",
-        "Write integration tests for auth flow"
-      ],
-      "status": "in-progress"
-    }
-  ],
-  "workstreams": [
-    {
-      "id": "ws-1",
-      "name": "Authentication flow",
-      "status": "in-progress",
-      "startDate": "2025-01-10",
-      "sessions": ["session-10", "session-11", "session-12"],
-      "completionEstimate": "80%"
-    }
-  ],
-  "resumePoint": {
-    "lastSession": "session-12",
-    "immediateNextStep": "Add rate limiting to auth endpoints",
-    "context": "JWT auth is working, need to harden before deployment",
-    "openFiles": ["src/middleware/auth.ts", "src/routes/api/auth.ts"],
-    "relatedArtifacts": ["architecture.json", "contracts.json"]
-  },
-  "timeline": [
-    {
-      "date": "2025-01-10",
-      "event": "Started authentication workstream",
-      "type": "milestone"
-    },
-    {
-      "date": "2025-01-12",
-      "event": "Decided on JWT over session-based auth",
-      "type": "decision"
-    },
-    {
-      "date": "2025-01-15",
-      "event": "Core auth flow working end-to-end",
-      "type": "milestone"
-    }
-  ]
+  "summary": { "totalSessions", "currentPhase", "lastSessionDate", "activeWorkstream", "blockers", "momentum" },
+  "sessions": [{ "id", "date", "duration", "workstream", "phase", "accomplished", "filesModified", "decisions", "gotchas", "blockers", "nextSteps", "status" }],
+  "workstreams": [{ "id", "name", "status", "startDate", "sessions", "completionEstimate" }],
+  "resumePoint": { "lastSession", "immediateNextStep", "context", "openFiles", "relatedArtifacts" },
+  "timeline": [{ "date", "event", "type" }]
 }
 ```
 
-### Schema Field Reference
+**Full schema and field reference**: See `references/output-schema.md`
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `$schema` | string | Always `"shipkit-artifact"` |
-| `type` | string | Always `"work-memory"` |
-| `version` | string | Schema version, currently `"1.0"` |
-| `lastUpdated` | string | ISO 8601 datetime of last update |
-| `source` | string | Always `"shipkit-work-memory"` |
-| `summary` | object | Aggregated data for dashboard cards |
-| `summary.totalSessions` | number | Count of all sessions logged |
-| `summary.currentPhase` | string | Current project phase (discovery, planning, implementation, testing, deployment) |
-| `summary.lastSessionDate` | string | ISO date of most recent session |
-| `summary.activeWorkstream` | string | Name of the currently active workstream |
-| `summary.blockers` | number | Count of active blockers across all sessions |
-| `summary.momentum` | string | `"high"`, `"medium"`, or `"low"` based on recent session frequency and progress |
-| `sessions` | array | Ordered list of session entries (most recent last) |
-| `sessions[].id` | string | Unique session ID (`session-N`) |
-| `sessions[].date` | string | ISO date of the session |
-| `sessions[].duration` | string | Approximate session duration |
-| `sessions[].workstream` | string | Which workstream this session contributed to |
-| `sessions[].phase` | string | Phase during this session |
-| `sessions[].accomplished` | array | List of completed items |
-| `sessions[].filesModified` | array | Files changed (from git status) |
-| `sessions[].decisions` | array | Objects with `decision` and `rationale` |
-| `sessions[].gotchas` | array | Surprises, errors, workarounds discovered |
-| `sessions[].blockers` | array | Active blockers preventing progress |
-| `sessions[].nextSteps` | array | What to do next |
-| `sessions[].status` | string | `"in-progress"`, `"complete"`, or `"blocked"` |
-| `workstreams` | array | Tracked workstreams grouping related sessions |
-| `workstreams[].id` | string | Unique workstream ID (`ws-N`) |
-| `workstreams[].name` | string | Workstream name |
-| `workstreams[].status` | string | `"in-progress"`, `"complete"`, or `"blocked"` |
-| `workstreams[].startDate` | string | ISO date when workstream began |
-| `workstreams[].sessions` | array | Session IDs belonging to this workstream |
-| `workstreams[].completionEstimate` | string | Estimated completion percentage |
-| `resumePoint` | object | Quick-resume context for next session |
-| `resumePoint.lastSession` | string | ID of the most recent session |
-| `resumePoint.immediateNextStep` | string | Single most important next action |
-| `resumePoint.context` | string | Brief context for resuming |
-| `resumePoint.openFiles` | array | Files that were being worked on |
-| `resumePoint.relatedArtifacts` | array | Other `.shipkit/*.json` files relevant to current work |
-| `timeline` | array | Ordered events for timeline visualization |
-| `timeline[].date` | string | ISO date of the event |
-| `timeline[].event` | string | Description of what happened |
-| `timeline[].type` | string | `"milestone"`, `"decision"`, `"blocker"`, or `"session"` |
+**Realistic example**: See `references/example.json`
 
 ---
 

@@ -1,0 +1,135 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "user-tasks",
+  "version": "1.0",
+  "lastUpdated": "2025-01-15",
+  "source": "shipkit-user-instructions",
+
+  "summary": {
+    "total": 5,
+    "byStatus": {
+      "active": 2,
+      "in-progress": 1,
+      "completed": 1,
+      "deferred": 1
+    },
+    "byPriority": {
+      "high": 2,
+      "medium": 2,
+      "low": 1
+    }
+  },
+
+  "tasks": [
+    {
+      "id": "configure-lemon-squeezy-webhook",
+      "title": "Configure Lemon Squeezy Webhook",
+      "description": "Webhook configuration enables Lemon Squeezy to notify your app of payment events (order_created, subscription_created). Without this, users won't get access after payment.",
+      "status": "active",
+      "priority": "high",
+      "steps": [
+        "Go to Lemon Squeezy dashboard -> Settings -> Webhooks",
+        "Add webhook URL: https://your-domain.com/api/webhooks/lemonsqueezy",
+        "Select events: order_created, subscription_created, subscription_updated",
+        "Copy the signing secret",
+        "Add to .env.local: LEMONSQUEEZY_WEBHOOK_SECRET=...",
+        "Add API key: LEMONSQUEEZY_API_KEY=..."
+      ],
+      "verification": [
+        ".env.local contains LEMONSQUEEZY_WEBHOOK_SECRET",
+        ".env.local contains LEMONSQUEEZY_API_KEY",
+        "Test purchase triggers webhook (use test mode)"
+      ],
+      "relatedFeature": "Payment processing",
+      "triggeredBy": "shipkit-integration-docs",
+      "createdAt": "2025-01-15",
+      "completedAt": null
+    },
+    {
+      "id": "setup-production-database",
+      "title": "Set up Production Database",
+      "description": "Production database is required for deployment. Local SQLite won't work in serverless environments.",
+      "status": "in-progress",
+      "priority": "high",
+      "steps": [
+        "Create a Turso database at https://turso.tech",
+        "Copy the database URL and auth token",
+        "Add to production environment: DATABASE_URL=...",
+        "Add to production environment: DATABASE_AUTH_TOKEN=...",
+        "Run prisma db push to create tables"
+      ],
+      "verification": [
+        "Production DATABASE_URL is set",
+        "Can connect to production database from local",
+        "Tables exist in production database"
+      ],
+      "relatedFeature": "Database",
+      "triggeredBy": "shipkit-project-context",
+      "createdAt": "2025-01-14",
+      "completedAt": null
+    },
+    {
+      "id": "install-docker",
+      "title": "Install Docker for Local Development",
+      "description": "Docker is needed for running PostgreSQL locally during development.",
+      "status": "active",
+      "priority": "medium",
+      "steps": [
+        "Download Docker Desktop from https://docker.com",
+        "Install and start Docker Desktop",
+        "Verify with: docker --version"
+      ],
+      "verification": [
+        "docker --version returns a version",
+        "docker ps works without errors"
+      ],
+      "relatedFeature": "Local development",
+      "triggeredBy": "manual",
+      "createdAt": "2025-01-12",
+      "completedAt": null
+    },
+    {
+      "id": "configure-oauth-providers",
+      "title": "Configure OAuth Providers",
+      "description": "OAuth providers enable social login. Google and GitHub are configured in code but need credentials.",
+      "status": "completed",
+      "priority": "medium",
+      "steps": [
+        "Create Google OAuth credentials at console.cloud.google.com",
+        "Create GitHub OAuth app at github.com/settings/developers",
+        "Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to .env.local",
+        "Add GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET to .env.local"
+      ],
+      "verification": [
+        "All four OAuth environment variables are set",
+        "Google login works in local development",
+        "GitHub login works in local development"
+      ],
+      "relatedFeature": "Authentication",
+      "triggeredBy": "shipkit-integration-docs",
+      "createdAt": "2025-01-10",
+      "completedAt": "2025-01-13"
+    },
+    {
+      "id": "setup-analytics",
+      "title": "Set up Analytics",
+      "description": "Analytics helps track user behavior and product usage. Can be deferred until after MVP launch.",
+      "status": "deferred",
+      "priority": "low",
+      "steps": [
+        "Create Posthog account at posthog.com",
+        "Copy project API key",
+        "Add NEXT_PUBLIC_POSTHOG_KEY to .env.local",
+        "Add NEXT_PUBLIC_POSTHOG_HOST to .env.local"
+      ],
+      "verification": [
+        "Posthog environment variables are set",
+        "Page views appear in Posthog dashboard"
+      ],
+      "relatedFeature": "Analytics",
+      "triggeredBy": "manual",
+      "createdAt": "2025-01-08",
+      "completedAt": null
+    }
+  ]
+}

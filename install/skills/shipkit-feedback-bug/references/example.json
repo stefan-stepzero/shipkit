@@ -1,0 +1,144 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "bug-spec",
+  "version": "1.0",
+  "lastUpdated": "2025-01-15T14:32:00Z",
+  "source": "shipkit-feedback-bug",
+
+  "summary": {
+    "name": "Cart Total Not Updating After Remove",
+    "status": "active",
+    "severity": "high",
+    "feedbackSource": "user-testing",
+    "rootCauseType": "state-management",
+    "affectedComponentCount": 2,
+    "hasBlastRadius": true
+  },
+
+  "metadata": {
+    "id": "bug-cart-total-not-updating",
+    "created": "2025-01-15",
+    "updated": "2025-01-15",
+    "author": "shipkit-feedback-bug",
+    "feedbackDate": "2025-01-14"
+  },
+
+  "originalFeedback": {
+    "quote": "I removed an item from my cart but the total price still shows the old amount. I had to refresh the page to see the correct total.",
+    "source": "user-testing",
+    "reporter": "User Testing Session #7"
+  },
+
+  "problem": {
+    "statement": "Cart total displays stale value after removing items until page refresh",
+    "expectedBehavior": "Cart total updates immediately when items are removed",
+    "actualBehavior": "Cart total remains unchanged after item removal; only updates on page refresh"
+  },
+
+  "reproduction": {
+    "confirmed": "2025-01-15",
+    "steps": [
+      "Add 2+ items to shopping cart",
+      "Navigate to cart page",
+      "Note the total price displayed",
+      "Click remove button on any item",
+      "Observe item disappears from list",
+      "Observe total price remains unchanged"
+    ],
+    "environment": {
+      "browser": "All browsers",
+      "os": "Any",
+      "prerequisites": [
+        "Logged in user",
+        "At least 2 items in cart"
+      ]
+    },
+    "minimumRepro": "Remove any item from cart with 2+ items"
+  },
+
+  "investigation": {
+    "codePath": {
+      "entry": "CartItem.handleRemove()",
+      "failurePoint": "CartContext.removeItem() - total not recalculated",
+      "relevantFiles": [
+        "src/components/CartItem.tsx:34",
+        "src/context/CartContext.tsx:45-78",
+        "src/components/CartSummary.tsx:12"
+      ]
+    },
+    "rootCause": {
+      "fiveWhys": [
+        {
+          "level": 1,
+          "symptom": "Total doesn't update after remove",
+          "because": "CartSummary reads from cached total"
+        },
+        {
+          "level": 2,
+          "symptom": "CartSummary reads from cached total",
+          "because": "useMemo dependency array missing items"
+        },
+        {
+          "level": 3,
+          "symptom": "useMemo dependency array missing items",
+          "because": "Developer oversight when adding memoization"
+        }
+      ],
+      "conclusion": "Stale closure: useMemo in CartSummary has incorrect dependency array - missing 'items' causes total to be cached with old values",
+      "type": "state-management"
+    },
+    "blastRadius": {
+      "description": "Similar memoization pattern used in wishlist",
+      "affectedComponents": [
+        {
+          "file": "src/components/WishlistSummary.tsx",
+          "risk": "medium",
+          "samePattern": true
+        },
+        {
+          "file": "src/components/OrderSummary.tsx",
+          "risk": "low",
+          "samePattern": false
+        }
+      ]
+    }
+  },
+
+  "fix": {
+    "approach": "Add 'items' to useMemo dependency array in CartSummary, audit other summary components for same issue",
+    "acceptanceCriteria": [
+      "Cart total updates immediately when item removed",
+      "Cart total updates immediately when quantity changed",
+      "WishlistSummary has correct dependencies",
+      "No performance regression from fix",
+      "Add unit test for total recalculation"
+    ]
+  },
+
+  "learnings": {
+    "patternToAvoid": "Manually specifying useMemo dependencies without exhaustive-deps lint rule",
+    "patternToUse": "Enable react-hooks/exhaustive-deps ESLint rule and trust the linter",
+    "architectureMemoryWorthy": false
+  },
+
+  "resolution": {
+    "status": "open",
+    "fixedIn": null,
+    "verifiedBy": null,
+    "verifiedDate": null
+  },
+
+  "references": {
+    "stack": ".shipkit/stack.json",
+    "codebaseIndex": ".shipkit/codebase-index.json",
+    "relatedSpecs": [],
+    "relatedBugs": []
+  },
+
+  "nextSteps": [
+    "Fix CartSummary useMemo dependencies",
+    "Audit WishlistSummary for same issue",
+    "Enable exhaustive-deps lint rule",
+    "/shipkit-verify after implementation"
+  ]
+}

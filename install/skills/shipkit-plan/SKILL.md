@@ -29,7 +29,7 @@ agent: shipkit-architect-agent
 ## Prerequisites
 
 **Check before starting**:
-- Spec exists: `.shipkit/specs/active/[feature-name].md`
+- Spec exists: `.shipkit/specs/active/[feature-name].json`
 - Stack defined: `.shipkit/stack.json` (from shipkit-project-context)
 
 **UI-Heavy Feature Check** (CRITICAL):
@@ -53,7 +53,7 @@ agent: shipkit-architect-agent
 
 **First, scan available specs:**
 ```bash
-ls .shipkit/specs/active/*.md 2>/dev/null || echo "No specs found"
+ls .shipkit/specs/active/*.json 2>/dev/null || echo "No specs found"
 ```
 
 **Then use AskUserQuestion tool:**
@@ -101,11 +101,11 @@ options:
 ### Step 2: Read Existing Context
 
 **Read these files to understand project context**:
-- `.shipkit/specs/active/[feature-name].md` (Required)
+- `.shipkit/specs/active/[feature-name].json` (Required)
 - `.shipkit/stack.json` (Stack info)
 - `.shipkit/architecture.json` (Past decisions)
 
-**Optional context** (load if relevant): contracts.json, schema.md
+**Optional context** (load if relevant): contracts.json, schema.json
 
 **Extract from spec:**
 - All requirements (for coverage mapping later)
@@ -199,7 +199,9 @@ grep -r "ErrorBoundary\|onError\|handleError" --include="*.ts" --include="*.tsx"
 
 **Create plan file using Write tool**:
 
-**Location**: `.shipkit/plans/active/[feature-name]-plan.md`
+**Location**: `.shipkit/plans/active/[feature-name].json`
+
+**Output format**: JSON (see `references/output-schema.md` for full schema, `references/example.json` for realistic example)
 
 **During generation, apply these rules:**
 
@@ -235,168 +237,148 @@ grep -r "ErrorBoundary\|onError\|handleError" --include="*.ts" --include="*.tsx"
    - Count files to create vs modify
    - List bash commands that will run (tests, build, migrations)
    - Note any new dependencies to install
-   - This populates the "Implementation Permissions" section
+   - This populates the `permissions` object
 
-**Plan structure:**
+**JSON Plan Structure:**
 
-```markdown
-# Implementation Plan - [Feature Name]
-
-**Created**: [timestamp]
-**Spec**: specs/active/[feature-name].md
-**Status**: Planning
-
----
-
-## Overview
-
-**Goal**: [1-2 sentence summary from spec]
-**Complexity**: [Simple/Medium/Complex]
-
----
-
-## Codebase Patterns (from Step 2.7 scan)
-
-| Concern | Current Pattern | Source File | Plan Will Use |
-|---------|-----------------|-------------|---------------|
-| State | [pattern] | [file] | [same pattern] |
-| Data fetching | [pattern] | [file] | [same pattern] |
-| Error handling | [pattern] | [file] | [same pattern] |
-| Auth | [pattern] | [file] | [same pattern] |
-
-**Pattern divergence**: [None / If diverging, explain why]
-
----
-
-## Implementation Phases
-
-### Phase 1: [Name]
-
-**Gate**: [Specific testable condition - command to run OR behavior to verify]
-
-| Step | Description | Creates | Consumed By |
-|------|-------------|---------|-------------|
-| 1.1 | [Specific actionable task] | [Artifact: file, function, type] | [File:function OR Step X.Y] |
-| 1.2 | [Specific actionable task] | [Artifact] | [Consumer] |
-
-### Phase 2: [Name]
-
-**Gate**: [Specific testable condition]
-
-| Step | Description | Creates | Consumed By |
-|------|-------------|---------|-------------|
-| 2.1 | [Specific actionable task] | [Artifact] | [Consumer] |
-| 2.2 | [Specific actionable task] | [Artifact] | [Consumer] |
-
-### Phase 3: [Name]
-
-**Gate**: [Specific testable condition]
-
-| Step | Description | Creates | Consumed By |
-|------|-------------|---------|-------------|
-| 3.1 | [Specific actionable task] | [Artifact] | [Consumer] |
-
-[Continue for all phases needed...]
-
----
-
-## Consumption Map
-
-**Purpose**: Verify no orphaned foundations - everything created is used.
-
-| Creates | Type | Consumed By | Status |
-|---------|------|-------------|--------|
-| [Artifact 1] | [file/function/type/config] | [Specific consumer] | ✓ |
-| [Artifact 2] | [file/function/type/config] | [Specific consumer] | ✓ |
-| [Every artifact from all phases...] | | | |
-
-**Orphan check**: [0 orphans ✓ / X orphans - MUST FIX BEFORE PROCEEDING]
-
----
-
-## Spec Coverage Map
-
-**Purpose**: Verify plan addresses all spec requirements.
-
-| Spec Requirement | Plan Step(s) | Status |
-|------------------|--------------|--------|
-| [Requirement 1 from spec] | Phase X, Step Y | ✓ |
-| [Requirement 2 from spec] | Phase X, Step Y | ✓ |
-| [Every requirement from spec...] | | |
-
-**Coverage check**: [X/X requirements mapped ✓ / X unmapped - MUST FIX]
-
----
-
-## Phase Gates Summary
-
-**Purpose**: Ensure each phase has verifiable completion criteria.
-
-| Phase | Gate Condition | Verification Method |
-|-------|----------------|---------------------|
-| 1 | [Specific condition] | [Command: `npm test` / Manual: check X in browser] |
-| 2 | [Specific condition] | [Command / Manual check] |
-| 3 | [Specific condition] | [Command / Manual check] |
-
-**Gate quality check**: All gates are specific and testable ✓
-
-**Bad gates** (never use these):
-- "Setup complete" → Instead: "`npm run dev` starts without errors"
-- "Core done" → Instead: "User can see login form at /login"
-- "It works" → Instead: "Token appears in localStorage after successful login"
-
----
-
-## Files
-
-**New files to create:**
-- [path/to/file.ts] - [purpose]
-- [path/to/file.ts] - [purpose]
-
-**Existing files to modify** (verified to exist):
-- [path/to/file.ts] - [what changes]
-- [path/to/file.ts] - [what changes]
-
----
-
-## Implementation Permissions
-
-**Actions needed to execute this plan** (pre-declare for smoother implementation):
-
-| Category | Actions | Scope |
-|----------|---------|-------|
-| Create files | [X] new files | [list paths] |
-| Modify files | [X] existing files | [list paths] |
-| Run commands | [list: tests, build, lint, etc.] | [specific commands if known] |
-| Database | [migrations, seeds, etc.] | [migration names if known] |
-| Install deps | [if any new deps needed] | [package names] |
-
-**Why this matters**: Approving the plan pre-grants these permission categories, avoiding constant prompts during implementation. User sees full scope upfront.
-
----
-
-## Key Decisions
-
-**Decision 1**: [What decision / Why this choice / What alternative was considered]
-
-[Only if plan makes architectural decisions or diverges from existing patterns]
-
----
-
-## Validation Summary
-
-```
-Consumption:      X creates, X consumed, 0 orphans ✓
-Granularity:      X steps, 0 oversized ✓
-Existence:        X references to existing code, X verified ✓
-Phase gates:      X phases, X testable gates ✓
-Spec coverage:    X/X requirements mapped ✓
-Pattern alignment: Aligned with codebase ✓
-Permissions:      X new files, X modified, X commands declared ✓
+```json
+{
+  "$schema": "https://shipkit.io/schemas/plan.json",
+  "type": "plan",
+  "version": "1.0.0",
+  "lastUpdated": "[ISO 8601 timestamp]",
+  "source": "shipkit-plan",
+  "plan": {
+    "id": "plan-[feature-name]",
+    "name": "[Feature Name]",
+    "status": "ready",
+    "specId": "spec-[feature-name]",
+    "created": "[ISO 8601 timestamp]",
+    "updated": "[ISO 8601 timestamp]",
+    "overview": {
+      "goal": "[1-2 sentence summary from spec]",
+      "complexity": "[simple/medium/complex]"
+    },
+    "summary": {
+      "phaseCount": 0,
+      "taskCount": 0,
+      "completionPercentage": 0,
+      "filesCreated": 0,
+      "filesModified": 0
+    },
+    "codebasePatterns": [
+      {
+        "concern": "[state/data-fetching/error-handling/auth]",
+        "currentPattern": "[pattern name]",
+        "sourceFile": "[example file path]",
+        "planWillUse": "[same pattern]"
+      }
+    ],
+    "phases": [
+      {
+        "id": "phase-1",
+        "name": "[Phase Name]",
+        "gate": {
+          "condition": "[Specific testable condition]",
+          "verification": "[Command or manual check]"
+        },
+        "tasks": [
+          {
+            "id": "1.1",
+            "description": "[Specific actionable task]",
+            "status": "pending",
+            "dependencies": [],
+            "creates": {
+              "artifact": "[file path or function name]",
+              "type": "[file/function/type/config/component/hook/api-endpoint/test/migration]"
+            },
+            "consumedBy": {
+              "reference": "[file:function OR task ID OR 'entry-point']",
+              "type": "[file/task/entry-point]"
+            },
+            "files": {
+              "create": ["[paths]"],
+              "modify": ["[paths]"]
+            },
+            "acceptanceCriteria": ["[criteria]"],
+            "estimatedHours": 1.0
+          }
+        ]
+      }
+    ],
+    "consumptionMap": [
+      {
+        "artifact": "[artifact name]",
+        "type": "[artifact type]",
+        "consumedBy": "[consumer]",
+        "verified": true
+      }
+    ],
+    "specCoverage": [
+      {
+        "requirement": "[requirement from spec]",
+        "taskIds": ["1.1", "1.2"],
+        "covered": true
+      }
+    ],
+    "files": {
+      "create": [
+        { "path": "[path]", "purpose": "[purpose]" }
+      ],
+      "modify": [
+        { "path": "[path]", "changes": "[what changes]" }
+      ]
+    },
+    "permissions": {
+      "createFiles": ["[paths]"],
+      "modifyFiles": ["[paths]"],
+      "commands": ["npm run dev", "npm run test"],
+      "database": [],
+      "dependencies": []
+    },
+    "decisions": [
+      {
+        "decision": "[what was decided]",
+        "rationale": "[why this choice]",
+        "alternatives": ["[alternative 1]", "[alternative 2]"]
+      }
+    ],
+    "risks": [
+      {
+        "risk": "[risk description]",
+        "likelihood": "[low/medium/high]",
+        "impact": "[low/medium/high]",
+        "mitigation": "[how to mitigate]"
+      }
+    ],
+    "openQuestions": [
+      {
+        "question": "[open question]",
+        "impact": "[how it affects plan]",
+        "resolution": "[blocking/can-proceed/resolved]",
+        "owner": "[who should resolve]"
+      }
+    ],
+    "validation": {
+      "consumption": { "creates": 0, "consumed": 0, "orphans": 0, "passed": true },
+      "granularity": { "totalSteps": 0, "oversized": 0, "passed": true },
+      "existence": { "references": 0, "verified": 0, "passed": true },
+      "phaseGates": { "totalPhases": 0, "testableGates": 0, "passed": true },
+      "specCoverage": { "totalRequirements": 0, "mapped": 0, "passed": true },
+      "patternAlignment": { "aligned": true, "divergences": 0, "justified": true, "passed": true },
+      "permissions": { "newFiles": 0, "modifiedFiles": 0, "commands": 0, "passed": true },
+      "status": "valid"
+    }
+  }
+}
 ```
 
-**Plan status**: VALID - Ready for implementation
-```
+**Gate quality rules** (never use vague gates):
+- Bad: "Setup complete" → Good: "`npm run dev` starts without errors"
+- Bad: "Core done" → Good: "User can see login form at /login"
+- Bad: "It works" → Good: "Token appears in localStorage after successful login"
+
+**Why this matters**: Approving the plan pre-grants permission categories in `permissions`, avoiding constant prompts during implementation. User sees full scope upfront.
 
 ---
 
@@ -474,18 +456,21 @@ Review Codebase Patterns table:
 - [ ] If diverging, explicit justification provided
 - [ ] No training-data patterns introduced without verification
 
-**Validation output** (include in plan):
-```
-Consumption:      [X] creates, [X] consumed, [0] orphans [✓/✗]
-Granularity:      [X] steps, [0] oversized [✓/✗]
-Existence:        [X] references, [X] verified [✓/✗]
-Phase gates:      [X] phases, [X] testable [✓/✗]
-Spec coverage:    [X]/[X] requirements [✓/✗]
-Pattern alignment: [Aligned/Divergence justified] [✓/✗]
-Permissions:      [X] new files, [X] modified, [X] commands [✓/✗]
+**Validation output** (populate in plan's `validation` object):
+```json
+"validation": {
+  "consumption": { "creates": X, "consumed": X, "orphans": 0, "passed": true },
+  "granularity": { "totalSteps": X, "oversized": 0, "passed": true },
+  "existence": { "references": X, "verified": X, "passed": true },
+  "phaseGates": { "totalPhases": X, "testableGates": X, "passed": true },
+  "specCoverage": { "totalRequirements": X, "mapped": X, "passed": true },
+  "patternAlignment": { "aligned": true, "divergences": 0, "justified": true, "passed": true },
+  "permissions": { "newFiles": X, "modifiedFiles": X, "commands": X, "passed": true },
+  "status": "valid"
+}
 ```
 
-**If ANY check fails**: Fix before proceeding. Do not output plan with known failures.
+**If ANY check fails**: Fix before proceeding. Set `status` to `"invalid"` if plan has known failures.
 
 ---
 
@@ -517,7 +502,7 @@ Copy and track:
 - [ ] All phases have testable gates
 - [ ] All spec requirements mapped to steps
 - [ ] Pattern alignment confirmed
-- [ ] Saved to `.shipkit/plans/active/[name]-plan.md`
+- [ ] Saved to `.shipkit/plans/active/[name].json`
 
 ---
 
@@ -573,7 +558,7 @@ Copy and track:
 
 ### Before This Skill
 - `/shipkit-spec` - Creates feature specification (required)
-- `/shipkit-project-context` - Generates stack.json, schema.md
+- `/shipkit-project-context` - Generates stack.json, schema.json
 - `/shipkit-architecture-memory` - Logs past decisions
 - `/shipkit-prototyping` - Creates UI prototypes (if UI-heavy)
 
@@ -587,7 +572,7 @@ Copy and track:
 ## Context Files This Skill Reads
 
 **Always reads**:
-- `.shipkit/specs/active/[feature].md` - Feature requirements
+- `.shipkit/specs/active/[feature].json` - Feature requirements
 - `.shipkit/stack.json` - Tech stack info
 
 **Scans** (for pattern detection):
@@ -596,14 +581,18 @@ Copy and track:
 **Conditionally reads**:
 - `.shipkit/architecture.json` - Past decisions
 - `.shipkit/contracts.json` - Type definitions
-- `.shipkit/schema.md` - Database schema
+- `.shipkit/schema.json` - Database schema
 
 ---
 
 ## Context Files This Skill Writes
 
 **Creates**:
-- `.shipkit/plans/active/[feature]-plan.md` - Validated implementation plan
+- `.shipkit/plans/active/[feature].json` - Validated implementation plan (JSON format)
+
+**JSON Schema**: See `references/output-schema.md` for full schema definition.
+
+**Example**: See `references/example.json` for a realistic implementation plan.
 
 **Write Strategy**: **OVERWRITE AND REPLACE**
 

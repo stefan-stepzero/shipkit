@@ -39,7 +39,7 @@ allowed-tools: Read, Glob, Grep, AskUserQuestion
 ## Prerequisites
 
 **Recommended**:
-- `.shipkit/why.md` — Project vision provides decision-making context
+- `.shipkit/why.json` — Project vision provides decision-making context
 - `.shipkit/architecture.json` — Existing decisions constrain new ones
 - `.shipkit/stack.json` — Technical constraints shape options
 
@@ -54,7 +54,7 @@ allowed-tools: Read, Glob, Grep, AskUserQuestion
 **Read available context files** (do NOT create or modify any files):
 
 ```
-Read: .shipkit/why.md         → Project vision, goals, constraints
+Read: .shipkit/why.json       → Project vision, goals, constraints
 Read: .shipkit/architecture.json → Existing decisions and rationale
 Read: .shipkit/stack.json        → Technology choices and constraints
 ```
@@ -214,10 +214,10 @@ Ask: "Would you like to explore any of these further, or shall we move to captur
 
 ## Context Files This Skill Reads
 
-- `.shipkit/why.md` — Project vision and goals
+- `.shipkit/why.json` — Project vision and goals
 - `.shipkit/architecture.json` — Existing architecture decisions
 - `.shipkit/stack.json` — Technology stack
-- `.shipkit/specs/active/*.md` — Active specifications (if relevant to discussion)
+- `.shipkit/specs/active/*.json` — Active specifications (if relevant to discussion)
 
 ## Context Files This Skill Writes
 

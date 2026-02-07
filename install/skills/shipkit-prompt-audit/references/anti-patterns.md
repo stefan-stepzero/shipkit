@@ -234,3 +234,90 @@ Grep: pattern="Promise\.all\(" near AI call patterns
 2. Add progress tracking
 3. Handle partial failures (Promise.allSettled)
 4. Consider batching if the API supports it
+
+---
+
+## 9. Task Frame Mismatch
+
+**What it is**: A prompt's task verb ("generate", "create", "suggest") activates pattern-completion mode, when the pipeline actually needs critical analysis, evaluation, or current-knowledge retrieval — or vice versa.
+
+**Why it's bad**:
+- "Generate great X" triggers pattern completion from training data (popular, generic, potentially outdated)
+- "Evaluate these X for issues" triggers critical analysis and fact-checking
+- The model isn't suppressing knowledge — the framing simply doesn't activate the evaluation pathway
+- This causes pipelines to produce confidently wrong output that passes schema validation perfectly
+
+**The core insight**: LLMs have different cognitive modes activated by task framing. The same model with the same knowledge will behave differently when asked to "generate activities for Maui" vs "evaluate these activities for Maui given current conditions." Generation mode completes patterns from training data. Evaluation mode activates critical analysis.
+
+**Detection**:
+```
+Read each prompt template. Check the primary task verb:
+
+GENERATION verbs (pattern completion mode):
+  "generate", "create", "suggest", "come up with", "write", "produce", "list"
+
+ANALYSIS verbs (critical evaluation mode):
+  "evaluate", "review", "check", "verify", "assess", "analyze", "identify issues"
+
+RESEARCH verbs (knowledge retrieval mode):
+  "research", "what are the current conditions", "what has changed", "investigate"
+
+Then ask: Does the verb match what the pipeline NEEDS from this stage?
+
+Common mismatch: An early "intelligence gathering" stage uses generation
+verbs ("generate a summary of X") instead of research verbs ("what are
+the current conditions, risks, and constraints for X?"). Downstream
+stages then operate on pattern-completed content, not actual knowledge.
+```
+
+**Severity**: Should Fix (Critical if the pipeline makes real-world recommendations — travel, health, legal, financial)
+
+**Resolution**:
+1. Map each pipeline stage to its intended cognitive mode (generate / evaluate / research)
+2. Ensure the task verb matches the intended mode
+3. For early "intelligence" stages: frame as research/investigation, not generation
+4. For quality gates: frame as evaluation/review, not summarization
+5. Small reframe at an upstream stage often eliminates the need for bolted-on negative constraints downstream
+
+**Example**:
+```
+BAD (generation mode — will reproduce popular pre-disaster Maui content):
+  "Generate the best activities and venues for a trip to Maui"
+
+BETTER (research mode — activates current-knowledge retrieval):
+  "Research current conditions in Maui. What areas are affected by
+   recent events? What is open/closed? What should travelers know?"
+
+Then feed that knowledge into downstream stages that generate recommendations.
+```
+
+---
+
+## 10. Upstream Knowledge Gap
+
+**What it is**: A multi-stage pipeline has an early "intelligence" or "research" stage that fails to surface critical context because it asks the wrong questions — causing all downstream stages to operate on incomplete information.
+
+**Why it's bad**:
+- Downstream stages can't compensate for what upstream didn't surface
+- Adding constraints downstream ("don't recommend X") is fragile and reactive
+- The root cause is the upstream prompt's question framing, not downstream filtering
+- Creates a false sense of safety: the pipeline "works" but produces subtly wrong output
+
+**Detection**:
+```
+In multi-stage pipelines, identify the earliest "context gathering" stage:
+1. What questions does it ask? (attractions? culture? → misses current conditions)
+2. What does it NOT ask? (closures? recent events? safety concerns?)
+3. Do downstream stages have negative constraints that compensate?
+   - "Don't recommend X" or "Exclude Y" → likely papering over upstream gap
+4. Would a small reframe of the upstream prompt eliminate the need
+   for downstream constraints?
+```
+
+**Severity**: Should Fix (Critical for recommendation/advisory pipelines)
+
+**Resolution**:
+1. Audit what the earliest knowledge-gathering stage actually asks for
+2. Add "current conditions" / "risks" / "constraints" to its question framing
+3. Remove downstream negative constraints that were compensating for the gap
+4. Principle: Fix the source of knowledge, not the consumers of it

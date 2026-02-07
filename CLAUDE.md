@@ -179,7 +179,7 @@ Claude has **implicit defaults** from training. These aren't wrong, but they're 
 **The Solution:**
 1. **Skills capture context** — `.shipkit/` files record explicit decisions
 2. **Skills check context first** — Before assuming, read what's been decided
-3. **Decisions override defaults** — If architecture.md says "monolithic for MVP", that wins
+3. **Decisions override defaults** — If architecture.json says "monolithic for MVP", that wins
 
 ---
 
@@ -245,9 +245,9 @@ Location: `install/skills/`
 
 **Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-scale-ready`, `shipkit-prompt-audit`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
 
-**System:** `shipkit-detect` (auto-triggered), `shipkit-update`, `shipkit-mission-control`, `shipkit-get-skills`, `shipkit-get-mcps`
+**System:** `shipkit-detect` (auto-triggered), `shipkit-update`, `shipkit-mission-control`, `shipkit-standby`, `shipkit-get-skills`, `shipkit-get-mcps`
 
-**Total:** 36 skills
+**Total:** 37 skills
 
 ### Agents
 Location: `install/agents/`

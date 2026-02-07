@@ -194,7 +194,7 @@ If count = 0: consider adding input validation
 
 **Read active spec:**
 ```
-Read: file_path=".shipkit/specs/active/feature-name.md"
+Read: file_path=".shipkit/specs/active/feature-name.json"
 ```
 
 **Extract acceptance criteria:**

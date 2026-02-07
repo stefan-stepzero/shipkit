@@ -58,7 +58,7 @@ This skill provides:
 3. Load fresh context files:
    - `.shipkit/stack.json` (if fresh and exists)
    - `.shipkit/architecture.json` (if exists)
-   - `.shipkit/why.md` (if exists)
+   - `.shipkit/why.json` (if exists)
 4. Display session start message with freshness warnings
 
 ---
@@ -105,9 +105,9 @@ This skill provides:
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
-| "Define vision", "Why this project?", "Project goals" | `/shipkit-why-project` | .shipkit/why.md |
-| "Set goals", "Objectives", "Priorities", "What to build toward" | `/shipkit-goals` | .shipkit/why.md, goals.json |
-| "Who are our users?", "Create personas", "User research", "User journey" | `/shipkit-product-discovery` | .shipkit/why.md, stack.json |
+| "Define vision", "Why this project?", "Project goals" | `/shipkit-why-project` | .shipkit/why.json |
+| "Set goals", "Objectives", "Priorities", "What to build toward" | `/shipkit-goals` | .shipkit/why.json, goals.json |
+| "Who are our users?", "Create personas", "User research", "User journey" | `/shipkit-product-discovery` | .shipkit/why.json, stack.json |
 
 ### Context & Status
 
@@ -122,6 +122,7 @@ This skill provides:
 | "Find MCPs", "Get MCPs", "Is there an MCP for?", "Install MCP" | `/shipkit-get-mcps` | .mcp.json |
 | "Install Shipkit", "Update Shipkit", "Upgrade Shipkit", "Reinstall Shipkit" | `/shipkit-update` | None |
 | "Mission control", "Monitor instances", "Dashboard", "Multi-instance", "Control center" | `/shipkit-mission-control` | None |
+| "Standby", "AFK", "Daemon mode", "Wait for commands" | `/shipkit-standby` | None |
 
 ### Specification & Planning
 
@@ -130,10 +131,10 @@ This skill provides:
 | "Spec this feature", "Create specification", "Write requirements" | `/shipkit-spec` | .shipkit/specs/active/ |
 | "Triage feedback", "Process bug reports", "User testing feedback" | `/shipkit-feedback-bug` | .shipkit/specs/active/, codebase-index |
 | "Plan this", "How to implement?", "Create plan" | `/shipkit-plan` | specs/, stack.json, architecture.json |
-| "Prototype", "Mockup", "Rapid prototype", "UI mockup" | `/shipkit-prototyping` | specs/, why.md |
+| "Prototype", "Mockup", "Rapid prototype", "UI mockup" | `/shipkit-prototyping` | specs/, why.json |
 | "Extract prototype", "Prototype to spec", "Capture UI patterns" | `/shipkit-prototype-to-spec` | .shipkit-mockups/, specs/active/ |
-| "Help me think through", "Think with me", "Let's discuss", "What am I missing?" | `/shipkit-thinking-partner` | .shipkit/why.md, architecture.json |
-| "Devil's advocate", "Pre-mortem", "Trade-offs", "I'm torn between" | `/shipkit-thinking-partner` | .shipkit/why.md, architecture.json |
+| "Help me think through", "Think with me", "Let's discuss", "What am I missing?" | `/shipkit-thinking-partner` | .shipkit/why.json, architecture.json |
+| "Devil's advocate", "Pre-mortem", "Trade-offs", "I'm torn between" | `/shipkit-thinking-partner` | .shipkit/why.json, architecture.json |
 
 ### Knowledge Persistence
 
@@ -149,7 +150,7 @@ This skill provides:
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
 | "Verify", "Check my work", "Ready to commit?", "Review changes" | `/shipkit-verify` | Git diff, specs, architecture |
-| "Preflight", "Production ready", "Ready to ship?", "Go live", "Launch check" | `/shipkit-preflight` | stack.json, why.md, architecture.json |
+| "Preflight", "Production ready", "Ready to ship?", "Go live", "Launch check" | `/shipkit-preflight` | stack.json, why.json, architecture.json |
 | "Audit UX", "Check UX patterns", "UX gaps" | `/shipkit-ux-audit` | implementations/ |
 | "Create task", "Track TODO", "User tasks" | `/shipkit-user-instructions` | user-tasks/active.md |
 | "Visualize", "HTML report", "Visual communication" | `/shipkit-communications` | Relevant files based on request |
@@ -218,7 +219,7 @@ User asks about component → Load component docs (~1000 tokens)
 **At session start:**
 - `.shipkit/stack.json` - Tech stack context
 - `.shipkit/architecture.json` - Architecture decisions
-- `.shipkit/why.md` - Project vision
+- `.shipkit/why.json` - Project vision
 - `package.json` - For freshness comparison
 
 **During routing:**

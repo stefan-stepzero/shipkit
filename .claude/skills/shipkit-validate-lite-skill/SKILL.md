@@ -1,6 +1,7 @@
 ---
 name: shipkit-validate-shipkit-skill
 description: Validates a skill against quality standards and 7-file integration requirements. Reports issues and offers automated fixes. Use when checking if a skill is production-ready.
+argument-hint: "<skill-name> [--loop N]"
 ---
 
 # shipkit-validate-shipkit-skill - Lite Skill Quality Validator
@@ -712,15 +713,43 @@ Apply all fixes? (y/n/selective)
 
 ---
 
+## Loop Mode
+
+When invoked with `--loop N`, the skill runs iteratively — validating, fixing, and re-validating — until either zero errors/warnings remain or N iterations are exhausted.
+
+**State file**: `.shipkit/validate-skill-loop.local.md`
+
+**Default completion promise**: "Skill validation reports zero errors and zero warnings"
+
+**How it works**:
+1. Parse `--loop N` from arguments (default N=3 if omitted)
+2. Create state file with frontmatter (skill, iteration, max_iterations, completion_promise)
+3. Run the normal validation check
+4. Update the Progress section in the state file with findings and fixes applied
+5. If zero errors and zero warnings → delete state file, report success, stop
+6. If issues remain → end response; the relentless stop hook blocks exit and re-prompts
+
+**Example**:
+```
+/shipkit-validate-lite-skill shipkit-spec --loop 2
+```
+
+This validates shipkit-spec up to 2 times, fixing issues between passes.
+
+**Shared reference**: See `.claude/skills/_shared/loop-mode-reference.md` for state file format and protocol details.
+
+---
+
 ## Context Files This Skill Writes
 
-**Write Strategy: NONE** (Validation skill, no file output)
+**Write Strategy: LOOP STATE ONLY** (when `--loop N` used)
+
+- `.shipkit/validate-skill-loop.local.md` — Loop mode state (only when `--loop N` used, deleted on completion)
 
 **This skill:**
-- ❌ Does not create or modify files
-- ✅ Reads files to validate structure
-- ✅ Reports issues found
-- ✅ Offers fixes (via separate fix skill)
+- Reads files to validate structure
+- Reports issues found
+- Offers fixes (via separate fix skill)
 
 **To apply fixes**: Use `/shipkit-fix-shipkit-skill {skill-name}` (separate skill)
 

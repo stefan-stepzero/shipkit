@@ -86,7 +86,7 @@ def main():
     specs_dir = shipkit_lite / 'specs' / 'active'
     if specs_dir.exists():
         # Get most recent spec file
-        spec_files = list(specs_dir.glob('*.md'))
+        spec_files = list(specs_dir.glob('*.json'))
         if spec_files:
             most_recent = max(spec_files, key=lambda p: p.stat().st_mtime)
             age_seconds = time.time() - most_recent.stat().st_mtime
@@ -145,7 +145,7 @@ def main():
     # 1. Recently created spec → suggest plan
     specs_dir = shipkit_lite / 'specs' / 'active'
     if specs_dir.exists():
-        recent_specs = [f for f in specs_dir.glob('*.md') if check_recent_file(f)]
+        recent_specs = [f for f in specs_dir.glob('*.json') if check_recent_file(f)]
         if recent_specs:
             print("💡 New spec created → Run `/shipkit-plan`")
             return 0
@@ -153,13 +153,13 @@ def main():
     # 2. Recently created plan → suggest implement
     plans_dir = shipkit_lite / 'plans'
     if plans_dir.exists():
-        recent_plans = [f for f in plans_dir.glob('*.md') if check_recent_file(f)]
+        recent_plans = [f for f in plans_dir.glob('*.json') if check_recent_file(f)]
         if recent_plans:
             print("💡 New plan created → Run `/shipkit-implement`")
             return 0
 
     # 3. Recently logged decision → suggest spec or plan
-    arch_file = shipkit_lite / 'architecture.md'
+    arch_file = shipkit_lite / 'architecture.json'
     if check_recent_file(arch_file):
         print("💡 Decision logged → Continue with `/shipkit-spec` or `/shipkit-plan`")
         return 0
@@ -210,7 +210,7 @@ Does your skill create a file?
 ### Example 1: SHOULD Modify (Deterministic Flow)
 
 **Skill**: `shipkit-spec`
-**Output**: `.shipkit/specs/active/[feature].md`
+**Output**: `.shipkit/specs/active/[feature].json`
 **Next Step**: ALWAYS `/shipkit-plan`
 
 ✅ **Add detection**: Spec → Plan is deterministic

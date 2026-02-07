@@ -1,0 +1,449 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "preflight",
+  "version": "1.0",
+  "lastUpdated": "2025-01-15",
+  "source": "shipkit-preflight",
+
+  "summary": {
+    "overallStatus": "ready-with-warnings",
+    "readinessScore": 85,
+    "scope": "full",
+    "commit": "a1b2c3d",
+    "filesChecked": 47,
+    "previousAuditCommit": null,
+    "counts": {
+      "pass": 22,
+      "fail": 1,
+      "warning": 5,
+      "notApplicable": 6,
+      "unchanged": 0
+    },
+    "byCategory": {
+      "auth-security": { "pass": 5, "fail": 0, "warning": 1, "notApplicable": 0, "changed": false },
+      "data-database": { "pass": 3, "fail": 0, "warning": 1, "notApplicable": 0, "changed": false },
+      "error-handling": { "pass": 4, "fail": 0, "warning": 1, "notApplicable": 0, "changed": false },
+      "environment": { "pass": 3, "fail": 0, "warning": 1, "notApplicable": 1, "changed": false },
+      "deployment": { "pass": 3, "fail": 1, "warning": 0, "notApplicable": 1, "changed": false },
+      "ux-resilience": { "pass": 3, "fail": 0, "warning": 1, "notApplicable": 1, "changed": false },
+      "code-structure": { "pass": 1, "fail": 0, "warning": 0, "notApplicable": 1, "changed": false },
+      "legal-compliance": { "pass": 0, "fail": 0, "warning": 0, "notApplicable": 2, "changed": false },
+      "payments": { "pass": 0, "fail": 0, "warning": 0, "notApplicable": 0, "changed": false },
+      "ai-accessibility": { "pass": 0, "fail": 0, "warning": 0, "notApplicable": 0, "changed": false }
+    }
+  },
+
+  "checks": [
+    {
+      "id": "auth-protected-routes",
+      "category": "auth-security",
+      "name": "Authentication on protected routes",
+      "status": "pass",
+      "evidence": "src/middleware/auth.ts:15 - requireAuth middleware found on all /api/protected/* routes",
+      "file": "src/middleware/auth.ts",
+      "line": 15,
+      "statusChange": null,
+      "details": "All 8 protected API routes have auth middleware applied"
+    },
+    {
+      "id": "session-management",
+      "category": "auth-security",
+      "name": "Session management with expiry",
+      "status": "pass",
+      "evidence": "src/lib/auth.ts:42 - JWT expires in 7 days, refresh token logic present",
+      "file": "src/lib/auth.ts",
+      "line": 42,
+      "statusChange": null,
+      "details": "Using HTTP-only cookies with 7-day expiry and refresh mechanism"
+    },
+    {
+      "id": "secrets-in-env",
+      "category": "auth-security",
+      "name": "Secrets in environment variables",
+      "status": "pass",
+      "evidence": "Grep for hardcoded secrets returned 0 matches",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "All secrets are loaded from environment variables"
+    },
+    {
+      "id": "input-validation",
+      "category": "auth-security",
+      "name": "Input validation on forms",
+      "status": "pass",
+      "evidence": "src/lib/validation.ts - Zod schemas found for all form handlers",
+      "file": "src/lib/validation.ts",
+      "line": 1,
+      "statusChange": null,
+      "details": "Zod validation on 6 form endpoints"
+    },
+    {
+      "id": "rate-limiting",
+      "category": "auth-security",
+      "name": "Rate limiting on auth endpoints",
+      "status": "warning",
+      "evidence": "No rate limiting middleware found on /api/auth/* routes",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "Auth endpoints exposed to brute force attacks"
+    },
+    {
+      "id": "csrf-protection",
+      "category": "auth-security",
+      "name": "CSRF protection",
+      "status": "pass",
+      "evidence": "next-auth handles CSRF automatically via cookies",
+      "file": "package.json",
+      "line": null,
+      "statusChange": null,
+      "details": "Using next-auth which includes CSRF protection"
+    },
+    {
+      "id": "rls-policies",
+      "category": "data-database",
+      "name": "Row-level security on user tables",
+      "status": "pass",
+      "evidence": "supabase/migrations/001_rls.sql - RLS enabled on users, projects, tasks tables",
+      "file": "supabase/migrations/001_rls.sql",
+      "line": 1,
+      "statusChange": null,
+      "details": "RLS policies on 3 user-facing tables"
+    },
+    {
+      "id": "cascade-deletes",
+      "category": "data-database",
+      "name": "Cascade deletes configured",
+      "status": "pass",
+      "evidence": "prisma/schema.prisma - onDelete: Cascade on project->tasks relation",
+      "file": "prisma/schema.prisma",
+      "line": 45,
+      "statusChange": null,
+      "details": "Cascade deletes set up for parent-child relationships"
+    },
+    {
+      "id": "backup-strategy",
+      "category": "data-database",
+      "name": "Backup strategy documented",
+      "status": "warning",
+      "evidence": "No backup documentation found in docs/ or README",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "Supabase has automatic backups but recovery process not documented"
+    },
+    {
+      "id": "try-catch-async",
+      "category": "error-handling",
+      "name": "Try/catch on async operations",
+      "status": "pass",
+      "evidence": "All 12 API routes wrap async operations in try/catch",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "Consistent error handling across API layer"
+    },
+    {
+      "id": "error-boundaries",
+      "category": "error-handling",
+      "name": "Error boundaries in UI",
+      "status": "pass",
+      "evidence": "src/app/error.tsx - Root error boundary present",
+      "file": "src/app/error.tsx",
+      "line": 1,
+      "statusChange": null,
+      "details": "Error boundary at app root catches render errors"
+    },
+    {
+      "id": "consistent-api-errors",
+      "category": "error-handling",
+      "name": "Consistent API error responses",
+      "status": "pass",
+      "evidence": "src/lib/api-response.ts - Standard error format used",
+      "file": "src/lib/api-response.ts",
+      "line": 15,
+      "statusChange": null,
+      "details": "All API errors return { error: string, code: string } format"
+    },
+    {
+      "id": "error-logging",
+      "category": "error-handling",
+      "name": "Error logging with context",
+      "status": "warning",
+      "evidence": "console.error used but no structured logging service",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "Consider adding Sentry or similar for production error tracking"
+    },
+    {
+      "id": "env-documented",
+      "category": "environment",
+      "name": "Environment variables documented",
+      "status": "pass",
+      "evidence": ".env.example lists all 8 required variables",
+      "file": ".env.example",
+      "line": 1,
+      "statusChange": null,
+      "details": "All env vars documented with descriptions"
+    },
+    {
+      "id": "no-hardcoded-urls",
+      "category": "environment",
+      "name": "No hardcoded URLs",
+      "status": "pass",
+      "evidence": "Grep for localhost:3000 returned 0 matches in src/",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "All URLs use environment variables"
+    },
+    {
+      "id": "feature-flags",
+      "category": "environment",
+      "name": "Feature flags for WIP",
+      "status": "warning",
+      "evidence": "No feature flag system detected",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "Consider adding feature flags before shipping experimental features"
+    },
+    {
+      "id": "secrets-not-in-git",
+      "category": "environment",
+      "name": "Secrets not in git history",
+      "status": "not-applicable",
+      "evidence": ".gitignore includes .env*, no secrets detected in git log",
+      "file": ".gitignore",
+      "line": null,
+      "statusChange": null,
+      "details": "Fresh repo with no secret history"
+    },
+    {
+      "id": "build-passes",
+      "category": "deployment",
+      "name": "Build passes without warnings",
+      "status": "pass",
+      "evidence": "npm run build exits 0, TypeScript strict mode passes",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "Clean build with no warnings"
+    },
+    {
+      "id": "health-endpoint",
+      "category": "deployment",
+      "name": "Health check endpoint",
+      "status": "fail",
+      "evidence": "No /api/health or /health endpoint found",
+      "file": null,
+      "line": null,
+      "statusChange": "new",
+      "details": "Health endpoint needed for container orchestration"
+    },
+    {
+      "id": "migrations-documented",
+      "category": "deployment",
+      "name": "Database migrations automated",
+      "status": "pass",
+      "evidence": "package.json has db:migrate script, runs on deploy",
+      "file": "package.json",
+      "line": 12,
+      "statusChange": null,
+      "details": "Prisma migrate runs automatically on Vercel deploy"
+    },
+    {
+      "id": "ssl-enforced",
+      "category": "deployment",
+      "name": "SSL/HTTPS enforced",
+      "status": "not-applicable",
+      "evidence": "Vercel enforces HTTPS automatically",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "Handled by deployment platform"
+    },
+    {
+      "id": "loading-states",
+      "category": "ux-resilience",
+      "name": "Loading states on async operations",
+      "status": "pass",
+      "evidence": "Skeleton components found in 4 async pages",
+      "file": "src/components/ui/skeleton.tsx",
+      "line": 1,
+      "statusChange": null,
+      "details": "Loading skeletons on dashboard, projects, settings pages"
+    },
+    {
+      "id": "empty-states",
+      "category": "ux-resilience",
+      "name": "Empty states handled",
+      "status": "pass",
+      "evidence": "EmptyState component used in list views",
+      "file": "src/components/empty-state.tsx",
+      "line": 1,
+      "statusChange": null,
+      "details": "Friendly empty states with CTAs"
+    },
+    {
+      "id": "destructive-confirmations",
+      "category": "ux-resilience",
+      "name": "Confirmation on destructive actions",
+      "status": "pass",
+      "evidence": "DeleteDialog component wraps all delete actions",
+      "file": "src/components/delete-dialog.tsx",
+      "line": 1,
+      "statusChange": null,
+      "details": "Confirmation dialog on delete project, delete task"
+    },
+    {
+      "id": "mobile-responsive",
+      "category": "ux-resilience",
+      "name": "Mobile responsive",
+      "status": "warning",
+      "evidence": "Tailwind responsive classes present but sidebar doesn't collapse",
+      "file": "src/components/sidebar.tsx",
+      "line": 15,
+      "statusChange": null,
+      "details": "Sidebar needs mobile drawer treatment"
+    },
+    {
+      "id": "form-validation-ux",
+      "category": "ux-resilience",
+      "name": "Form validation with clear errors",
+      "status": "not-applicable",
+      "evidence": "React Hook Form with inline error messages",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "Forms show validation errors inline"
+    },
+    {
+      "id": "no-duplicate-components",
+      "category": "code-structure",
+      "name": "No duplicate components",
+      "status": "pass",
+      "evidence": "Glob for Button|Modal|Dialog finds only shared/ versions",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "All UI components centralized in shared/"
+    },
+    {
+      "id": "types-centralized",
+      "category": "code-structure",
+      "name": "Types centralized",
+      "status": "not-applicable",
+      "evidence": "src/types/ contains all shared types",
+      "file": "src/types/index.ts",
+      "line": 1,
+      "statusChange": null,
+      "details": "Types exported from single location"
+    },
+    {
+      "id": "terms-of-service",
+      "category": "legal-compliance",
+      "name": "Terms of Service link",
+      "status": "not-applicable",
+      "evidence": "Internal tool, no public users",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "N/A for internal tools"
+    },
+    {
+      "id": "privacy-policy",
+      "category": "legal-compliance",
+      "name": "Privacy Policy link",
+      "status": "not-applicable",
+      "evidence": "Internal tool, no public users",
+      "file": null,
+      "line": null,
+      "statusChange": null,
+      "details": "N/A for internal tools"
+    }
+  ],
+
+  "blockers": [
+    {
+      "checkId": "health-endpoint",
+      "category": "deployment",
+      "name": "Missing health check endpoint",
+      "file": null,
+      "line": null,
+      "problem": "No /api/health endpoint exists for monitoring",
+      "impact": "Container orchestration and uptime monitoring cannot verify app health",
+      "fix": "Create src/app/api/health/route.ts that returns { status: 'ok', timestamp: Date.now() }",
+      "statusChange": "new"
+    }
+  ],
+
+  "recommendations": [
+    {
+      "checkId": "rate-limiting",
+      "category": "auth-security",
+      "name": "Rate limiting on auth endpoints",
+      "severity": "warning",
+      "suggestion": "Add rate limiting middleware to /api/auth/* routes. Consider upstash/ratelimit or express-rate-limit.",
+      "effort": "low"
+    },
+    {
+      "checkId": "backup-strategy",
+      "category": "data-database",
+      "name": "Backup strategy documentation",
+      "severity": "warning",
+      "suggestion": "Document Supabase backup/restore process in docs/operations.md or README",
+      "effort": "low"
+    },
+    {
+      "checkId": "error-logging",
+      "category": "error-handling",
+      "name": "Structured error logging",
+      "severity": "warning",
+      "suggestion": "Add Sentry (free tier) or similar service for production error tracking with context",
+      "effort": "medium"
+    },
+    {
+      "checkId": "feature-flags",
+      "category": "environment",
+      "name": "Feature flag system",
+      "severity": "warning",
+      "suggestion": "Consider adding LaunchDarkly, Flagsmith, or simple env-based feature flags before shipping experimental features",
+      "effort": "medium"
+    },
+    {
+      "checkId": "mobile-responsive",
+      "category": "ux-resilience",
+      "name": "Mobile sidebar navigation",
+      "severity": "warning",
+      "suggestion": "Convert sidebar to a drawer/sheet on mobile breakpoints using existing Sheet component",
+      "effort": "low"
+    }
+  ],
+
+  "statusChanges": {
+    "fixed": [],
+    "newIssues": [
+      { "checkId": "health-endpoint", "description": "Health endpoint needed for deployment monitoring" }
+    ],
+    "regressions": []
+  },
+
+  "auditHistory": [
+    {
+      "date": "2025-01-15",
+      "commit": "a1b2c3d",
+      "scope": "full",
+      "blockers": 1,
+      "warnings": 5
+    }
+  ],
+
+  "context": {
+    "project": "Internal task management tool for engineering team",
+    "stack": "Next.js 14, Supabase, Prisma, TypeScript",
+    "deployment": "Vercel"
+  }
+}
