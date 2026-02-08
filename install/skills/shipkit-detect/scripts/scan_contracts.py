@@ -15,14 +15,20 @@ COMMON_TYPES = ['User', 'Post', 'Comment', 'Product', 'Order', 'Session', 'Profi
 
 
 def find_latest_plan():
-    """Find most recently modified plan."""
-    plans_dir = Path('.shipkit/plans/active')
-    if not plans_dir.exists():
-        plans_dir = Path('.shipkit/plans')
-    if not plans_dir.exists():
-        return None
+    """Find most recently modified plan from todo or active folders."""
+    base_dir = Path('.shipkit/plans')
+    plans = []
 
-    plans = list(plans_dir.glob('*.json'))
+    # Check todo and active folders (the actionable ones)
+    for folder in ['todo', 'active']:
+        folder_path = base_dir / folder
+        if folder_path.exists():
+            plans.extend(folder_path.glob('*.json'))
+
+    # Fallback to legacy flat structure
+    if not plans and base_dir.exists():
+        plans = list(base_dir.glob('*.json'))
+
     if not plans:
         return None
 

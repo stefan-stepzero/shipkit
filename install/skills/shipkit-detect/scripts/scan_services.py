@@ -28,15 +28,20 @@ SERVICES = {
 
 
 def find_latest_spec():
-    """Find most recently modified spec."""
-    specs_dir = Path('.shipkit/specs/active')
-    if not specs_dir.exists():
-        specs_dir = Path('.shipkit/specs')
+    """Find most recently modified spec from todo or active folders."""
+    base_dir = Path('.shipkit/specs')
+    specs = []
 
-    if not specs_dir.exists():
-        return None
+    # Check todo and active folders (the actionable ones)
+    for folder in ['todo', 'active']:
+        folder_path = base_dir / folder
+        if folder_path.exists():
+            specs.extend(folder_path.glob('*.json'))
 
-    specs = list(specs_dir.glob('*.json'))
+    # Fallback to legacy flat structure
+    if not specs and base_dir.exists():
+        specs = list(base_dir.glob('*.json'))
+
     if not specs:
         return None
 

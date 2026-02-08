@@ -16,8 +16,13 @@ Feature specs are stored as JSON files following the Shipkit artifact convention
 
 ## File Location
 
-**Active specs**: `.shipkit/specs/active/{feature-name}.json`
-**Implemented specs**: `.shipkit/specs/implemented/{feature-name}.json`
+```
+.shipkit/specs/
+├── todo/        # Defined, ready to start
+├── active/      # Being implemented
+├── parked/      # On hold (blocked, deprioritized)
+└── shipped/     # Delivered to users
+```
 
 **Naming**: Use kebab-case for feature names (e.g., `recipe-sharing.json`, `user-authentication.json`)
 
@@ -246,7 +251,7 @@ Feature specs are stored as JSON files following the Shipkit artifact convention
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `name` | string | yes | Human-readable feature name |
-| `status` | enum | yes | `"active"` or `"implemented"` |
+| `status` | enum | yes | `"todo"`, `"active"`, `"parked"`, or `"shipped"` |
 | `featureType` | enum | yes | `"user-facing-ui"`, `"api-backend"`, `"integration"`, `"infrastructure"` |
 | `complexity` | enum | yes | `"simple"`, `"medium"`, `"complex"` |
 | `scenarioCount` | number | yes | Count of scenarios defined |
@@ -364,13 +369,27 @@ Array of strings suggesting what to do after spec is complete.
 
 | Status | Location | Description |
 |--------|----------|-------------|
-| `active` | `.shipkit/specs/active/` | Spec is being worked on or pending implementation |
-| `implemented` | `.shipkit/specs/implemented/` | Feature has been shipped |
+| `todo` | `.shipkit/specs/todo/` | Spec defined, ready to start when capacity available |
+| `active` | `.shipkit/specs/active/` | Currently being implemented |
+| `parked` | `.shipkit/specs/parked/` | On hold (blocked, deprioritized, waiting) |
+| `shipped` | `.shipkit/specs/shipped/` | Delivered to users |
 
-When a feature is complete:
-1. Update `status` to `"implemented"`
-2. Add completion metadata to spec
-3. Move file from `active/` to `implemented/`
+### Transitions
+
+```
+[spec created] → todo/ → active/ → shipped/
+                   ↓        ↓
+                parked/ ←──┘
+                   ↓
+                 (back to todo/ when unblocked)
+```
+
+| Transition | When | Action |
+|------------|------|--------|
+| `todo` → `active` | Work starts | Move file, update status |
+| `active` → `shipped` | Feature delivered | Move file, update status, add completion metadata |
+| `active` → `parked` | Blocked or deprioritized | Move file, update status, add reason in metadata |
+| `parked` → `todo` | Unblocked, ready again | Move file, update status |
 
 ---
 

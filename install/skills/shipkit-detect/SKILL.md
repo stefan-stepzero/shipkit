@@ -69,7 +69,7 @@ Follow-up skill can process queue
 
 ## Pending
 - [ ] Supabase
-  - Mentioned in: specs/active/auth-flow.json
+  - Mentioned in: specs/todo/auth-flow.json
   - Keywords: supabase, auth, rls
   - Need: Current auth patterns, RLS examples
 ```
@@ -94,7 +94,7 @@ Follow-up skill can process queue
 
 ## Pending
 - [ ] User
-  - Mentioned in: plans/active/auth-implementation.json
+  - Mentioned in: plans/todo/auth-implementation.json
   - Layers: Database → API → Frontend
   - Need: Consistent shape across all layers
 ```
@@ -239,8 +239,8 @@ This folder is:
 
 | Mode | Reads |
 |------|-------|
-| services | `.shipkit/specs/active/*.json` |
-| contracts | `.shipkit/plans/active/*.json` |
+| services | `.shipkit/specs/{todo,active}/*.json` |
+| contracts | `.shipkit/plans/{todo,active}/*.json` |
 | changes | `src/components/**`, `src/app/**` (file modification times) |
 | ux-gaps | `src/components/**` (interactive patterns) |
 | ext-boundaries | `src/**/*.{ts,js}`, `app/**/*.{ts,js}`, `lib/**/*.{ts,js}` (external SDK usage) |

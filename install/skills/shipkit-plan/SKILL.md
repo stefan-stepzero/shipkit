@@ -29,7 +29,7 @@ agent: shipkit-architect-agent
 ## Prerequisites
 
 **Check before starting**:
-- Spec exists: `.shipkit/specs/active/[feature-name].json`
+- Spec exists: `.shipkit/specs/todo/[feature-name].json` or `.shipkit/specs/active/[feature-name].json`
 - Stack defined: `.shipkit/stack.json` (from shipkit-project-context)
 
 **UI-Heavy Feature Check** (CRITICAL):
@@ -51,9 +51,9 @@ agent: shipkit-architect-agent
 
 ### Step 1: Confirm Scope
 
-**First, scan available specs:**
+**First, scan available specs (todo and active):**
 ```bash
-ls .shipkit/specs/active/*.json 2>/dev/null || echo "No specs found"
+ls .shipkit/specs/todo/*.json .shipkit/specs/active/*.json 2>/dev/null || echo "No specs found"
 ```
 
 **Then use AskUserQuestion tool:**
@@ -101,7 +101,7 @@ options:
 ### Step 2: Read Existing Context
 
 **Read these files to understand project context**:
-- `.shipkit/specs/active/[feature-name].json` (Required)
+- `.shipkit/specs/todo/[feature-name].json` or `.shipkit/specs/active/[feature-name].json` (Required)
 - `.shipkit/stack.json` (Stack info)
 - `.shipkit/architecture.json` (Past decisions)
 
@@ -212,7 +212,16 @@ grep -r "ErrorBoundary\|onError\|handleError" --include="*.ts" --include="*.tsx"
 
 **Create plan file using Write tool**:
 
-**Location**: `.shipkit/plans/active/[feature-name].json`
+**Location**: `.shipkit/plans/todo/[feature-name].json` (new plans start in todo/)
+
+**Plan Folder Structure** (mirrors specs):
+```
+.shipkit/plans/
+├── todo/        # Plan ready, waiting for capacity
+├── active/      # Plan being executed
+├── parked/      # Blocked or deprioritized
+└── shipped/     # Historical record
+```
 
 **Output format**: JSON (see `references/output-schema.md` for full schema, `references/example.json` for realistic example)
 
@@ -506,7 +515,7 @@ Review Codebase Patterns table:
 ## Completion Checklist
 
 Copy and track:
-- [ ] Read spec from `.shipkit/specs/active/`
+- [ ] Read spec from `.shipkit/specs/todo/` or `.shipkit/specs/active/`
 - [ ] Completed codebase pattern scan
 - [ ] Created plan with all required sections
 - [ ] Consumption map has zero orphans
@@ -515,7 +524,7 @@ Copy and track:
 - [ ] All phases have testable gates
 - [ ] All spec requirements mapped to steps
 - [ ] Pattern alignment confirmed
-- [ ] Saved to `.shipkit/plans/active/[name].json`
+- [ ] Saved to `.shipkit/plans/todo/[name].json`
 
 ---
 
@@ -585,7 +594,7 @@ Copy and track:
 ## Context Files This Skill Reads
 
 **Always reads**:
-- `.shipkit/specs/active/[feature].json` - Feature requirements
+- `.shipkit/specs/todo/[feature].json` or `.shipkit/specs/active/[feature].json` - Feature requirements
 - `.shipkit/stack.json` - Tech stack info
 
 **Scans** (for pattern detection):
@@ -601,7 +610,9 @@ Copy and track:
 ## Context Files This Skill Writes
 
 **Creates**:
-- `.shipkit/plans/active/[feature].json` - Validated implementation plan (JSON format)
+- `.shipkit/plans/todo/[feature].json` - Validated implementation plan (JSON format)
+
+**Lifecycle**: Plans follow same 4-folder pattern as specs (todo → active → shipped, or parked if blocked)
 
 **JSON Schema**: See `references/output-schema.md` for full schema definition.
 
@@ -620,9 +631,9 @@ Copy and track:
 
 **Guardrails Check:** Before moving to next task, verify:
 
-1. **Persistence** - Plan saved to `.shipkit/plans/active/`
+1. **Persistence** - Plan saved to `.shipkit/plans/todo/`
 2. **Validation** - All 6 checks passing
-3. **Prerequisites** - Implementation can start with Phase 1
+3. **Prerequisites** - Implementation can start with Phase 1 (move plan to active/ when starting)
 
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 

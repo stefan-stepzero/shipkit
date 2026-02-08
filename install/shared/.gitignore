@@ -2,8 +2,8 @@
 # SHIPKIT LITE FRAMEWORK FILES
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Framework Infrastructure (ignore - these are installed, not created by you)
-.claude/
+# Framework Infrastructure (ignore - project-specific, not created by you)
+# NOTE: .claude/ is NOT ignored — remote coding instances need access to skills/hooks
 CLAUDE.md
 
 # Shipkit Lite - Scripts only (ignore - framework infrastructure)

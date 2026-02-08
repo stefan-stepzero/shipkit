@@ -166,16 +166,6 @@
           }
         ]
       },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python -X utf8 .claude/hooks/mission-control-reporter.py",
-            "async": true,
-            "timeout": 5000
-          }
-        ]
-      }
     ],
     "PreToolUse": [],
     "Stop": [

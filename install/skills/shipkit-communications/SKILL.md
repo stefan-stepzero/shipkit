@@ -36,8 +36,8 @@ description: "Use when user wants to visualize or present shipkit content as HTM
 - `.shipkit/architecture.json` - For architecture decisions
 - `.shipkit/implementations.json` - For component/route docs
 - `.shipkit/stack.json` - For tech stack overview
-- `.shipkit/specs/active/*.json` - For specs
-- `.shipkit/plans/active/*.json` - For implementation plans
+- `.shipkit/specs/{todo,active}/*.json` - For specs
+- `.shipkit/plans/{todo,active}/*.json` - For implementation plans
 
 **No strict prerequisites** - Can create HTML from any content.
 
@@ -77,10 +77,10 @@ Choose a number or describe what you need:
 |--------|---------------|------------------|
 | 1. Architecture Decisions | `.shipkit/architecture.json` | `architecture-decisions` |
 | 2. Project Status | Glob `.shipkit/**/*.json` | `project-status` |
-| 3. Quality Checklist | `.shipkit/implementations.json`, `.shipkit/specs/active/*.json` | `quality-checklist` |
+| 3. Quality Checklist | `.shipkit/implementations.json`, `.shipkit/specs/{todo,active}/*.json` | `quality-checklist` |
 | 4. Component Documentation | `.shipkit/implementations.json` | `component-docs` |
-| 5. Feature Specs | `.shipkit/specs/active/*.json` | `feature-specs` |
-| 6. Implementation Plans | `.shipkit/plans/active/*.json` | `implementation-plans` |
+| 5. Feature Specs | `.shipkit/specs/{todo,active}/*.json` | `feature-specs` |
+| 6. Implementation Plans | `.shipkit/plans/{todo,active}/*.json` | `implementation-plans` |
 | 7. Tech Stack | `.shipkit/stack.json` | `tech-stack` |
 | 8. Custom | User-specified files | User-specified description |
 
@@ -101,8 +101,8 @@ Launch these Read operations IN PARALLEL (single message, multiple tool calls):
 2. Read: .shipkit/stack.json
 3. Read: .shipkit/implementations.json
 4. Read: .shipkit/schema.json
-5. Glob + Read: .shipkit/specs/active/*.json
-6. Glob + Read: .shipkit/plans/active/*.json
+5. Glob + Read: .shipkit/specs/{todo,active}/*.json
+6. Glob + Read: .shipkit/plans/{todo,active}/*.json
 ```
 
 **Why parallel**: All file reads are independent - no dependencies between them. Parallel reads significantly speed up comprehensive report generation.
@@ -117,7 +117,7 @@ Read: .shipkit/architecture.json
 For quality checklist:
 ```
 Read: .shipkit/implementations.json
-Glob: .shipkit/specs/active/*.json
+Glob: .shipkit/specs/{todo,active}/*.json
 ```
 
 **IMPORTANT**: Actually read files - don't generate placeholder content.
@@ -392,8 +392,8 @@ Copy and track:
 - `.shipkit/architecture.json` - Architecture decisions
 - `.shipkit/implementations.json` - Components/routes
 - `.shipkit/stack.json` - Tech stack
-- `.shipkit/specs/active/*.json` - Specifications
-- `.shipkit/plans/active/*.json` - Implementation plans
+- `.shipkit/specs/{todo,active,parked,shipped}/*.json` - Specifications
+- `.shipkit/plans/{todo,active,parked,shipped}/*.json` - Implementation plans
 - Any `.shipkit/**/*.json` - Custom/comprehensive
 
 **Lazy loading**: Only reads what's needed for chosen visualization
@@ -492,7 +492,7 @@ User: "Show me quality checklist as HTML"
 
 Claude:
 1. Ask confirmation
-2. Read: implementations.json + specs/active/*.json
+2. Read: implementations.json + specs/{todo,active}/*.json
 3. Check latest.html (exists)
 4. Archive: archive/20251228-1620-quality-checklist.html
 5. Generate checklist HTML with:

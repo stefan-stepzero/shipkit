@@ -42,7 +42,7 @@ agent: shipkit-product-owner-agent
 
 **Optional but helpful**:
 - Architecture decisions: `.shipkit/architecture.json`
-- Existing specs: `.shipkit/specs/active/*.json` (check for similar patterns)
+- Existing specs: `.shipkit/specs/todo/*.json`, `.shipkit/specs/active/*.json` (check for similar patterns)
 
 **If missing**: Ask user basic questions about tech stack and data instead
 
@@ -166,7 +166,7 @@ what contracts exist that must be preserved."
 
 **Create spec file using Write tool**:
 
-**Location**: `.shipkit/specs/active/{feature-name}.json`
+**Location**: `.shipkit/specs/todo/{feature-name}.json` (new specs start in todo/)
 
 **Use kebab-case for filename**: `recipe-sharing.json`, `user-authentication.json`
 
@@ -193,13 +193,13 @@ what contracts exist that must be preserved."
 
 ### Step 6: Save and Suggest Next Step
 
-**Use Write tool to create**: `.shipkit/specs/active/{feature-name}.json`
+**Use Write tool to create**: `.shipkit/specs/todo/{feature-name}.json`
 
 **Output to user**:
 ```
 Specification created
 
-Location: .shipkit/specs/active/{feature-name}.json
+Location: .shipkit/specs/todo/{feature-name}.json
 
 Summary:
   - [X] core scenarios
@@ -228,7 +228,7 @@ Copy and track:
 - [ ] Applied all 6 core edge case categories (+ external-service if applicable)
 - [ ] Defined test strategy (call flows, coverage, mocking)
 - [ ] Mapped key test cases from scenarios
-- [ ] Saved to `.shipkit/specs/active/{name}.json`
+- [ ] Saved to `.shipkit/specs/todo/{name}.json`
 
 ---
 
@@ -246,7 +246,7 @@ Copy and track:
 
   "summary": {
     "name": "Feature Name",
-    "status": "active",
+    "status": "todo",
     "featureType": "user-facing-ui",
     "complexity": "medium",
     "scenarioCount": 3,
@@ -406,7 +406,7 @@ Copy and track:
 - Acceptance criteria with prioritization
 - Technical notes for context
 - Test strategy (call flows, coverage, key test cases)
-- Moves to implemented/ folder when done
+- Moves through todo/ → active/ → shipped/ lifecycle
 
 **Not included** (vs full /dev-specify):
 - Formal Cucumber/Gherkin syntax
@@ -438,7 +438,7 @@ Copy and track:
 - `/shipkit-plan` - Creates implementation plan from spec
   - **When**: Spec is complete and approved
   - **Why**: Spec defines WHAT to build, plan defines HOW
-  - **Trigger**: Spec saved to specs/active/, user confirms "ready to plan"
+  - **Trigger**: Spec saved to specs/todo/, user confirms "ready to plan"
 
 - `/shipkit-prototyping` - Creates rapid UI mockup
   - **When**: Spec includes significant UI/UX components (optional step)
@@ -468,27 +468,37 @@ Copy and track:
 
 ## Context Files This Skill Writes
 
-**Write Strategy: CREATE (with ARCHIVE on completion)**
+**Write Strategy: CREATE (with lifecycle transitions)**
 
 **Creates**:
-- `.shipkit/specs/active/{feature-name}.json` - New specification
+- `.shipkit/specs/todo/{feature-name}.json` - New specification (starts in todo/)
+
+**Folder Structure**:
+```
+.shipkit/specs/
+├── todo/        # Defined, ready to start
+├── active/      # Being implemented
+├── parked/      # On hold (blocked, deprioritized)
+└── shipped/     # Delivered to users
+```
 
 **Update Behavior**:
-- Active specs can be modified during planning/implementation (overwrites previous version)
+- Specs can be modified during their lifecycle (overwrites previous version)
 - Each update REPLACES the file contents completely
-- No version history maintained in active/ folder
+- Status field must match the folder the spec is in
 
-**Archive Behavior** (when feature complete):
-- Moves: `.shipkit/specs/active/{feature-name}.json` -> `.shipkit/specs/implemented/{feature-name}.json`
-- Updates `status` field from `"active"` to `"implemented"`
-- Adds completion metadata (implemented date)
-- Archived specs become read-only historical records
-- Moving specs: Either manual or via `/shipkit-verify` when feature ships
+**Lifecycle Transitions**:
+| Transition | When | Action |
+|------------|------|--------|
+| `todo` → `active` | Work starts | Move file, update status |
+| `active` → `shipped` | Feature delivered | Move file, update status, add completion metadata |
+| `active` → `parked` | Blocked or deprioritized | Move file, update status, add reason |
+| `parked` → `todo` | Unblocked | Move file, update status |
 
-**Why CREATE with ARCHIVE:**
+**Why This Structure:**
 - Specs are living documents during development (can be refined)
-- Each feature gets its own independent file (not appending to shared file)
-- History preserved by moving completed specs to implemented/ folder
+- Each feature gets its own independent file
+- Four states cover full lifecycle: backlog → in-progress → done (or parked)
 - JSON format enables dashboard visualization
 
 ---
@@ -507,9 +517,9 @@ Copy and track:
 8. Total context loaded: ~2000-2500 tokens (focused)
 
 **Not loaded unless needed**:
-- Other specs (unless checking for similar patterns)
+- Other specs (unless checking for similar patterns in todo/ or active/)
 - Plans
-- Implementations
+- Shipped specs (historical)
 - User tasks
 
 ---
@@ -542,7 +552,7 @@ Spec is complete when:
 - [ ] Technical notes include DB/API changes
 - [ ] Test strategy identifies call flows and coverage approach
 - [ ] Key test cases mapped from scenarios
-- [ ] File saved to `.shipkit/specs/active/{name}.json`
+- [ ] File saved to `.shipkit/specs/todo/{name}.json`
 <!-- /SECTION:success-criteria -->
 ---
 

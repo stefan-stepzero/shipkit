@@ -11,8 +11,10 @@
 | `.shipkit/stack.json` | > 7 days old OR older than `package.json` | `package.json` mtime | Stack should reflect current dependencies |
 | `.shipkit/architecture.json` | > 14 days old OR major structural changes | `src/` directory mtime | Architecture evolves slower than code |
 | `.shipkit/why.json` | > 30 days old | None (absolute) | Vision rarely changes |
-| `.shipkit/specs/active/*.json` | > 7 days AND feature not shipped | Git history | Specs shouldn't linger unimplemented |
-| `.shipkit/plans/active/*.json` | > 3 days AND plan not started | None (absolute) | Plans should be executed promptly |
+| `.shipkit/specs/todo/*.json` | > 7 days | None (absolute) | Backlog specs should move to active or parked |
+| `.shipkit/specs/active/*.json` | > 7 days AND feature not shipped | Git history | Active specs should complete or park |
+| `.shipkit/plans/todo/*.json` | > 3 days | None (absolute) | Plans should be executed or parked promptly |
+| `.shipkit/plans/active/*.json` | > 3 days AND plan not started | None (absolute) | Active plans should show progress |
 
 ---
 

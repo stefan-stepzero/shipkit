@@ -64,8 +64,11 @@ This document defines the JSON schema for `.shipkit/status.json` produced by the
 
   "workflow": {
     "specs": {
-      "activeCount": 2,
-      "files": ["specs/active/recipe-sharing.json", "specs/active/user-profile.json"]
+      "todoCount": 1,
+      "activeCount": 1,
+      "parkedCount": 0,
+      "shippedCount": 0,
+      "files": ["specs/todo/user-profile.json", "specs/active/recipe-sharing.json"]
     },
     "plans": {
       "count": 0,

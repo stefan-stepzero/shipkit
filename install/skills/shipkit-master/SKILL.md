@@ -128,11 +128,11 @@ This skill provides:
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
-| "Spec this feature", "Create specification", "Write requirements" | `/shipkit-spec` | .shipkit/specs/active/ |
-| "Triage feedback", "Process bug reports", "User testing feedback" | `/shipkit-feedback-bug` | .shipkit/specs/active/, codebase-index |
-| "Plan this", "How to implement?", "Create plan" | `/shipkit-plan` | specs/, stack.json, architecture.json |
-| "Prototype", "Mockup", "Rapid prototype", "UI mockup" | `/shipkit-prototyping` | specs/, why.json |
-| "Extract prototype", "Prototype to spec", "Capture UI patterns" | `/shipkit-prototype-to-spec` | .shipkit-mockups/, specs/active/ |
+| "Spec this feature", "Create specification", "Write requirements" | `/shipkit-spec` | .shipkit/specs/todo/ |
+| "Triage feedback", "Process bug reports", "User testing feedback" | `/shipkit-feedback-bug` | .shipkit/specs/{todo,active}/, codebase-index |
+| "Plan this", "How to implement?", "Create plan" | `/shipkit-plan` | specs/{todo,active}/, stack.json, architecture.json |
+| "Prototype", "Mockup", "Rapid prototype", "UI mockup" | `/shipkit-prototyping` | specs/{todo,active}/, why.json |
+| "Extract prototype", "Prototype to spec", "Capture UI patterns" | `/shipkit-prototype-to-spec` | .shipkit-mockups/, specs/{todo,active}/ |
 | "Help me think through", "Think with me", "Let's discuss", "What am I missing?" | `/shipkit-thinking-partner` | .shipkit/why.json, architecture.json |
 | "Devil's advocate", "Pre-mortem", "Trade-offs", "I'm torn between" | `/shipkit-thinking-partner` | .shipkit/why.json, architecture.json |
 

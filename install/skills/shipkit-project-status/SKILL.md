@@ -144,7 +144,7 @@ find src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.js
 |-----------|----------------------|
 | "Undocumented file" | Glob confirms file exists + file path not in implementations.json |
 | "Stale documentation" | Compare file mtime vs doc mtime (use stat) |
-| "Missing spec" | Glob for `specs/active/*.json` matching feature name returns empty |
+| "Missing spec" | Glob for `specs/todo/*.json` and `specs/active/*.json` matching feature name returns empty |
 | "Orphan plan" | Plan exists but Grep for implementation references returns 0 |
 
 **Never claim "undocumented" without:**
@@ -166,10 +166,14 @@ find src -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.js
 **Check workflow progress**:
 
 ```bash
-# Count active specs
-ls -1 .shipkit/specs/active/*.json 2>/dev/null | wc -l
+# Count specs by status
+ls -1 .shipkit/specs/todo/*.json 2>/dev/null | wc -l      # Backlog
+ls -1 .shipkit/specs/active/*.json 2>/dev/null | wc -l    # In progress
+ls -1 .shipkit/specs/parked/*.json 2>/dev/null | wc -l    # On hold
+ls -1 .shipkit/specs/shipped/*.json 2>/dev/null | wc -l   # Completed
 
-# Count plans
+# Count plans by status
+ls -1 .shipkit/plans/todo/*.json 2>/dev/null | wc -l
 ls -1 .shipkit/plans/active/*.json 2>/dev/null | wc -l
 
 # Count user tasks
@@ -464,12 +468,12 @@ Copy and track:
 **Workflow (Phase 3+)**:
 
 - `/shipkit-plan` - When specs exist but no plans
-  - **When**: Found .shipkit/specs/active/*.json but no .shipkit/plans/active/*.json
+  - **When**: Found .shipkit/specs/todo/*.json or specs/active/*.json but no matching plans
   - **Why**: Specs without plans block implementation
   - **Trigger**: Workflow gap detected
 
 - `implement (no skill needed)` - When plans exist but no implementation notes
-  - **When**: Found plans/active/*.json but no recent implementation entries
+  - **When**: Found plans/todo/*.json or plans/active/*.json but no recent implementation entries
   - **Why**: Plans without execution are just ideas
   - **Trigger**: Workflow gap detected
 
@@ -489,8 +493,8 @@ Copy and track:
 - `.shipkit/contracts.json` - Data contracts
 
 **Workflow files (checks for progress)**:
-- `.shipkit/specs/active/*.json` (glob to count)
-- `.shipkit/plans/active/*.json` (glob to count)
+- `.shipkit/specs/{todo,active,parked,shipped}/*.json` (glob to count by status)
+- `.shipkit/plans/{todo,active,parked,shipped}/*.json` (glob to count by status)
 - `.shipkit/user-tasks/active.md` (if exists)
 - `.shipkit/progress.json` - Session continuity
 - `.shipkit/skill-usage.json` (if exists, for usage analytics)

@@ -137,8 +137,8 @@ For each codebase in the response:
 
 1. **Read the .shipkit/ context files** (if accessible):
    - `.shipkit/why.json` - Project vision and goals
-   - `.shipkit/specs/active/*.json` - Active specifications
-   - `.shipkit/plans/active/*.json` - Implementation plans
+   - `.shipkit/specs/{todo,active,parked,shipped}/*.json` - Specifications by status
+   - `.shipkit/plans/{todo,active,parked,shipped}/*.json` - Plans by status
    - `.shipkit/implementations.json` - What's been built
 
 2. **Analyze skill usage patterns**:
