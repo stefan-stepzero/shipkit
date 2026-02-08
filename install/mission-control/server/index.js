@@ -396,15 +396,21 @@ function generateRecommendations(codebase) {
         }
     }
 
-    // Check for missing foundational skills
-    const foundational = ['shipkit-project-context', 'shipkit-project-status'];
-    for (const skill of foundational) {
+    // Check for missing foundational skills (these produce artifacts most other skills depend on)
+    const foundational = [
+        { skill: 'shipkit-why-project', priority: 'high', message: 'No project vision defined - 5+ skills depend on why.json' },
+        { skill: 'shipkit-project-context', priority: 'high', message: 'No stack detection run - 8+ skills depend on stack.json' },
+        { skill: 'shipkit-codebase-index', priority: 'medium', message: 'No codebase index - 12 skills fall back to slow full exploration' },
+        { skill: 'shipkit-goals', priority: 'medium', message: 'No goals set - building without strategic direction' },
+        { skill: 'shipkit-architecture-memory', priority: 'low', message: 'No architecture decisions recorded - pattern drift goes undetected' },
+    ];
+    for (const { skill, priority, message } of foundational) {
         if (!codebase.skills[skill]) {
             recommendations.push({
                 type: 'missing',
                 skill: skill,
-                message: `${skill} has never been run - recommended for new projects`,
-                priority: 'high',
+                message,
+                priority,
                 action: `/${skill}`,
                 source: 'hardcoded'
             });

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Codebase, Instance, Event } from '../types'
-import { FOUNDATIONAL_ARTIFACTS, ALL_ARTIFACT_TYPES, ARTIFACT_TYPE_ICONS } from '../types'
+import { FOUNDATIONAL_ARTIFACTS, PER_FEATURE_ARTIFACTS, QUALITY_ARTIFACTS, ALL_ARTIFACT_TYPES, ARTIFACT_TYPE_ICONS } from '../types'
 
 interface ProjectOverviewProps {
   codebase: Codebase
@@ -56,6 +56,8 @@ export function ProjectOverview({ codebase, instances, events }: ProjectOverview
   const artifactCount = codebase.artifacts ? Object.keys(codebase.artifacts).length : 0
 
   const foundationalSet = new Set<string>(FOUNDATIONAL_ARTIFACTS)
+  const perFeatureSet = new Set<string>(PER_FEATURE_ARTIFACTS)
+  const qualitySet = new Set<string>(QUALITY_ARTIFACTS)
 
   // Skill usage sorted by most used
   const skillEntries = Object.values(codebase.skills)
@@ -67,6 +69,14 @@ export function ProjectOverview({ codebase, instances, events }: ProjectOverview
     : []
 
   const existingTypes = new Set(existingArtifacts.map(([, a]) => a.type))
+
+  // Categorize existing artifacts
+  const foundationArtifacts = existingArtifacts.filter(([, a]) => foundationalSet.has(a.type))
+  const featureArtifacts = existingArtifacts.filter(([, a]) => perFeatureSet.has(a.type))
+  const qualityArtifacts = existingArtifacts.filter(([, a]) => qualitySet.has(a.type))
+  const contextArtifacts = existingArtifacts.filter(([, a]) =>
+    !foundationalSet.has(a.type) && !perFeatureSet.has(a.type) && !qualitySet.has(a.type)
+  )
 
   const missingFoundational = FOUNDATIONAL_ARTIFACTS.filter(
     f => !existingTypes.has(f)
@@ -139,41 +149,95 @@ export function ProjectOverview({ codebase, instances, events }: ProjectOverview
                 </button>
               </div>
             )}
-            <div className="coverage-grid">
-              {existingArtifacts.map(([key, artifact]) => {
-                const age = getArtifactAge(artifact.lastUpdated)
-                const stale = isStaleArtifact(artifact.lastUpdated)
-                const isFoundational = foundationalSet.has(artifact.type)
-                const classes = [
-                  'coverage-item',
-                  'exists',
-                  isFoundational ? 'foundational' : '',
-                ].filter(Boolean).join(' ')
 
-                return (
-                  <div key={key} className={classes} title={`${formatTypeName(artifact.type)}: exists`}>
-                    <span className="coverage-icon">{ARTIFACT_TYPE_ICONS[artifact.type] ?? '\uD83D\uDCC4'}</span>
-                    <span className="coverage-name">{formatTypeName(artifact.type)}</span>
-                    <span className="coverage-status">{'\u2713'}</span>
-                    {age && (
-                      <span className={`artifact-age${stale ? ' stale' : ''}`}>
-                        {age}
-                      </span>
-                    )}
-                  </div>
-                )
-              })}
-              {missingFoundational.map(type => {
-                const classes = 'coverage-item missing foundational'
-                return (
-                  <div key={type} className={classes} title={`${formatTypeName(type)}: missing`}>
+            {/* Foundation — project-wide, most skills depend on these */}
+            <div className="coverage-category">
+              <div className="coverage-category-label">Foundation ({foundationArtifacts.length}/{FOUNDATIONAL_ARTIFACTS.length})</div>
+              <div className="coverage-grid">
+                {foundationArtifacts.map(([key, artifact]) => {
+                  const age = getArtifactAge(artifact.lastUpdated)
+                  const stale = isStaleArtifact(artifact.lastUpdated)
+                  return (
+                    <div key={key} className="coverage-item exists foundational" title={`${formatTypeName(artifact.type)}: exists`}>
+                      <span className="coverage-icon">{ARTIFACT_TYPE_ICONS[artifact.type] ?? '\uD83D\uDCC4'}</span>
+                      <span className="coverage-name">{formatTypeName(artifact.type)}</span>
+                      <span className="coverage-status">{'\u2713'}</span>
+                      {age && <span className={`artifact-age${stale ? ' stale' : ''}`}>{age}</span>}
+                    </div>
+                  )
+                })}
+                {missingFoundational.map(type => (
+                  <div key={type} className="coverage-item missing foundational" title={`${formatTypeName(type)}: missing`}>
                     <span className="coverage-icon">{ARTIFACT_TYPE_ICONS[type] ?? '\uD83D\uDCC4'}</span>
                     <span className="coverage-name">{formatTypeName(type)}</span>
                     <span className="coverage-status">{'\u2014'}</span>
                   </div>
-                )
-              })}
+                ))}
+              </div>
             </div>
+
+            {/* Per-feature — specs, plans, bugs */}
+            {featureArtifacts.length > 0 && (
+              <div className="coverage-category">
+                <div className="coverage-category-label">Features ({featureArtifacts.length} active)</div>
+                <div className="coverage-grid">
+                  {featureArtifacts.map(([key, artifact]) => {
+                    const age = getArtifactAge(artifact.lastUpdated)
+                    const stale = isStaleArtifact(artifact.lastUpdated)
+                    return (
+                      <div key={key} className="coverage-item exists" title={`${formatTypeName(artifact.type)}: ${key}`}>
+                        <span className="coverage-icon">{ARTIFACT_TYPE_ICONS[artifact.type] ?? '\uD83D\uDCC4'}</span>
+                        <span className="coverage-name">{key.replace('.json', '')}</span>
+                        <span className="coverage-status">{'\u2713'}</span>
+                        {age && <span className={`artifact-age${stale ? ' stale' : ''}`}>{age}</span>}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Quality gates */}
+            {qualityArtifacts.length > 0 && (
+              <div className="coverage-category">
+                <div className="coverage-category-label">Quality Gates ({qualityArtifacts.length})</div>
+                <div className="coverage-grid">
+                  {qualityArtifacts.map(([key, artifact]) => {
+                    const age = getArtifactAge(artifact.lastUpdated)
+                    const stale = isStaleArtifact(artifact.lastUpdated)
+                    return (
+                      <div key={key} className="coverage-item exists" title={`${formatTypeName(artifact.type)}: exists`}>
+                        <span className="coverage-icon">{ARTIFACT_TYPE_ICONS[artifact.type] ?? '\uD83D\uDCC4'}</span>
+                        <span className="coverage-name">{formatTypeName(artifact.type)}</span>
+                        <span className="coverage-status">{'\u2713'}</span>
+                        {age && <span className={`artifact-age${stale ? ' stale' : ''}`}>{age}</span>}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Context & progress */}
+            {contextArtifacts.length > 0 && (
+              <div className="coverage-category">
+                <div className="coverage-category-label">Context ({contextArtifacts.length})</div>
+                <div className="coverage-grid">
+                  {contextArtifacts.map(([key, artifact]) => {
+                    const age = getArtifactAge(artifact.lastUpdated)
+                    const stale = isStaleArtifact(artifact.lastUpdated)
+                    return (
+                      <div key={key} className="coverage-item exists" title={`${formatTypeName(artifact.type)}: exists`}>
+                        <span className="coverage-icon">{ARTIFACT_TYPE_ICONS[artifact.type] ?? '\uD83D\uDCC4'}</span>
+                        <span className="coverage-name">{formatTypeName(artifact.type)}</span>
+                        <span className="coverage-status">{'\u2713'}</span>
+                        {age && <span className={`artifact-age${stale ? ' stale' : ''}`}>{age}</span>}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

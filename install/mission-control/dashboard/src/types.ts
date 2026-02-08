@@ -150,34 +150,50 @@ export type AppRoute =
   | { view: 'portfolio' }
   | { view: 'project'; projectPath: string }
 
-// Foundational artifact types for coverage display
-export const FOUNDATIONAL_ARTIFACTS = ['goals', 'spec', 'plan', 'preflight', 'architecture'] as const
+// Foundation artifacts — project-wide, most other skills depend on these
+export const FOUNDATIONAL_ARTIFACTS = ['project-why', 'stack', 'codebase-index', 'goals', 'architecture'] as const
+
+// Per-feature artifacts — many of these exist, state (active/done) matters
+export const PER_FEATURE_ARTIFACTS = ['spec', 'plan', 'bug-spec'] as const
+
+// Quality gate artifacts — run periodically, freshness matters
+export const QUALITY_ARTIFACTS = ['preflight', 'scale-readiness', 'prompt-audit', 'ux-decisions', 'test-coverage'] as const
 
 // All known artifact types
 export const ALL_ARTIFACT_TYPES = [
-  'goals', 'project-status', 'architecture', 'data-contracts', 'product-discovery',
-  'work-memory', 'codebase-index', 'preflight', 'scale-readiness', 'prompt-audit',
-  'user-tasks', 'test-coverage', 'spec', 'plan', 'bug-spec', 'ux-decisions', 'project-why'
+  // Foundation
+  'project-why', 'stack', 'codebase-index', 'goals', 'architecture',
+  // Per-feature
+  'spec', 'plan', 'bug-spec',
+  // Quality gates
+  'preflight', 'scale-readiness', 'prompt-audit', 'ux-decisions', 'test-coverage',
+  // Context & progress
+  'project-status', 'data-contracts', 'product-discovery', 'work-memory', 'user-tasks',
 ] as const
 
 export type ArtifactType = typeof ALL_ARTIFACT_TYPES[number]
 
 export const ARTIFACT_TYPE_ICONS: Record<string, string> = {
-  goals: '\uD83C\uDFAF',
-  'project-status': '\uD83D\uDCCA',
-  architecture: '\uD83C\uDFD7\uFE0F',
-  'data-contracts': '\uD83D\uDD17',
-  'product-discovery': '\uD83D\uDC65',
-  'work-memory': '\uD83D\uDCDD',
+  // Foundation
+  'project-why': '\uD83E\uDD14',
+  stack: '\uD83D\uDEE0\uFE0F',
   'codebase-index': '\uD83D\uDCC2',
-  preflight: '\uD83D\uDE80',
-  'scale-readiness': '\uD83D\uDCC8',
-  'prompt-audit': '\uD83D\uDD0D',
-  'user-tasks': '\u2705',
-  'test-coverage': '\uD83E\uDDEA',
+  goals: '\uD83C\uDFAF',
+  architecture: '\uD83C\uDFD7\uFE0F',
+  // Per-feature
   spec: '\uD83D\uDCC4',
   plan: '\uD83D\uDCCB',
   'bug-spec': '\uD83D\uDC1B',
+  // Quality gates
+  preflight: '\uD83D\uDE80',
+  'scale-readiness': '\uD83D\uDCC8',
+  'prompt-audit': '\uD83D\uDD0D',
   'ux-decisions': '\uD83C\uDFA8',
-  'project-why': '\uD83E\uDD14',
+  'test-coverage': '\uD83E\uDDEA',
+  // Context & progress
+  'project-status': '\uD83D\uDCCA',
+  'data-contracts': '\uD83D\uDD17',
+  'product-discovery': '\uD83D\uDC65',
+  'work-memory': '\uD83D\uDCDD',
+  'user-tasks': '\u2705',
 }
