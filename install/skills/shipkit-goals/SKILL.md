@@ -9,11 +9,11 @@ agent: shipkit-product-owner-agent
 
 **Purpose**: Capture structured, trackable project goals that bridge `.shipkit/why.json` vision to concrete specs — with priorities, status, and success criteria.
 
-**What it does**: Proposes stage-appropriate goals based on project context, lets user validate and customize, then generates `.shipkit/goals.json` with structured goals that persist across sessions and feed into mission control.
+**What it does**: Proposes stage-appropriate goals based on project context, lets user validate and customize, then generates `.shipkit/goals.json` with structured goals that persist across sessions.
 
 **Philosophy**: Goals are 80% predictable from project stage and type. This skill does the grunt work — proposing smart defaults across Technical, Product/UX, Growth, and Operational lenses — so users validate rather than create from scratch. **For MVPs, first impressions are critical** — users form opinions in seconds, so UX goals are weighted heavily.
 
-**Output format**: JSON — readable by Claude, renderable by mission control dashboard, and the single source of truth for project goals.
+**Output format**: JSON — readable by Claude, machine-readable by other tools, and the single source of truth for project goals.
 
 ---
 
@@ -165,7 +165,7 @@ Accept these? Or:
 
 **Create file using Write tool**: `.shipkit/goals.json`
 
-The output MUST conform to the schema below. This is a strict contract — mission control and other skills depend on this structure.
+The output MUST conform to the schema below. This is a strict contract — other skills depend on this structure.
 
 ---
 

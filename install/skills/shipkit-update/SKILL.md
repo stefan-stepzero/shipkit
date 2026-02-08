@@ -295,8 +295,7 @@ rm /tmp/shipkit-install.py
 
 **Hooks merge detail:** Replace the entire `hooks` section with the new template. This ensures new hook types (e.g., `PostToolUse`, `PreToolUse`, `PreCompact`) are added when they didn't exist in the old settings. All Shipkit hook types must be present:
 - `SessionStart` — session initialization
-- `PostToolUse` — skill usage tracking + Mission Control reporter (async)
-- `PreToolUse` — Mission Control command receiver
+- `PostToolUse` — skill usage tracking
 - `Stop` — auto-detection routing + relentless execution loop
 - `PreCompact` — context preservation before compaction
 
@@ -456,40 +455,14 @@ Found .md files pending conversion:
   ⚠ specs/active/payment-flow.md — run /shipkit-spec to convert
   ⚠ plans/active/api-refactor.md — run /shipkit-plan to convert
 
-These skills now output JSON for mission control integration.
+These skills now output JSON for structured data.
 Run each skill to convert, or keep .md files (they still work).
 ```
 
 **Why this matters:**
-- JSON files integrate with mission control dashboard
-- Structured data enables better tooling
+- JSON files enable better tooling and cross-skill queries
+- Structured data is machine-readable
 - Mixed formats work but JSON is preferred going forward
-
----
-
-### Step 9: Update Mission Control Hub (if exists)
-
-The Mission Control hub at `~/.shipkit-mission-control/` is a global install shared across projects. When Shipkit updates, the hub may have stale server/dashboard files.
-
-1. **Check if hub exists:** Look for `~/.shipkit-mission-control/server/index.js`
-   - If NOT found: skip this step (user hasn't set up mission control yet)
-
-2. **Compare versions:**
-   - Read `SERVER_VERSION` from the freshly installed `install/mission-control/server/index.js` (source)
-   - Read `SERVER_VERSION` from `~/.shipkit-mission-control/server/index.js` (hub)
-
-3. **If source version > hub version:**
-   - Stop the Mission Control server if running (kill process on port 7777)
-   - Copy fresh files:
-     - `install/mission-control/server/` → `~/.shipkit-mission-control/server/`
-     - `install/mission-control/dashboard/dist/` → `~/.shipkit-mission-control/dashboard/dist/`
-   - Report: `Mission Control hub: updated {old} → {new}`
-
-4. **If versions match:**
-   - Report: `Mission Control hub: up to date ({version})`
-
-5. **If hub not found:**
-   - Report: `Mission Control hub: not installed (skip)`
 
 ---
 
@@ -550,8 +523,6 @@ Deprecated .md files:
 - plans/active/user-auth.md → archived (replaced by .json)
 - product-discovery.md ⚠ run /shipkit-product-discovery to convert
 - ux-decisions.md ⚠ run /shipkit-ux-audit to convert
-
-Mission Control hub: updated 1.0.0 → 1.1.0
 
 ⚠ settings.local.json has stale refs (see above)
 
@@ -723,7 +694,6 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 - [ ] Deprecated .md files detected and reported
 - [ ] .md files with .json equivalents archived and removed
 - [ ] .md files pending conversion listed with skill to run
-- [ ] Mission Control hub updated if exists and stale
 - [ ] No data loss possible (archive has everything)
 <!-- /SECTION:success-criteria -->
 

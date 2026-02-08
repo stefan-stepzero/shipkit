@@ -175,7 +175,7 @@ The ID-based cross-references enable these graph traversals:
 
 ## Shipkit Artifact Convention
 
-This skill follows the **Shipkit JSON artifact convention** - a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
+This skill follows the **Shipkit JSON artifact convention** - a standard structure for all `.shipkit/*.json` files that enables dashboard visualization.
 
 **Every JSON artifact MUST include these top-level fields:**
 
@@ -190,7 +190,7 @@ This skill follows the **Shipkit JSON artifact convention** - a standard structu
 }
 ```
 
-- `$schema` - Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
+- `$schema` - Always `"shipkit-artifact"`. Identifies Shipkit artifact files.
 - `type` - The artifact type (`"product-discovery"`, `"preflight"`, `"spec"`, etc.). Dashboard uses this for rendering.
 - `version` - Schema version. Bump when fields change.
 - `lastUpdated` - When this file was last written.

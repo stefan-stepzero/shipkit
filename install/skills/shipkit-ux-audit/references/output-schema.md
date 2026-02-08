@@ -139,7 +139,7 @@ This file follows the **Shipkit Artifact Convention** -- a standard envelope for
 
 - **Programmatic consumption** by other skills (e.g., `shipkit-verify`, `shipkit-preflight`)
 - **Pattern consistency checking** across components
-- **Dashboard rendering** in mission control
+- **Dashboard rendering**
 - **Historical tracking** of UX decisions
 
 Required envelope fields for all Shipkit artifacts:

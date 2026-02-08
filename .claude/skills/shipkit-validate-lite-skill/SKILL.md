@@ -246,7 +246,7 @@ def validate_skill_md_quality(skill_name):
 **Migration check**: If skill writes to `.shipkit/*.md` and the output is primarily structured data (lists, status tracking, counts), flag as:
 ```
 WARNING: {skill_name} outputs .shipkit/{file}.md — consider migrating to JSON artifact convention
-  → Structured data renders better in mission control dashboard
+  → Structured data renders better in dashboards and tooling
   → Reference: install/skills/shipkit-goals/SKILL.md for JSON artifact pattern
 ```
 

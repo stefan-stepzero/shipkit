@@ -7,7 +7,7 @@ This document defines the JSON schema for bug specifications output by `/shipkit
 ## Overview
 
 Bug specs are stored as JSON files following the Shipkit artifact convention. They share the same base structure as feature specs (from `/shipkit-spec`) with additional bug-specific fields. This enables:
-- Dashboard visualization in mission control
+- Dashboard visualization
 - Structured queries across specs and bugs
 - Programmatic access by other skills
 - Consistent format for all specification documentation

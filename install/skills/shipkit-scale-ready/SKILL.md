@@ -334,11 +334,11 @@ For enterprise customers and regulated industries.
 
 ## Output Format
 
-**Output format**: JSON — machine-readable by other skills, renderable by mission control dashboard, and the single source of truth for scale readiness.
+**Output format**: JSON — machine-readable by other tools, and the single source of truth for scale readiness.
 
 **Create file using Write tool**: `.shipkit/scale-readiness.json`
 
-The output MUST conform to the schema below. This is a strict contract — mission control and other skills depend on this structure.
+The output MUST conform to the schema below. This is a strict contract — other skills depend on this structure.
 
 ---
 

@@ -407,7 +407,7 @@ Copy and track:
 - `implement (no skill needed)` - Use defined entities/types in components/actions
 - `/shipkit-user-instructions` - Track migration tasks (if schema mismatch)
 - `/shipkit-plan` - Create plan using defined entities
-- `/shipkit-mission-control` - Reads `summary` from contracts.json for dashboard cards
+- `/shipkit-project-status` - Reads `summary` from contracts.json for project health
 
 ---
 

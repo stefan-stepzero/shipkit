@@ -15,6 +15,7 @@ Solo dev framework for shipping MVPs. AI-assisted, fast iteration, production-re
 - **Confirmations:** Just do it for small changes, confirm for destructive ops
 - **Code style:** Match existing codebase
 - **Scope:** Stay focused on what's asked
+- **Subagent models:** Default to `model: haiku` for Explore agents and simple search tasks. Use sonnet/opus only when deeper reasoning is needed.
 
 ---
 

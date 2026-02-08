@@ -185,7 +185,7 @@ Choose 1, 2, 3, or 4:
 What format should the output file use?
 
 1. JSON - Structured data following the Shipkit Artifact Convention
-   Use for: Goals, status, structured data that mission control can visualize
+   Use for: Goals, status, structured data that dashboards can visualize
    → Output as .json with required fields: $schema, type, version, lastUpdated, source, summary
    → RECOMMENDED for new artifact skills
 

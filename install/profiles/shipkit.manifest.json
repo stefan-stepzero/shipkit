@@ -80,8 +80,7 @@
       ],
       "System": [
         {"name": "shipkit-update", "desc": "Install or update Shipkit from GitHub"},
-        {"name": "shipkit-mission-control", "desc": "Monitor & command multiple instances"},
-        {"name": "shipkit-standby", "desc": "AFK daemon mode with Mission Control polling"},
+        {"name": "shipkit-standby", "desc": "AFK daemon mode with command polling"},
         {"name": "shipkit-get-skills", "desc": "Find & install community skills"},
         {"name": "shipkit-get-mcps", "desc": "Find & install MCP servers"}
       ]

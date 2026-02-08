@@ -134,7 +134,7 @@ This document defines the JSON schema for `.shipkit/test-cases/coverage.json`.
 This file follows the **Shipkit Artifact Convention** -- a standard envelope for structured data files produced by Shipkit skills. The convention enables:
 
 - **Programmatic consumption** by other skills (e.g., `shipkit-verify`, `shipkit-preflight`)
-- **Dashboard rendering** in mission control
+- **Dashboard rendering**
 - **Threshold checks** (e.g., "coverageScore >= 80")
 
 Required envelope fields for all Shipkit artifacts:

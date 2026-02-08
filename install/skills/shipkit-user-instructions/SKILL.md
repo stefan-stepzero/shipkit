@@ -7,7 +7,7 @@ description: "Use when there are manual tasks the user must complete. Triggers: 
 
 **Purpose**: Prevent manual tasks from being lost in chat by maintaining a persistent JSON tracking file for tasks that require user action outside Claude's control.
 
-**What it does**: Captures manual tasks the user must complete, tracks their status, and persists them in `.shipkit/user-tasks.json` — a structured JSON artifact readable by Claude, renderable by mission control, and the single source of truth for user action items.
+**What it does**: Captures manual tasks the user must complete, tracks their status, and persists them in `.shipkit/user-tasks.json` — a structured JSON artifact readable by Claude, machine-readable by other tools, and the single source of truth for user action items.
 
 **Output format**: JSON — follows the Shipkit artifact convention for dashboard integration.
 

@@ -226,7 +226,7 @@ fi
 
 **Use Write tool to create/overwrite**: `.shipkit/status.json`
 
-The output MUST conform to the JSON Schema below. This is a strict contract -- mission control and other skills depend on this structure.
+The output MUST conform to the JSON Schema below. This is a strict contract -- other skills depend on this structure.
 
 **Terminal display**: After writing the JSON file, display a human-readable formatted summary to the user (not raw JSON). Example:
 

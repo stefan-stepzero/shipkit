@@ -18,7 +18,7 @@ allowed-tools:
 
 **What it does**: Runs an MVP-focused production checklist covering security, data integrity, error handling, UX basics, and legal compliance. Generates `.shipkit/preflight.json` with structured results. For scale/enterprise readiness (observability, performance, operational maturity), use `/shipkit-scale-ready` after you have traction.
 
-**Output format**: JSON — readable by Claude, renderable by mission control dashboard, and the single source of truth for production readiness status.
+**Output format**: JSON — readable by Claude, machine-readable by other tools, and the single source of truth for production readiness status.
 
 **Philosophy**: With AI dev, building is cheap — but security, data integrity, and user trust aren't. This checklist keeps what matters for MVP while deferring optimization concerns.
 
@@ -300,7 +300,7 @@ Each checklist item describes what to "Scan for" — translate these to actual t
 
 **Create**: `.shipkit/preflight.json`
 
-**The output MUST conform to the schema in `references/output-schema.md`.** This is a strict contract — mission control and other skills depend on this structure.
+**The output MUST conform to the schema in `references/output-schema.md`.** This is a strict contract — other skills depend on this structure.
 
 ---
 

@@ -160,7 +160,7 @@ Pipeline: [name/purpose]
 - Tag pipeline type: `"chain"` (sequential), `"parallel"` (concurrent stages), `"mixed"` (both)
 - Link `issues[]` to relevant issue IDs from the audit findings
 
-This topology data powers the pipeline flow graph in Mission Control.
+This topology data powers pipeline flow graph visualization.
 
 **For multi-stage pipelines (3+ stages)**:
 - Identify which stages could run in parallel
@@ -298,7 +298,7 @@ Every finding MUST be backed by actual tool output. Follow the same verification
 
 **Create file using Write tool**: `.shipkit/prompt-audit.json`
 
-The output MUST conform to the schema below. This is a strict contract — mission control and other skills depend on this structure.
+The output MUST conform to the schema below. This is a strict contract — other skills depend on this structure.
 
 ---
 

@@ -11,7 +11,7 @@ context: fork
 
 **What it does**: Scans project files to detect tech stack, environment requirements, and database schema. Generates `.shipkit/stack.json` as a structured JSON artifact, plus optional markdown files for env and schema.
 
-**Output format**: JSON — readable by Claude, renderable by mission control dashboard, and the single source of truth for project tech stack.
+**Output format**: JSON — readable by Claude, machine-readable by other tools, and the single source of truth for project tech stack.
 
 ---
 
@@ -231,7 +231,7 @@ Each stack entry includes a `confidence` field. Example:
 
 **Create file using Write tool**: `.shipkit/stack.json`
 
-The output MUST conform to the JSON schema below. This is a strict contract -- mission control and other skills depend on this structure.
+The output MUST conform to the JSON schema below. This is a strict contract -- other skills depend on this structure.
 
 ```json
 {
@@ -394,7 +394,7 @@ Copy and track:
 
 ## Shipkit Artifact Convention
 
-This skill follows the **Shipkit JSON artifact convention** -- a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
+This skill follows the **Shipkit JSON artifact convention** -- a standard structure for all `.shipkit/*.json` files that enables dashboard visualization.
 
 **Every JSON artifact MUST include these top-level fields:**
 
@@ -409,7 +409,7 @@ This skill follows the **Shipkit JSON artifact convention** -- a standard struct
 }
 ```
 
-- `$schema` -- Always `"shipkit-artifact"`. Lets the reporter hook identify files to ship to mission control.
+- `$schema` -- Always `"shipkit-artifact"`. Identifies Shipkit artifact files.
 - `type` -- The artifact type (`"stack"`, `"goals"`, `"spec"`, `"plan"`, etc.). Dashboard uses this for rendering.
 - `version` -- Schema version. Bump when fields change.
 - `lastUpdated` -- When this file was last written.

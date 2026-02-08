@@ -574,7 +574,6 @@ def install_shared_core(repo_root, target_dir, language, edition):
     shutil.copy2(hooks_src / "shipkit-track-skill-usage.py", hooks_dest / "shipkit-track-skill-usage.py")
     shutil.copy2(hooks_src / "shipkit-relentless-stop-hook.py", hooks_dest / "shipkit-relentless-stop-hook.py")
     shutil.copy2(hooks_src / "shipkit-precompact-hook.py", hooks_dest / "shipkit-precompact-hook.py")
-    shutil.copy2(hooks_src / "shipkit-mission-control-reporter.py", hooks_dest / "mission-control-reporter.py")
     print_success("Hooks installed")
 
     # Install framework rules
@@ -849,16 +848,6 @@ def _build_hooks_config():
                         "command": "python -X utf8 .claude/hooks/shipkit-track-skill-usage.py"
                     }
                 ]
-            },
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "python -X utf8 .claude/hooks/mission-control-reporter.py",
-                        "async": True,
-                        "timeout": 5000
-                    }
-                ]
             }
         ],
         "PreToolUse": [],
@@ -897,7 +886,7 @@ def update_hooks(settings_path):
     """Update hooks section in existing settings.json.
 
     Replaces the entire hooks section with the canonical config so that
-    new hook types (PostToolUse MC reporter, PreToolUse MC receiver, etc.)
+    new hook types (PostToolUse skill tracker, PreCompact, etc.)
     are wired in on update — not just on fresh install.
     """
     with open(settings_path, 'r', encoding='utf-8') as f:

@@ -10,7 +10,7 @@ agent: shipkit-product-owner-agent
 
 **Purpose**: Transform feature descriptions into structured JSON specifications with Given/When/Then scenarios and comprehensive edge case coverage, creating clear acceptance criteria for implementation.
 
-**Output format**: JSON -- structured data readable by Claude, renderable by mission control dashboard, and queryable by other skills.
+**Output format**: JSON -- structured data readable by Claude, machine-readable by other tools, and queryable by other skills.
 
 ---
 

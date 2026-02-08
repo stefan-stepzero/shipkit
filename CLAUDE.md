@@ -205,6 +205,10 @@ Bash IS appropriate for git, tests, builds, system operations.
 
 **Don't use for:** Scratch notes, single-session todos, user-facing docs, code files, product artifacts (those go in `.shipkit/`)
 
+### Subagent Models
+
+When using the Task tool, default to `model: haiku` for Explore agents and straightforward search/audit tasks. Only use sonnet or opus for subagents that require deeper reasoning or complex analysis.
+
 ### Using Claude Code's Task System
 
 For complex multi-step framework development (migrations, multi-file refactors, release prep), use Claude Code's native Task tools:
@@ -245,9 +249,9 @@ Location: `install/skills/`
 
 **Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-scale-ready`, `shipkit-prompt-audit`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
 
-**System:** `shipkit-detect` (auto-triggered), `shipkit-update`, `shipkit-mission-control`, `shipkit-standby`, `shipkit-get-skills`, `shipkit-get-mcps`
+**System:** `shipkit-detect` (auto-triggered), `shipkit-update`, `shipkit-standby`, `shipkit-get-skills`, `shipkit-get-mcps`
 
-**Total:** 37 skills
+**Total:** 36 skills
 
 ### Agents
 Location: `install/agents/`

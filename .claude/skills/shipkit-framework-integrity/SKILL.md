@@ -583,7 +583,7 @@ Reference: install/skills/shipkit-goals/SKILL.md (JSON artifact pattern)
 Convention: $schema, type, version, lastUpdated, source, summary
 ```
 
-**Why this matters**: JSON artifacts are natively visualizable by mission control dashboard. Progressive migration ensures the dashboard gets richer data over time without requiring a big-bang rewrite.
+**Why this matters**: JSON artifacts are natively visualizable by external dashboards. Progressive migration ensures tooling gets richer data over time without requiring a big-bang rewrite.
 
 ---
 

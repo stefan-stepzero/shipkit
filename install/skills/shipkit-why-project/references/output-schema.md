@@ -66,7 +66,7 @@ This file follows the **Shipkit Artifact Convention** -- a standard envelope for
 
 - **Programmatic consumption** by other skills (e.g., `shipkit-spec`, `shipkit-verify`)
 - **Session auto-loading** for strategic context
-- **Dashboard rendering** in mission control
+- **Dashboard rendering**
 - **Consistency checks** across project artifacts
 
 Required envelope fields for all Shipkit artifacts:

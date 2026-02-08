@@ -173,7 +173,7 @@ This document defines the JSON schema for `.shipkit/architecture.json`.
 
 ## Shipkit Artifact Convention
 
-This skill follows the **Shipkit JSON artifact convention** - a standard structure for all `.shipkit/*.json` files that enables mission control visualization.
+This skill follows the **Shipkit JSON artifact convention** - a standard structure for all `.shipkit/*.json` files that enables dashboard visualization.
 
 **Every JSON artifact MUST include these top-level fields:**
 

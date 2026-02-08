@@ -7,7 +7,7 @@ This document defines the JSON schema for feature specifications output by `/shi
 ## Overview
 
 Feature specs are stored as JSON files following the Shipkit artifact convention. This enables:
-- Dashboard visualization in mission control
+- Dashboard visualization
 - Structured queries across specs
 - Programmatic access by other skills
 - Consistent format for all feature documentation
