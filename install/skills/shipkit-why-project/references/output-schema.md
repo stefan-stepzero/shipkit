@@ -25,16 +25,6 @@ This document defines the JSON schema for `.shipkit/why.json`.
   "nonGoals": [
     "string"
   ],
-  "timeline": {
-    "target": "string | null",
-    "milestones": [
-      {
-        "name": "string",
-        "target": "string",
-        "status": "planned | in-progress | completed"
-      }
-    ]
-  },
   "approach": "string"
 }
 ```
@@ -70,16 +60,6 @@ This document defines the JSON schema for `.shipkit/why.json`.
 | `constraints` | array | yes | Limitations, must-haves, non-negotiables (can be empty) |
 | `nonGoals` | array | yes | What we're explicitly NOT building (can be empty) |
 
-### Timeline Object
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `timeline.target` | string | no | Overall target date or timeframe, or `null` |
-| `timeline.milestones` | array | no | Key milestones with targets (can be empty) |
-| `timeline.milestones[].name` | string | yes | Milestone name |
-| `timeline.milestones[].target` | string | yes | Target date or timeframe |
-| `timeline.milestones[].status` | enum | yes | `"planned"`, `"in-progress"`, or `"completed"` |
-
 ## Shipkit Artifact Convention
 
 This file follows the **Shipkit Artifact Convention** -- a standard envelope for structured data files produced by Shipkit skills. The convention enables:
@@ -109,8 +89,6 @@ When updating an existing `why.json`:
 
 All array fields (`successCriteria`, `constraints`, `nonGoals`) can be empty arrays `[]` if user skips those questions. This is valid - not all projects need explicit constraints or non-goals early on.
 
-### Timeline
+### Timeline and Milestones
 
-The timeline is optional. If user doesn't specify dates or milestones:
-- Set `timeline.target` to `null`
-- Set `timeline.milestones` to empty array `[]`
+**Note:** Timeline and milestones are NOT captured in `why.json`. For trackable objectives with priorities and status, use `/shipkit-goals` which creates `goals.json`. This separation keeps `why.json` focused on strategic context while `goals.json` handles actionable tracking.

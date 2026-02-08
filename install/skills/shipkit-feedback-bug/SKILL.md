@@ -133,6 +133,15 @@ Severity (for bugs):
 
 ### 3b: Isolate the Problem + 3d: Assess Blast Radius (PARALLEL)
 
+**Index-Accelerated Investigation** — Read `.shipkit/codebase-index.json` if available:
+
+1. `Read: .shipkit/codebase-index.json`
+2. If index exists:
+   - Use `concepts` to immediately locate files for the affected feature area
+   - Use `coreFiles` to assess blast radius of high-dependency files
+   - Pass file lists to agents below for targeted investigation
+3. If index doesn't exist → agents discover related code via broad scanning
+
 **FOR MULTIPLE BUGS, USE PARALLEL SUBAGENTS:**
 
 ```
@@ -140,12 +149,14 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 1. CODE ISOLATION AGENT (subagent_type: "Explore")
    Prompt: "Find code related to [feature/component from bug].
+   [If index exists, include: 'The codebase index maps these files for this area: [concept files]. Start from these.']
    Look for: event handlers, state management, API calls.
    Check for: error handling, edge cases, race conditions.
    Return: file paths, relevant code sections, potential problem areas."
 
 2. BLAST RADIUS AGENT (subagent_type: "Explore")
    Prompt: "Find all places using similar patterns to [feature/component].
+   [If index exists, include: 'Core files (high fan-in): [coreFiles]. Concepts: [concepts]. Use these to quickly identify blast radius scope.']
    Check if same bug pattern could occur elsewhere.
    Return: list of files with similar code, risk assessment per file."
 ```

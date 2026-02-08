@@ -107,21 +107,7 @@ If .shipkit/why.json does NOT exist:
 
 ---
 
-### Step 6: Ask About Timeline (Optional)
-
-**Ask**: "Any target dates or milestones? (or Enter to skip)"
-
-**If user provides content**:
-- Set `timeline.target` to overall target
-- Parse any milestones into `timeline.milestones` array
-
-**If user skips**:
-- Set `timeline.target` to `null`
-- Set `timeline.milestones` to empty array `[]`
-
----
-
-### Step 7: Generate why.json
+### Step 6: Generate why.json
 
 **Location**: `.shipkit/why.json`
 
@@ -143,23 +129,20 @@ If .shipkit/why.json does NOT exist:
   "successCriteria": ["{parsed from Step 3}"],
   "constraints": ["{parsed from Step 4}"],
   "nonGoals": ["{parsed from Step 5}"],
-  "timeline": {
-    "target": "{overall target or null}",
-    "milestones": ["{parsed from Step 6}"]
-  },
   "approach": "{Answer to Question 5}"
 }
 ```
 
 ---
 
-### Step 8: Confirm to User
+### Step 7: Confirm to User
 
 **Output**:
 - Summary of vision, problem, target users
 - Location of file (`.shipkit/why.json`)
 - Note about auto-loading at session start
 - Counts of success criteria, constraints, non-goals captured
+- Suggest `/shipkit-goals` to define actionable objectives
 
 ---
 
@@ -179,6 +162,7 @@ Copy and track:
 - [ ] Captured constraints (or explicitly skipped)
 - [ ] Captured non-goals (or explicitly skipped)
 - [ ] Saved to `.shipkit/why.json`
+- [ ] Suggested `/shipkit-goals` for actionable objectives
 
 ---
 
@@ -198,10 +182,10 @@ Copy and track:
 - None (can be first skill)
 
 ### After This Skill
+- `/shipkit-goals` - **Recommended next step** — Define actionable objectives with priorities and tracking
 - `/shipkit-project-context` - Scan technical stack
 - `/shipkit-architecture-memory` - Log architectural decisions
 - `/shipkit-spec` - Create feature specs (can reference vision for alignment)
-- Any other skill - Strategic context available via auto-load
 
 ---
 

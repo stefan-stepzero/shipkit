@@ -15,13 +15,20 @@ This document defines the JSON schema for `.shipkit/goals.json`.
   "summary": {
     "total": 5,
     "byPriority": { "p0": 2, "p1": 2, "p2": 1 },
-    "byStatus": { "not-started": 2, "in-progress": 2, "achieved": 1, "deferred": 0 }
+    "byStatus": { "not-started": 2, "in-progress": 2, "achieved": 1, "deferred": 0 },
+    "byLens": { "technical": 2, "product": 1, "growth": 1, "operational": 1 }
+  },
+
+  "stage": {
+    "current": "mvp",
+    "target": "production"
   },
 
   "goals": [
     {
       "id": "goal-slug",
       "name": "Human-readable goal name",
+      "lens": "technical",
       "priority": "p0",
       "status": "in-progress",
       "objective": "What we're trying to achieve",
@@ -48,7 +55,15 @@ This document defines the JSON schema for `.shipkit/goals.json`.
 | `lastUpdated` | string | yes | ISO date of last modification |
 | `source` | string | yes | Skill that created/updated this file |
 | `summary` | object | yes | Aggregated counts for dashboard rendering |
+| `stage` | object | yes | Current and target project stage |
 | `goals` | array | yes | The actual goals |
+
+### Stage Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `current` | string | yes | Current stage: `"poc"` \| `"mvp"` \| `"production"` \| `"scale"` |
+| `target` | string | yes | Target stage for this goal set |
 
 ### Goal Object Fields
 
@@ -56,12 +71,22 @@ This document defines the JSON schema for `.shipkit/goals.json`.
 |-------|------|----------|-------------|
 | `id` | string | yes | Slug identifier (kebab-case) |
 | `name` | string | yes | Display name |
+| `lens` | enum | yes | `"technical"` \| `"product"` \| `"growth"` \| `"operational"` |
 | `priority` | enum | yes | `"p0"` \| `"p1"` \| `"p2"` |
 | `status` | enum | yes | `"not-started"` \| `"in-progress"` \| `"achieved"` \| `"deferred"` |
 | `objective` | string | yes | What we're trying to achieve |
 | `successCriteria` | string[] | yes | How we know it's done |
 | `linkedSpecs` | string[] | no | Paths to related spec files |
 | `notes` | string | no | Additional context |
+
+### Lens Values
+
+| Lens | Focus |
+|------|-------|
+| `technical` | Does it work? Security, reliability, infrastructure |
+| `product` | Can users succeed? UX, onboarding, usability |
+| `growth` | Can it scale organically? Activation, virality, retention |
+| `operational` | Can we support it? Docs, monitoring, support |
 
 ### Priority Levels
 
@@ -88,7 +113,8 @@ The `summary` field MUST be kept in sync with the `goals` array. It exists so th
 {
   "total": 5,
   "byPriority": { "p0": 2, "p1": 2, "p2": 1 },
-  "byStatus": { "not-started": 2, "in-progress": 2, "achieved": 1, "deferred": 0 }
+  "byStatus": { "not-started": 2, "in-progress": 2, "achieved": 1, "deferred": 0 },
+  "byLens": { "technical": 2, "product": 1, "growth": 1, "operational": 1 }
 }
 ```
 

@@ -5,82 +5,108 @@
   "lastUpdated": "2025-01-15",
   "source": "shipkit-goals",
 
+  "stage": {
+    "current": "mvp",
+    "target": "production"
+  },
+
   "summary": {
-    "total": 5,
-    "byPriority": { "p0": 2, "p1": 2, "p2": 1 },
-    "byStatus": { "not-started": 1, "in-progress": 2, "achieved": 1, "deferred": 1 }
+    "total": 6,
+    "byPriority": { "p0": 2, "p1": 3, "p2": 1 },
+    "byStatus": { "not-started": 2, "in-progress": 2, "achieved": 1, "deferred": 1 },
+    "byLens": { "technical": 2, "product": 2, "growth": 1, "operational": 1 }
   },
 
   "goals": [
     {
-      "id": "launch-mvp",
-      "name": "Launch MVP",
+      "id": "auth-hardened",
+      "name": "Auth Hardened",
+      "lens": "technical",
       "priority": "p0",
       "status": "achieved",
-      "objective": "Ship a working product that solves the core problem",
+      "objective": "Authentication secure enough for production use",
       "successCriteria": [
-        "Core user flow works end-to-end",
-        "Deployed to production environment",
-        "Basic error handling in place"
+        "Session expiry configured",
+        "Rate limiting on auth endpoints",
+        "Brute force prevention active"
       ],
-      "linkedSpecs": ["specs/active/core-flow.json", "specs/active/deployment.json"],
+      "linkedSpecs": [],
       "notes": "Completed 2025-01-10"
     },
     {
-      "id": "beta-users",
-      "name": "Acquire 10 Beta Users",
+      "id": "error-recovery",
+      "name": "Error Recovery Exists",
+      "lens": "technical",
       "priority": "p0",
       "status": "in-progress",
-      "objective": "Get real users testing the product and providing feedback",
+      "objective": "System handles failures gracefully",
       "successCriteria": [
-        "10 users signed up",
-        "At least 5 have completed core flow",
-        "Collected feedback from at least 3 users"
+        "Retry logic on transient failures",
+        "Graceful degradation for non-critical features",
+        "User sees actionable error messages"
       ],
-      "linkedSpecs": ["specs/active/onboarding.json"],
-      "notes": "Currently at 7 users"
+      "linkedSpecs": [],
+      "notes": "Retry logic done, working on degradation"
     },
     {
-      "id": "payment-integration",
-      "name": "Integrate Payment Processing",
+      "id": "onboarding-flow",
+      "name": "Onboarding Flow Complete",
+      "lens": "product",
       "priority": "p1",
       "status": "in-progress",
-      "objective": "Enable users to pay for premium features",
+      "objective": "New users guided through first key actions",
       "successCriteria": [
-        "Stripe integration complete",
-        "Subscription flow works",
-        "Invoice generation automated"
+        "First-run experience exists",
+        "User completes activation within first session",
+        "Empty states guide next actions"
       ],
-      "linkedSpecs": ["specs/active/payments.json"],
+      "linkedSpecs": ["specs/active/onboarding.json"],
       "notes": null
     },
     {
-      "id": "mobile-responsive",
-      "name": "Mobile-Responsive Design",
+      "id": "webhook-verification",
+      "name": "Webhook Signature Verification",
+      "lens": "technical",
       "priority": "p1",
       "status": "not-started",
-      "objective": "Ensure product works well on mobile devices",
+      "objective": "Payment webhooks verified before processing",
       "successCriteria": [
-        "All pages render correctly on mobile",
-        "Touch interactions work properly",
-        "Performance acceptable on 3G connections"
+        "Stripe webhook signatures validated",
+        "Invalid webhooks rejected with logging",
+        "Replay attacks prevented"
       ],
-      "linkedSpecs": [],
-      "notes": "Blocked until core features stable"
+      "linkedSpecs": ["specs/active/payments.json"],
+      "notes": "Blocked until payments integration starts"
     },
     {
-      "id": "analytics-dashboard",
-      "name": "Admin Analytics Dashboard",
-      "priority": "p2",
-      "status": "deferred",
-      "objective": "Provide admins visibility into usage metrics",
+      "id": "user-docs",
+      "name": "User-Facing Documentation",
+      "lens": "operational",
+      "priority": "p1",
+      "status": "not-started",
+      "objective": "Users can self-serve answers to common questions",
       "successCriteria": [
-        "Daily active users visible",
-        "Feature usage breakdown",
-        "Error rate monitoring"
+        "FAQ covers top 10 questions",
+        "Getting started guide exists",
+        "Help accessible from within app"
       ],
       "linkedSpecs": [],
-      "notes": "Deferred to v2 - focus on user-facing features first"
+      "notes": null
+    },
+    {
+      "id": "invite-flow",
+      "name": "User Can Invite Others",
+      "lens": "growth",
+      "priority": "p2",
+      "status": "deferred",
+      "objective": "Enable organic growth through user referrals",
+      "successCriteria": [
+        "Invite link generation works",
+        "Invited users see referrer context",
+        "Referral tracking in analytics"
+      ],
+      "linkedSpecs": [],
+      "notes": "Deferred to post-launch - focus on core value first"
     }
   ]
 }

@@ -96,6 +96,16 @@ For each applicable category, run checks and classify as:
 
 **See**: `references/checklists/` for detailed check definitions.
 
+**Index-Accelerated Audit** — Read `.shipkit/codebase-index.json` first:
+
+1. `Read: .shipkit/codebase-index.json`
+2. If index exists:
+   - Use `framework` to skip N/A categories (e.g., skip database checks if no DB in stack)
+   - Use `concepts` to direct each agent to relevant files
+   - Use `configFiles` to identify what infrastructure is configured
+   - Use `coreFiles` for prioritizing high-impact audit targets
+3. If index doesn't exist → agents scan entire codebase as below
+
 **USE PARALLEL SUBAGENTS BY CATEGORY** - For full audits, spawn multiple Explore agents in parallel:
 
 ```
@@ -103,6 +113,7 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 1. SECURITY & DATABASE AGENT (subagent_type: "Explore")
    Prompt: "Audit security hardening and database optimization in this [stack] codebase.
+   [If index exists, include: 'Start from: auth=[concepts.auth files], database=[concepts.database files]. Config: [configFiles].']
    SECURITY: Check security headers (CSP, HSTS), session config, admin route protection,
    re-auth on sensitive actions, API key management.
    DATABASE: Check indexes on queries, N+1 patterns, connection pooling, slow query logging.
@@ -110,6 +121,7 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 2. OBSERVABILITY & PERFORMANCE AGENT (subagent_type: "Explore")
    Prompt: "Audit observability and performance in this [stack] codebase.
+   [If index exists, include: 'Entry points: [entryPoints]. Core files: [coreFiles]. Recently active: [recentlyActive].']
    OBSERVABILITY: Check structured logging vs console.log, log levels, request/correlation ID,
    error tracking context, health endpoint detail.
    PERFORMANCE: Check bundle size, code splitting, image optimization, caching headers,
@@ -118,6 +130,7 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 3. RELIABILITY & OPERATIONS AGENT (subagent_type: "Explore")
    Prompt: "Audit reliability patterns and operational readiness in this [stack] codebase.
+   [If index exists, include: 'API entry points: [entryPoints.api]. External service files: [concepts with external calls]. Config: [configFiles].']
    RELIABILITY: Check timeouts on external calls, retry with backoff, graceful degradation,
    idempotency keys, retriable jobs.
    OPERATIONS: Check for runbooks, rollback docs, zero-downtime deploy config, feature flags.
@@ -125,12 +138,14 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 4. CODE MATURITY AGENT (subagent_type: "Explore")
    Prompt: "Audit code maturity and technical debt in this [stack] codebase.
+   [If index exists, include: 'Core files: [coreFiles]. Recently active: [recentlyActive]. Directories: [directories].']
    Check: test coverage on critical paths, duplicate components, shared component usage,
    centralized types, TODO/FIXME in core flows, dependency vulnerabilities (npm audit).
    Report Pass/Fail/Warning with file:line evidence for each check."
 
 5. COMPLIANCE AGENT (Enterprise tier only) (subagent_type: "Explore")
    Prompt: "Audit compliance patterns in this [stack] codebase.
+   [If index exists, include: 'Concepts: [concepts]. Entry points: [entryPoints]. Focus on data handling paths.']
    Check: GDPR export endpoint, GDPR deletion flow, audit logging on sensitive actions,
    data retention cleanup jobs.
    Report Pass/Fail/Warning/Human-Verify with file:line evidence for each check."

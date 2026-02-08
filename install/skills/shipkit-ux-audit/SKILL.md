@@ -134,17 +134,31 @@ Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
 
 UX decisions based on `.shipkit/` context files alone miss actual component patterns, inconsistencies between components, and accessibility gaps that only show up in source code.
 
+**Index-Accelerated Exploration** — Read `.shipkit/codebase-index.json` first:
+
+1. `Read: .shipkit/codebase-index.json`
+2. If index exists:
+   - Use `directories` to find component directories (e.g., `src/components`, `src/app`)
+   - Use `concepts` for UI-related concept mappings
+   - Use `framework` to know which UI patterns to look for (React, Vue, Svelte, etc.)
+   - Pass component directories and framework to Explore agents for targeted scanning
+3. If index doesn't exist → agents scan entire codebase for UI patterns
+
 **Launch explore agents** — Use the Task tool with `subagent_type: Explore`:
 
 ```
 Agent 1 - Component patterns: "Find UI components related to [component type]
-in the codebase. Look for: existing component implementations, state management
+in the codebase.
+[If index exists, include: 'Framework: [framework]. Component directories: [directories]. Start from these locations — skip broad file discovery.']
+Look for: existing component implementations, state management
 patterns (loading/error/empty states), form handling patterns, modal patterns,
 and shared UI utilities. Report: what patterns are established, which components
 handle states well vs poorly, what UI library/primitives are in use."
 
 Agent 2 - Consistency and gaps: "Scan all UI components for consistency in
-UX patterns. Look for: components missing loading states, inconsistent error
+UX patterns.
+[If index exists, include: 'Core files: [coreFiles]. Recently active: [recentlyActive]. Prioritize these for consistency checking.']
+Look for: components missing loading states, inconsistent error
 handling, missing accessibility attributes (aria-*, role, tabIndex), hardcoded
 strings that should be accessible, missing keyboard handlers, touch target sizes.
 Report: which components follow good patterns, which have gaps, and what the

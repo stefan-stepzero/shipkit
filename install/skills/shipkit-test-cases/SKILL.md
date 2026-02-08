@@ -111,6 +111,16 @@ git diff --name-only HEAD~5..HEAD
 
 ### Step 4: Generate/Update Test Cases
 
+**Index-Accelerated Feature Discovery** — Read `.shipkit/codebase-index.json` first:
+
+1. `Read: .shipkit/codebase-index.json`
+2. If index exists:
+   - Use `concepts` to identify feature areas and their files (auth, billing, etc.) — skip manual feature discovery
+   - Use `entryPoints` to find API routes and app entry points that need test coverage
+   - Use `coreFiles` to prioritize high-dependency files for testing
+   - Spawn one subagent per concept area with its file list pre-populated
+3. If index doesn't exist → discover features manually from codebase scan
+
 **FOR MULTIPLE FEATURES (3+), USE PARALLEL SUBAGENTS:**
 
 ```
@@ -119,14 +129,14 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 For each feature area discovered (auth, billing, checkout, etc.):
 
 1. AUTH TEST CASE AGENT (subagent_type: "Explore")
-   Prompt: "Generate test cases for auth feature files: [list auth files]
+   Prompt: "Generate test cases for auth feature files: [list auth files, or use concepts.auth from index]
    Read each file. For each function/endpoint, generate:
    - Core test case (happy path)
    - Edge test cases (error states, boundaries)
    Return test cases in format: ID, Scenario, Validates, Type, Action, Verify."
 
 2. BILLING TEST CASE AGENT (subagent_type: "Explore")
-   Prompt: "Generate test cases for billing feature files: [list billing files]
+   Prompt: "Generate test cases for billing feature files: [list billing files, or use concepts.payments from index]
    Read each file. For each function/endpoint, generate:
    - Core test case (happy path)
    - Edge test cases (error states, boundaries)

@@ -55,11 +55,22 @@ allowed-tools:
 
 Scan the codebase for all LLM-related code using detection patterns.
 
+**Index-Accelerated Discovery** — Read `.shipkit/codebase-index.json` first:
+
+1. `Read: .shipkit/codebase-index.json`
+2. If index exists:
+   - Check `concepts` for any AI/LLM-related concept mappings
+   - Use `configFiles` to identify AI SDK config files (e.g., AI provider configs)
+   - Use `directories` to identify likely locations (e.g., `src/lib`, `src/services`, `src/api`)
+   - Pass this context to the Explore agent to narrow its search scope
+3. If index doesn't exist → full scan as below
+
 **USE SUBAGENT FOR DISCOVERY** — Launch Explore subagent for efficient parallel scanning:
 
 ```
 Task tool with subagent_type: "Explore"
 Prompt: "Find all LLM integration points in this codebase.
+[If index exists, include: 'The codebase index shows: directories=[dirs], config files=[configs], concepts=[concepts]. Focus search on these locations first before scanning broadly.']
 
 Search for these patterns (see references/detection-patterns.md for full list):
 

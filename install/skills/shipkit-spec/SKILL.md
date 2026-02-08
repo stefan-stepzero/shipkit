@@ -115,27 +115,40 @@ Read these files IN PARALLEL (single message, multiple tool calls):
 
 Specs written without reading source code miss existing patterns, hidden constraints, and ripple effects. This step ensures the spec is grounded in reality.
 
-**3a. Identify code areas** — From the feature description + context files, determine:
+**3a. Index Lookup** — Read `.shipkit/codebase-index.json` first:
+
+1. `Read: .shipkit/codebase-index.json`
+2. If index exists:
+   - Use `concepts` to find files related to the feature area
+   - Use `entryPoints` to understand where the feature connects
+   - Use `coreFiles` to identify high-dependency files that must be preserved
+   - Pass relevant file lists to Explore agents below for targeted scanning
+3. If index doesn't exist → identify code areas manually from feature description
+
+**3b. Identify code areas** — From the feature description + context files + index data, determine:
 - Which files/modules will be directly modified or created?
 - What naming patterns, conventions, or abstractions exist in those areas?
 
-**3b. Launch explore agents** — Use the Task tool with `subagent_type: Explore` to investigate:
+**3c. Launch explore agents** — Use the Task tool with `subagent_type: Explore` to investigate:
 
 ```
 Agent 1 - Direct code: "Find and summarize the code directly related to
-[feature area]. Look for existing patterns, data structures, API signatures,
-and component interfaces. Report: what exists today, what patterns are used,
+[feature area].
+[If index exists, include: 'The codebase index maps these relevant files: [concept files]. Entry points: [entryPoints]. Start from these — focus on patterns, data structures, and API signatures rather than broad search.']
+Report: what exists today, what patterns are used,
 what constraints the existing code imposes."
 
 Agent 2 - Ripple effects: "Find code that depends on or interacts with
-[feature area]. Look for callers, consumers, imports, tests, shared state,
+[feature area].
+[If index exists, include: 'Core files (high fan-in): [coreFiles]. Use these to trace dependency chains. Concepts: [concepts] — check cross-concept interactions.']
+Look for callers, consumers, imports, tests, shared state,
 and integration points. Report: what other code would be affected by changes,
 what contracts exist that must be preserved."
 ```
 
 **Launch both agents in parallel** — they are independent searches.
 
-**3c. Synthesize findings** — Before generating the spec, note:
+**3d. Synthesize findings** — Before generating the spec, note:
 - Existing patterns the spec should follow or explicitly deviate from
 - Integration points and contracts the spec must preserve
 - Hidden complexity the user's description didn't mention

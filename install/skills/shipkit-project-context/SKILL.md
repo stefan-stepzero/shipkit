@@ -79,11 +79,24 @@ context: fork
 
 ### Step 3: Scan Project Files
 
+**Index-Accelerated Stack Detection** — Read `.shipkit/codebase-index.json` first:
+
+1. `Read: .shipkit/codebase-index.json`
+2. If index exists:
+   - `framework` gives the primary framework directly
+   - `configFiles` shows all detected config files (database, testing, build tools)
+   - `directories` shows project structure
+   - `scripts` shows available npm scripts
+   - Skip broad framework/config detection — focus Explore agent on **working patterns** the index doesn't capture (provider hierarchy, API route structure, import aliases)
+3. If index doesn't exist → full stack detection as below
+
 **USE SUBAGENT FOR COMPREHENSIVE STACK DETECTION** - For first run or full rescan:
 
 ```
 Task tool with subagent_type: "Explore"
-Prompt: "Scan this project to detect complete tech stack. Report:
+Prompt: "Scan this project to detect complete tech stack.
+[If index exists, include: 'The codebase index already detected: framework=[X], config files=[list], directories=[list]. Skip re-detecting these. Focus on: working patterns (provider hierarchy, API route structure, import aliases from tsconfig), auth setup detail, and database schema specifics.']
+Report:
 
 1. FRAMEWORK: Check package.json for next, react, vue, svelte, remix, etc.
 2. DATABASE: Find Supabase, Prisma, Drizzle, MongoDB in deps + find migration files

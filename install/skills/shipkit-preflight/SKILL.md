@@ -174,6 +174,15 @@ Possible questions (only if not already documented):
 
 **See**: `references/checklists/` for full checklist content.
 
+**Index-Accelerated Audit** — Read `.shipkit/codebase-index.json` first:
+
+1. `Read: .shipkit/codebase-index.json`
+2. If index exists:
+   - Use `framework` to select applicable checklist sections (skip N/A categories)
+   - Use `concepts` to direct each agent to relevant files (e.g., AUTH agent gets `concepts.auth` files, DATA agent gets `concepts.database` files)
+   - Use `entryPoints` and `coreFiles` to prioritize high-impact areas
+3. If index doesn't exist → agents scan entire codebase as below
+
 **USE PARALLEL SUBAGENTS BY CATEGORY** - For full audits, spawn multiple Explore agents in parallel:
 
 ```
@@ -181,24 +190,28 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 1. AUTH & SECURITY AGENT (subagent_type: "Explore")
    Prompt: "Audit authentication and security patterns in this [stack] codebase.
+   [If index exists, include: 'Start from these files: [concepts.auth files]. Entry points: [entryPoints]. Core files: [coreFiles].']
    Check: auth on protected routes, session expiry, CSRF protection, rate limiting,
    secrets in env vars, input validation, brute force prevention, form abuse prevention.
    Report Pass/Fail/Warning with file:line evidence for each check."
 
 2. DATA & ERROR HANDLING AGENT (subagent_type: "Explore")
    Prompt: "Audit data integrity and error handling in this [stack] codebase.
+   [If index exists, include: 'Start from: [concepts.database files]. Config: [configFiles].']
    Check: RLS policies (Supabase), cascade deletes, backup docs, try/catch on async,
    error boundaries, consistent API errors, retry logic, graceful degradation, error logging.
    Report Pass/Fail/Warning with file:line evidence for each check."
 
 3. UX & DEPLOYMENT AGENT (subagent_type: "Explore")
    Prompt: "Audit UX resilience and deployment readiness in this [stack] codebase.
+   [If index exists, include: 'Start from: [entryPoints]. UI directories: [relevant directories].']
    Check: loading states, empty states, confirmation dialogs, form validation,
    mobile responsive, build passes, health endpoint, migrations, SSL, domain config.
    Report Pass/Fail/Warning with file:line evidence for each check."
 
 4. CODE QUALITY & COMPLIANCE AGENT (subagent_type: "Explore")
    Prompt: "Audit code structure, accessibility, and compliance in this [stack] codebase.
+   [If index exists, include: 'Core files: [coreFiles]. Recently active: [recentlyActive].']
    Check: no duplicate components, shared components used, consistent naming,
    utils consolidated, types centralized, data-testid attributes, ARIA roles,
    Terms of Service link, Privacy Policy link, cookie consent.
@@ -206,6 +219,7 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 5. PAYMENTS AGENT (if applicable) (subagent_type: "Explore")
    Prompt: "Audit payment integration in this [stack] codebase.
+   [If index exists, include: 'Start from: [concepts.payments files if present].']
    Check: webhook signature verification, idempotency, failed payment handling,
    subscription state sync, test mode disabled in prod.
    Report Pass/Fail/Warning with file:line evidence for each check."

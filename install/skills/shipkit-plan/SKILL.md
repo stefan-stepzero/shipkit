@@ -142,20 +142,33 @@ options:
 
 **Why this matters**: Claude defaults to training data patterns. If codebase uses SWR but Claude proposes React Query, the plan creates inconsistency and technical debt.
 
+**Index-Accelerated Scanning** — Read `.shipkit/codebase-index.json` first:
+
+1. `Read: .shipkit/codebase-index.json`
+2. If index exists:
+   - Extract `framework`, `concepts`, `entryPoints`, `coreFiles`
+   - Pass to Explore agents below so they skip broad discovery and focus on **pattern detail** (which specific library, how it's used, code snippets)
+   - Skip detecting framework/stack (index already has it)
+3. If index doesn't exist → proceed with full exploration below
+
 **USE PARALLEL SUBAGENTS FOR PATTERN SCANNING** - Launch multiple Explore agents simultaneously for faster, more thorough scanning:
 
 ```
 Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 1. FRONTEND PATTERNS AGENT (subagent_type: "Explore")
-   Prompt: "Scan codebase for frontend patterns. Find and report:
+   Prompt: "Scan codebase for frontend patterns.
+   [If index exists, include: 'The codebase index shows: framework=[X], concepts=[Y], entry points=[Z]. Use these as starting points — focus on HOW patterns are used, not WHAT exists.']
+   Find and report:
    - State management (useState/useReducer/Redux/Zustand/Jotai/signals)
    - Data fetching (fetch/axios/SWR/React Query/tRPC)
    - Component structure (feature folders/atomic/barrel exports)
    For each: pattern name, example file path, brief usage snippet."
 
 2. BACKEND & INFRASTRUCTURE AGENT (subagent_type: "Explore")
-   Prompt: "Scan codebase for backend/infrastructure patterns. Find and report:
+   Prompt: "Scan codebase for backend/infrastructure patterns.
+   [If index exists, include: 'The codebase index shows: framework=[X], concepts.auth=[files], concepts.database=[files]. Start from these files — focus on implementation detail, not discovery.']
+   Find and report:
    - Auth pattern (session/JWT/middleware/protected routes)
    - Error handling (ErrorBoundary/try-catch/error middleware)
    - API patterns (route handlers, response format, validation)

@@ -27,25 +27,5 @@
     "Not building custom UI/dashboard - terminal-first approach",
     "Not supporting non-Claude AI assistants"
   ],
-  "timeline": {
-    "target": "Q2 2025 public release",
-    "milestones": [
-      {
-        "name": "Core skills complete",
-        "target": "2025-01",
-        "status": "completed"
-      },
-      {
-        "name": "Beta testing with external users",
-        "target": "2025-02",
-        "status": "in-progress"
-      },
-      {
-        "name": "Public release",
-        "target": "2025-04",
-        "status": "planned"
-      }
-    ]
-  },
   "approach": "Build incrementally on Claude Code primitives. Each skill captures one type of decision. Auto-load critical context at session start. Prioritize developer experience over feature count."
 }

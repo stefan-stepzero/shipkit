@@ -167,20 +167,33 @@ Example: Recording "Use Server Actions for mutations"
 
 A grep count tells you how many files mention a pattern, but not whether the code is consistent, what alternatives are mixed in, or what would break if the pattern changes.
 
+**Index-Accelerated Exploration** — Read `.shipkit/codebase-index.json` first:
+
+1. `Read: .shipkit/codebase-index.json`
+2. If index exists:
+   - Use `concepts` to find files in the affected area (e.g., if decision is about auth, get `concepts.auth` files)
+   - Use `coreFiles` to identify high-dependency files that would amplify blast radius
+   - Pass affected file lists directly to Explore agents for targeted analysis
+3. If index doesn't exist → agents discover affected areas via broad scanning
+
 **Launch explore agents** — Use the Task tool with `subagent_type: Explore`:
 
 ```
 Agent 1 - Current state of affected area: "Explore the codebase areas
-related to [decision topic]. Look for: how [pattern/technology] is
-currently used, what conventions exist, whether usage is consistent
-or fragmented, and what the code structure looks like in affected areas.
-Report: current state summary, consistency level, notable deviations."
+related to [decision topic].
+[If index exists, include: 'The codebase index maps these relevant files: [concept files for decision area]. Start from these — focus on consistency analysis and pattern assessment, not broad discovery.']
+Look for: how [pattern/technology] is currently used, what conventions exist,
+whether usage is consistent or fragmented, and what the code structure looks
+like in affected areas. Report: current state summary, consistency level,
+notable deviations."
 
 Agent 2 - Impact and dependencies: "Find code that would be affected
-if [decision] is applied. Look for: files that use the old/alternative
-pattern, downstream consumers, tests that depend on current behavior,
-configuration that references the pattern. Report: blast radius of
-the decision, contracts that must be preserved, migration scope."
+if [decision] is applied.
+[If index exists, include: 'Core files (high fan-in): [coreFiles]. Concepts: [concepts]. These are the highest-impact files — trace dependency chains from here.']
+Look for: files that use the old/alternative pattern, downstream consumers,
+tests that depend on current behavior, configuration that references the pattern.
+Report: blast radius of the decision, contracts that must be preserved,
+migration scope."
 ```
 
 **Launch both agents in parallel** — they are independent searches.

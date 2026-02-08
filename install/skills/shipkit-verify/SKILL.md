@@ -121,11 +121,14 @@ If user dismissed nothing, omit the Dismissed Themes section.
 
 Changed files may affect other files using the same patterns. Expand verification scope:
 
+**Index-Accelerated Ripple** — If `.shipkit/codebase-index.json` exists, use `concepts` mapping to immediately identify related files by concept area (e.g., if a changed file is in `concepts.auth`, all auth files are in the ripple scope). This narrows the Explore agent's search significantly.
+
 **USE SUBAGENT FOR PATTERN RIPPLE** - Launch Explore subagent for efficient parallel scanning:
 
 ```
 Task tool with subagent_type: "Explore"
 Prompt: "Detect pattern ripple from these changed files: [list files]
+[If index exists, include: 'The codebase index maps these concept areas: [list concepts with their files]. Use this to immediately identify same-concept files. Focus your scanning on cross-concept ripple effects the index doesn't capture.']
 
 For each file, identify which patterns it uses:
 - Auth: getSession, requireAuth, isAuthorized
