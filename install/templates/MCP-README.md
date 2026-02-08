@@ -54,7 +54,15 @@ Create a MongoDB aggregation pipeline. use context7
 
 **Location:** `.mcp.json` (in your project root)
 
-**Default configuration:**
+**Note:** MCPs are **disabled by default** to avoid memory overhead when running multiple Claude instances. A template file `.mcp.json.example` is created during installation.
+
+**To enable MCPs:**
+```bash
+cp .mcp.json.example .mcp.json
+# Then edit to keep only the MCPs you need
+```
+
+**Example configuration:**
 ```json
 {
   "mcpServers": {
