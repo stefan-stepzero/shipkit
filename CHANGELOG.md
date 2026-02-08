@@ -12,6 +12,87 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.8.1] - 2026-02-08
+
+### Changed
+- **Goals skill enhanced with template-based proposals** — Proposes stage-appropriate goals instead of asking open-ended questions. 80% of goals predictable from project stage + detected capabilities
+- Goals organized across 4 lenses: Technical, Product/UX, Growth, Operational
+- Added `lens` and `stage` fields to goals.json schema
+- New `references/goal-templates.md` with stage definitions and concept modifiers
+
+### Fixed
+- Removed timeline/milestones from why-project (goals.json handles tracking now)
+- Cleaner separation: why.json = strategic context, goals.json = actionable tracking
+
+---
+
+## [1.8.0] - 2026-02-08
+
+### Added
+- **React + Vite dashboard for Mission Control** — Replaces vanilla HTML with React Flow graph visualization
+- **shipkit-goals skill** — Capture structured project goals with priorities (P0/P1/P2) and status tracking
+- **JSON artifact convention** — Standard envelope for all `.shipkit/*.json` files (`$schema`, `type`, `version`, `lastUpdated`, `source`, `summary`)
+- L-I-E (Likelihood · Impact · Effort) assessment added to verify findings
+
+### Changed
+- Migrated 11 skills to JSON artifact output (architecture, contracts, preflight, scale-ready, prompt-audit, ux-audit, progress, product-discovery, spec, plan, goals)
+- Skills now reference `codebase-index.json` for accelerated exploration (goals, project-context, preflight)
+- Mission Control hooks properly wired in installer
+
+### Fixed
+- Installer gaps: Mission Control files, permissions, version consolidation
+- Standby command delivery: active polling replaces hook injection
+- MC hooks wiring gap in installer and update skill
+
+---
+
+## [1.7.0] - 2026-02-07
+
+### Added
+- **Mission Control** — Real-time project dashboard with artifact visualization
+- **Changelog sync system** — Auto-fetch Claude Code changelog for compatibility checks
+- `shipkit-standby` skill — Wait for Mission Control commands
+- `shipkit-mission-control` skill — Launch and manage dashboard
+- PostToolUse hook for skill usage tracking and MC reporter
+- PreToolUse hook for MC command receiver
+- Contextual skill nudges in session-start hook
+
+### Changed
+- Skill count: 29 → 37
+- Added `.claude/skills/` for cross-session skill access
+- Moved get-skills/get-mcps to System category
+
+---
+
+## [1.6.0] - 2026-02-06
+
+### Added
+- `shipkit-thinking-partner` — Rubber duck debugging and ideation partner
+- `shipkit-prompt-audit` — Analyze and improve AI prompts
+- `shipkit-scale-ready` — Enterprise/growth readiness audit (post-traction)
+- Parallel execution guidance added to remaining skills
+
+### Changed
+- Fix-and-recheck loop added to verify skill with user dismissals
+- Write permissions for updater to run without interruptions
+
+---
+
+## [1.5.0] - 2026-02-06
+
+### Added
+- **Modular rules structure** — Framework rules in `.claude/rules/shipkit.md`
+- **PreCompact hook** — Context preservation before compaction
+- `shipkit-implement-independently` — Parallel implementation across git worktrees
+- `shipkit-cleanup-worktrees` — Clean up finished worktrees
+
+### Changed
+- Relentless skills refactored to semantic approach (ralph-wiggum pattern)
+- Added `--max` and `--cmd` arguments to relentless skills
+- Installation simplified with single VERSION file
+
+---
+
 ## [1.4.0] - 2026-02-05
 
 ### Added
