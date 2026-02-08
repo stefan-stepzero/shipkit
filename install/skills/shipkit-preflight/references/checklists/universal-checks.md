@@ -168,12 +168,38 @@ Grep: pattern="error.*userId|error.*requestId|logError"
 **Fail impact**: Frustrated users, abandoned forms
 **Severity**: 🟡 Warning
 
-### UNI-UX-005: Mobile Responsive
-**Check**: UI works on mobile viewports
-**Scan for**: Fixed widths, no responsive breakpoints
-**Pass criteria**: Usable on 375px width
-**Fail impact**: Lost mobile users
-**Severity**: 🟡 Warning (if web app)
+### UNI-UX-005: Mobile Actually Works
+**Check**: Core flow works on mobile — responsive, touch-friendly, survives auto-lock
+**Scan for**: Fixed widths, hover-only UI, missing touch handling
+**Pass criteria**: Usable on 375px width, 44px+ tap targets, state survives background
+**Fail impact**: 50%+ of users lost immediately — no second chances on mobile
+**Severity**: 🔴 Blocker (if web app targeting consumers)
+
+**Mobile Killers to check:**
+| Issue | Detection | Why Critical |
+|-------|-----------|--------------|
+| Horizontal scroll | Fixed widths > 375px | Unusable, user leaves |
+| Tiny tap targets | Interactive elements < 44px | Can't tap accurately |
+| Hover-only interactions | Dropdowns/tooltips need hover | Inaccessible on touch |
+| Session lost on lock | No `visibilitychange` handler | Lost work = rage quit |
+| No offline handling | No service worker or offline UI | White screen on spotty connection |
+| Slow load on 3G | No code splitting, large bundles | Abandoned before content shows |
+| Keyboard breaks layout | Fixed bottom elements | Can't see input while typing |
+
+**Quick scan:**
+```
+# Fixed widths that break mobile
+Grep: pattern="width:\s*(1000|800|600|500)px"
+      glob="**/*.{css,scss,tsx}"
+
+# Hover-only patterns
+Grep: pattern=":hover\s*{[^}]*display:"
+      glob="**/*.{css,scss}"
+
+# Session persistence
+Grep: pattern="visibilitychange|pagehide"
+      glob="**/*.{ts,tsx,js}"
+```
 
 ---
 

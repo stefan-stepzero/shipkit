@@ -42,13 +42,26 @@ Each stage has goals across four lenses. Not all lenses apply to all project typ
 | Deployable to hosted environment | Can run outside localhost |
 | Environment config separated | No hardcoded secrets or URLs |
 
-#### Product/UX Lens
-| Goal | Success Criteria |
-|------|------------------|
-| First-run experience exists | New user knows what to do on arrival |
-| Core action is obvious | Primary CTA visible within 5 seconds |
-| Loading states present | User knows when something is happening |
-| Mobile not broken | Core flow works on phone (if web) |
+#### Product/UX Lens (First Impressions Critical)
+
+**Why this matters for MVP:** Users form opinions in 3-5 seconds. A janky first impression = no users, no revenue. Polish the core path ruthlessly.
+
+| Goal | Success Criteria | Why Critical |
+|------|------------------|--------------|
+| **Value clear in 5 seconds** | Headline/hero explains what this does and for whom | Users bounce if confused |
+| **Core action is obvious** | Primary CTA visible above fold, clear verb | Confused users don't convert |
+| **First-run experience exists** | New user guided to first success moment | "Aha!" creates retention |
+| **Loading states present** | Skeleton screens or spinners on all async actions | Slow = broken in users' minds |
+| **No dead-ends** | Every error/empty state has a next action | Stuck users = lost users |
+| **Mobile actually works** | Core flow works on phone — responsive, touch-friendly, survives auto-lock | 50%+ of traffic is mobile, no second chances |
+| **Feels fast** | Core action completes in <1s (or appears to) | Perceived speed = quality |
+
+**First Impression Killers (avoid these):**
+- Blank screens while loading
+- Generic error messages ("Something went wrong")
+- Requiring signup before showing value
+- Walls of text instead of clear actions
+- Broken responsive layout on mobile
 
 #### Growth Lens (if applicable)
 | Goal | Success Criteria |
@@ -77,14 +90,27 @@ Each stage has goals across four lenses. Not all lenses apply to all project typ
 | CI/CD pipeline | Automated build, test, deploy |
 | Health check endpoint | Monitoring can verify app is alive |
 
-#### Product/UX Lens
-| Goal | Success Criteria |
-|------|------------------|
-| Onboarding flow complete | User guided through first key actions |
-| Empty states guide users | No dead-ends when data is missing |
-| Confirmation on destructive actions | Delete/remove requires explicit confirm |
-| Error messages are actionable | User knows what to do, not just what failed |
-| Form validation inline | Errors shown at field level, not just on submit |
+#### Product/UX Lens (Retention & Trust)
+
+**Why this matters for Production:** First impressions got them in. Now polish keeps them. Trust signals convert free → paid.
+
+| Goal | Success Criteria | Why Critical |
+|------|------------------|--------------|
+| **Onboarding flow complete** | User guided to first success in <2 minutes | Fast time-to-value = activation |
+| **Empty states guide users** | Every empty state has a clear CTA | Stuck users churn |
+| **Error messages are actionable** | User knows what to do, not just what failed | Confusion = support tickets |
+| **Form validation inline** | Errors shown at field level before submit | Frustration = abandonment |
+| **Confirmation on destructive actions** | Delete/remove requires explicit confirm | Accidents = lost trust |
+| **Trust signals visible** | Security badges, testimonials, or social proof where users decide | Doubt = no conversion |
+| **Consistent UI patterns** | Buttons, forms, modals behave the same everywhere | Predictability = confidence |
+| **Feedback on every action** | User knows their action was received (toast, animation) | Silence = uncertainty |
+
+**Trust Killers (especially before payment):**
+- No visible security on payment forms
+- Unclear pricing or hidden fees
+- No way to contact support
+- Broken or missing terms/privacy links
+- Inconsistent visual design (feels amateur)
 
 #### Growth Lens (if applicable)
 | Goal | Success Criteria |
@@ -214,6 +240,24 @@ When `codebase-index.json` shows specific concepts, add relevant goals:
 | MVP → Prod | API authentication, Consistent error format, Basic rate limiting |
 | Prod → Scale | API versioning, API documentation (OpenAPI), Per-customer rate limits |
 
+### If `concepts.mobile` or `concepts.pwa` exists (Mobile Web App)
+
+**Why critical:** 50%+ of web traffic is mobile. Phones have unique behaviors that break naive implementations.
+
+| Stage | Add Goals |
+|-------|-----------|
+| POC → MVP | **Responsive sizing works** (no horizontal scroll, tap targets ≥44px), **Touch interactions work** (no hover-dependent UI), **Viewport meta tag set** |
+| MVP → Prod | **PWA installable** (manifest.json, service worker, icons), **Works offline or degrades gracefully** (cached assets, offline indicator), **Auto-lock safe** (no data loss when phone locks/unlocks, session survives background), **Keyboard doesn't break layout** (inputs visible when keyboard opens), **Pull-to-refresh works** (if applicable) |
+| Prod → Scale | **App store presence** (TWA for Play Store or App Clip), **Push notifications** (with permission UX), **Deep linking works** (URLs open in app) |
+
+**Mobile Killers:**
+- Tiny tap targets (< 44px)
+- Hover-only interactions (tooltips, dropdowns)
+- Fixed positioning breaking on keyboard open
+- Session lost when app backgrounded
+- No offline handling (white screen when signal drops)
+- Slow initial load on 3G (> 3 seconds)
+
 ---
 
 ## Project Type Variations
@@ -224,6 +268,14 @@ Adjust lens weights based on project type:
 - All lenses apply
 - Growth lens high priority
 - Operational lens high priority
+
+### Mobile Web App / PWA
+- Technical lens: PWA requirements, offline support, service workers
+- Product/UX lens: **highest priority** — touch interactions, responsive sizing, auto-lock handling, keyboard behavior
+- Growth lens: app store presence, push notifications, deep linking
+- Operational lens: device testing matrix, performance on slow networks
+
+**Critical for mobile:** First impression happens on a small screen with spotty connectivity. If it feels slow or janky, users delete immediately. No second chances.
 
 ### CLI Tool
 - Technical lens: focus on install, cross-platform

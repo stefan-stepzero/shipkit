@@ -11,7 +11,7 @@ agent: shipkit-product-owner-agent
 
 **What it does**: Proposes stage-appropriate goals based on project context, lets user validate and customize, then generates `.shipkit/goals.json` with structured goals that persist across sessions and feed into mission control.
 
-**Philosophy**: Goals are 80% predictable from project stage and type. This skill does the grunt work — proposing smart defaults across Technical, Product/UX, Growth, and Operational lenses — so users validate rather than create from scratch.
+**Philosophy**: Goals are 80% predictable from project stage and type. This skill does the grunt work — proposing smart defaults across Technical, Product/UX, Growth, and Operational lenses — so users validate rather than create from scratch. **For MVPs, first impressions are critical** — users form opinions in seconds, so UX goals are weighted heavily.
 
 **Output format**: JSON — readable by Claude, renderable by mission control dashboard, and the single source of truth for project goals.
 
@@ -132,9 +132,11 @@ TECHNICAL (P0):
   □ Error recovery exists (retry logic, graceful degradation)
   □ CI/CD pipeline operational
 
-PRODUCT/UX (P0):
-  □ Onboarding flow complete
-  □ Error messages are actionable
+PRODUCT/UX (P0) — First impressions & trust:
+  □ Onboarding completes in <2 minutes (fast time-to-value)
+  □ Error messages are actionable (user knows what to do)
+  □ Trust signals visible before payment (security badges, clear pricing)
+  □ Feedback on every action (no silent failures)
 
 PAYMENTS (P1 - detected):
   □ Webhook signature verification
@@ -147,7 +149,7 @@ OPERATIONAL (P1):
 Accept these? Or:
   - Add: "I also need X"
   - Remove: "Skip the payments goals"
-  - Reprioritize: "Make onboarding P0"
+  - Reprioritize: "Make trust signals P0"
   - Custom: "Replace with my own list"
 ```
 

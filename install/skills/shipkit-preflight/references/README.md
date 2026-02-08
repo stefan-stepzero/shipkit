@@ -6,7 +6,7 @@ Comprehensive production readiness checklists for SaaS applications.
 ## Contents
 
 ### Checklists
-- `checklists/universal-checks.md` — Applies to all projects
+- `checklists/universal-checks.md` — Applies to all projects (includes mobile checks)
 - `checklists/auth-checks.md` — Authentication & authorization
 - `checklists/payment-checks.md` — Stripe, Lemon Squeezy, payments
 - `checklists/database-checks.md` — Supabase, Postgres, data layer
