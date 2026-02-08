@@ -177,16 +177,7 @@
         ]
       }
     ],
-    "PreToolUse": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python -X utf8 .claude/hooks/mission-control-receiver.py"
-          }
-        ]
-      }
-    ],
+    "PreToolUse": [],
     "Stop": [
       {
         "hooks": [

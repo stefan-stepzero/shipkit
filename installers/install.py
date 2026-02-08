@@ -527,7 +527,6 @@ def verify_source_files(repo_root):
         "install/settings",
         "install/claude-md",
         "install/profiles",
-        "install/mission-control"
     ]
 
     missing = 0
@@ -576,7 +575,6 @@ def install_shared_core(repo_root, target_dir, language, edition):
     shutil.copy2(hooks_src / "shipkit-relentless-stop-hook.py", hooks_dest / "shipkit-relentless-stop-hook.py")
     shutil.copy2(hooks_src / "shipkit-precompact-hook.py", hooks_dest / "shipkit-precompact-hook.py")
     shutil.copy2(hooks_src / "shipkit-mission-control-reporter.py", hooks_dest / "mission-control-reporter.py")
-    shutil.copy2(hooks_src / "shipkit-mission-control-receiver.py", hooks_dest / "mission-control-receiver.py")
     print_success("Hooks installed")
 
     # Install framework rules
@@ -863,16 +861,7 @@ def _build_hooks_config():
                 ]
             }
         ],
-        "PreToolUse": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "python -X utf8 .claude/hooks/mission-control-receiver.py"
-                    }
-                ]
-            }
-        ],
+        "PreToolUse": [],
         "Stop": [
             {
                 "hooks": [
@@ -970,78 +959,6 @@ def install_agents(repo_root, target_dir, selected_agents):
 
     print_success(f"Installed {count} agent personas")
 
-def _parse_server_version(index_js_path):
-    """Extract SERVER_VERSION from mission control index.js"""
-    try:
-        with open(index_js_path, 'r', encoding='utf-8') as f:
-            for line in f:
-                if "SERVER_VERSION" in line and "=" in line:
-                    # Match: const SERVER_VERSION = '1.1.0';
-                    parts = line.split("'")
-                    if len(parts) >= 2:
-                        return parts[1]
-                    parts = line.split('"')
-                    if len(parts) >= 2:
-                        return parts[1]
-    except Exception:
-        pass
-    return None
-
-def install_mission_control(repo_root, target_dir):
-    """Install Mission Control hub (server + dashboard) to ~/.shipkit-mission-control/"""
-    print()
-    print(f"  {Colors.BOLD}Installing Mission Control hub{Colors.RESET}")
-    print()
-
-    mc_src = repo_root / "install" / "mission-control"
-    if not mc_src.exists():
-        print_warning("Mission Control source not found, skipping")
-        return
-
-    # Hub lives in user home, shared across projects
-    hub_dir = Path.home() / ".shipkit-mission-control"
-
-    # Check if hub already has same or newer version
-    src_version = _parse_server_version(mc_src / "server" / "index.js")
-    existing_version = _parse_server_version(hub_dir / "server" / "index.js")
-
-    if src_version and existing_version and existing_version >= src_version:
-        print_info(f"Mission Control hub already at v{existing_version} (source: v{src_version}), skipping")
-    else:
-        # Copy server (index.js + package.json only, no node_modules)
-        server_dest = hub_dir / "server"
-        server_dest.mkdir(parents=True, exist_ok=True)
-        server_src = mc_src / "server"
-        for filename in ["index.js", "package.json"]:
-            src_file = server_src / filename
-            if src_file.exists():
-                shutil.copy2(src_file, server_dest / filename)
-
-        # Copy dashboard dist (pre-built assets)
-        dashboard_dist_src = mc_src / "dashboard" / "dist"
-        if dashboard_dist_src.exists():
-            dashboard_dist_dest = hub_dir / "dashboard" / "dist"
-            if dashboard_dist_dest.exists():
-                shutil.rmtree(dashboard_dist_dest)
-            shutil.copytree(dashboard_dist_src, dashboard_dist_dest)
-
-        version_msg = f" v{src_version}" if src_version else ""
-        print_success(f"Mission Control hub{version_msg} installed to {hub_dir}")
-
-    # Create project-local MC directories
-    mc_local = target_dir / ".shipkit" / "mission-control"
-    (mc_local / "codebases").mkdir(parents=True, exist_ok=True)
-    (mc_local / "inbox").mkdir(parents=True, exist_ok=True)
-    print_success("Mission Control local directories created")
-
-    # Copy MC start script to project scripts
-    mc_start_src = mc_src / "start.py"
-    if mc_start_src.exists():
-        scripts_dest = target_dir / ".shipkit" / "scripts"
-        scripts_dest.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(mc_start_src, scripts_dest / "mission-control.py")
-        print_success("Mission Control start script copied to .shipkit/scripts/mission-control.py")
-
 def delete_unused_language(target_dir, language):
     """Delete scripts for the language not selected"""
     print()
@@ -1098,113 +1015,65 @@ def make_scripts_executable(target_dir, language):
 # MCP CONFIGURATION
 # ═══════════════════════════════════════════════════════════════════════════════
 
-def prompt_for_mcps(manifest):
-    """Prompt user to select which MCP servers to install"""
-    mcps = manifest.get("mcps", {}).get("recommended", [])
+def install_mcp_example(target_dir, manifest):
+    """Install MCP server configuration as .mcp.json.example (not enabled by default)
 
-    if not mcps:
-        return []
-
-    print()
-    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
-    print(f"  {Colors.BOLD}MCP Servers (Model Context Protocol){Colors.RESET}")
-    print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
-    print()
-    print(f"  {Colors.DIM}MCPs extend Claude with external tools and APIs.{Colors.RESET}")
-    print(f"  {Colors.DIM}Token cost shown = context used when MCP is active.{Colors.RESET}")
-    print()
-
-    selected = [True] * len(mcps)
-
-    while True:
-        for i, mcp in enumerate(mcps):
-            marker = f"{Colors.GREEN}✓{Colors.RESET}" if selected[i] else " "
-            name = mcp["name"]
-            purpose = mcp["purpose"]
-            tokens = mcp.get("tokens", "")
-            prereq = f" {Colors.YELLOW}(requires: {mcp['prereq']}){Colors.RESET}" if mcp.get("prereq") else ""
-
-            print(f"  [{i+1}] {marker} {Colors.CYAN}{name:16}{Colors.RESET} - {purpose} {Colors.DIM}({tokens}){Colors.RESET}{prereq}")
-
-        print()
-        print(f"  {Colors.DIM}Enter numbers to toggle, or:{Colors.RESET}")
-        print(f"  {Colors.DIM}  [a] Select all  [n] Select none  [Enter] Continue{Colors.RESET}")
-        print()
-
-        choice = input(f"  {Colors.BOLD}Selection:{Colors.RESET} ").strip().lower()
-
-        if choice == "":
-            break
-        elif choice == "a":
-            selected = [True] * len(mcps)
-        elif choice == "n":
-            selected = [False] * len(mcps)
-        else:
-            try:
-                nums = [int(x.strip()) for x in choice.replace(",", " ").split()]
-                for num in nums:
-                    if 1 <= num <= len(mcps):
-                        selected[num-1] = not selected[num-1]
-            except ValueError:
-                print_warning("Invalid input. Enter numbers, 'a', 'n', or press Enter.")
-
-        print()
-
-    return [mcp for i, mcp in enumerate(mcps) if selected[i]]
-
-def install_mcp_config(target_dir, selected_mcps):
-    """Install MCP server configuration for selected MCPs"""
-    if not selected_mcps:
-        print_info("No MCP servers selected, skipping .mcp.json")
+    MCPs are useful but consume memory. Creating as .example lets users:
+    1. See what's available
+    2. Enable only what they need: cp .mcp.json.example .mcp.json
+    3. Run multiple Claude instances without memory bloat
+    """
+    all_mcps = manifest.get("mcps", {}).get("recommended", [])
+    if not all_mcps:
         return
 
-    mcp_config_path = target_dir / ".mcp.json"
+    example_path = target_dir / ".mcp.json.example"
+    active_path = target_dir / ".mcp.json"
 
-    if mcp_config_path.exists():
-        print_warning(f".mcp.json already exists at {target_dir}")
-        if not confirm("Overwrite with new MCP configuration?", default=False):
-            print_info("Keeping existing .mcp.json")
-            return
+    # Don't overwrite if user already has active config
+    if active_path.exists():
+        print_info(".mcp.json exists (MCPs already configured)")
+        return
+
+    # Don't overwrite existing example
+    if example_path.exists():
+        print_info(".mcp.json.example exists (MCP template already present)")
+        return
 
     try:
         mcp_servers = {}
-        prereqs = []
 
-        for mcp in selected_mcps:
+        for mcp in all_mcps:
             name = mcp["name"]
             command = mcp["command"]
             args = mcp["args"]
 
-            if platform.system() == "Windows" and command == "npx":
-                mcp_servers[name] = {
-                    "command": "cmd",
-                    "args": ["/c", "npx"] + args
-                }
-            else:
-                mcp_servers[name] = {
-                    "command": command,
-                    "args": args
-                }
+            # Add description as _comment field for discoverability
+            server_config = {
+                "_comment": f"{mcp.get('purpose', '')} ({mcp.get('tokens', 'unknown')} tokens)",
+                "command": command if platform.system() != "Windows" or command != "npx" else "cmd",
+                "args": args if platform.system() != "Windows" or command != "npx" else ["/c", "npx"] + args
+            }
 
             if mcp.get("prereq"):
-                prereqs.append((name, mcp["prereq"]))
+                server_config["_prereq"] = mcp["prereq"]
 
-        mcp_config = {"mcpServers": mcp_servers}
+            mcp_servers[name] = server_config
 
-        with open(mcp_config_path, 'w', encoding='utf-8') as f:
+        mcp_config = {
+            "_instructions": "To enable MCPs: cp .mcp.json.example .mcp.json (then remove MCPs you don't need)",
+            "mcpServers": mcp_servers
+        }
+
+        with open(example_path, 'w', encoding='utf-8') as f:
             json.dump(mcp_config, f, indent=2)
             f.write('\n')
 
-        print_success(f"MCP configuration installed ({len(selected_mcps)} servers)")
-
-        if prereqs:
-            print()
-            print_warning("Some MCPs require setup before use:")
-            for name, prereq in prereqs:
-                print(f"    {Colors.CYAN}{name}{Colors.RESET}: {Colors.YELLOW}{prereq}{Colors.RESET}")
+        print_success(f"MCP template installed (.mcp.json.example with {len(all_mcps)} servers)")
+        print_info("To enable: cp .mcp.json.example .mcp.json")
 
     except Exception as e:
-        print_error(f"Failed to install MCP config: {e}")
+        print_error(f"Failed to install MCP example: {e}")
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # COMPLETION
@@ -1275,8 +1144,8 @@ def show_completion(target_dir, selected_skills, selected_agents, language):
     print_success(f"Settings (.claude/settings.json)")
     print_success(f"Project instructions (CLAUDE.md)")
     print_success("Git configuration (.gitignore, .gitattributes)")
-    print_success(f"Mission Control hub (~/.shipkit-mission-control/)")
     print_success("HTML skill reference (.shipkit/shipkit-overview.html)")
+    print_success("MCP template (.mcp.json.example - not enabled by default)")
 
     print()
     print(f"  {Colors.BRIGHT_MAGENTA}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{Colors.RESET}")
@@ -1318,8 +1187,7 @@ def main():
     parser.add_argument("--all-skills", action="store_true", help="Install all skills without prompting")
     parser.add_argument("--all-agents", action="store_true", help="Install all agents without prompting")
     parser.add_argument("--no-agents", action="store_true", help="Skip agent installation")
-    parser.add_argument("--all-mcps", action="store_true", help="Install all MCP servers without prompting")
-    parser.add_argument("--no-mcps", action="store_true", help="Skip MCP server installation")
+    parser.add_argument("--no-mcps", action="store_true", help="Skip MCP template file creation")
     parser.add_argument("--claude-md", choices=["skip", "overwrite", "merge"], help="CLAUDE.md handling")
     parser.add_argument("-y", "--yes", action="store_true",
                         help="Non-interactive mode: use sensible defaults (python, current dir, all skills/agents)")
@@ -1429,22 +1297,13 @@ def main():
     install_edition_files(repo_root, target_dir, manifest, language, selected_skills, claude_md_action, skip_prompts=args.yes)
     install_skills(repo_root, target_dir, selected_skills)
     install_agents(repo_root, target_dir, selected_agents)
-    install_mission_control(repo_root, target_dir)
     delete_unused_language(target_dir, language)
     make_scripts_executable(target_dir, language)
 
-    # MCP selection (respect --no-mcps and --all-mcps flags)
-    if args.no_mcps:
-        selected_mcps = []
-    elif args.all_mcps:
-        selected_mcps = manifest.get("mcps", {}).get("recommended", [])
-    elif args.yes:
-        # Non-interactive mode: skip MCP selection (default to none)
-        selected_mcps = []
-        print_info("MCP selection skipped (non-interactive mode)")
-    else:
-        selected_mcps = prompt_for_mcps(manifest)
-    install_mcp_config(target_dir, selected_mcps)
+    # MCP example file (not enabled by default to avoid memory bloat)
+    # User can enable with: cp .mcp.json.example .mcp.json
+    if not args.no_mcps:
+        install_mcp_example(target_dir, manifest)
 
     # Show completion
     show_completion(target_dir, selected_skills, selected_agents, language)

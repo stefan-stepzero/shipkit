@@ -65,7 +65,7 @@ All skills use the `shipkit-` prefix for clarity.
 **System Skills (6 skills):**
 - `shipkit-detect` - Pattern detection and queue creation (auto-triggered)
 - `shipkit-update` - Install or update Shipkit from GitHub
-- `shipkit-mission-control` - Monitor and command multiple instances from web dashboard
+- `shipkit-mission-control` - Check status and interact with the [standalone Mission Control dashboard](https://github.com/stefan-stepzero/sg-shipkit-missioncontrol)
 - `shipkit-standby` - AFK daemon mode with Mission Control polling and backoff
 - `shipkit-get-skills` - Discover and install Claude Code skills
 - `shipkit-get-mcps` - Discover and install MCP servers
