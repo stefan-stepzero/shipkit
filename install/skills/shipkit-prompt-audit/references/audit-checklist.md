@@ -57,6 +57,18 @@ Detailed checks per dimension with IDs, severity, scan methods, and pass criteri
 **Fail**: Full previous output passed when only one field is used
 **Fix**: Extract needed fields before passing to next stage
 
+### PA-PAR-004: Serverless Timeout Risk
+**Severity**: Critical
+**Scan**: Detect deployment target (Vercel, Netlify, AWS Lambda) via config files (`vercel.json`, `netlify.toml`, `serverless.yml`) or framework conventions (Next.js `app/api/`, `pages/api/`). Check for `maxDuration` or timeout configuration on routes containing AI calls. Then estimate cumulative latency for the pipeline:
+- Count sequential LLM calls in the request path
+- Factor in model choice (larger models = slower), thinking budget, and expected output length
+- Check if streaming is used (streams avoid response timeout but not execution timeout on some platforms)
+
+Default timeout assumptions: Vercel Hobby = 60s, Vercel Pro = 300s, AWS Lambda = 15s (configurable), Netlify = 26s.
+**Pass**: Sequential AI pipeline latency fits comfortably within deployment timeout. Routes with long-running AI calls have appropriate `maxDuration` config. Streaming used where applicable.
+**Fail**: Any of: (1) 2+ sequential LLM calls on a serverless route with default timeout, (2) large model + high thinking budget with no timeout override, (3) no streaming on a call likely to exceed 10s, (4) no `maxDuration` export on Next.js routes with AI calls
+**Fix**: Add `maxDuration` config to AI routes. Parallelize independent calls. Use streaming for long-running generation. Consider moving heavy pipelines to background jobs or edge functions with longer timeouts. For Next.js: `export const maxDuration = 30;` in route files.
+
 ---
 
 ## Dimension 3: Schema Tightness (PA-SCH)
@@ -239,6 +251,18 @@ Detailed checks per dimension with IDs, severity, scan methods, and pass criteri
 **Pass**: Task verb aligns with intended stage purpose — generation stages generate, evaluation stages evaluate, research stages research
 **Fail**: A stage meant to gather current knowledge uses generation framing ("generate a summary of destinations") instead of research framing ("research current conditions and constraints for this destination")
 **Fix**: Reframe the task verb to activate the appropriate cognitive mode. Generation mode completes patterns from training data. Evaluation mode activates critical analysis. Research mode activates knowledge retrieval. A small verb change upstream often eliminates the need for downstream constraints.
+
+### PA-CON-004: Thinking Budget Mismatch
+**Severity**: Should Fix
+**Scan**: Search for thinking/extended thinking configuration in AI calls. Check `thinking`, `budget_tokens`, `reasoning_effort`, or equivalent parameters. For each call, classify the task complexity:
+- **Simple** (classification, extraction, formatting): thinking unnecessary or minimal budget sufficient
+- **Medium** (summarization, single-step analysis): moderate budget appropriate
+- **Complex** (multi-step reasoning, planning, code generation, evaluation): higher budget warranted
+
+Cross-reference with deployment constraints — high thinking budgets on serverless functions with tight timeouts are especially risky.
+**Pass**: Thinking budget is tuned per call based on task complexity. Simple tasks disable thinking or use minimal budget. Complex tasks allocate appropriately. Budget accounts for deployment timeout constraints.
+**Fail**: Any of: (1) thinking enabled with default/max budget on simple tasks (wasted latency and cost), (2) thinking disabled on complex reasoning tasks where accuracy would benefit, (3) high thinking budget on a serverless route with a 60s timeout, (4) same thinking config copy-pasted across all calls regardless of task
+**Fix**: Tune `budget_tokens` per call. Disable thinking for simple extraction/classification. Enable with appropriate budget for complex reasoning. On serverless, calculate: thinking latency + generation latency + network must fit within `maxDuration`.
 
 ---
 
