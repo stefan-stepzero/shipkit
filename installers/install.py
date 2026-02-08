@@ -391,13 +391,31 @@ def prompt_for_claude_md_action(target_dir):
         else:
             print_warning("Invalid choice. Please enter 1, 2, or 3.")
 
-def merge_claude_md(existing_path, template_path):
+def get_version(repo_root):
+    """Read version from VERSION file"""
+    version_file = repo_root / "VERSION"
+    if version_file.exists():
+        return "v" + version_file.read_text(encoding="utf-8").strip()
+    return ""
+
+def install_claude_md_with_version(src_path, dest_path, repo_root):
+    """Copy CLAUDE.md template with version placeholder replaced"""
+    content = src_path.read_text(encoding="utf-8")
+    version = get_version(repo_root)
+    content = content.replace("{{SHIPKIT_VERSION}}", version)
+    dest_path.write_text(content, encoding="utf-8")
+
+def merge_claude_md(existing_path, template_path, repo_root):
     """Merge Shipkit template into existing CLAUDE.md"""
     with open(existing_path, 'r', encoding='utf-8') as f:
         existing_content = f.read()
 
     with open(template_path, 'r', encoding='utf-8') as f:
         template_content = f.read()
+
+    # Replace version placeholder in template
+    version = get_version(repo_root)
+    template_content = template_content.replace("{{SHIPKIT_VERSION}}", version)
 
     # Check if already merged
     if "## Skills Reference" in existing_content and "/shipkit-" in existing_content:
@@ -429,7 +447,7 @@ def merge_claude_md(existing_path, template_path):
     # Append sections
     merged = existing_content.rstrip()
     if sections_to_add:
-        merged += "\n\n---\n\n# Shipkit Integration\n\n"
+        merged += f"\n\n---\n\n# Shipkit Integration {version}\n\n"
         merged += "\n\n".join(sections_to_add)
         merged += "\n"
 
@@ -626,30 +644,31 @@ def install_edition_files(repo_root, target_dir, manifest, language, selected_sk
             update_hooks(settings_dest)
             print_success("Skill permissions and hooks updated")
 
-    # CLAUDE.md
+    # CLAUDE.md (with version injection)
     claude_md_file = manifest["claudeMdFile"]
     claude_md_src = repo_root / "install" / "claude-md" / claude_md_file
     claude_md_dest = target_dir / "CLAUDE.md"
+    version = get_version(repo_root)
 
     if claude_md_action == "install":
-        shutil.copy2(claude_md_src, claude_md_dest)
-        print_success(f"CLAUDE.md installed")
+        install_claude_md_with_version(claude_md_src, claude_md_dest, repo_root)
+        print_success(f"CLAUDE.md {version} installed")
     elif claude_md_action == "skip":
         print_info("CLAUDE.md skipped (keeping existing)")
     elif claude_md_action == "overwrite":
-        shutil.copy2(claude_md_src, claude_md_dest)
-        print_success("CLAUDE.md overwritten with Shipkit template")
+        install_claude_md_with_version(claude_md_src, claude_md_dest, repo_root)
+        print_success(f"CLAUDE.md {version} overwritten with Shipkit template")
     elif claude_md_action == "merge":
         # Fix: Check if file exists before attempting merge
         if not claude_md_dest.exists():
             # No existing file to merge with, just install
-            shutil.copy2(claude_md_src, claude_md_dest)
-            print_success("CLAUDE.md installed (no existing file to merge)")
+            install_claude_md_with_version(claude_md_src, claude_md_dest, repo_root)
+            print_success(f"CLAUDE.md {version} installed (no existing file to merge)")
         else:
-            merged_content = merge_claude_md(claude_md_dest, claude_md_src)
+            merged_content = merge_claude_md(claude_md_dest, claude_md_src, repo_root)
             with open(claude_md_dest, 'w', encoding='utf-8') as f:
                 f.write(merged_content)
-            print_success("CLAUDE.md merged with Shipkit sections")
+            print_success(f"CLAUDE.md {version} merged with Shipkit sections")
 
 def generate_settings(manifest, language, selected_skills):
     """Generate settings.json with only selected skill permissions"""
@@ -1199,11 +1218,8 @@ def install_html_docs(repo_root, target_dir):
     if not overview_file.exists():
         return None
 
-    # Read version
-    version_file = repo_root / "VERSION"
-    version = "dev"
-    if version_file.exists():
-        version = "v" + version_file.read_text(encoding="utf-8").strip()
+    # Read version (use shared helper, fallback to "dev")
+    version = get_version(repo_root) or "dev"
 
     # Read HTML, replace placeholder, write to dest
     dest_file = target_dir / ".shipkit" / "shipkit-overview.html"

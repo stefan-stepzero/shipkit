@@ -216,19 +216,19 @@ Mission Control Analysis Complete
 
 Analyzed 3 codebases:
 
-sg-shipkit (P:/Projects/sg-shipkit)
+my-framework (~projects/my-framework)
    Phase: Active Development
    Recommendations:
    [HIGH] /shipkit-verify - No quality check in 5 days
    [MED] /shipkit-work-memory - Log recent progress
 
-client-app (P:/Projects/client-app)
+client-app (~projects/client-app)
    Phase: Planning
    Recommendations:
    [HIGH] /shipkit-plan - Spec exists, ready for planning
    [LOW] /shipkit-architecture-memory - Log tech decisions
 
-api-server (P:/Projects/api-server)
+api-server (~projects/api-server)
    Phase: Discovery
    Recommendations:
    [HIGH] /shipkit-project-context - No context scan yet

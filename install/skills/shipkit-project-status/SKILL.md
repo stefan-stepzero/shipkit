@@ -60,16 +60,31 @@ fi
 
 ---
 
-### Step 2: Scan Core Context Files
+### Step 2: Scan Foundation Files (Phase 1)
 
-**Scan these files for existence and freshness**:
+**These are the critical foundation artifacts that all other skills depend on.**
+
+Per the Skill Artifact Dependency Graph, Phase 1 files are:
 
 ```bash
-# Core context files to check
-.shipkit/stack.json
-.shipkit/architecture.json
-.shipkit/implementations.json
-.shipkit/progress.json
+# Foundation files (required for healthy project)
+.shipkit/why.json              # Vision & purpose (from /shipkit-why-project)
+.shipkit/stack.json            # Tech context (from /shipkit-project-context)
+.shipkit/schema.json           # Data model (from /shipkit-project-context)
+.shipkit/codebase-index.json   # Code understanding (from /shipkit-codebase-index)
+```
+
+**Also check these Phase 2+ files if they exist**:
+
+```bash
+# Phase 2: Discovery
+.shipkit/goals.json            # Strategic goals (from /shipkit-goals)
+
+# Phase 3: Design (cross-cutting)
+.shipkit/architecture.json     # Tech decisions (from /shipkit-architecture-memory)
+
+# Phase 5: Implementation
+.shipkit/progress.json         # Session continuity (from /shipkit-work-memory)
 ```
 
 **For each file, check**:
@@ -81,6 +96,11 @@ fi
 - ✓ Modified within last 24 hours = Fresh
 - ⚠ Modified 1-7 days ago = Aging
 - ✗ Modified >7 days ago OR missing = Stale
+
+**Foundation completeness**:
+- 4/4 foundation files = Ready for development
+- 3/4 foundation files = Minor gap
+- 2/4 or fewer = Critical gaps (suggest foundation skills first)
 
 ---
 
@@ -212,20 +232,27 @@ Status saved.
 Location: .shipkit/status.json
 
   Health Score: 72/100
-  Core Context: 3/4 files present (1 stale)
-  Specs: 2 active | Plans: 0 | Tasks: 5 active
 
-  Gaps Found: 4
-    - stack.json is stale (2 days, package.json modified since)
-    - 2 undocumented files >200 LOC
+  Foundation (Phase 1): 3/4 files
+    ✓ why.json (fresh)
+    ✓ stack.json (aging - 3 days)
+    ✓ schema.json (fresh)
+    ✗ codebase-index.json (missing)
+
+  Discovery: goals.json ✓ | architecture.json ✓
+  Workflow: 2 specs | 0 plans | 5 tasks
+
+  Gaps Found: 3
+    - codebase-index.json missing (run /shipkit-codebase-index)
     - Active specs have no plans
+    - 2 undocumented files >200 LOC
 
   Top Recommendations:
-    1. /shipkit-project-context (stack is stale)
+    1. /shipkit-codebase-index (foundation incomplete)
     2. /shipkit-plan for recipe-sharing spec
     3. Document large components manually
 
-  Skill Usage: 47 total invocations, 2 never used, 2 stale
+  Skill Usage: 47 total invocations, 2 never used
 ```
 
 ---
@@ -241,7 +268,7 @@ Location: .shipkit/status.json
 {
   "$schema": "shipkit-artifact",
   "type": "project-status",
-  "version": "1.0",
+  "version": "1.1",
   "lastUpdated": "YYYY-MM-DD",
   "source": "shipkit-project-status",
   "summary": {
@@ -250,10 +277,11 @@ Location: .shipkit/status.json
     "totalPlans": number,
     "totalTasks": number,
     "gapsFound": number,
-    "coreFilesPresent": number,
-    "coreFilesTotal": 4
+    "foundationFilesPresent": number,
+    "foundationFilesTotal": 4
   },
-  "coreContext": [{ "file", "exists", "freshness", "lastModified?", "sizeBytes?", "itemCount?", "notes?" }],
+  "foundation": [{ "file", "exists", "freshness", "lastModified?", "sizeBytes?", "notes?" }],
+  "discovery": [{ "file", "exists", "freshness", "lastModified?", "notes?" }],
   "workflow": {
     "specs": { "activeCount", "files" },
     "plans": { "count", "files" },
@@ -269,10 +297,11 @@ Location: .shipkit/status.json
 
 | Field | Description |
 |-------|-------------|
-| `summary.healthScore` | 0-100 score based on freshness, gaps, and workflow state |
-| `coreContext[].freshness` | `"fresh"` (<24h) \| `"aging"` (1-7d) \| `"stale"` (>7d) \| `"missing"` |
+| `summary.healthScore` | 0-100 score based on foundation completeness, freshness, and workflow state |
+| `summary.foundationFilesPresent` | Count of Phase 1 files present (why, stack, schema, codebase-index) |
+| `foundation[].freshness` | `"fresh"` (<24h) \| `"aging"` (1-7d) \| `"stale"` (>7d) \| `"missing"` |
 | `gaps[].severity` | `"critical"` \| `"warning"` \| `"info"` |
-| `gaps[].category` | `"freshness"` \| `"undocumented"` \| `"workflow-gap"` \| `"missing"` |
+| `gaps[].category` | `"foundation"` \| `"freshness"` \| `"undocumented"` \| `"workflow-gap"` |
 
 ---
 
@@ -280,25 +309,37 @@ Location: .shipkit/status.json
 
 **Based on detected gaps, suggest ONE priority action**:
 
-**Decision logic**:
+**Decision logic** (prioritizes foundation files first):
 
 ```
 IF .shipkit/ doesn't exist:
   → "Run /shipkit-project-context to initialize"
 
-ELSE IF stack.json is stale (>7 days) OR package.json newer than stack.json:
-  → "Run /shipkit-project-context to refresh stack"
+# Foundation checks (Phase 1) - these block everything else
+ELSE IF why.json missing:
+  → "Run /shipkit-why-project to define project vision"
 
+ELSE IF stack.json missing OR stale (>7 days) OR package.json newer than stack.json:
+  → "Run /shipkit-project-context to scan/refresh tech stack"
+
+ELSE IF codebase-index.json missing AND project has >10 source files:
+  → "Run /shipkit-codebase-index to accelerate code understanding"
+
+# Discovery checks (Phase 2)
+ELSE IF goals.json missing AND why.json exists:
+  → "Run /shipkit-goals to define strategic goals"
+
+# Workflow checks (Phase 3+)
 ELSE IF active specs exist AND no plans exist:
   → "Run /shipkit-plan for [spec-name]"
 
 ELSE IF plans exist AND no implementation notes:
-  → "Run implement (no skill needed) to start coding"
+  → "Start implementing (no skill needed)"
 
 ELSE IF large undocumented files exist:
-  → "Run document components manually to document [file]"
+  → "Document large components manually"
 
-ELSE IF no architectural decisions logged:
+ELSE IF no architectural decisions logged AND implementation in progress:
   → "Run /shipkit-architecture-memory to log decisions"
 
 ELSE IF user tasks all unchecked:
@@ -394,22 +435,38 @@ Copy and track:
   - **Why**: Status identifies what's missing or stale - next action should fix it
   - **Trigger**: Specific gap detected
 
-**Common suggestions**:
+**Common suggestions** (prioritized by phase):
+
+**Foundation (Phase 1) - suggest first if missing**:
+
+- `/shipkit-why-project` - When why.json is missing
+  - **When**: No .shipkit/why.json exists
+  - **Why**: Vision drives all other decisions
+  - **Trigger**: Foundation check fails
 
 - `/shipkit-project-context` - When stack.json is stale or missing
   - **When**: package.json modified after stack.json OR .shipkit/ doesn't exist
   - **Why**: Stale stack causes wrong tech assumptions
-  - **Trigger**: Freshness check fails
+  - **Trigger**: Foundation freshness check fails
+
+- `/shipkit-codebase-index` - When codebase-index.json is missing
+  - **When**: Project has >10 source files but no index
+  - **Why**: Index accelerates all exploration skills
+  - **Trigger**: Foundation check fails
+
+**Discovery (Phase 2)**:
+
+- `/shipkit-goals` - When goals.json is missing but why.json exists
+  - **When**: Foundation complete but no strategic goals defined
+  - **Why**: Goals guide spec prioritization
+  - **Trigger**: Discovery gap detected
+
+**Workflow (Phase 3+)**:
 
 - `/shipkit-plan` - When specs exist but no plans
   - **When**: Found .shipkit/specs/active/*.json but no .shipkit/plans/active/*.json
   - **Why**: Specs without plans block implementation
   - **Trigger**: Workflow gap detected
-
-- `document components manually` - When large files undocumented
-  - **When**: Found src/**/*.ts files >200 LOC not mentioned in implementations.json
-  - **Why**: Undocumented code becomes unmaintainable
-  - **Trigger**: Gap detection finds undocumented files
 
 - `implement (no skill needed)` - When plans exist but no implementation notes
   - **When**: Found plans/active/*.json but no recent implementation entries
@@ -420,18 +477,22 @@ Copy and track:
 
 ## Context Files This Skill Reads
 
-**Always attempts to read**:
-- `.shipkit/stack.json`
-- `.shipkit/architecture.json`
-- `.shipkit/implementations.json`
-- `.shipkit/progress.json`
+**Foundation files (Phase 1 - always checks)**:
+- `.shipkit/why.json` - Project vision and purpose
+- `.shipkit/stack.json` - Tech stack context
+- `.shipkit/schema.json` - Data model
+- `.shipkit/codebase-index.json` - Code understanding accelerator
 
-**Conditionally reads**:
+**Discovery/Design files (Phase 2-3 - checks if exist)**:
+- `.shipkit/goals.json` - Strategic goals
+- `.shipkit/architecture.json` - Tech decisions
+- `.shipkit/contracts.json` - Data contracts
+
+**Workflow files (checks for progress)**:
 - `.shipkit/specs/active/*.json` (glob to count)
 - `.shipkit/plans/active/*.json` (glob to count)
 - `.shipkit/user-tasks/active.md` (if exists)
-- `.shipkit/schema.json` (if exists)
-- `.shipkit/contracts.json` (if exists)
+- `.shipkit/progress.json` - Session continuity
 - `.shipkit/skill-usage.json` (if exists, for usage analytics)
 
 **Also checks**:
@@ -506,10 +567,12 @@ Status check is complete when:
 ## Example Output Scenarios
 
 See the JSON Schema section above for the complete structure. The JSON adapts to project state:
-- **Healthy Project**: `healthScore` near 100, empty `gaps` array, no critical recommendations
+- **New Project**: `foundationFilesPresent: 0`, suggests `/shipkit-why-project` first
+- **Foundation Incomplete**: `foundationFilesPresent: 2/4`, gap with `category: "foundation"`, suggests missing foundation skill
+- **Healthy Project**: `foundationFilesPresent: 4/4`, `healthScore` near 100, empty `gaps` array
 - **Stale Stack**: Gap entry with `category: "freshness"`, recommendation to run `/shipkit-project-context`
-- **Workflow Gap**: Gap entry with `category: "workflow-gap"`, missing specs/plans highlighted
-- **Fresh Project**: All `coreContext` entries have `freshness: "fresh"`, high health score
+- **Workflow Gap**: Gap entry with `category: "workflow-gap"`, specs exist but no plans
+- **Ready for Development**: All `foundation` entries exist and fresh, discovery files present
 
 ---
 

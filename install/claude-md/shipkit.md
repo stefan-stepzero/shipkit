@@ -1,4 +1,4 @@
-# Shipkit
+# Shipkit {{SHIPKIT_VERSION}}
 
 Solo dev framework for shipping MVPs. AI-assisted, fast iteration, production-ready core paths.
 
