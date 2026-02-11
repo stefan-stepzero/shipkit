@@ -130,7 +130,8 @@
       "Skill(shipkit-scale-ready)",
       "Skill(shipkit-prompt-audit)",
       "Skill(shipkit-standby)",
-      "Skill(shipkit-goals)"
+      "Skill(shipkit-goals)",
+      "Skill(shipkit-semantic-qa)"
     ],
 
     "deny": [
@@ -164,7 +165,7 @@
             "command": "python -X utf8 .claude/hooks/shipkit-track-skill-usage.py"
           }
         ]
-      },
+      }
     ],
     "PreToolUse": [],
     "Stop": [

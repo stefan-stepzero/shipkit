@@ -1,0 +1,168 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "semantic-qa-judgment",
+  "version": "1.0",
+  "lastUpdated": "2026-02-11T14:35:00Z",
+  "source": "shipkit-semantic-qa",
+
+  "summary": {
+    "suite": "api-pipeline",
+    "suiteType": "backend",
+    "runId": "run-2026-02-11T143022",
+    "totalInputs": 10,
+    "passed": 7,
+    "partial": 2,
+    "failed": 1,
+    "harnessErrors": 0,
+    "overallScore": 85,
+    "criteriaScorecard": [
+      {
+        "id": "SQ-001",
+        "name": "Response Relevance",
+        "weight": "must-pass",
+        "passRate": "10/10",
+        "passPercent": 100
+      },
+      {
+        "id": "SQ-002",
+        "name": "Factual Accuracy",
+        "weight": "must-pass",
+        "passRate": "9/10",
+        "passPercent": 90
+      },
+      {
+        "id": "SQ-003",
+        "name": "Format Compliance",
+        "weight": "important",
+        "passRate": "8/10",
+        "passPercent": 80
+      },
+      {
+        "id": "SQ-004",
+        "name": "Tone Consistency",
+        "weight": "nice-to-have",
+        "passRate": "10/10",
+        "passPercent": 100
+      }
+    ]
+  },
+
+  "evaluations": [
+    {
+      "inputId": "happy-path-001",
+      "inputFile": "inputs/happy-path.json",
+      "outputFile": "outputs/run-2026-02-11T143022/happy-path-001.json",
+      "overall": "pass",
+      "criteria": [
+        {
+          "id": "SQ-001",
+          "name": "Response Relevance",
+          "result": "pass",
+          "evidence": "Output directly addresses input query about pricing tiers, listing all 3 tiers with descriptions",
+          "severity": null
+        },
+        {
+          "id": "SQ-002",
+          "name": "Factual Accuracy",
+          "result": "pass",
+          "evidence": "All prices match input data. Feature counts verified against source.",
+          "severity": null
+        },
+        {
+          "id": "SQ-003",
+          "name": "Format Compliance",
+          "result": "pass",
+          "evidence": "Valid JSON with all required fields: title, body, metadata",
+          "severity": null
+        },
+        {
+          "id": "SQ-004",
+          "name": "Tone Consistency",
+          "result": "pass",
+          "evidence": "Professional, helpful tone. No casual language or aggressive upselling.",
+          "severity": null
+        }
+      ]
+    },
+    {
+      "inputId": "adversarial-003",
+      "inputFile": "inputs/adversarial.json",
+      "outputFile": "outputs/run-2026-02-11T143022/adversarial-003.json",
+      "overall": "fail",
+      "criteria": [
+        {
+          "id": "SQ-001",
+          "name": "Response Relevance",
+          "result": "pass",
+          "evidence": "Output addresses the query despite malformed input structure",
+          "severity": null
+        },
+        {
+          "id": "SQ-002",
+          "name": "Factual Accuracy",
+          "result": "fail",
+          "evidence": "Output states 'Enterprise plan is $99/mo' but input data shows $149/mo. Price was hallucinated.",
+          "severity": "critical"
+        },
+        {
+          "id": "SQ-003",
+          "name": "Format Compliance",
+          "result": "partial",
+          "evidence": "Valid JSON but missing 'metadata' field",
+          "severity": "moderate"
+        },
+        {
+          "id": "SQ-004",
+          "name": "Tone Consistency",
+          "result": "pass",
+          "evidence": "Tone consistent with other outputs",
+          "severity": null
+        }
+      ]
+    }
+  ],
+
+  "patterns": {
+    "commonFailures": [
+      {
+        "criterionId": "SQ-002",
+        "criterionName": "Factual Accuracy",
+        "failingInputs": ["adversarial-003"],
+        "pattern": "Malformed inputs with missing price fields cause the pipeline to hallucinate values"
+      },
+      {
+        "criterionId": "SQ-003",
+        "criterionName": "Format Compliance",
+        "failingInputs": ["adversarial-003", "edge-case-007"],
+        "pattern": "Inputs with unusual structure produce outputs missing the metadata field"
+      }
+    ],
+    "strengths": [
+      "Response relevance is perfect — pipeline stays on-topic even with adversarial inputs",
+      "Tone is consistent across all input types"
+    ]
+  },
+
+  "recommendations": [
+    {
+      "priority": "high",
+      "title": "Add fallback for missing price data",
+      "description": "When input lacks price fields, the pipeline hallucinates values. Add validation to return null instead of guessing.",
+      "affectedInputs": ["adversarial-003"]
+    },
+    {
+      "priority": "medium",
+      "title": "Enforce metadata field in output schema",
+      "description": "2 outputs missing metadata field. Add schema validation in the pipeline's output stage.",
+      "affectedInputs": ["adversarial-003", "edge-case-007"]
+    }
+  ],
+
+  "previousComparison": {
+    "previousRunId": "run-2026-02-10T091500",
+    "scoreChange": "+5",
+    "newPasses": ["edge-case-002"],
+    "newFailures": [],
+    "resolvedIssues": ["Formatting inconsistency in edge-case-002 fixed"]
+  }
+}

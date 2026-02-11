@@ -154,6 +154,7 @@ This skill provides:
 | "Create task", "Track TODO", "User tasks" | `/shipkit-user-instructions` | user-tasks/active.md |
 | "Visualize", "HTML report", "Visual communication" | `/shipkit-communications` | Relevant files based on request |
 | "Audit prompts", "Prompt architecture", "LLM pipeline review", "Check my prompts" | `/shipkit-prompt-audit` | stack.json, architecture.json |
+| "Semantic QA", "Quality check", "Visual QA", "Judge outputs", "QA suite", "Run QA" | `/shipkit-semantic-qa` | .shipkit/semantic-qa/config.json |
 
 ### Execution
 
@@ -256,7 +257,7 @@ This skill is the **central router** that connects all other skills.
 | Context/Status | `shipkit-project-status`, `shipkit-project-context`, `shipkit-work-memory` |
 | Spec/Planning | `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec`, `shipkit-thinking-partner` |
 | Knowledge | `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`, `shipkit-claude-md` |
-| Quality | `shipkit-verify`, `shipkit-ux-audit`, `shipkit-prompt-audit`, `shipkit-user-instructions`, `shipkit-communications` |
+| Quality | `shipkit-verify`, `shipkit-ux-audit`, `shipkit-prompt-audit`, `shipkit-semantic-qa`, `shipkit-user-instructions`, `shipkit-communications` |
 
 **Does NOT Route:**
 - Natural capabilities (implement, debug, test, refactor) - Claude handles directly
