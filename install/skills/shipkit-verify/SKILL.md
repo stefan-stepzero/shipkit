@@ -307,6 +307,7 @@ The relentless hook manages the iteration. You don't need to count loops — jus
 - All acceptance criteria covered
 - Edge cases from spec handled
 - Feature actually solves the stated problem
+- **Fix didn't break the general case** — if a bug spec exists (`.shipkit/specs/active/bug-*.json`), check that the fix handles the reported case WITHOUT regressing the happy path or other documented edge cases. Read `fix.robustness.findings` for what was considered.
 
 ### 3. Error Resilience
 - Unhandled promise rejections
@@ -337,6 +338,7 @@ The relentless hook manages the iteration. You don't need to count loops — jus
 - Unicode/special characters
 - Timezone issues
 - Concurrent access scenarios
+- **Overengineered edge case handling** — fix for one edge case broke or degraded the happy path or other cases (e.g., added loading guard that blocks normal render, validation so strict it rejects valid input, error handling that swallows success paths)
 
 ### 7. Performance Landmines
 - Unnecessary re-renders

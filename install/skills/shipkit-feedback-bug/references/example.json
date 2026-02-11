@@ -105,13 +105,25 @@
   },
 
   "fix": {
-    "approach": "Add 'items' to useMemo dependency array in CartSummary, audit other summary components for same issue",
+    "approach": "Fix stale closure in useMemo by adding missing dependency, enable exhaustive-deps lint rule to prevent recurrence, and add defensive handling for empty/null cart state",
+    "robustness": {
+      "edgeCasesConsidered": ["consistency", "empty", "loading"],
+      "findings": [
+        "Consistency: Cart total could also go stale if items are modified by another tab/session — fix should force recalculation on cart mount, not just on dependency change",
+        "Empty: When all items are removed, total should show $0.00 not blank/NaN — need null guard in calculation",
+        "Loading: If cart data is still loading when component mounts, useMemo could calculate from incomplete items array — need loading state check before calculation"
+      ]
+    },
     "acceptanceCriteria": [
       "Cart total updates immediately when item removed",
       "Cart total updates immediately when quantity changed",
-      "WishlistSummary has correct dependencies",
+      "Cart total shows $0.00 when cart is empty (not blank or NaN)",
+      "Cart total recalculates correctly on mount (handles stale tab state)",
+      "Cart total is not calculated during loading state (prevents partial data)",
+      "WishlistSummary has correct dependencies (blast radius)",
+      "exhaustive-deps lint rule enabled and passing",
       "No performance regression from fix",
-      "Add unit test for total recalculation"
+      "Unit test for total recalculation on item change, empty cart, and loading state"
     ]
   },
 

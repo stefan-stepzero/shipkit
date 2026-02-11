@@ -51,7 +51,7 @@ Step 1: Receive & Parse Feedback
     ↓
 Step 2: Categorize Each Item (bug / feature / won't fix)
     ↓
-Step 3: For Each Bug → Investigate (reproduce, isolate, root cause)
+Step 3: For Each Bug → Investigate (reproduce, isolate, root cause, stress-test fix)
     ↓
 Step 4: Finalize Bug Specs with Findings
     ↓
@@ -131,7 +131,7 @@ Severity (for bugs):
 - Note exact error messages, console output
 - Find the simplest case that triggers the bug
 
-### 3b: Isolate the Problem + 3d: Assess Blast Radius (PARALLEL)
+### 3b: Isolate the Problem + Assess Blast Radius (PARALLEL)
 
 **Index-Accelerated Investigation** — Read `.shipkit/codebase-index.json` if available:
 
@@ -197,6 +197,59 @@ ROOT CAUSE: Race condition between parent re-render and async response
 - Environment issue (browser, config)
 
 **Document blast radius**: Use results from parallel agent to identify other code/features with same issue.
+
+### 3d: Solution Robustness Check
+
+**Goal**: Before proposing a fix, verify it handles the *general case* — not just the exact reported scenario.
+
+Bugs return as variations. A fix that only addresses the specific report will break when reality throws edge cases at it. This step forces you to stress-test the fix strategy before it gets baked into the spec.
+
+**Map root cause type to relevant edge case categories:**
+
+| Root Cause Type | Always Check | Often Check |
+|-----------------|-------------|-------------|
+| `race-condition` | Loading, Data Consistency | Boundary |
+| `state-management` | Data Consistency, Loading | Empty/Missing |
+| `missing-validation` | Boundary, Empty/Missing, Error | — |
+| `logic-error` | Boundary, Empty/Missing | — |
+| `integration` | Error, Loading | External Service |
+| `environment` | Error, Boundary | — |
+
+**For each relevant category, stress-test the proposed fix:**
+
+1. **Loading States** — Does the fix handle pending operations? What if the same action fires twice rapidly? What if the operation times out? Does the fix itself introduce new async that could race?
+
+2. **Error States** — Does the fix degrade gracefully on network failure? What if the server returns an error mid-fix? Does the fix handle partial failure (some operations succeed, some don't)?
+
+3. **Empty/Missing States** — Does the fix work when the data is empty, null, or undefined? What about a deleted resource? First-time user with no prior state?
+
+4. **Boundary Conditions** — Does the fix handle min/max values? Zero items, one item, thousands of items? Off-by-one scenarios? Rate limits or quotas?
+
+5. **Data Consistency** — Does the fix prevent stale data? What about concurrent users modifying the same resource? Cache invalidation? Partial updates that leave inconsistent state?
+
+6. **External Service Constraints** (integration bugs only) — Does the fix respect timeout budgets? Rate limits from the provider? What happens when the external service is slow or down?
+
+**Not every category applies to every bug.** Use the mapping table — skip categories that aren't relevant. But ALWAYS check the "Always Check" categories for your root cause type.
+
+**How to apply:**
+
+1. Draft the fix approach based on root cause
+2. Look up relevant edge case categories from the mapping table
+3. For each relevant category, ask: "Does this fix still work when [category scenario]?"
+4. If the answer is "no" or "maybe" — expand the fix to handle it
+5. Record findings in `robustness.findings` (these feed into acceptance criteria)
+
+**Example — race condition bug (rapid save clicks):**
+
+| Category | Question | Finding |
+|----------|----------|---------|
+| Loading | Does debouncing handle in-flight requests? | No — need AbortController to cancel pending request, not just debounce new ones |
+| Consistency | Can two saves produce inconsistent state? | Yes — add optimistic update rollback on failure |
+| Boundary | What about 0ms delay (instant double-click)? | Debounce alone won't catch it — need request deduplication too |
+
+The original fix "debounce the save button" was a point-fix. After robustness check, the fix becomes "debounce + AbortController + request deduplication + rollback on failure."
+
+**Why this matters**: The 10 seconds spent checking edge cases here prevents the next bug report that says "it still happens when [variation]."
 
 ### 3e: Capture Learnings
 
@@ -295,9 +348,16 @@ ROOT CAUSE: Race condition between parent re-render and async response
   },
 
   "fix": {
-    "approach": "[How to fix it]",
+    "approach": "[How to fix it — general strategy, not just the point-fix]",
+    "robustness": {
+      "edgeCasesConsidered": ["[categories checked from mapping table]"],
+      "findings": [
+        "[Category]: [What the robustness check revealed and how fix addresses it]"
+      ]
+    },
     "acceptanceCriteria": [
-      "[Specific criterion]",
+      "[Specific criterion from bug report]",
+      "[Criterion from robustness findings]",
       "No regression in related functionality",
       "Blast radius addressed (if applicable)"
     ]
@@ -433,7 +493,11 @@ For obvious bugs that don't need deep investigation, use the same JSON schema bu
   },
 
   "fix": {
-    "approach": "[How to fix]",
+    "approach": "[How to fix — general strategy]",
+    "robustness": {
+      "edgeCasesConsidered": ["[relevant categories]"],
+      "findings": ["[Category]: [Finding]"]
+    },
     "acceptanceCriteria": ["[Acceptance criterion]"]
   },
 
@@ -505,8 +569,9 @@ For obvious bugs that don't need deep investigation, use the same JSON schema bu
 
 1. **Persistence** - Bug specs saved with investigation findings
 2. **Root causes** - Each bug has identified root cause (not just symptoms)
-3. **Blast radius** - Other affected code identified where applicable
-4. **Learnings** - Patterns to avoid/use documented
+3. **Robustness** - Fix stress-tested against relevant edge case categories
+4. **Blast radius** - Other affected code identified where applicable
+5. **Learnings** - Patterns to avoid/use documented
 
 **Natural capabilities** (no skill needed): Implementing fixes, writing tests.
 
@@ -522,6 +587,7 @@ For obvious bugs that don't need deep investigation, use the same JSON schema bu
 Triage is complete when:
 - [ ] All feedback items categorized
 - [ ] Each bug investigated (reproduced, root cause found)
+- [ ] Fix stress-tested against relevant edge case categories (robustness check)
 - [ ] Bug specs created with findings
 - [ ] Blast radius assessed
 - [ ] Feature requests noted for `/shipkit-spec`

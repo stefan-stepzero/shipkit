@@ -140,11 +140,21 @@ Bug specs are stored as JSON files following the Shipkit artifact convention. Th
   },
 
   "fix": {
-    "approach": "Implement request deduplication with AbortController and add debouncing to save action",
+    "approach": "Implement request deduplication with AbortController, add debouncing, and add optimistic update rollback to handle the general class of rapid-action race conditions",
+    "robustness": {
+      "edgeCasesConsidered": ["loading", "consistency", "boundary"],
+      "findings": [
+        "Loading: Debounce alone doesn't handle in-flight requests — need AbortController to cancel pending saves",
+        "Consistency: Two concurrent saves could produce inconsistent server state — need optimistic update with rollback on failure",
+        "Boundary: Instant double-click (0ms) bypasses debounce — need request deduplication as additional guard"
+      ]
+    },
     "acceptanceCriteria": [
       "Rapid clicks are debounced (300ms)",
       "Pending requests are cancelled when new request starts",
       "No data loss under any click timing",
+      "Instant double-click handled via request deduplication",
+      "Failed save rolls back optimistic UI update",
       "Loading indicator shows during save",
       "Same fix applied to useDelete and useUpdate hooks"
     ]
@@ -269,8 +279,20 @@ Bug specs are stored as JSON files following the Shipkit artifact convention. Th
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `approach` | string | yes | How to fix it |
-| `acceptanceCriteria` | string[] | yes | Specific criteria for fix |
+| `approach` | string | yes | How to fix it — general strategy, not just the point-fix |
+| `robustness` | object | yes | Solution robustness validation from Step 3d |
+| `robustness.edgeCasesConsidered` | string[] | yes | Edge case categories checked (from mapping table) |
+| `robustness.findings` | string[] | yes | What the robustness check revealed per category |
+| `acceptanceCriteria` | string[] | yes | Specific criteria for fix (includes robustness-derived items) |
+
+**Edge case category values** (from root cause → edge case mapping):
+- `loading` — Pending operations, duplicate submissions, timeouts
+- `error` — Network failure, server error, validation, partial failure
+- `empty` — Null/undefined data, deleted resources, first-time state
+- `permission` — Auth/authz checks (if applicable to bug)
+- `boundary` — Min/max values, off-by-one, rate limits
+- `consistency` — Stale data, concurrent access, cache invalidation
+- `external-service` — Timeout budgets, provider rate limits (integration bugs only)
 
 ### Learnings
 
@@ -351,6 +373,8 @@ When a bug is resolved:
 3. **At Least 1 Acceptance Criterion**: The `acceptanceCriteria` array must have at least one entry
 4. **At Least 2 Reproduction Steps**: The `steps` array must have at least 2 entries
 5. **Summary Sync**: Summary counts must match actual array lengths
+6. **Robustness Check**: `robustness.edgeCasesConsidered` must have at least 1 entry matching a valid category value
+7. **Robustness Findings**: `robustness.findings` must have at least 1 entry (one finding per considered category)
 
 ---
 
