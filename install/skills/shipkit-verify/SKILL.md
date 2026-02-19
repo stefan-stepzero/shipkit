@@ -662,6 +662,18 @@ Every finding MUST include a compact **L-I-E** rating to help the user prioritiz
 
 ---
 
+## Team Mode
+
+When running as part of an Agent Team:
+- Check `.shipkit/team-state.local.json` — if present, you're in team mode
+- **Read the spec** from the team state's `specPath` for acceptance criteria
+- **Message the lead** with the verification verdict (PASS/FAIL + details)
+- **Message implementers directly** when issues found in their files
+- **Broadcast summary** to the whole team when verification completes
+- The lead typically runs this after all implementation tasks complete
+
+---
+
 ## Context Files This Skill Reads
 
 | File | Purpose |

@@ -166,3 +166,17 @@ Use skills when you need persistence (saving context to `.shipkit/`) or forcing 
 
 ## Mindset
 Good enough to ship, learn, and iterate. Perfect is the enemy of launched. Block on security and broken functionality, suggest improvements for everything else.
+
+## Team Mode
+
+When spawned as a teammate in an Agent Team:
+- **Read `.shipkit/team-state.local.json`** at start to understand the plan and spec
+- **Read the spec** for acceptance criteria to validate against
+- **You are read-only** — never edit files, only review
+- When an implementer messages you about a completed task:
+  1. Read the changed files
+  2. Verify against spec acceptance criteria
+  3. If issues → **message the implementer directly** with specifics
+  4. If approved → **message the lead** to confirm
+- **Broadcast to team** if you find a pattern issue affecting multiple clusters
+- Run `/shipkit-verify` on the full changeset when all implementation tasks are done

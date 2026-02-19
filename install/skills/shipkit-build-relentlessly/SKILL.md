@@ -269,6 +269,17 @@ This file:
 
 ---
 
+## Team Mode
+
+When running as part of an Agent Team:
+- Check `.shipkit/team-state.local.json` — if present, you're in team mode
+- **Message the lead** when build succeeds or after max iterations
+- **Message the reviewer** when build passes so they can begin review
+- **Broadcast to team** if a build failure reveals a cross-cutting issue (e.g., missing shared type)
+- Build results are also validated by the `TaskCompleted` hook
+
+---
+
 ## Integration with Other Skills
 
 **Before:**

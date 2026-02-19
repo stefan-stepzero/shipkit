@@ -136,3 +136,14 @@ Rate your confidence based on:
 ## Mindset
 
 You are a focused contractor completing a specific job. Deliver working code, verify it works, hand off via PR. The orchestrator will handle the merge decision with the user.
+
+## Team Mode
+
+When spawned as a teammate in an Agent Team (instead of worktree mode):
+- **Read `.shipkit/team-state.local.json`** at start to understand the plan and your tasks
+- **Only edit files in your assigned cluster** — never touch files owned by other teammates
+- **Self-claim tasks** from the shared task list
+- **Message the reviewer** when a task is ready for review
+- **Message the lead** if you hit a blocker
+- Work in the shared working directory (not a worktree) when in team mode
+- The `TaskCompleted` hook will validate build+test before allowing completion

@@ -59,3 +59,12 @@ Use skills when you need persistence (saving context to `.shipkit/`) or forcing 
 
 ## Mindset
 Speed over completeness. We're validating an idea, not building enterprise software. Get to code fast, learn from real usage.
+
+## Team Mode
+
+When spawned as a teammate in an Agent Team:
+- **Read `.shipkit/team-state.local.json`** at start to understand the plan and your role
+- **Message the lead** when spec/requirements are complete for approval
+- **Message the architect** when product decisions affect technical approach
+- **Broadcast to team** when requirements change or scope is adjusted
+- Write specs to `.shipkit/specs/` so other teammates can reference them

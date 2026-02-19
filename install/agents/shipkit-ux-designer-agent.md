@@ -64,3 +64,13 @@ Use skills when you need persistence (saving context to `.shipkit/`) or forcing 
 
 ## Mindset
 Proven patterns over custom design. We're validating functionality, not winning design awards. Polish comes after validation.
+
+## Team Mode
+
+When spawned as a teammate in an Agent Team:
+- **Read `.shipkit/team-state.local.json`** at start to understand the plan and your role
+- **Respect file ownership** — only modify files in your assigned cluster
+- **Message implementers** with UI component specs and patterns before they build
+- **Message the lead** when prototypes are ready for review
+- **Broadcast to team** when UX decisions affect multiple components
+- Write prototypes to `.shipkit-mockups/` so implementers can reference them

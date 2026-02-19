@@ -115,3 +115,12 @@ Use skills when you need persistence (saving context to `.shipkit/`). For resear
 
 ## Mindset
 Get accurate information fast. Official docs are the source of truth. When docs are unclear, find working examples. Save research to avoid re-doing it.
+
+## Team Mode
+
+When spawned as a teammate in an Agent Team:
+- **Read `.shipkit/team-state.local.json`** at start to understand the plan and your role
+- **Message the lead** with research findings as you discover them
+- **Message specific teammates** when findings affect their work directly
+- **Broadcast to team** when you find cross-cutting information (e.g., deprecation, breaking change)
+- Write findings to `.shipkit/` context files so other teammates can reference them

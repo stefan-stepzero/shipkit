@@ -297,6 +297,16 @@ This file:
 
 ---
 
+## Team Mode
+
+When running as part of an Agent Team:
+- Check `.shipkit/team-state.local.json` — if present, you're in team mode
+- **Message the lead** when lint passes or after max iterations
+- **Message the reviewer** when lint is clean
+- **Broadcast to team** if lint rules need config changes that affect all files
+
+---
+
 ## Integration with Other Skills
 
 **Before:**

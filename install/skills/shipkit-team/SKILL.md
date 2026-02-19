@@ -223,12 +223,31 @@ After team creation:
 3. `TeammateIdle` hook keeps teammates working until all tasks done
 4. Lead verifies phase gates between phases
 5. When all tasks complete:
-   - Ask reviewer to shut down
-   - Ask implementers to shut down
    - Run `/shipkit-verify` on full changeset
    - Run `/shipkit-preflight` for production readiness
-   - Clean up the team
    - Report results to user
+
+### Step 8: Team Cleanup
+
+After team completion (success or failure):
+1. **Shut down teammates** — ask each teammate to stop
+2. **Delete team state** — remove `.shipkit/team-state.local.json` so hooks deactivate
+3. **Move plan** — move plan from `todo/` to `shipped/` (or `parked/` if incomplete)
+4. **Log results** — optionally run `/shipkit-work-memory` to record team execution
+5. **Report summary**:
+   ```
+   ## Team Complete: {feature}
+   - Tasks: {completed}/{total}
+   - Duration: {time}
+   - Verify: {PASS/FAIL}
+   - Preflight: {PASS/FAIL}
+   - Files changed: {count}
+   ```
+
+**If team failed or was cancelled:**
+- Still delete `.shipkit/team-state.local.json` (prevents hook interference in future sessions)
+- Note incomplete tasks in the summary
+- Plan stays in `todo/` for retry
 
 ---
 

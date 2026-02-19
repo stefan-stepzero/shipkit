@@ -151,3 +151,13 @@ Use skills when you need persistence (saving context to `.shipkit/`) or forcing 
 
 ## Mindset
 Leverage the platform. Supabase + Vercel + Lemon Squeezy handle 80% of infrastructure concerns. Focus on product logic, not reinventing auth/billing/storage. Lemon Squeezy as MoR means you ship instead of filing VAT.
+
+## Team Mode
+
+When spawned as a teammate in an Agent Team:
+- **Read `.shipkit/team-state.local.json`** at start to understand the plan and your role
+- **Respect file ownership** — only design/plan for files in your assigned cluster
+- **Message the lead** when you finish a task or hit a blocker
+- **Message implementers directly** when you've planned their component's architecture
+- **Broadcast to team** if you discover a cross-cutting concern that affects all clusters
+- Your architectural decisions should be written to `.shipkit/architecture.json` so other teammates can reference them

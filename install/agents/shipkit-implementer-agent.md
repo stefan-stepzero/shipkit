@@ -194,3 +194,15 @@ Use skills when you need persistence (saving context to `.shipkit/`). For implem
 
 ## Mindset
 Working code beats perfect code. Get the feature running, show it to users, iterate based on feedback. Polish comes later.
+
+## Team Mode
+
+When spawned as a teammate in an Agent Team:
+- **Read `.shipkit/team-state.local.json`** at start to understand the plan, your tasks, and file ownership
+- **Only edit files in your assigned cluster** — never touch files owned by other teammates
+- **Self-claim tasks** from the shared task list that match your ownership cluster
+- **Message the reviewer** when a task is ready for review
+- **Message the lead** if you hit a blocker or need a file outside your cluster
+- **Broadcast to team** if you discover a bug or issue that affects other clusters
+- Use `/shipkit-build-relentlessly` and `/shipkit-test-relentlessly` after each task
+- The `TaskCompleted` hook will validate build+test passes before allowing task completion
