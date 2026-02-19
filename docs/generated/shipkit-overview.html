@@ -407,7 +407,7 @@
             <h1>⚡ Shipkit <span style="font-size: 0.5em; opacity: 0.8;">{{SHIPKIT_VERSION}}</span></h1>
             <div class="stats">
                 <div class="stat">
-                    <span class="stat-number">38</span>
+                    <span class="stat-number">39</span>
                     <span class="stat-label">Skills</span>
                 </div>
                 <div class="stat">
@@ -677,6 +677,11 @@
                             <td class="creates">PR + worktree</td>
                         </tr>
                         <tr>
+                            <td class="trigger">Create agent team from plan</td>
+                            <td><span class="skill">/shipkit-team</span></td>
+                            <td class="creates">Team + tasks</td>
+                        </tr>
+                        <tr>
                             <td class="trigger">Clean up stale worktrees</td>
                             <td><span class="skill">/shipkit-cleanup-worktrees</span></td>
                             <td class="creates">Cleanup</td>
@@ -747,6 +752,7 @@
                         <li><span class="name">/shipkit-test-relentlessly</span> <span class="desc">— Run tests until all pass. Uses test-cases for change-aware execution.</span></li>
                         <li><span class="name">/shipkit-lint-relentlessly</span> <span class="desc">— Lint until clean. Loops until no lint errors.</span></li>
                         <li><span class="name">/shipkit-implement-independently</span> <span class="desc">— Spawn parallel implementation in isolated git worktree. Creates PR for merge.</span></li>
+                        <li><span class="name">/shipkit-team</span> <span class="desc">— Create agent team from implementation plan. Parallel build with quality gate hooks.</span></li>
                         <li><span class="name">/shipkit-cleanup-worktrees</span> <span class="desc">— Review and clean up stale implementation worktrees. Shows PR status and age.</span></li>
                     </ul>
                 </div>

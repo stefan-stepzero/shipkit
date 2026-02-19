@@ -165,6 +165,7 @@ This skill provides:
 | "Test until", "Run tests until green", "Fix test failures" | `/shipkit-test-relentlessly` | Test output, test-cases |
 | "Lint until", "Fix lint errors", "Clean up lint" | `/shipkit-lint-relentlessly` | Lint output |
 | "Implement independently", "Parallel implementation", "Work on this separately" | `/shipkit-implement-independently` | Spec, stack.json, architecture.json |
+| "Create a team", "Team implement", "Build with a team", "Parallel team" | `/shipkit-team` | Plan, spec, stack.json, architecture.json |
 | "Cleanup worktrees", "Clean up worktrees", "Remove old worktrees" | `/shipkit-cleanup-worktrees` | .shipkit/worktrees/ |
 
 ---

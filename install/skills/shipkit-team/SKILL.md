@@ -289,6 +289,35 @@ After team creation:
 
 ---
 
+<!-- SECTION:success-criteria -->
+## Success Criteria
+
+- [ ] Plan read and tasks decomposed into ownership clusters
+- [ ] Team state file written to `.shipkit/team-state.local.json`
+- [ ] Agent team created with implementers + reviewer
+- [ ] All tasks completed and gate conditions verified
+- [ ] `/shipkit-verify` run on full changeset
+- [ ] `/shipkit-preflight` run for production readiness
+- [ ] Team cleaned up, state file deleted
+<!-- /SECTION:success-criteria -->
+
+---
+
+<!-- SECTION:after-completion -->
+## After Completion
+
+**Team succeeded:** All tasks done, verify + preflight passed. Review the changes and commit/PR.
+
+**Team partially completed:** Some tasks may remain. Check task list status, spawn replacement teammates if needed.
+
+**Next steps:**
+- Commit changes or create PR
+- `/shipkit-work-memory` — Log the team execution for session continuity
+- `/shipkit-verify` — Re-run if additional changes were made post-team
+<!-- /SECTION:after-completion -->
+
+---
+
 ## Constraints
 
 - Requires Agent Teams experimental feature enabled
