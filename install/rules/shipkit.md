@@ -95,6 +95,7 @@ If `.shipkit/codebase-index.json` exists:
 | Lint until clean | `/shipkit-lint-relentlessly` |
 | Generate test case specs | `/shipkit-test-cases` |
 | Parallel implementation in worktree | `/shipkit-implement-independently` |
+| Create agent team from plan | `/shipkit-team` |
 | Clean up stale worktrees | `/shipkit-cleanup-worktrees` |
 
 ### Quality & Communication

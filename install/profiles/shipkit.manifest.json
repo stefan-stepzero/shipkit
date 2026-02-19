@@ -67,6 +67,7 @@
         {"name": "shipkit-lint-relentlessly", "desc": "Lint until clean"},
         {"name": "shipkit-test-cases", "desc": "Generate code-anchored test cases"},
         {"name": "shipkit-implement-independently", "desc": "Parallel implementation in worktree"},
+        {"name": "shipkit-team", "desc": "Create agent team from implementation plan"},
         {"name": "shipkit-cleanup-worktrees", "desc": "Clean up stale worktrees"}
       ],
       "Quality & Communication": [
