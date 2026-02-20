@@ -14,6 +14,19 @@ from pathlib import Path
 from datetime import datetime
 
 
+def _find_project_root(start: Path) -> Path | None:
+    """Walk up from start to find the project root (directory containing .shipkit/ or .claude/)."""
+    current = start.resolve()
+    for _ in range(20):  # Safety limit
+        if (current / '.shipkit').is_dir() or (current / '.claude').is_dir():
+            return current
+        parent = current.parent
+        if parent == current:
+            break  # Hit filesystem root
+        current = parent
+    return None
+
+
 def main():
     # Read hook input from stdin
     try:
@@ -28,12 +41,16 @@ def main():
     if not skill_name:
         return 0  # No skill to track
 
-    # Find project root from cwd or transcript_path
+    # Find project root — walk up from cwd to find .shipkit/ or .claude/
+    # This handles cases where Claude cd'd into a subdirectory (e.g. frontend/)
     cwd = hook_input.get('cwd', '')
     if not cwd:
         return 0
 
-    project_root = Path(cwd)
+    project_root = _find_project_root(Path(cwd))
+    if not project_root:
+        return 0  # Not in a Shipkit project
+
     shipkit_dir = project_root / '.shipkit'
 
     # Create .shipkit if it doesn't exist

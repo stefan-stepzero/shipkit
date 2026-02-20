@@ -17,8 +17,13 @@ from datetime import datetime, timedelta
 GITHUB_VERSION_URL = "https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/VERSION"
 
 
-def get_installed_version() -> str:
-    """Read installed Shipkit version from .shipkit/VERSION."""
+def get_installed_version(project_root: Path = None) -> str:
+    """Read installed Shipkit version from .shipkit/VERSION or VERSION."""
+    if project_root:
+        for candidate in [project_root / ".shipkit" / "VERSION", project_root / "VERSION"]:
+            if candidate.exists():
+                return candidate.read_text(encoding='utf-8').strip()
+    # Fallback to relative path (process cwd)
     version_file = Path(".shipkit/VERSION")
     if version_file.exists():
         return version_file.read_text(encoding='utf-8').strip()
@@ -245,7 +250,7 @@ def check_for_updates(project_root: Path) -> str | None:
     Returns: Message string if update available, None otherwise.
     """
     check_file = project_root / '.shipkit' / '.update-check'
-    installed_version = get_installed_version()
+    installed_version = get_installed_version(project_root)
 
     # Can't check for updates if we don't know current version
     if installed_version == "unknown":
