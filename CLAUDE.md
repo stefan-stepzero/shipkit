@@ -249,9 +249,11 @@ Location: `install/skills/`
 
 **Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-scale-ready`, `shipkit-prompt-audit`, `shipkit-semantic-qa`, `shipkit-qa-visual`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
 
-**System:** `shipkit-detect` (auto-triggered), `shipkit-update`, `shipkit-standby`, `shipkit-get-skills`, `shipkit-get-mcps`
+**System:** `shipkit-update`, `shipkit-get-skills`, `shipkit-get-mcps`
 
-**Total:** 38 skills
+**System infrastructure:** `shipkit-detect` (auto-triggered hook, not user-invocable)
+
+**Total:** 36 skills
 
 ### Agents
 Location: `install/agents/`

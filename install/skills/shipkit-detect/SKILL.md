@@ -1,6 +1,7 @@
 ---
 name: shipkit-detect
-description: Unified detection skill that scans artifacts after skill completion and creates work queues for follow-up skills. System skill - auto-triggered by router hook, not user-invocable.
+description: Unified detection skill that scans artifacts after skill completion and creates work queues for follow-up skills. System hook infrastructure - auto-triggered by router hook, not user-invocable.
+user-invocable: false
 disable-model-invocation: true
 model: haiku
 allowed-tools:

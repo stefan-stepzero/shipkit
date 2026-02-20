@@ -114,7 +114,7 @@ If `.shipkit/codebase-index.json` exists:
 | Install or update Shipkit | `/shipkit-update` |
 | Find and install community skills | `/shipkit-get-skills` |
 | Find and install MCP servers | `/shipkit-get-mcps` |
-| AFK daemon / standby mode | `/shipkit-standby` |
+
 
 **No skill needed for:** implementing, debugging, testing, refactoring, documenting code.
 

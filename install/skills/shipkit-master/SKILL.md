@@ -123,7 +123,7 @@ This skill provides:
 | "Find skills", "Get skills", "Is there a skill for?", "Install skill" | `/shipkit-get-skills` | None |
 | "Find MCPs", "Get MCPs", "Is there an MCP for?", "Install MCP" | `/shipkit-get-mcps` | .mcp.json |
 | "Install Shipkit", "Update Shipkit", "Upgrade Shipkit", "Reinstall Shipkit" | `/shipkit-update` | None |
-| "Standby", "AFK", "Daemon mode", "Wait for commands" | `/shipkit-standby` | None |
+
 
 ### Specification & Planning
 

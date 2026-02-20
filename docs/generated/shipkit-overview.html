@@ -407,7 +407,7 @@
             <h1>⚡ Shipkit <span style="font-size: 0.5em; opacity: 0.8;">{{SHIPKIT_VERSION}}</span></h1>
             <div class="stats">
                 <div class="stat">
-                    <span class="stat-number">38</span>
+                    <span class="stat-number">36</span>
                     <span class="stat-label">Skills</span>
                 </div>
                 <div class="stat">
@@ -702,7 +702,7 @@
 
         <!-- ALL SKILLS TAB -->
         <div id="skills" class="tab-content">
-            <h2 class="section-header">All 38 Skills by Category</h2>
+            <h2 class="section-header">All 36 Skills by Category</h2>
 
             <div class="skill-groups">
                 <div class="skill-group">
@@ -771,12 +771,11 @@
                     <h3>⚙️ System</h3>
                     <ul class="skill-list">
                         <li><span class="name">/shipkit-master</span> <span class="desc">— Session orchestrator: loads context at start, routes requests to appropriate skills.</span></li>
-                        <li><span class="name">/shipkit-detect</span> <span class="desc">— Auto-triggered scanner that creates work queues after skill completion. Not user-invocable.</span></li>
                         <li><span class="name">/shipkit-update</span> <span class="desc">— Install or update Shipkit from GitHub. Archives existing install, merges user content.</span></li>
-                        <li><span class="name">/shipkit-standby</span> <span class="desc">— AFK daemon mode. Polls for commands with exponential backoff.</span></li>
                         <li><span class="name">/shipkit-get-skills</span> <span class="desc">— Search and install skills from skills.sh marketplace. Extend Claude capabilities.</span></li>
                         <li><span class="name">/shipkit-get-mcps</span> <span class="desc">— Search and install MCP servers to add new tools and integrations.</span></li>
                     </ul>
+                    <p style="font-size: 0.85em; color: #64748b; margin-top: 8px;">+ <code>shipkit-detect</code> (system hook infrastructure — auto-triggered, not user-invocable)</p>
                 </div>
 
                 <div class="skill-group">
@@ -929,7 +928,7 @@
         </div>
 
         <footer>
-            <p>Shipkit {{SHIPKIT_VERSION}} • 38 Skills • 9 Agents • 7 Principles</p>
+            <p>Shipkit {{SHIPKIT_VERSION}} • 36 Skills • 9 Agents • 7 Principles</p>
             <p style="margin-top: 10px;">Production-ready MVPs for SaaS applications</p>
         </footer>
     </div>

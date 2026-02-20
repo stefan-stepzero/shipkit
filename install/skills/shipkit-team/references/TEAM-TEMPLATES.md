@@ -105,39 +105,24 @@ Rules:
 
 ---
 
-## Template 5: Full Pipeline (Autonomous)
+## Template 5: Full Pipeline
 
-**When:** You want spec → plan → implement → review in one team session. Phase 2 vision.
+**When:** You want the full lifecycle — discovery → definition → spec → architecture → plan → implement → verify — in one team session.
 
+**Command:** `/shipkit-team --template pipeline "Build a [product description]"`
+
+See the **Pipeline Template** section in the main skill file for full phase details, artifact DAG, gate logic, and optional skills per phase.
+
+**Summary:**
 ```
-Create an agent team to build: {feature description}
-
-Read context: .shipkit/stack.json, .shipkit/architecture.json
-
-Phase 1 — Specification:
-- Spawn PO teammate (Opus): Run /shipkit-spec, produce spec.json
-- Require plan approval from lead before proceeding
-
-Phase 2 — Planning:
-- Spawn Architect teammate (Opus): Run /shipkit-plan from spec, produce plan.json
-- Require plan approval from lead before proceeding
-
-Phase 3 — Implementation:
-- After plan approved, spawn N implementers (Sonnet) from plan task clusters
-- Spawn reviewer (Opus) to validate alongside
-
-Phase 4 — Quality:
-- Lead runs /shipkit-verify + /shipkit-preflight
-- Report results
-
-Rules:
-- PO reads .shipkit/why.json and .shipkit/goals.json for project context
-- Architect reads spec.json and follows codebase patterns
-- Implementers follow plan.json tasks with file ownership boundaries
-- Reviewer validates against spec acceptance criteria
-- Lead approves each phase gate before next phase starts
+Phase 1: Discovery        — why → goals → personas (+ project-context parallel)
+Phase 2: Product Definition — feature portfolio with goal coverage
+Phase 3: Specification     — batch specs from product-definition
+Phase 4: Architecture      — solution architect proposes from all context
+Phase 5: Planning          — one plan per spec, dependency-ordered
+Phase 6: Implementation    — parallel team build + verify + preflight
 ```
 
-**Model selection:** Opus for PO/Architect/Reviewer (reasoning-heavy), Sonnet for implementers.
+**Model selection:** Sonnet for PO/Architect/Implementers, Opus for Spec (Phase 3) and Reviewer (Phase 6).
 
-**Risk:** Spec and plan quality depend on how well `.shipkit/` context captures user intent. Best with well-populated context files.
+**Risk:** Vision quality depends on the product goal passed in `$ARGUMENTS`. Be specific — "Build a spaced repetition learning app for medical students" is better than "Build a learning app".

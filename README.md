@@ -2,14 +2,13 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**38 skills** organized for streamlined workflow:
+**36 skills** organized for streamlined workflow:
 - **Core Workflow** (5) - Orchestration, status, and context management
 - **Discovery & Planning** (8) - Product discovery, goals, product definition, specification, and bug triage
 - **Implementation** (3) - Architecture, contracts, and integrations
-- **Execution** (6) - Test case generation, relentless build/test/lint, parallel implementation
+- **Execution** (7) - Test case generation, relentless build/test/lint, team orchestration, parallel implementation
 - **Quality & Documentation** (10) - Testing, UX, production readiness, prompt architecture, semantic QA, visual QA, and documentation
-- **Ecosystem** (2) - Get skills and MCPs
-- **System** (3) - Detection, updates, and standby mode
+- **System** (3) - Updates, community skills, and MCP discovery
 
 Plus **9 agent personas** that specialize behaviors for different workflow stages.
 
@@ -17,7 +16,7 @@ Plus **9 agent personas** that specialize behaviors for different workflow stage
 
 ## What's Inside
 
-### Skills (38 total)
+### Skills (36 total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -43,12 +42,13 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-data-contracts` - Type definitions (Zod patterns)
 - `shipkit-integration-docs` - Integration patterns
 
-**Execution (6 skills):**
+**Execution (7 skills):**
 - `shipkit-test-cases` - Generate code-anchored test case specs
 - `shipkit-build-relentlessly` - Build until compiles
 - `shipkit-test-relentlessly` - Test until green
 - `shipkit-lint-relentlessly` - Lint until clean
 - `shipkit-implement-independently` - Parallel implementation in isolated worktree
+- `shipkit-team` - Create agent team from implementation plan for parallel execution
 - `shipkit-cleanup-worktrees` - Clean up stale implementation worktrees
 
 **Quality & Documentation (10 skills):**
@@ -63,12 +63,13 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-communications` - Communication and formatting
 - `shipkit-work-memory` - Session memory and context
 
-**System Skills (5 skills):**
-- `shipkit-detect` - Pattern detection and queue creation (auto-triggered)
+**System (3 skills):**
 - `shipkit-update` - Install or update Shipkit from GitHub
-- `shipkit-standby` - AFK daemon mode with command polling and backoff
 - `shipkit-get-skills` - Discover and install Claude Code skills
 - `shipkit-get-mcps` - Discover and install MCP servers
+
+*System infrastructure (not counted — auto-triggered, not user-invocable):*
+- `shipkit-detect` - Pattern detection and queue creation (hook infrastructure)
 
 ### Agent Personas (9)
 
@@ -102,7 +103,7 @@ Add `-y` for non-interactive mode (uses sensible defaults).
 **Already have Shipkit?** Update with `/shipkit-update`
 
 The installer will:
-- Install all 38 skills
+- Install all 36 skills
 - Set up 9 agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
@@ -117,7 +118,7 @@ your-project/
 │   ├── settings.json            # Permissions + hooks
 │   ├── rules/
 │   │   └── shipkit.md           # Framework rules (managed by /shipkit-update)
-│   ├── skills/                  # 35 skill definitions
+│   ├── skills/                  # 37 skill definitions
 │   ├── agents/                  # 9 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace

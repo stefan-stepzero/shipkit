@@ -274,44 +274,38 @@ The pipeline template orchestrates the full product development lifecycle — fr
 ### Pipeline Phases
 
 ```
-Phase 0: Setup ──→ Phase 1: Discovery ──→ Phase 2: Product Definition
-    │                    │                        │
-    ▼                    ▼                        ▼
-stack.json          why.json               product-definition.json
-codebase-index.json goals.json             (feature portfolio +
-                    product-discovery.json   goal coverage matrix)
-                         │
-Phase 3: Specification ──→ Phase 4: Architecture ──→ Phase 5: Planning
-    │                          │                         │
-    ▼                          ▼                         ▼
-specs/*.json              architecture.json         plans/*.json
-(one per feature)         (solution architect)      (one per spec)
+Phase 1: Discovery ──────→ Phase 2: Product Definition ──→ Phase 3: Specification
+    │                            │                              │
+    ▼                            ▼                              ▼
+why.json                  product-definition.json          specs/*.json
+goals.json                (feature portfolio +             (one per feature,
+product-discovery.json     goal coverage matrix)            batch from product-def)
+stack.json (parallel)           │
+                          Phase 4: Architecture ──→ Phase 5: Planning
+                               │                        │
+                               ▼                        ▼
+                          architecture.json         plans/*.json
+                          (solution architect)      (one per spec)
                                                         │
-                              Phase 6: Implementation + Verification
-                                  │
-                                  ▼
-                              Code + tests + verify + preflight
+                               Phase 6: Implementation + Verification
+                                   │
+                                   ▼
+                               Code + tests + verify + preflight
 ```
 
 ### Phase Details
 
-#### Phase 0: Setup
-- **Agent**: Lead (current session)
-- **Skills**: `/shipkit-project-context`, `/shipkit-codebase-index`
-- **Gate**: `stack.json` + `codebase-index.json` exist
-- **Notes**: Fast — reads package.json and scans file structure. Skipped if both artifacts are fresh.
-
 #### Phase 1: Discovery
 - **Agent**: Product Owner (Sonnet)
-- **Skills**: `/shipkit-why-project`, `/shipkit-goals`, `/shipkit-product-discovery`
+- **Skills**: `/shipkit-why-project`, `/shipkit-goals`, `/shipkit-product-discovery` (sequential); `/shipkit-project-context` (parallel if codebase exists)
 - **Gate**: `why.json` + `goals.json` + `product-discovery.json` written and confirmed
-- **Notes**: All three use propose mode. Sequential: why → goals → personas. The product goal from `$ARGUMENTS` is passed as context to each skill.
+- **Notes**: Vision first — why-project has no dependencies, everything else flows from it. Sequential: why → goals → personas. `project-context` runs in parallel because it reads the codebase (not vision artifacts). For greenfield projects with no code yet, `project-context` may produce minimal output and can re-run after scaffolding. The product goal from `$ARGUMENTS` is passed as context to each skill.
 
 #### Phase 2: Product Definition
 - **Agent**: Product Owner (Sonnet)
 - **Skills**: `/shipkit-product-definition`
 - **Gate**: `product-definition.json` written and confirmed — feature portfolio with goal coverage matrix
-- **Notes**: **KEY GATE** — This is where the product blueprint is confirmed. All downstream work derives from this artifact. In default mode, always pause here regardless of previous auto-confirms.
+- **Notes**: **KEY GATE** — This is where the product blueprint is confirmed. All downstream work derives from this artifact. Reads: goals.json, product-discovery.json, why.json, stack.json. In default mode, always pause here regardless of previous auto-confirms.
 
 #### Phase 3: Specification
 - **Agent**: Product Owner (Opus)
@@ -323,19 +317,87 @@ specs/*.json              architecture.json         plans/*.json
 - **Agent**: Architect (Sonnet)
 - **Skills**: `/shipkit-architecture-memory --propose` (solution architect mode)
 - **Gate**: `architecture.json` written and confirmed
-- **Notes**: Reads all Phase 0-3 artifacts for informed architecture proposal.
+- **Notes**: Reads all Phase 1-3 artifacts for informed architecture proposal. Optionally runs `/shipkit-data-contracts` first if specs reference complex entity relationships (produces `contracts.json` which informs architecture).
 
 #### Phase 5: Planning
 - **Agent**: Architect (Sonnet)
 - **Skills**: `/shipkit-plan`
 - **Gate**: Plan files for all specs written
-- **Notes**: One plan per spec. Plans produced in dependency order. Each plan reads previous plans as context.
+- **Notes**: One plan per spec. Plans produced in dependency order. Each plan reads previous plans as context. Optionally runs `/shipkit-test-cases` to generate test case specs before implementation.
 
 #### Phase 6: Implementation + Verification
 - **Agents**: Implementers (Sonnet, parallel) + Reviewer (Opus)
 - **Skills**: `/shipkit-build-relentlessly`, `/shipkit-test-relentlessly`, `/shipkit-lint-relentlessly`, `/shipkit-verify`, `/shipkit-preflight`
 - **Gate**: All features implemented, tests pass, lint clean, verification passes
-- **Notes**: File ownership from plans. Features implemented in dependency order from product-definition. Verify + preflight run after all features complete.
+- **Notes**: File ownership from plans. Features implemented in dependency order from product-definition. `/shipkit-integration-docs` triggered on-demand when implementers encounter external services. Verify + preflight run after all features complete. For apps with UI, `/shipkit-qa-visual` and `/shipkit-semantic-qa` can run as optional quality checks.
+
+### Full Skill Coverage (36 user-facing skills)
+
+Every Shipkit skill has a defined role relative to this pipeline. No skill is "cross-cutting" — each is either a core pipeline step, a phase-specific augmentation, a pre-pipeline prerequisite, or explicitly manual-mode-only. (`shipkit-detect` is system hook infrastructure, not counted as a user-facing skill.)
+
+#### Core Pipeline Skills (14)
+
+These are invoked directly by the pipeline phases:
+
+| Phase | Skill | Role |
+|-------|-------|------|
+| 1 | `/shipkit-why-project` | Vision → why.json |
+| 1 | `/shipkit-goals` | Outcomes → goals.json |
+| 1 | `/shipkit-product-discovery` | Personas → product-discovery.json |
+| 1 | `/shipkit-project-context` | Stack detection → stack.json (parallel) |
+| 2 | `/shipkit-product-definition` | Feature portfolio → product-definition.json |
+| 3 | `/shipkit-spec` | Feature specs → specs/*.json (batch) |
+| 4 | `/shipkit-architecture-memory` | Architecture proposal → architecture.json |
+| 5 | `/shipkit-plan` | Implementation plans → plans/*.json |
+| 6 | `/shipkit-build-relentlessly` | Build until it compiles |
+| 6 | `/shipkit-test-relentlessly` | Test until green |
+| 6 | `/shipkit-lint-relentlessly` | Lint until clean |
+| 6 | `/shipkit-implement-independently` | Autonomous single-agent implementation |
+| 6 | `/shipkit-verify` | Verify against spec |
+| 6 | `/shipkit-preflight` | Production readiness audit |
+
+#### Phase-Specific Optional Skills (15)
+
+Augment specific phases when the project needs them:
+
+| Phase | Skill | When to use |
+|-------|-------|-------------|
+| 1 | `/shipkit-thinking-partner` | Complex domain needing brainstorming |
+| 1 | `/shipkit-feedback-bug` | Existing user feedback to incorporate |
+| 4 | `/shipkit-data-contracts` | Complex entity relationships in specs |
+| 5 | `/shipkit-test-cases` | Generate test case specs before implementation |
+| 6 | `/shipkit-integration-docs` | External API integration detected during implementation |
+| 6 | `/shipkit-cleanup-worktrees` | After parallel worktree-based implementation |
+| 6 | `/shipkit-qa-visual` | UI-heavy app needing visual QA |
+| 6 | `/shipkit-semantic-qa` | API/LLM output quality verification |
+| 6 | `/shipkit-ux-audit` | UX pattern review |
+| 6 | `/shipkit-scale-ready` | Production scaling concerns |
+| 6 | `/shipkit-prompt-audit` | AI prompt quality in LLM apps |
+| 6 | `/shipkit-user-instructions` | Track manual tasks (env vars, service signups) |
+| post | `/shipkit-communications` | Stakeholder report after build completes |
+| post | `/shipkit-work-memory` | Session handoff if pipeline is interrupted or completed |
+| post | `/shipkit-team` | This skill — orchestrates implementation (Phase 6 uses its own standard team flow) |
+
+#### Pre-Pipeline Prerequisites (5)
+
+Run before starting the pipeline — one-time setup, not build steps:
+
+| Skill | Purpose |
+|-------|---------|
+| `/shipkit-update` | Ensure Shipkit version is current |
+| `/shipkit-claude-md` | Configure project CLAUDE.md preferences |
+| `/shipkit-codebase-index` | Semantic index for large existing codebases |
+| `/shipkit-get-skills` | Discover and install community Claude Code skills |
+| `/shipkit-get-mcps` | Discover and install MCP servers for integrations |
+
+#### Manual-Mode-Only Skills (2)
+
+These skills are for ad-hoc usage outside the pipeline. The pipeline replaces their function:
+
+| Skill | Why excluded |
+|-------|-------------|
+| `/shipkit-master` | Pipeline template replaces master's routing |
+| `/shipkit-project-status` | Pipeline state replaces gap analysis |
 
 ### Pipeline State
 
@@ -348,7 +410,6 @@ Write `.shipkit/team-state.local.json` with pipeline-specific fields:
   "mode": "default",
   "created": "ISO timestamp",
   "phases": [
-    {"id": 0, "name": "Setup", "status": "completed", "gate": "stack.json + codebase-index.json exist"},
     {"id": 1, "name": "Discovery", "status": "in_progress", "gate": "why + goals + personas confirmed"},
     {"id": 2, "name": "Product Definition", "status": "pending", "gate": "product-definition.json confirmed"},
     {"id": 3, "name": "Specification", "status": "pending", "gate": "All feature specs written"},
@@ -359,13 +420,13 @@ Write `.shipkit/team-state.local.json` with pipeline-specific fields:
   "currentPhase": 1,
   "gateAutoConfirm": false,
   "artifacts": {
-    "stack": ".shipkit/stack.json",
-    "codebaseIndex": ".shipkit/codebase-index.json",
     "why": null,
     "goals": null,
     "personas": null,
+    "stack": null,
     "productDefinition": null,
     "specs": [],
+    "contracts": null,
     "architecture": null,
     "plans": []
   }
@@ -377,7 +438,7 @@ Write `.shipkit/team-state.local.json` with pipeline-specific fields:
 On startup, read `.shipkit/` for existing artifacts. For each phase, if all gate artifacts exist, mark phase as completed. Start from first incomplete phase.
 
 ```
-Resuming pipeline from Phase {N} ({name}) — Phases 0-{N-1} complete.
+Resuming pipeline from Phase {N} ({name}) — Phases 1-{N-1} complete.
 ```
 
 ### Gate Logic
