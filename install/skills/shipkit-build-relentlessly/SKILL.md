@@ -1,13 +1,7 @@
 ---
 name: shipkit-build-relentlessly
-description: Build/compile relentlessly until success. Use for migrations, setup, major refactors.
+description: Build and compile relentlessly until success — keeps fixing build errors, type errors, and compilation failures in a loop. Use for migrations, setup, major refactors, or when you need to make it compile.
 argument-hint: "[task] [--max N]"
-triggers:
-  - build relentlessly
-  - keep building until it compiles
-  - fix all build errors
-  - fix all type errors
-  - make it compile
 allowed-tools:
   - Read
   - Write
@@ -56,6 +50,8 @@ The user invokes this skill and walks away. Come back to either success or a cle
 ---
 
 ## Arguments
+
+User input arrives via `$ARGUMENTS` (e.g. `/shipkit-build-relentlessly migrate to TypeScript --max 20`).
 
 ```
 /shipkit-build-relentlessly [task] [--max N]

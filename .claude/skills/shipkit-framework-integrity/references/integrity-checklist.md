@@ -390,7 +390,6 @@ rm .claude/skills/shipkit-framework-integrity/.integrity-state.json
 
 | Check | Tool | Scope |
 |-------|------|-------|
-| Single skill quality | `shipkit-validate-lite-skill` | One skill |
 | Framework integrity | `shipkit-framework-integrity` | All skills + integration |
 | Pre-commit | Git hooks | Changed files only |
 | CI/CD | GitHub Actions | Full repo |

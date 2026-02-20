@@ -37,6 +37,14 @@ Use this 8-character ID in all state file names below. If not found in session c
 
 ---
 
+## Arguments
+
+If `$ARGUMENTS` is provided (e.g. `/shipkit-verify auth module`), use it as the explicit verification scope. Skip scope detection and treat it as the answer to "What should I verify?".
+
+If `$ARGUMENTS` is empty, proceed normally with automatic scope detection (git diff, session context).
+
+---
+
 ## Process
 
 ### Step 1: Detect Scope

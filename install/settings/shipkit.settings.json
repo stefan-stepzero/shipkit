@@ -40,49 +40,49 @@
       "Write(.shipkit/**)",
       "Write(.shipkit-archive/**)",
 
-      "Bash(git:*)",
-      "Bash(python:*)",
-      "Bash(pip:*)",
-      "Bash(poetry:*)",
-      "Bash(pytest:*)",
-      "Bash(black:*)",
-      "Bash(ruff:*)",
-      "Bash(mypy:*)",
-      "Bash(uvicorn:*)",
-      "Bash(node:*)",
-      "Bash(npm:*)",
-      "Bash(npx:*)",
-      "Bash(pnpm:*)",
-      "Bash(yarn:*)",
-      "Bash(tsc:*)",
-      "Bash(eslint:*)",
-      "Bash(prettier:*)",
-      "Bash(vercel:*)",
-      "Bash(docker:*)",
-      "Bash(docker-compose:*)",
-      "Bash(ls:*)",
-      "Bash(cat:*)",
-      "Bash(grep:*)",
-      "Bash(find:*)",
-      "Bash(wc:*)",
-      "Bash(chmod:*)",
-      "Bash(pwd:*)",
-      "Bash(cd:*)",
-      "Bash(echo:*)",
-      "Bash(mkdir:*)",
-      "Bash(touch:*)",
-      "Bash(mv:*)",
-      "Bash(cp:*)",
-      "Bash(rm:*)",
-      "Bash(curl:*)",
-      "Bash(wget:*)",
-      "Bash(sed:*)",
-      "Bash(awk:*)",
-      "Bash(sort:*)",
-      "Bash(uniq:*)",
-      "Bash(diff:*)",
-      "Bash(tree:*)",
-      "Bash(gh:*)",
+      "Bash(git *)",
+      "Bash(python *)",
+      "Bash(pip *)",
+      "Bash(poetry *)",
+      "Bash(pytest *)",
+      "Bash(black *)",
+      "Bash(ruff *)",
+      "Bash(mypy *)",
+      "Bash(uvicorn *)",
+      "Bash(node *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(pnpm *)",
+      "Bash(yarn *)",
+      "Bash(tsc *)",
+      "Bash(eslint *)",
+      "Bash(prettier *)",
+      "Bash(vercel *)",
+      "Bash(docker *)",
+      "Bash(docker-compose *)",
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+      "Bash(find *)",
+      "Bash(wc *)",
+      "Bash(chmod *)",
+      "Bash(pwd *)",
+      "Bash(cd *)",
+      "Bash(echo *)",
+      "Bash(mkdir *)",
+      "Bash(touch *)",
+      "Bash(mv *)",
+      "Bash(cp *)",
+      "Bash(rm *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(sed *)",
+      "Bash(awk *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(diff *)",
+      "Bash(tree *)",
+      "Bash(gh *)",
 
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
@@ -137,9 +137,9 @@
 
     "deny": [
       
-      "Bash(sudo:*)",
-      "Bash(su:*)",
-      "Bash(ssh:*)"
+      "Bash(sudo *)",
+      "Bash(su *)",
+      "Bash(ssh *)"
     ]
   },
 
@@ -147,6 +147,7 @@
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
 
+  "teammateMode": "in-process",
   "defaultMode": "acceptEdits",
 
   "hooks": {
@@ -196,8 +197,8 @@
       {
         "hooks": [
           {
-            "type": "command",
-            "command": "python -X utf8 .claude/hooks/shipkit-precompact-hook.py"
+            "type": "prompt",
+            "prompt": "Context compaction is approaching. If significant work is in progress, consider running /shipkit-work-memory to save your current work state before details are lost."
           }
         ]
       }

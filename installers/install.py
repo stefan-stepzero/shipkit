@@ -573,7 +573,6 @@ def install_shared_core(repo_root, target_dir, language, edition):
     shutil.copy2(hooks_src / "shipkit-after-skill-router.py", hooks_dest / "after-skill-router.py")
     shutil.copy2(hooks_src / "shipkit-track-skill-usage.py", hooks_dest / "shipkit-track-skill-usage.py")
     shutil.copy2(hooks_src / "shipkit-relentless-stop-hook.py", hooks_dest / "shipkit-relentless-stop-hook.py")
-    shutil.copy2(hooks_src / "shipkit-precompact-hook.py", hooks_dest / "shipkit-precompact-hook.py")
     print_success("Hooks installed")
 
     # Install framework rules
@@ -874,8 +873,8 @@ def _build_hooks_config():
             {
                 "hooks": [
                     {
-                        "type": "command",
-                        "command": "python -X utf8 .claude/hooks/shipkit-precompact-hook.py"
+                        "type": "prompt",
+                        "prompt": "Context compaction is approaching. If significant work is in progress, consider running /shipkit-work-memory to save your current work state before details are lost."
                     }
                 ]
             }

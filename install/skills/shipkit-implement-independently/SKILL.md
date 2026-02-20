@@ -1,15 +1,9 @@
 ---
 name: shipkit-implement-independently
-description: Spawn an independent implementation agent in an isolated git worktree. Creates parallel work that can be merged back via PR.
+description: Spawn an independent implementation agent in an isolated git worktree. Creates parallel work that can be merged back via PR. Use when you want to implement something independently in the background.
 argument-hint: "<spec-file-or-task-description>"
 context: fork
 agent: shipkit-implement-independently
-triggers:
-  - implement independently
-  - parallel implementation
-  - implement in background
-  - work on this separately
-  - create a branch and implement
 allowed-tools:
   - Read
   - Write
@@ -61,15 +55,14 @@ Spawn an autonomous implementation agent in an isolated git worktree. The agent 
 ┌─────────────────────────────────────────────────────────────────┐
 │  1. SETUP                                                       │
 │     • Capture current branch (source_branch)                    │
-│     • Create worktree: .shipkit/worktrees/{task-slug}/          │
-│     • Create branch: impl/{task-slug}                           │
+│     • Parse task input (spec path or description)               │
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  2. SPAWN AGENT                                                 │
-│     • Agent works in isolated worktree                          │
-│     • Implements spec/task                                      │
+│  2. SPAWN AGENT (isolation: worktree)                           │
+│     • CC auto-creates isolated worktree                         │
+│     • Agent implements spec/task                                │
 │     • Runs tests, lint, build                                   │
 │     • Creates PR → source_branch                                │
 │     • Returns structured result                                 │
@@ -80,8 +73,8 @@ Spawn an autonomous implementation agent in an isolated git worktree. The agent 
 │  3. MERGE PROMPT                                                │
 │     • Display stats (files, lines, tests, confidence)           │
 │     • Ask user: Ready to merge?                                 │
-│     • On yes: squash merge + cleanup worktree                   │
-│     • On no: preserve worktree for manual review                │
+│     • On yes: squash merge via gh pr merge                      │
+│     • On no: keep PR open for manual review                     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -110,50 +103,32 @@ SOURCE_BRANCH=$(git branch --show-current)
 
 **Critical**: This is the PR target. Store it for the agent.
 
-### Step 3: Create Worktree
+### Step 3: Spawn Implementation Agent
 
-Run the setup script:
-
-```bash
-# Generate task slug from input
-TASK_SLUG="[sanitized-task-name]"
-WORKTREE_PATH=".shipkit/worktrees/${TASK_SLUG}"
-IMPL_BRANCH="impl/${TASK_SLUG}"
-
-# Create worktree
-git worktree add -b "${IMPL_BRANCH}" "${WORKTREE_PATH}" HEAD
-```
-
-**Verify**: Confirm worktree was created before proceeding.
-
-### Step 4: Spawn Implementation Agent
-
-Use the Task tool to spawn `shipkit-implement-independently-agent`:
+Use the Task tool to spawn `shipkit-implement-independently-agent`. The agent has `isolation: worktree` in its frontmatter — CC automatically creates and manages the worktree.
 
 **Prompt template:**
 ```
-You are working in worktree: {WORKTREE_PATH}
 Source branch (PR target): {SOURCE_BRANCH}
-Implementation branch: {IMPL_BRANCH}
 
 ## Task
 {spec_content_or_task_description}
 
 ## Instructions
-1. Implement the task completely
-2. Run build, tests, lint
-3. Create PR targeting {SOURCE_BRANCH}
-4. Report results with stats and confidence score
+1. Rename your branch to impl/{task-slug}
+2. Implement the task completely
+3. Run build, tests, lint
+4. Create PR targeting {SOURCE_BRANCH}
+5. Report results with stats and confidence score
 
 Work autonomously. Create a mergeable PR.
 ```
 
 **Agent settings:**
-- `context: fork` - Isolated context
-- `agent: shipkit-implement-independently` - Uses dedicated agent persona
+- `agent: shipkit-implement-independently` - Uses dedicated agent persona with `isolation: worktree`
 - Background execution if desired
 
-### Step 5: Receive Results
+### Step 4: Receive Results
 
 Agent returns structured result:
 ```
@@ -171,7 +146,7 @@ Agent returns structured result:
 }
 ```
 
-### Step 6: Present Merge Decision
+### Step 5: Present Merge Decision
 
 Display to user:
 
@@ -199,35 +174,22 @@ All tests pass, implementation matches spec scope.
 [Yes, squash merge] [Yes, merge commit] [Review PR first] [Skip - keep for later]
 ```
 
-### Step 7: Execute User Decision
+### Step 6: Execute User Decision
 
 **If merge approved:**
 ```bash
 gh pr merge {pr_number} --squash --delete-branch
-
-# Cleanup worktree
-git worktree remove ".shipkit/worktrees/{task_slug}"
 ```
+
+CC automatically cleans up the worktree when the agent exits.
 
 **If review/skip:**
 ```
-Worktree preserved at: .shipkit/worktrees/{task_slug}
 PR available at: {pr_url}
 
 To merge later: gh pr merge {pr_number} --squash
-To cleanup: /shipkit-cleanup-worktrees
+To cleanup stale worktrees: /shipkit-cleanup-worktrees
 ```
-
----
-
-## Worktree Management
-
-**Location:** `.shipkit/worktrees/{task-slug}/`
-
-**Naming:**
-- Task slug derived from spec filename or task description
-- Sanitized: lowercase, hyphens, no special chars
-- Examples: `login-form`, `user-avatar-upload`, `api-refactor`
 
 **Branch naming:** `impl/{task-slug}`
 

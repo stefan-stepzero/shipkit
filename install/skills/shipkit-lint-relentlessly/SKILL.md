@@ -1,13 +1,7 @@
 ---
 name: shipkit-lint-relentlessly
-description: Fix lint/format errors relentlessly until clean. Use for code cleanup, PR prep, style fixes.
+description: Fix lint and formatting errors relentlessly until clean — keeps running linter and fixing issues in a loop. Use for code cleanup, PR prep, style fixes, or when you need to make lint pass.
 argument-hint: "[task] [--max N]"
-triggers:
-  - lint relentlessly
-  - fix all lint errors
-  - clean up code style
-  - fix formatting
-  - make lint pass
 allowed-tools:
   - Read
   - Write
@@ -58,6 +52,8 @@ The user invokes this skill and walks away. Come back to either success or a cle
 ---
 
 ## Arguments
+
+User input arrives via `$ARGUMENTS` (e.g. `/shipkit-lint-relentlessly fix src/components only --max 5`).
 
 ```
 /shipkit-lint-relentlessly [task] [--max N]

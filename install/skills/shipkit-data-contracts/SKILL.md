@@ -1,6 +1,7 @@
 ---
 name: shipkit-data-contracts
 description: "Use when validating data shapes across layers or checking type alignment. Triggers: 'validate contracts', 'check types', 'data shape mismatch'."
+context: fork
 ---
 
 # shipkit-data-contracts - Entity-Relationship & Validation Contract Manager

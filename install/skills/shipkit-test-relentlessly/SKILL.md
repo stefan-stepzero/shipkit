@@ -1,13 +1,7 @@
 ---
 name: shipkit-test-relentlessly
-description: Run tests relentlessly until all pass. Use for TDD, fixing test failures, ensuring green builds.
+description: Run tests relentlessly until all pass — keeps fixing failing tests in a loop until green. Use for TDD, fixing test failures, ensuring green builds, or when you need to make tests pass.
 argument-hint: "[task] [--max N]"
-triggers:
-  - test relentlessly
-  - keep testing until green
-  - fix all failing tests
-  - make tests pass
-  - TDD this
 allowed-tools:
   - Read
   - Write
@@ -57,6 +51,8 @@ The user invokes this skill and walks away. Come back to either success or a cle
 ---
 
 ## Arguments
+
+User input arrives via `$ARGUMENTS` (e.g. `/shipkit-test-relentlessly implement UserService --max 15`).
 
 ```
 /shipkit-test-relentlessly [task] [--max N]

@@ -1,11 +1,6 @@
 ---
 name: shipkit-cleanup-worktrees
-description: List and clean up stale implementation worktrees. Shows PR status and age for each worktree.
-triggers:
-  - cleanup worktrees
-  - clean up worktrees
-  - remove old worktrees
-  - worktree cleanup
+description: List and clean up stale implementation worktrees created by /shipkit-implement-independently. Shows PR status and age for each worktree. Use when worktrees accumulate and need cleanup.
 allowed-tools:
   - Read
   - Glob

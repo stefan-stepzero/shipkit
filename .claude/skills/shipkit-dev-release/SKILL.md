@@ -215,10 +215,8 @@ If `--dry-run`: Skip steps 7-8, just report what would happen.
 - `/shipkit-dev-review` — Design review should pass first
   - **Trigger**: Review verdict is PASS
   - **Why**: Don't release unreviewed changes
-- `/shipkit-framework-integrity` — Structural validation
+- `/shipkit-framework-integrity` — Structural and skill validation
   - **Trigger**: Called automatically in Step 2
-- `/shipkit-validate-lite-skill` — Skill validation
-  - **Trigger**: Called if specific skills changed
 
 ### After This Skill
 - GitHub release — user creates release notes on GitHub

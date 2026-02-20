@@ -68,7 +68,7 @@ argument-hint: "<feature-name> [--template skill|refactor|review|release|self-im
 1. A writes SKILL.md → Gate: file exists, frontmatter valid
 2. B updates integration files → Gate: 7-file checklist passes
 3. Reviewer validates → Gate: review verdict PASS
-4. Lead runs `/shipkit-validate-lite-skill` + `/shipkit-framework-integrity`
+4. Lead runs `/shipkit-framework-integrity`
 
 ---
 
@@ -246,9 +246,7 @@ When all tasks complete:
 - `/shipkit-dev-release` — Release if review passes
 
 ### During Execution (by teammates)
-- `/shipkit-create-lite-skill` — Implementers creating new skills
-- `/shipkit-validate-lite-skill` — Validation during implementation
-- `/shipkit-framework-integrity` — Final validation
+- `/shipkit-framework-integrity` — Validation during and after implementation
 - `/shipkit-scout`, `/shipkit-analyst`, `/shipkit-ideator` — Self-improvement template
 
 ---

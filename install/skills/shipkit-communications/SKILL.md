@@ -1,6 +1,7 @@
 ---
 name: shipkit-communications
 description: "Use when user wants to visualize or present shipkit content as HTML. Triggers: 'create presentation', 'visualize this', 'HTML report'."
+context: fork
 ---
 
 # shipkit-communications - Visual HTML Reports

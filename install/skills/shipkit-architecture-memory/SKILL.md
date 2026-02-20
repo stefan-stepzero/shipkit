@@ -2,6 +2,7 @@
 name: shipkit-architecture-memory
 description: "Use when making or documenting an architectural decision, technology choice, or design pattern. Triggers: 'log decision', 'why did we choose', 'architecture choice'."
 argument-hint: "<decision to log>"
+context: fork
 agent: shipkit-architect-agent
 ---
 

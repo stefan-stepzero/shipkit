@@ -1,13 +1,8 @@
 ---
 name: shipkit-standby
-description: AFK daemon mode. Polls Mission Control for commands with exponential backoff. Activate before going AFK.
+description: AFK daemon mode — polls for commands with exponential backoff while you're away. Use when going AFK and want Claude to stay active waiting for commands.
 argument-hint: "[--max N]"
-triggers:
-  - standby
-  - standby mode
-  - go afk
-  - daemon mode
-  - wait for commands
+disable-model-invocation: true
 allowed-tools:
   - Read
   - Write

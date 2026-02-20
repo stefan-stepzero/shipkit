@@ -2,6 +2,7 @@
 name: shipkit-get-mcps
 description: Discover and install MCP servers for enhanced Claude capabilities
 argument-hint: "<search query>"
+disable-model-invocation: true
 allowed-tools:
   - Bash
   - Read

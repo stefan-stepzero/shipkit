@@ -907,7 +907,7 @@ This runs up to 3 iterations of check-fix-recheck. Combines with `--fix` for aut
 
 ### Before This Skill
 - After refactoring skills or removing files
-- After running `shipkit-create-lite-skill` (verify integration)
+- After adding/removing skills or agents
 - Before `git push` to main branch
 
 ### After This Skill
@@ -916,8 +916,8 @@ This runs up to 3 iterations of check-fix-recheck. Combines with `--fix` for aut
 - Proceed with release/commit
 
 ### Related Skills
-- `shipkit-validate-lite-skill` — Validates single skill quality (complementary)
-- `shipkit-create-lite-skill` — Creates new skills (run integrity after to verify)
+- `shipkit-dev-spec` → `shipkit-dev-plan` — Design and plan new skills/changes
+- `shipkit-dev-review` — Reviews changes for quality after implementation
 
 ---
 

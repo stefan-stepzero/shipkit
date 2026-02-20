@@ -44,6 +44,14 @@ agent: shipkit-researcher-agent
 
 ---
 
+## Arguments
+
+If `$ARGUMENTS` is provided (e.g. `/shipkit-feedback-bug The login button doesn't work on mobile`), treat it as the feedback input. Skip the "paste your feedback" prompt in Step 1 and proceed directly to parsing and categorization.
+
+If `$ARGUMENTS` is empty, proceed normally — ask the user to provide feedback first.
+
+---
+
 ## Process Overview
 
 ```

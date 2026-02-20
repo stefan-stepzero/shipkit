@@ -48,6 +48,14 @@ agent: shipkit-product-owner-agent
 
 ---
 
+## Arguments
+
+If `$ARGUMENTS` is provided (e.g. `/shipkit-spec user login flow`), use it as the initial feature description. Skip Question 1 (Feature Type prompt) and infer the type from the description. Proceed directly to deeper clarifying questions.
+
+If `$ARGUMENTS` is empty, proceed normally from Step 1.
+
+---
+
 ## Process
 
 ### Step 1: Understand the Feature

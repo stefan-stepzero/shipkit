@@ -94,7 +94,6 @@ Organize tasks into phases with gates:
 - Gate: "All 7-file integration points updated"
 
 **Phase 3 — Validation**:
-- Run `/shipkit-validate-lite-skill` (for skill changes)
 - Run `/shipkit-framework-integrity` (for any change)
 - Depends on Phase 2
 - Gate: "Zero errors from validation"
@@ -120,7 +119,7 @@ For each task:
   "ownershipCluster": "A",
   "dependsOn": [],
   "acceptanceCriteria": ["AC-1", "AC-2"],
-  "skills": ["shipkit-create-lite-skill"],
+  "skills": [],
   "estimatedEffort": "medium"
 }
 ```
@@ -218,8 +217,7 @@ Write `.claude/plans/{feature}.json`:
 - Gate: 7-file integration complete
 
 ### Phase 3: Validation
-- 3.1: Run validate-lite-skill
-- 3.2: Run framework-integrity
+- 3.1: Run framework-integrity
 - Gate: Zero errors
 
 **Team**: 2 implementers (Sonnet) + 1 reviewer (Opus)

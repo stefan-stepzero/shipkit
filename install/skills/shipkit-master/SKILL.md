@@ -1,6 +1,7 @@
 ---
 name: shipkit-master
 description: Orchestrator that manages context loading at session start and routes user requests to appropriate shipkit skills. Auto-loaded via session-start hook.
+disable-model-invocation: true
 ---
 
 # shipkit-master - Lightweight Orchestration & Routing

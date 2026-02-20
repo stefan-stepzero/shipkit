@@ -1,13 +1,7 @@
 ---
 name: shipkit-team
-description: Create an agent team from an implementation plan to build features in parallel. Reads plan.json, decomposes tasks by file ownership, spawns implementer and reviewer teammates with quality gates. Use after /shipkit-plan when ready to implement.
+description: Create an agent team from an implementation plan to build features in parallel. Reads plan.json, decomposes tasks by file ownership, spawns implementer and reviewer teammates with quality gates. Use when ready to implement a plan with parallel team execution.
 argument-hint: "<plan-file-path>"
-triggers:
-  - create a team
-  - team implement
-  - implement with a team
-  - build this with a team
-  - parallel team implementation
 allowed-tools:
   - Read
   - Write
@@ -35,6 +29,19 @@ Create an agent team from a Shipkit plan to implement features in parallel with 
 - Plan exists in `.shipkit/plans/todo/{feature}.json` (run `/shipkit-plan` first)
 - Spec exists in `.shipkit/specs/todo/{feature}.json` (run `/shipkit-spec` first)
 - Agent Teams enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` in settings or env)
+
+---
+
+## Arguments
+
+If `$ARGUMENTS` is provided (e.g. `/shipkit-team recipe-sharing`), use it as the plan name or path. Try to read:
+1. `$ARGUMENTS` directly (if it contains `/`)
+2. `.shipkit/plans/todo/$ARGUMENTS.json`
+3. `.shipkit/plans/active/$ARGUMENTS.json`
+
+If found, skip plan selection and proceed to Step 2. If not found, fall back to listing available plans.
+
+If `$ARGUMENTS` is empty, proceed normally from Step 1.
 
 ---
 

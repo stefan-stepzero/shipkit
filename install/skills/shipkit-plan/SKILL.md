@@ -43,6 +43,14 @@ agent: shipkit-architect-agent
 
 ---
 
+## Arguments
+
+If `$ARGUMENTS` is provided (e.g. `/shipkit-plan recipe-sharing`), use it as the spec name. Try to read `.shipkit/specs/todo/$ARGUMENTS.json` or `.shipkit/specs/active/$ARGUMENTS.json`. If found, skip spec selection and proceed to Step 1 Question 2 (Plan Detail). If not found, fall back to listing available specs.
+
+If `$ARGUMENTS` is empty, proceed normally from Step 1.
+
+---
+
 ## Process
 
 **Subagent Principle**: Use Explore subagents for codebase scanning and verification tasks. They're faster, use less context, and return focused results. See Steps 2.7 and 3 for specific subagent prompts.

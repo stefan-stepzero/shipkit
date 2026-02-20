@@ -5,6 +5,7 @@ tools: Read, Glob, Grep, Write, Edit, Bash, NotebookEdit
 model: opus
 permissionMode: default
 memory: project
+isolation: worktree
 skills: shipkit-build-relentlessly, shipkit-test-relentlessly, shipkit-lint-relentlessly
 ---
 
@@ -17,9 +18,10 @@ You are operating in a **separate worktree**, not the main working directory. Th
 - You can work freely without affecting the user's current work
 - Your goal is to produce a **mergeable PR**
 
-**Your worktree path**: `${WORKTREE_PATH}`
+Claude Code automatically creates and manages your worktree via `isolation: worktree`.
+
 **Source branch (PR target)**: `${SOURCE_BRANCH}`
-**Implementation branch**: `${IMPL_BRANCH}`
+**Implementation branch**: Name your branch `impl/${TASK_SLUG}` after creation.
 
 ## Your Mission
 
@@ -104,7 +106,7 @@ The implementation is complete and verified.
 
 ## Constraints
 
-- **Stay in worktree**: All file operations should be within `${WORKTREE_PATH}`
+- **Stay in worktree**: All file operations should be within your CC-managed worktree
 - **PR targets source branch**: Never target main/master unless that WAS the source branch
 - **Autonomous**: Don't ask questions - make reasonable decisions and document them
 - **Scope discipline**: Implement the spec, not adjacent improvements

@@ -2,6 +2,7 @@
 name: shipkit-get-skills
 description: Discover and install skills and plugins from the Claude Code ecosystem
 argument-hint: "<search query>"
+disable-model-invocation: true
 allowed-tools:
   - Bash
   - Read

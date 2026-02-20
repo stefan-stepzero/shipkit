@@ -6,6 +6,7 @@ disallowedTools: Write, Edit, Bash, NotebookEdit
 model: opus
 permissionMode: default
 memory: project
+maxTurns: 30
 skills: shipkit-thinking-partner
 ---
 

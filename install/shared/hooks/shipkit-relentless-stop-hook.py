@@ -26,7 +26,6 @@ Old-format files (no sid8) are still supported as fallback.
 
 Loop mode state files (dev skills):
 - framework-integrity-loop.{sid8}.local.md  (framework-integrity --loop N)
-- validate-skill-loop.{sid8}.local.md       (validate-lite-skill --loop N)
 
 The hook does NOT run commands - it just manages iteration and blocks/allows stop.
 """
@@ -93,6 +92,7 @@ def main():
 
     session_id = hook_input.get("session_id", "unknown")
     sid8 = session_id[:8] if session_id != "unknown" else "unknown"
+    last_message = hook_input.get("last_assistant_message", "")
 
     # Find project directory
     project_dir = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
@@ -141,6 +141,12 @@ def main():
         # Disabled - allow stop without cleanup (user can re-enable)
         sys.exit(0)
 
+    # Check if Claude's last message indicates it explicitly deleted the state file
+    # (completion signal). This catches cases where the file was deleted but
+    # a race condition means it was re-read before deletion completed.
+    if last_message and state_file and not state_file.exists():
+        sys.exit(0)
+
     # Check iteration limit
     iteration = state.get("iteration", 1)
     max_iterations = state.get("max_iterations", 10)
@@ -173,6 +179,13 @@ def main():
 
     is_loop = "-loop." in state_file.name and state_file.name.endswith(".local.md")
 
+    # Truncate last message for context (avoid bloating the reason)
+    last_msg_snippet = ""
+    if last_message:
+        last_msg_snippet = last_message[:200].strip()
+        if len(last_message) > 200:
+            last_msg_snippet += "..."
+
     if is_loop:
         reason = build_loop_reason(
             skill=skill,
@@ -198,7 +211,8 @@ def main():
             max_iterations=max_iterations,
             task=task,
             completion_promise=completion_promise,
-            state_filename=state_file.name
+            state_filename=state_file.name,
+            last_message=last_msg_snippet
         )
 
     # Block the stop
@@ -275,7 +289,7 @@ def cleanup_state_file(state_file: Path):
 
 def build_relentless_reason(skill: str, iteration: int, max_iterations: int,
                             task: str, completion_promise: str,
-                            state_filename: str) -> str:
+                            state_filename: str, last_message: str = "") -> str:
     """Build the reason message for relentless skills (build, test, lint, verify)."""
 
     skill_display_names = {
@@ -286,6 +300,13 @@ def build_relentless_reason(skill: str, iteration: int, max_iterations: int,
     }
     skill_display = skill_display_names.get(skill, skill.replace("-", " ").title())
 
+    last_msg_section = ""
+    if last_message:
+        last_msg_section = f"""
+**Your Last Message (for context):**
+{last_message}
+"""
+
     return f"""**Relentless Mode: {skill_display} - Iteration {iteration}/{max_iterations}**
 
 You are in relentless mode. The completion promise has NOT been met yet.
@@ -295,7 +316,7 @@ You are in relentless mode. The completion promise has NOT been met yet.
 
 **Your Task:**
 {task}
-
+{last_msg_section}
 **Instructions:**
 1. Run the appropriate command to check current status
 2. Analyze any errors or failures

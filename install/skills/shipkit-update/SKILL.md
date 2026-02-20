@@ -1,11 +1,8 @@
 ---
 name: shipkit-update
 description: Install or update Shipkit from GitHub. Detects existing installations, archives them safely, and intelligently merges user content with new version.
-user_invocable: true
-arguments:
-  - name: repo
-    description: GitHub repo (default: stefan-stepzero/shipkit or configured repo)
-    required: false
+disable-model-invocation: true
+argument-hint: "[repo-url]"
 ---
 
 # shipkit-update - Install & Update Shipkit

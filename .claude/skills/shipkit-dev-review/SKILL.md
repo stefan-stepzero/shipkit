@@ -19,8 +19,7 @@ argument-hint: "[--scope recent|branch|skill:<name>|all] [--strict]"
 
 | Tool | What it checks |
 |------|---------------|
-| `shipkit-validate-lite-skill` | Structural: frontmatter, sections, 7-file integration |
-| `shipkit-framework-integrity` | Consistency: manifest sync, broken refs, installer |
+| `shipkit-framework-integrity` | Structural + consistency: frontmatter, 7-file integration, manifest sync, broken refs, installer |
 | **`shipkit-dev-review`** | **Design: is this the RIGHT thing built the RIGHT way?** |
 
 ---
@@ -208,7 +207,7 @@ Present findings inline (not a JSON file — reviews are transient):
 
 ### Before This Skill
 - Implementation — changes must exist to review
-- `/shipkit-validate-lite-skill` — structural checks should pass first
+- `/shipkit-framework-integrity` — structural checks should pass first
   - **Why**: Don't waste design review time on structurally broken skills
 
 ### After This Skill
