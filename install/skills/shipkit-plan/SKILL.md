@@ -45,7 +45,7 @@ agent: shipkit-architect-agent
 
 ## Arguments
 
-If `$ARGUMENTS` is provided (e.g. `/shipkit-plan recipe-sharing`), use it as the spec name. Try to read `.shipkit/specs/todo/$ARGUMENTS.json` or `.shipkit/specs/active/$ARGUMENTS.json`. If found, skip spec selection and proceed to Step 1 Question 2 (Plan Detail). If not found, fall back to listing available specs.
+If `$ARGUMENTS` is provided (e.g. `/shipkit-plan recipe-sharing`), use it as the spec name. Try to read `.shipkit/specs/todo/$ARGUMENTS.json` or `.shipkit/specs/active/$ARGUMENTS.json`. If found, skip spec selection and proceed to Step 1 Question 2 (Plan Detail). If not found, tell the user: "No spec found matching '$ARGUMENTS'. Available specs:" then list what exists and let them choose.
 
 If `$ARGUMENTS` is empty, proceed normally from Step 1.
 

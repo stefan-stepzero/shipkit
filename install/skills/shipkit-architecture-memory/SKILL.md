@@ -516,6 +516,7 @@ Copy and track:
   - **Strategy**: READ-MODIFY-WRITE (read existing JSON, add/update entries, write back)
   - **Rationale**: JSON graph structure requires full-file writes; decision history is preserved by never removing entries from the `decisions` array
   - **Process**: Read existing file -> Parse JSON -> Add/update entries -> Recompute summary -> Write full file back
+  - **Note**: This skill uses `context: fork` — conversation context is forked but filesystem writes go to the real project. Always re-read `architecture.json` immediately before writing to avoid stale data.
   - **File size**: Grows slowly (decisions are infrequent); nodes/edges stay relatively stable
 
 **Never modifies**:
