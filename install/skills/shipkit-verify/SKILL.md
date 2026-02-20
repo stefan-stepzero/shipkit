@@ -704,6 +704,9 @@ None. This is a read-only reporting tool.
 
 This skill provides a **fast single-pass review** — good for daily use.
 
+For **visual UI verification**, use the dedicated visual QA skill:
+- `/shipkit-qa-visual` — maintains UI goals (pages × personas), generates Playwright tests, runs headlessly
+
 For **thorough multi-agent review**, two plugins are available:
 
 | Plugin | Agents | Best For |

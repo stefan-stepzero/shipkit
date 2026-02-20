@@ -245,13 +245,13 @@ Location: `install/skills/`
 
 **Implementation:** `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`
 
-**Execution:** `shipkit-build-relentlessly`, `shipkit-test-relentlessly`, `shipkit-lint-relentlessly`, `shipkit-test-cases`, `shipkit-implement-independently`, `shipkit-cleanup-worktrees`
+**Execution:** `shipkit-build-relentlessly`, `shipkit-test-relentlessly`, `shipkit-lint-relentlessly`, `shipkit-test-cases`, `shipkit-implement-independently`, `shipkit-team`, `shipkit-cleanup-worktrees`
 
-**Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-scale-ready`, `shipkit-prompt-audit`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
+**Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-scale-ready`, `shipkit-prompt-audit`, `shipkit-semantic-qa`, `shipkit-qa-visual`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
 
 **System:** `shipkit-detect` (auto-triggered), `shipkit-update`, `shipkit-standby`, `shipkit-get-skills`, `shipkit-get-mcps`
 
-**Total:** 36 skills
+**Total:** 39 skills
 
 ### Agents
 Location: `install/agents/`

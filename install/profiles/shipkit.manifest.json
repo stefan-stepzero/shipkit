@@ -78,7 +78,8 @@
         {"name": "shipkit-user-instructions", "desc": "Track manual tasks for user"},
         {"name": "shipkit-communications", "desc": "Create visual HTML reports"},
         {"name": "shipkit-prompt-audit", "desc": "Audit LLM prompt pipeline architecture"},
-        {"name": "shipkit-semantic-qa", "desc": "Semantic QA for API/LLM outputs and UI screenshots"}
+        {"name": "shipkit-semantic-qa", "desc": "Semantic QA for API/LLM outputs and UI screenshots"},
+        {"name": "shipkit-qa-visual", "desc": "Visual QA with Playwright: UI goals + autonomous test generation"}
       ],
       "System": [
         {"name": "shipkit-update", "desc": "Install or update Shipkit from GitHub"},

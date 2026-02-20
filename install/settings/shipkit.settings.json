@@ -132,6 +132,7 @@
       "Skill(shipkit-standby)",
       "Skill(shipkit-goals)",
       "Skill(shipkit-semantic-qa)",
+      "Skill(shipkit-qa-visual)",
       "Skill(shipkit-team)"
     ],
 
