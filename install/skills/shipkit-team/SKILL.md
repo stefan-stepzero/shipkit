@@ -433,13 +433,63 @@ Write `.shipkit/team-state.local.json` with pipeline-specific fields:
 }
 ```
 
-### Resume Behavior
+### Artifact-Aware Startup
 
-On startup, read `.shipkit/` for existing artifacts. For each phase, if all gate artifacts exist, mark phase as completed. Start from first incomplete phase.
+On pipeline startup, scan `.shipkit/` before doing anything else. Map existing artifacts to phases and start from the first incomplete phase — never redo work that already exists.
+
+#### Artifact → Phase Mapping
+
+| Phase | Required Artifacts | Complete When |
+|-------|--------------------|---------------|
+| 1 Discovery | `why.json`, `goals.json`, `product-discovery.json` | All 3 exist and non-empty. `stack.json` optional (parallel). |
+| 2 Product Definition | `product-definition.json` | Exists with `features[]` array. |
+| 3 Specification | `specs/todo/*.json` or `specs/active/*.json` | Spec count ≥ feature count from product-definition. |
+| 4 Architecture | `architecture.json` | Exists with at least one entry. `contracts.json` optional. |
+| 5 Planning | `plans/todo/*.json` or `plans/active/*.json` | Plan count ≥ spec count. |
+| 6 Implementation | (code is the artifact) | All features built, tests pass, verify passes. |
+
+#### Scan Logic
 
 ```
-Resuming pipeline from Phase {N} ({name}) — Phases 1-{N-1} complete.
+1. Read .shipkit/ directory listing
+2. For each phase 1→5, check if required artifacts exist
+3. For Phase 3: count spec files, compare to product-definition.features.length
+4. For Phase 5: count plan files, compare to spec count
+5. Find earliest phase with missing or incomplete artifacts
+6. Mark all prior phases as "completed" in pipeline state
 ```
+
+#### Partial Phase Detection
+
+Phase 3 (Specification) and Phase 5 (Planning) can be **partially complete** — some specs or plans exist but not all. When detected:
+- Count existing vs required
+- Only generate the missing items
+- Display which items are done and which remain
+
+#### Startup Display
+
+Always show the scan result before proceeding:
+
+```
+Pipeline Artifact Scan:
+  ✅ Phase 1 (Discovery): why.json, goals.json, product-discovery.json, stack.json
+  ✅ Phase 2 (Product Definition): product-definition.json (12 features)
+  ⚠️ Phase 3 (Specification): 3/12 specs written — 9 remaining
+  ❌ Phase 4 (Architecture): not started
+  ❌ Phase 5 (Planning): not started
+  ❌ Phase 6 (Implementation): not started
+
+Starting from Phase 3 — completing 9 remaining specs.
+Proceed?
+```
+
+Status icons:
+- ✅ = phase complete (all artifacts present and valid)
+- ⚠️ = phase partially complete (some artifacts exist)
+- ❌ = phase not started (no artifacts)
+
+If ALL phases are complete (rare — means artifacts exist but code wasn't built), start at Phase 6.
+If NO artifacts exist, start at Phase 1 (normal greenfield flow).
 
 ### Gate Logic
 
@@ -459,18 +509,23 @@ Resuming pipeline from Phase {N} ({name}) — Phases 1-{N-1} complete.
 
 ```
 1. Parse $ARGUMENTS for product goal, --yolo flag
-2. Write pipeline team state
-3. Check existing artifacts → skip completed phases
-4. For each pending phase:
+2. Run artifact scan (see Artifact-Aware Startup above)
+3. Display scan results to user
+4. If scan found completed phases: "Starting from Phase {N}. Proceed?"
+   - In YOLO mode: auto-proceed
+   - In default mode: wait for user confirmation
+5. Write pipeline team state (with completed phases pre-marked)
+6. For each pending/partial phase:
    a. Spawn appropriate agent(s) with skills
-   b. Pass product goal + all existing artifacts as context
-   c. Wait for phase completion
-   d. Verify gate condition
-   e. If default mode: present artifacts, wait for confirmation
-   f. If YOLO mode: auto-proceed (unless failure)
-   g. Update team state
-5. After Phase 6: report full summary
-6. Cleanup: delete team state, move plans to shipped/
+   b. Pass product goal + ALL existing artifacts as context (including from completed phases)
+   c. For partial phases: pass list of already-completed items so agent skips them
+   d. Wait for phase completion
+   e. Verify gate condition
+   f. If default mode: present artifacts, wait for confirmation
+   g. If YOLO mode: auto-proceed (unless failure)
+   h. Update team state
+7. After Phase 6: report full summary
+8. Cleanup: delete team state, move plans to shipped/
 ```
 
 ### Phase 6 Team Composition
