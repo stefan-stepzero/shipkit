@@ -32,10 +32,10 @@ agent: shipkit-architect-agent
 - Spec exists: `.shipkit/specs/todo/[feature-name].json` or `.shipkit/specs/active/[feature-name].json`
 - Stack defined: `.shipkit/stack.json` (from shipkit-project-context)
 
-**UI-Heavy Feature Check** (CRITICAL):
-- If spec describes significant UI/UX → Prototype MUST exist before planning
-- Check: `.shipkit-mockups/[feature-name]/` OR spec contains `## UI/UX Patterns` section
-- See "Step 1.5: UI-Heavy Gate" below
+**UI-Heavy Feature Check**:
+- If spec describes significant UI/UX, check if architecture.json has UI patterns or stack.json has a frontend framework
+- If neither exists, warn: "This feature has significant UI — consider running `/shipkit-architecture-memory` first to define UI patterns"
+- Do NOT block on prototyping — proceed with planning
 
 **Optional but helpful**:
 - Architecture decisions: `.shipkit/architecture.json`
@@ -64,9 +64,13 @@ If `$ARGUMENTS` is empty, proceed normally from Step 1.
 ls .shipkit/specs/todo/*.json .shipkit/specs/active/*.json 2>/dev/null || echo "No specs found"
 ```
 
-**Then use AskUserQuestion tool:**
+**Auto-selection logic** (skip interactive questions when possible):
+1. If `$ARGUMENTS` matched a spec → already selected, skip to Question 2
+2. If only ONE pending spec exists → auto-select it, announce: "Auto-selecting {spec name} (only pending spec)"
+3. If `.shipkit/product-definition.json` exists → check for next unplanned feature in dependency order, auto-select its spec
+4. Otherwise → ask Question 1
 
-**Question 1 - Spec Selection:** (if multiple specs exist)
+**Question 1 - Spec Selection:** (only if multiple specs and no auto-selection)
 ```
 header: "Spec"
 question: "Which spec are you planning?"
@@ -98,11 +102,8 @@ options:
 **UI-heavy indicators** (if 3+ found): form, modal, table, grid, dashboard, navigation, animation, drag/drop, chart, upload
 
 **Decision logic:**
-- UI-heavy + No prototype → BLOCK - Require prototype first
-- UI-heavy + Prototype exists → Proceed to Step 2
+- UI-heavy → Note this in the plan as a consideration (suggest user review UI approach before implementation)
 - Not UI-heavy → Proceed to Step 2
-
-**If BLOCKED**: Suggest `/shipkit-prototyping` or let user skip with acknowledgment of risk.
 
 ---
 
@@ -590,7 +591,7 @@ Copy and track:
 - `/shipkit-spec` - Creates feature specification (required)
 - `/shipkit-project-context` - Generates stack.json, schema.json
 - `/shipkit-architecture-memory` - Logs past decisions
-- `/shipkit-prototyping` - Creates UI prototypes (if UI-heavy)
+- `/shipkit-product-definition` - Feature portfolio with goal mapping
 
 ### After This Skill
 - `implement (no skill needed)` - Executes the plan

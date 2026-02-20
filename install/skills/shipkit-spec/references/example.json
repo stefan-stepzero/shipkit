@@ -291,7 +291,6 @@
 
   "nextSteps": [
     "/shipkit-plan to create implementation plan with task breakdown",
-    "/shipkit-prototyping to create UI mockup of share modal (optional)",
     "/shipkit-architecture-memory to log share link token strategy decision"
   ]
 }

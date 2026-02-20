@@ -18,9 +18,8 @@ Complete reference for all 23 Shipkit skills.
 | | `shipkit-product-discovery` | Personas and journeys |
 | | `shipkit-spec` | Feature specification |
 | | `shipkit-plan` | Implementation planning |
-| | `shipkit-prototyping` | Rapid UI mockups |
-| | `shipkit-prototype-to-spec` | Extract learnings |
-| **Implementation** | `shipkit-architecture-memory` | Decision logging |
+| | `shipkit-product-definition` | Feature portfolio from goals |
+| **Implementation** | `shipkit-architecture-memory` | Architecture decisions & proposals |
 | | `shipkit-data-contracts` | Type definitions |
 | | `shipkit-integration-docs` | External API patterns |
 | **Quality** | `shipkit-verify` | Quality verification |
@@ -187,31 +186,17 @@ Suggested: Create a spec with /shipkit-spec
 
 ---
 
-### shipkit-prototyping
+### shipkit-product-definition
 
-**Purpose:** Creates rapid HTML prototypes for UI validation.
-
-**When to use:**
-- Need to validate UI before coding
-- Want quick visual mockup
-- Testing interaction patterns
-
-**Reads:** Spec if exists
-**Writes:** `.shipkit-mockups/*.html`
-
----
-
-### shipkit-prototype-to-spec
-
-**Purpose:** Extracts validated patterns from prototypes into specs.
+**Purpose:** Synthesizes vision artifacts into a feature portfolio mapped to goals with dependency ordering and coverage analysis.
 
 **When to use:**
-- After prototyping session
-- Before deleting prototype
-- Want to preserve learnings
+- After defining goals and personas
+- Need a complete feature portfolio before writing specs
+- Want goal-to-feature traceability
 
-**Reads:** `.shipkit-mockups/*/iterations.md`
-**Writes:** Updates `.shipkit/specs/active/*.json`
+**Reads:** `.shipkit/goals.json`, `.shipkit/product-discovery.json`, `.shipkit/why.json`, `.shipkit/stack.json`
+**Writes:** `.shipkit/product-definition.json`
 
 ---
 
@@ -219,15 +204,16 @@ Suggested: Create a spec with /shipkit-spec
 
 ### shipkit-architecture-memory
 
-**Purpose:** Logs architecture decisions with rationale (append-only).
+**Purpose:** Two modes: (1) Solution Architect — proposes complete architecture from goals, stack, and specs. (2) Decision Logger — logs individual architecture decisions.
 
 **When to use:**
-- Made a significant technical decision
+- Starting a new project (solution architect mode)
+- Made a significant technical decision (decision logger mode)
 - Chose between alternatives
 - Want future sessions to know "why"
 
-**Reads:** Nothing
-**Writes:** `.shipkit/architecture.json` (append)
+**Reads:** `.shipkit/goals.json`, `.shipkit/stack.json`, `.shipkit/specs/`, `.shipkit/architecture.json`
+**Writes:** `.shipkit/architecture.json`
 
 **Entry format:**
 ```markdown

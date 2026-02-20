@@ -54,6 +54,37 @@ agent: shipkit-product-owner-agent
 
 ---
 
+### Step 0b: Propose Mode (Context-Driven)
+
+If `.shipkit/why.json` exists, attempt to propose personas and journeys without asking:
+
+1. Read `.shipkit/why.json` (target audience, problem space, vision)
+2. Read `.shipkit/goals.json` if exists (what outcomes we need)
+3. Read `.shipkit/stack.json` if exists (platform constraints: web, mobile, API)
+4. Based on the target audience and problem space from why.json, propose:
+   - 2-4 personas with key attributes, needs, and pain points
+   - Core user journeys per persona
+   - User stories derived from journeys
+5. Present the proposal:
+   ```
+   Based on your project vision, here are proposed personas:
+
+   1. [Persona Name] — [role/description]
+      Needs: [key needs]
+      Pain points: [frustrations]
+
+   2. [Persona Name] — ...
+
+   Confirm, adjust, or switch to interactive mode?
+   ```
+6. If confirmed → proceed to Step 3 (read context files) with the proposed data, skip Step 1
+7. If adjusted → incorporate changes, proceed to Step 3
+8. If interactive requested → fall through to Step 1
+
+If `.shipkit/why.json` does NOT exist → fall through to Step 1.
+
+---
+
 ### Step 1: Gather Context About Users and Goals
 
 **Use AskUserQuestion tool to gather requirements:**

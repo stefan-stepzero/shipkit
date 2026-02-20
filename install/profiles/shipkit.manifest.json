@@ -44,14 +44,13 @@
         {"name": "shipkit-project-context", "desc": "Scan codebase, detect stack"},
         {"name": "shipkit-project-status", "desc": "Check project health & gaps"},
         {"name": "shipkit-codebase-index", "desc": "Index codebase for navigation"},
-        {"name": "shipkit-goals", "desc": "Capture project goals & priorities"}
+        {"name": "shipkit-goals", "desc": "Capture project goals & priorities"},
+        {"name": "shipkit-product-definition", "desc": "Map goals to features with coverage analysis"}
       ],
       "Spec & Planning": [
         {"name": "shipkit-spec", "desc": "Create feature specifications"},
         {"name": "shipkit-feedback-bug", "desc": "Process feedback into investigated bug specs"},
         {"name": "shipkit-plan", "desc": "Plan implementation steps"},
-        {"name": "shipkit-prototyping", "desc": "Create quick UI mockups"},
-        {"name": "shipkit-prototype-to-spec", "desc": "Extract prototype learnings"},
         {"name": "shipkit-thinking-partner", "desc": "Think through decisions with cognitive frameworks"}
       ],
       "Knowledge & Memory": [

@@ -2,9 +2,9 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**39 skills** organized for streamlined workflow:
+**38 skills** organized for streamlined workflow:
 - **Core Workflow** (5) - Orchestration, status, and context management
-- **Discovery & Planning** (9) - Product discovery, goals, specification, and bug triage
+- **Discovery & Planning** (8) - Product discovery, goals, product definition, specification, and bug triage
 - **Implementation** (3) - Architecture, contracts, and integrations
 - **Execution** (6) - Test case generation, relentless build/test/lint, parallel implementation
 - **Quality & Documentation** (10) - Testing, UX, production readiness, prompt architecture, semantic QA, visual QA, and documentation
@@ -17,7 +17,7 @@ Plus **9 agent personas** that specialize behaviors for different workflow stage
 
 ## What's Inside
 
-### Skills (39 total)
+### Skills (38 total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -28,15 +28,14 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-codebase-index` - Semantic codebase indexing
 - `shipkit-claude-md` - CLAUDE.md management
 
-**Discovery & Planning (9 skills):**
+**Discovery & Planning (8 skills):**
 - `shipkit-product-discovery` - Personas, journeys, user stories
 - `shipkit-why-project` - Strategic vision definition
 - `shipkit-goals` - Project goals, priorities, and success criteria
+- `shipkit-product-definition` - Map goals to features with coverage analysis
 - `shipkit-spec` - Feature specification
 - `shipkit-feedback-bug` - Process feedback into investigated bug specs (5 Whys root cause)
 - `shipkit-plan` - Implementation planning
-- `shipkit-prototyping` - Rapid UI mockups
-- `shipkit-prototype-to-spec` - Extract learnings from prototypes
 - `shipkit-thinking-partner` - Think through decisions with cognitive frameworks
 
 **Implementation (3 skills):**
@@ -103,7 +102,7 @@ Add `-y` for non-interactive mode (uses sensible defaults).
 **Already have Shipkit?** Update with `/shipkit-update`
 
 The installer will:
-- Install all 39 skills
+- Install all 38 skills
 - Set up 9 agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace

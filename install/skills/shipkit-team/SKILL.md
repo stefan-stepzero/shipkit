@@ -258,6 +258,171 @@ After team completion (success or failure):
 
 ---
 
+## Pipeline Template
+
+**Trigger**: `/shipkit-team --template pipeline "Build a [product description]"`
+
+The pipeline template orchestrates the full product development lifecycle — from a single user goal through discovery, definition, specification, architecture, planning, implementation, and verification.
+
+### Pipeline Arguments
+
+- `$ARGUMENTS` must contain `--template pipeline` to activate
+- Everything after `--template pipeline` is the **product goal** (e.g., "Build a learning app with spaced repetition")
+- `--yolo` flag: auto-confirm all artifact gates (autonomous mode)
+- Without `--yolo`: pause at each phase gate for user confirmation (default)
+
+### Pipeline Phases
+
+```
+Phase 0: Setup ──→ Phase 1: Discovery ──→ Phase 2: Product Definition
+    │                    │                        │
+    ▼                    ▼                        ▼
+stack.json          why.json               product-definition.json
+codebase-index.json goals.json             (feature portfolio +
+                    product-discovery.json   goal coverage matrix)
+                         │
+Phase 3: Specification ──→ Phase 4: Architecture ──→ Phase 5: Planning
+    │                          │                         │
+    ▼                          ▼                         ▼
+specs/*.json              architecture.json         plans/*.json
+(one per feature)         (solution architect)      (one per spec)
+                                                        │
+                              Phase 6: Implementation + Verification
+                                  │
+                                  ▼
+                              Code + tests + verify + preflight
+```
+
+### Phase Details
+
+#### Phase 0: Setup
+- **Agent**: Lead (current session)
+- **Skills**: `/shipkit-project-context`, `/shipkit-codebase-index`
+- **Gate**: `stack.json` + `codebase-index.json` exist
+- **Notes**: Fast — reads package.json and scans file structure. Skipped if both artifacts are fresh.
+
+#### Phase 1: Discovery
+- **Agent**: Product Owner (Sonnet)
+- **Skills**: `/shipkit-why-project`, `/shipkit-goals`, `/shipkit-product-discovery`
+- **Gate**: `why.json` + `goals.json` + `product-discovery.json` written and confirmed
+- **Notes**: All three use propose mode. Sequential: why → goals → personas. The product goal from `$ARGUMENTS` is passed as context to each skill.
+
+#### Phase 2: Product Definition
+- **Agent**: Product Owner (Sonnet)
+- **Skills**: `/shipkit-product-definition`
+- **Gate**: `product-definition.json` written and confirmed — feature portfolio with goal coverage matrix
+- **Notes**: **KEY GATE** — This is where the product blueprint is confirmed. All downstream work derives from this artifact. In default mode, always pause here regardless of previous auto-confirms.
+
+#### Phase 3: Specification
+- **Agent**: Product Owner (Opus)
+- **Skills**: `/shipkit-spec` (batch mode from product-definition)
+- **Gate**: All features in `product-definition.json` have specs written
+- **Notes**: Uses Opus for complex spec reasoning. Iterates features in dependency order from `product-definition.json`.
+
+#### Phase 4: Architecture
+- **Agent**: Architect (Sonnet)
+- **Skills**: `/shipkit-architecture-memory --propose` (solution architect mode)
+- **Gate**: `architecture.json` written and confirmed
+- **Notes**: Reads all Phase 0-3 artifacts for informed architecture proposal.
+
+#### Phase 5: Planning
+- **Agent**: Architect (Sonnet)
+- **Skills**: `/shipkit-plan`
+- **Gate**: Plan files for all specs written
+- **Notes**: One plan per spec. Plans produced in dependency order. Each plan reads previous plans as context.
+
+#### Phase 6: Implementation + Verification
+- **Agents**: Implementers (Sonnet, parallel) + Reviewer (Opus)
+- **Skills**: `/shipkit-build-relentlessly`, `/shipkit-test-relentlessly`, `/shipkit-lint-relentlessly`, `/shipkit-verify`, `/shipkit-preflight`
+- **Gate**: All features implemented, tests pass, lint clean, verification passes
+- **Notes**: File ownership from plans. Features implemented in dependency order from product-definition. Verify + preflight run after all features complete.
+
+### Pipeline State
+
+Write `.shipkit/team-state.local.json` with pipeline-specific fields:
+
+```json
+{
+  "template": "pipeline",
+  "productGoal": "Build a learning app with spaced repetition",
+  "mode": "default",
+  "created": "ISO timestamp",
+  "phases": [
+    {"id": 0, "name": "Setup", "status": "completed", "gate": "stack.json + codebase-index.json exist"},
+    {"id": 1, "name": "Discovery", "status": "in_progress", "gate": "why + goals + personas confirmed"},
+    {"id": 2, "name": "Product Definition", "status": "pending", "gate": "product-definition.json confirmed"},
+    {"id": 3, "name": "Specification", "status": "pending", "gate": "All feature specs written"},
+    {"id": 4, "name": "Architecture", "status": "pending", "gate": "architecture.json confirmed"},
+    {"id": 5, "name": "Planning", "status": "pending", "gate": "All plans written"},
+    {"id": 6, "name": "Implementation", "status": "pending", "gate": "All features built + verified"}
+  ],
+  "currentPhase": 1,
+  "gateAutoConfirm": false,
+  "artifacts": {
+    "stack": ".shipkit/stack.json",
+    "codebaseIndex": ".shipkit/codebase-index.json",
+    "why": null,
+    "goals": null,
+    "personas": null,
+    "productDefinition": null,
+    "specs": [],
+    "architecture": null,
+    "plans": []
+  }
+}
+```
+
+### Resume Behavior
+
+On startup, read `.shipkit/` for existing artifacts. For each phase, if all gate artifacts exist, mark phase as completed. Start from first incomplete phase.
+
+```
+Resuming pipeline from Phase {N} ({name}) — Phases 0-{N-1} complete.
+```
+
+### Gate Logic
+
+**Default mode** (`gateAutoConfirm: false`):
+- After each phase completes, present the produced artifacts to the user
+- Wait for confirmation: "Confirm and proceed to Phase {N+1}, or adjust?"
+- User can: confirm, adjust artifacts, switch to YOLO mode, or stop
+
+**YOLO mode** (`gateAutoConfirm: true`):
+- Auto-confirm all artifact gates
+- Only stop on: build/test failures, ambiguity requiring user input, or PR creation
+- User can interrupt at any time and switch to default mode
+
+**Mode switching**: User can say "switch to yolo" or "switch to default" at any gate. Update `gateAutoConfirm` in team state.
+
+### Pipeline Execution Flow
+
+```
+1. Parse $ARGUMENTS for product goal, --yolo flag
+2. Write pipeline team state
+3. Check existing artifacts → skip completed phases
+4. For each pending phase:
+   a. Spawn appropriate agent(s) with skills
+   b. Pass product goal + all existing artifacts as context
+   c. Wait for phase completion
+   d. Verify gate condition
+   e. If default mode: present artifacts, wait for confirmation
+   f. If YOLO mode: auto-proceed (unless failure)
+   g. Update team state
+5. After Phase 6: report full summary
+6. Cleanup: delete team state, move plans to shipped/
+```
+
+### Phase 6 Team Composition
+
+Phase 6 uses the standard team pattern from this skill (Steps 2-8 above):
+1. Read all plans from `.shipkit/plans/todo/`
+2. Derive file ownership clusters from plan tasks
+3. Spawn implementer teammates (one per cluster)
+4. Spawn reviewer teammate
+5. Monitor, gate, and complete per standard team flow
+
+---
+
 ## Context Files
 
 **Reads:**

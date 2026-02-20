@@ -214,7 +214,7 @@ fi
 
 **Skill categories for analysis**:
 - **Discovery**: shipkit-product-discovery, shipkit-why-project, shipkit-project-context
-- **Planning**: shipkit-spec, shipkit-plan, shipkit-prototyping
+- **Planning**: shipkit-spec, shipkit-plan, shipkit-product-definition
 - **Implementation**: shipkit-architecture-memory, shipkit-data-contracts, shipkit-integration-docs
 - **Quality**: shipkit-verify, shipkit-preflight, shipkit-ux-audit
 

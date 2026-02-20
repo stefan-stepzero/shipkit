@@ -23,8 +23,7 @@
       "Spec & Planning": [
         {"name": "shipkit-spec", "desc": "Create feature specifications"},
         {"name": "shipkit-plan", "desc": "Plan implementation steps"},
-        {"name": "shipkit-prototyping", "desc": "Create quick UI mockups"},
-        {"name": "shipkit-prototype-to-spec", "desc": "Extract prototype learnings"}
+        {"name": "shipkit-product-definition", "desc": "Map goals to features with coverage analysis"}
       ],
       "Knowledge": [
         {"name": "shipkit-architecture-memory", "desc": "Log architecture decisions"},

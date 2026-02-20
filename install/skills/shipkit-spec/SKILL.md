@@ -52,11 +52,64 @@ agent: shipkit-product-owner-agent
 
 If `$ARGUMENTS` is provided (e.g. `/shipkit-spec user login flow`), use it as the initial feature description. Skip Question 1 (Feature Type prompt) and infer the type from the description. Proceed directly to deeper clarifying questions.
 
-If `$ARGUMENTS` is empty, proceed normally from Step 1.
+If `$ARGUMENTS` is empty, proceed normally from Step -1.
 
 ---
 
 ## Process
+
+### Step -1: Batch Detection
+
+Check if a product definition exists with features to spec:
+
+1. Read `.shipkit/product-definition.json` (if exists)
+2. If found, check for features where `status` is `"todo"` (no spec written yet)
+3. If unspecced features exist:
+   - Sort by `dependencyOrder` field
+   - Announce: "Product definition found. {N} features need specs. Starting with: **{first feature name}** — {description}"
+   - For the first unspecced feature, proceed to Step 0 (Propose Mode) with the feature's context (goalsServed, personasServed, description, dependsOn)
+   - After writing the spec, update `product-definition.json`: set `specPath` to the written file path and `status` to `"specced"`
+   - Ask: "Continue to next feature?" (in pipeline/YOLO mode, auto-continue)
+   - Repeat for each unspecced feature
+4. If no `product-definition.json` or no unspecced features: proceed to Step 0
+
+---
+
+### Step 0: Propose Mode (Context-Driven)
+
+Check if sufficient context exists to propose a spec without interactive questions:
+
+**Context sufficiency**: `product-definition.json` exists for this feature, OR (`goals.json` AND `why.json` exist)
+
+1. Read available context in parallel:
+   - `.shipkit/product-definition.json` — feature description, goals served, personas
+   - `.shipkit/goals.json` — what outcomes we need
+   - `.shipkit/product-discovery.json` — persona details
+   - `.shipkit/stack.json` — tech constraints
+   - `.shipkit/architecture.json` — existing architecture decisions
+   - `.shipkit/codebase-index.json` — existing code patterns
+   - Previously written specs — for consistency (especially for batch mode)
+2. Generate a complete spec proposal with all fields pre-filled:
+   - Feature type inferred from description and goals
+   - Scenarios derived from persona journeys and goals
+   - Edge cases inferred from stack constraints and dependencies
+   - Acceptance criteria derived from goals served
+   - Technical notes derived from architecture and stack
+3. Present the proposed spec:
+   ```
+   Proposed spec for: {feature name}
+
+   [Full spec JSON preview]
+
+   Confirm, adjust, or switch to interactive mode?
+   ```
+4. If confirmed → still run Step 3 (Explore) to validate against actual code, then write
+5. If adjusted → incorporate adjustments, run Step 3, then write
+6. If interactive → fall through to Step 1
+
+**If insufficient context**: Fall through to Step 1.
+
+---
 
 ### Step 1: Understand the Feature
 
@@ -447,11 +500,6 @@ Copy and track:
   - **When**: Spec is complete and approved
   - **Why**: Spec defines WHAT to build, plan defines HOW
   - **Trigger**: Spec saved to specs/todo/, user confirms "ready to plan"
-
-- `/shipkit-prototyping` - Creates rapid UI mockup
-  - **When**: Spec includes significant UI/UX components (optional step)
-  - **Why**: Validate UI direction before committing to full implementation
-  - **Trigger**: User wants to see UI mockup before building real code
 
 - `/shipkit-architecture-memory` - Logs architectural decisions made during spec
   - **When**: Spec reveals architectural choices (optional step)

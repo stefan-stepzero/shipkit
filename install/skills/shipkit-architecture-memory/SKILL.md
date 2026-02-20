@@ -1,31 +1,32 @@
 ---
 name: shipkit-architecture-memory
-description: "Use when making or documenting an architectural decision, technology choice, or design pattern. Triggers: 'log decision', 'why did we choose', 'architecture choice'."
-argument-hint: "<decision to log>"
+description: "Two modes: (1) Solution Architect — proposes complete architecture from goals, stack, and specs. (2) Decision Logger — logs individual architecture decisions. Triggers: 'propose architecture', 'log decision', 'architecture choice'."
+argument-hint: "<decision to log> or --propose"
 context: fork
 agent: shipkit-architect-agent
 ---
 
-# shipkit-architecture-memory - Architectural Decision Logger
+# shipkit-architecture-memory - Architecture Decision Logger + Solution Architect
 
-**Purpose**: Maintain a structured graph of architectural nodes, edges, decisions, and constraints in JSON format — preserving full decision history with rationale, alternatives, implications, superseded decisions, and component relationships suitable for React Flow visualization.
+**Purpose**: Two modes: (1) **Solution Architect** — proposes a complete architecture from goals, stack, and specs. (2) **Decision Logger** — logs individual architecture decisions with rationale. Both maintain the same graph structure in `architecture.json`.
 
 ---
 
 ## When to Invoke
 
-**User triggers**:
+**Solution Architect mode triggers:**
+- "Propose the architecture"
+- "Design the architecture"
+- "What architecture should we use?"
+- After `/shipkit-spec` when no `architecture.json` exists yet
+- Pipeline Phase 4 (automatic)
+
+**Decision Logger mode triggers:**
 - "Let's use Server Actions instead of API routes"
 - "Log this decision"
 - "Document this choice"
 - "Remember we're using [pattern/tech/approach]"
-- After making significant architectural choice
-
-**Auto-suggest contexts**:
-- After `/shipkit-spec` when approach decisions are made
-- After `/shipkit-plan` when significant patterns are established
-- During `implement (no skill needed)` when new patterns emerge
-- When user describes an architectural choice in conversation
+- After making significant architectural choice during implementation
 
 ---
 
@@ -36,6 +37,111 @@ agent: shipkit-architect-agent
 - Architecture graph exists: `.shipkit/architecture.json` (to check contradictions and existing nodes)
 
 **Can run standalone**: Yes - creates architecture.json if it doesn't exist
+
+---
+
+## Step 0: Mode Selection
+
+**Determine which mode to use based on context:**
+
+```
+IF $ARGUMENTS contains "--propose":
+  → Solution Architect mode (force proposal even if architecture.json exists)
+
+ELSE IF .shipkit/architecture.json does NOT exist
+  AND (.shipkit/goals.json exists OR .shipkit/stack.json exists):
+  → Solution Architect mode (no architecture yet, context available)
+
+ELSE:
+  → Decision Logger mode (existing flow starting at Step 1)
+```
+
+### Solution Architect Mode
+
+When entering this mode, follow Steps SA-1 through SA-5 below, then skip to Step 5 (Update Architecture Graph) to write the result.
+
+#### SA-1: Read All Upstream Context (Parallel)
+
+Read all available context in parallel:
+
+```
+Read in parallel:
+1. .shipkit/goals.json         — what outcomes we need
+2. .shipkit/stack.json         — technology constraints
+3. .shipkit/why.json           — project purpose and stage
+4. .shipkit/product-definition.json — feature portfolio
+5. .shipkit/specs/todo/*.json  — feature specs (glob)
+6. .shipkit/codebase-index.json — existing code structure
+```
+
+If goals.json is missing, warn: "No goals found. Run `/shipkit-goals` first for a goal-aligned architecture proposal. Proceeding with best inference from available context."
+
+#### SA-2: Determine Project Stage
+
+From `why.json` (or infer from context):
+
+| Stage | Architecture Approach |
+|-------|----------------------|
+| **MVP / Prototype** | Simplest possible. Monolith, single deployment, minimal abstractions. Speed over elegance. |
+| **Growth** | Modular monolith. Clear boundaries between domains, but single deployment. Prepare for splitting. |
+| **Scale** | Distributed where needed. Services split by domain, async communication, caching layers. |
+
+**The cardinal rule**: Never over-architect for the current stage. An MVP with microservices is a red flag.
+
+#### SA-3: Build Architecture Proposal
+
+Generate a proposal covering 8 sections:
+
+**1. Overview** — 2-3 sentence architecture summary aligned with goals and stage.
+
+**2. Components** — High-level component structure:
+- For MVP: monolith with clear module boundaries
+- For Growth: modular monolith with domain packages
+- For Scale: services with communication patterns
+
+**3. Data Model** — Core entities and relationships derived from specs and goals. Include entity names, key attributes, and relationships (1:1, 1:N, N:M).
+
+**4. API Surface** — Key routes/endpoints grouped by domain. Match to features from product-definition.json.
+
+**5. State Management** — Client-side state approach matched to stack:
+- Next.js → Server Components + minimal client state
+- React SPA → Zustand/Jotai for simple, Redux for complex
+- Match complexity to actual needs
+
+**6. Deployment** — Where and how it runs, derived from stack.json:
+- Vercel/Netlify → serverless, edge functions
+- Docker → container orchestration
+- Simple host → traditional server
+
+**7. Trade-offs** — 3-5 key decisions with explicit rationale:
+```
+"I recommend [X] because [goal alignment].
+Alternative: [Y], which would be better if [condition]."
+```
+Each trade-off should reference a specific goal from goals.json.
+
+**8. Constraints** — Performance, security, and scaling requirements derived from goals. Only include constraints that actually apply to this project.
+
+#### SA-4: Present Proposal
+
+Present the full proposal in a readable format. Then ask:
+
+**"Confirm this architecture, adjust specific sections, or switch to manual decision logging?"**
+
+User can:
+- **Confirm** → Write architecture.json (SA-5)
+- **Adjust** → Modify specific sections, re-present, then write
+- **Reject** → Fall through to Decision Logger mode (Step 1)
+
+#### SA-5: Write Architecture as Graph
+
+Convert the confirmed proposal into the existing architecture.json graph schema:
+- **Components** → `nodes[]` (type: service/database/cache/etc, layer: frontend/api/etc)
+- **Dependencies** → `edges[]` (source → target, type: sync/async/event)
+- **Trade-offs** → `decisions[]` (status: decided, with rationale and alternatives)
+- **Requirements** → `constraints[]` (type: performance/security/etc)
+
+Recompute `summary` fields and set `lastUpdated`. Then proceed to Step 6 (Check Stack Consistency).
 
 ---
 
@@ -461,9 +567,10 @@ Copy and track:
 
 ---
 
-## What Makes This "Lite"
+## What This Skill Covers
 
 **Included**:
+- **Solution Architect mode** — proposes complete architecture from goals, stack, and specs
 - Graph-based architecture model (nodes + edges)
 - Structured decision records with full context
 - Contradiction detection across decisions
@@ -471,27 +578,29 @@ Copy and track:
 - Stack consistency checking
 - React Flow-compatible graph structure
 - Dashboard-ready summary data
+- Stage-aware opinion rules (MVP=simple, Growth=modular, Scale=distributed)
 
-**Not included** (vs full architecture-memory):
+**Not included**:
 - Architecture diagram image generation
 - Multi-repository decision tracking
 - Team vote/approval workflows
-- Decision impact analysis across codebase
 - Automated dependency graph discovery from code
 
-**Philosophy**: Structured architecture graph to maintain context and enable visualization, not comprehensive architecture documentation system.
+**Philosophy**: Opinionated architecture proposals grounded in project goals, with structured persistence for context and visualization.
 
 ---
 
 ## Integration with Other Skills
 
 **Before shipkit-architecture-memory**:
-- `/shipkit-spec` - Makes approach decisions worth logging
-- `/shipkit-plan` - Establishes patterns worth documenting
-- `/shipkit-project-context` - Generates stack.json for consistency checking
+- `/shipkit-goals` - Produces goals.json (recommended for solution architect mode)
+- `/shipkit-project-context` - Generates stack.json (recommended for solution architect mode)
+- `/shipkit-product-definition` - Produces feature portfolio (enriches proposals)
+- `/shipkit-spec` - Feature specs (enriches proposals; also makes approach decisions worth logging)
+- `/shipkit-plan` - Establishes patterns worth documenting (decision logger mode)
 
 **After shipkit-architecture-memory**:
-- `/shipkit-plan` - Create implementation plan using logged decisions
+- `/shipkit-plan` - Create implementation plan using architecture decisions
 - `implement (no skill needed)` - Code following logged patterns
 - `document manually` - Create extended architecture docs (optional)
 
@@ -502,7 +611,15 @@ Copy and track:
 **Primary**:
 - `.shipkit/architecture.json` - Existing architecture graph (to check contradictions and existing nodes)
 
-**Secondary**:
+**Solution Architect mode reads** (all optional, more = better proposal):
+- `.shipkit/goals.json` - Goal list for alignment
+- `.shipkit/stack.json` - Technology constraints
+- `.shipkit/why.json` - Project purpose and stage
+- `.shipkit/product-definition.json` - Feature portfolio
+- `.shipkit/specs/todo/*.json` - Feature specs
+- `.shipkit/codebase-index.json` - Existing code structure
+
+**Decision Logger mode reads**:
 - `.shipkit/stack.json` - Tech stack (to verify consistency)
 
 ---
@@ -607,7 +724,16 @@ New decision: "Use Zod for runtime validation"
 <!-- SECTION:success-criteria -->
 ## Success Criteria
 
-Decision is logged when:
+**Solution Architect mode:**
+- [ ] All available upstream context read (goals, stack, why, specs, product-definition)
+- [ ] Project stage determined and architecture ambition matched
+- [ ] Proposal covers all 8 sections (overview, components, data model, API, state, deployment, trade-offs, constraints)
+- [ ] Trade-offs reference specific goals from goals.json
+- [ ] User confirmed or adjusted the proposal
+- [ ] architecture.json written with graph schema (nodes, edges, decisions, constraints)
+- [ ] `summary` fields computed and `lastUpdated` set
+
+**Decision Logger mode:**
 - [ ] Affected code areas explored (current state, consistency, blast radius)
 - [ ] Decision entry added to `decisions` array in architecture.json
 - [ ] Includes `chosen` statement

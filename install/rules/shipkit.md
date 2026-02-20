@@ -74,8 +74,7 @@ If `.shipkit/codebase-index.json` exists:
 | Create feature specification | `/shipkit-spec` |
 | Process feedback into investigated bug specs | `/shipkit-feedback-bug` |
 | Plan implementation steps | `/shipkit-plan` |
-| Quick UI mockup | `/shipkit-prototyping` |
-| Extract prototype learnings | `/shipkit-prototype-to-spec` |
+| Map goals to features | `/shipkit-product-definition` |
 | Think through decisions | `/shipkit-thinking-partner` |
 
 ### Knowledge & Memory

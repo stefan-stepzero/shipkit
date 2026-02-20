@@ -109,6 +109,7 @@ This skill provides:
 | "Define vision", "Why this project?", "Project goals" | `/shipkit-why-project` | .shipkit/why.json |
 | "Set goals", "Objectives", "Priorities", "What to build toward" | `/shipkit-goals` | .shipkit/why.json, goals.json |
 | "Who are our users?", "Create personas", "User research", "User journey" | `/shipkit-product-discovery` | .shipkit/why.json, stack.json |
+| "Define features", "Product definition", "Feature portfolio", "Map goals to features", "What to build" | `/shipkit-product-definition` | .shipkit/goals.json, product-discovery.json, why.json |
 
 ### Context & Status
 
@@ -131,8 +132,6 @@ This skill provides:
 | "Spec this feature", "Create specification", "Write requirements" | `/shipkit-spec` | .shipkit/specs/todo/ |
 | "Triage feedback", "Process bug reports", "User testing feedback" | `/shipkit-feedback-bug` | .shipkit/specs/{todo,active}/, codebase-index |
 | "Plan this", "How to implement?", "Create plan" | `/shipkit-plan` | specs/{todo,active}/, stack.json, architecture.json |
-| "Prototype", "Mockup", "Rapid prototype", "UI mockup" | `/shipkit-prototyping` | specs/{todo,active}/, why.json |
-| "Extract prototype", "Prototype to spec", "Capture UI patterns" | `/shipkit-prototype-to-spec` | .shipkit-mockups/, specs/{todo,active}/ |
 | "Help me think through", "Think with me", "Let's discuss", "What am I missing?" | `/shipkit-thinking-partner` | .shipkit/why.json, architecture.json |
 | "Devil's advocate", "Pre-mortem", "Trade-offs", "I'm torn between" | `/shipkit-thinking-partner` | .shipkit/why.json, architecture.json |
 
@@ -168,6 +167,7 @@ This skill provides:
 | "Lint until", "Fix lint errors", "Clean up lint" | `/shipkit-lint-relentlessly` | Lint output |
 | "Implement independently", "Parallel implementation", "Work on this separately" | `/shipkit-implement-independently` | Spec, stack.json, architecture.json |
 | "Create a team", "Team implement", "Build with a team", "Parallel team" | `/shipkit-team` | Plan, spec, stack.json, architecture.json |
+| "Build this product", "Full pipeline", "End to end", "YOLO build" | `/shipkit-team --template pipeline` | All .shipkit/ |
 | "Cleanup worktrees", "Clean up worktrees", "Remove old worktrees" | `/shipkit-cleanup-worktrees` | .shipkit/worktrees/ |
 
 ---
@@ -258,7 +258,7 @@ This skill is the **central router** that connects all other skills.
 |----------|------------------|
 | Vision/Discovery | `shipkit-why-project`, `shipkit-goals`, `shipkit-product-discovery` |
 | Context/Status | `shipkit-project-status`, `shipkit-project-context`, `shipkit-work-memory` |
-| Spec/Planning | `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-prototyping`, `shipkit-prototype-to-spec`, `shipkit-thinking-partner` |
+| Spec/Planning | `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-product-definition`, `shipkit-thinking-partner` |
 | Knowledge | `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`, `shipkit-claude-md` |
 | Quality | `shipkit-verify`, `shipkit-ux-audit`, `shipkit-prompt-audit`, `shipkit-semantic-qa`, `shipkit-qa-visual`, `shipkit-user-instructions`, `shipkit-communications` |
 

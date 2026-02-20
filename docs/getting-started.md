@@ -192,13 +192,13 @@ Shows what context exists, what's missing, and suggests next steps.
 
 Appends a decision to `.shipkit/architecture.json` with rationale.
 
-### Create a UI Prototype
+### Define Product Features
 
 ```
-/shipkit-prototyping
+/shipkit-product-definition
 ```
 
-Generates a quick HTML prototype for validation.
+Maps goals to a feature portfolio with dependency ordering and coverage analysis.
 
 ### End a Session
 

@@ -226,7 +226,6 @@ Feature specs are stored as JSON files following the Shipkit artifact convention
 
   "nextSteps": [
     "/shipkit-plan to create implementation plan",
-    "/shipkit-prototyping for UI mockup (optional)",
     "/shipkit-architecture-memory to log any architectural decisions"
   ]
 }

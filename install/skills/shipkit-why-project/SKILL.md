@@ -38,6 +38,32 @@ agent: shipkit-product-owner-agent
 
 ## Process
 
+### Step 0: Context Check + Propose Mode
+
+Before asking questions, check if the project already has enough context to propose a vision:
+
+1. Read available context: `README.md`, `package.json` (name, description, keywords), existing source files, any `.shipkit/*.json` files
+2. **If sufficient context exists** (README or package.json with description, or >5 source files):
+   - Generate a complete `why.json` proposal based on what you found
+   - Present the proposal as a formatted summary:
+     ```
+     Based on your project files, here's a proposed vision:
+
+     Who: [inferred target audience]
+     Problem: [inferred from README/description]
+     Current State: [inferred from code maturity]
+     Vision: [inferred from project scope]
+     Approach: [inferred from tech stack and patterns]
+
+     Confirm, adjust, or switch to interactive mode?
+     ```
+   - If user confirms → write `why.json` and skip to Step 7 (suggest next steps)
+   - If user adjusts → incorporate adjustments, write, and skip to Step 7
+   - If user wants interactive → fall through to Step 1
+3. **If insufficient context** (empty project, no README, no package.json): Fall through to Step 1
+
+---
+
 ### Step 1: Check if why.json Already Exists
 
 ```
