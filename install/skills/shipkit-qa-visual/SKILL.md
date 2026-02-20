@@ -48,7 +48,7 @@ Parse `$ARGUMENTS` before starting:
 
 - **URL provided** (e.g. `/shipkit-qa-visual https://myapp.com`) → use as `baseUrl` for this run; update `ui-goals.json` if different from stored value
 - **`--update-goals`** → run Steps 0–1 only; skip test generation and execution; useful for keeping goals current without a full run
-- **`--run-only`** → skip Steps 1 and 3; run existing test files as-is; useful for regression without regenerating tests
+- **`--run-only`** → skip Steps 1 and 3; run existing test files as-is; still loads `ui-goals.json` for the results-to-goals mapping in Step 5; useful for regression without regenerating tests
 - **`--screenshots`** → capture screenshots on every assertion, not just failures
 - **Empty** → proceed with the full flow (Steps 0 through 5)
 
@@ -165,7 +165,7 @@ Create (or overwrite) `tests/e2e/{page-name}.spec.ts` where `page-name` is deriv
 import { test, expect } from '@playwright/test';
 
 test.describe('{persona.name}', () => {
-  // Goal: {goal.goal}
+  // Goal ID: {goal.id} — {goal.goal}
   test('{goal.goal}', async ({ page }) => {
     await page.goto('{baseUrl}{page.path}');
     // Assert goal is met
@@ -261,6 +261,7 @@ When creating or updating `.shipkit/ui-goals.json`, always conform to this struc
       "name": "Homepage",
       "goals": [
         {
+          "id": "homepage-guest-hero",
           "persona": "guest",
           "goal": "Can see hero section and CTA button",
           "priority": "high",
@@ -276,8 +277,9 @@ When creating or updating `.shipkit/ui-goals.json`, always conform to this struc
 
 **Field notes:**
 - `personas[].id` — used as the persona key in goal references; use lowercase kebab-case
+- `pages[].goals[].id` — stable identifier for traceability; use `{page-name}-{persona-id}-{short-slug}` format; generated tests reference this ID in comments
 - `pages[].goals[].persona` — must match a `personas[].id` value
-- `pages[].goals[].priority` — one of `"high"`, `"medium"`, `"low"`; high-priority goals are always run, others can be skipped with `--run-only` if time is short
+- `pages[].goals[].priority` — one of `"high"`, `"medium"`, `"low"`; used for reporting order (high first) and can filter test generation in future iterations
 - `pages[].goals[].selectors` — optional array of CSS or data-testid selectors to use in assertions; omit if you want Claude to infer selectors at generation time
 - `lastConfirmed` — updated whenever the user reviews and approves the goals
 - `lastTestedAt` — updated after each successful test run
@@ -322,9 +324,7 @@ This skill is used by:
 
 | Skill | How |
 |-------|-----|
-| `shipkit-verify` | Can invoke `shipkit-qa-visual --run-only` as the visual verification step during quality checks |
-| `shipkit-test-relentlessly` | Includes the `tests/e2e/` directory in its relentless test loop when Playwright config is detected |
-| `shipkit-preflight` | Runs visual QA as a pre-deploy check to confirm the production build meets stated UI goals |
+| `shipkit-verify` | References `shipkit-qa-visual --run-only` as an optional visual verification step in deeper reviews |
 
 ---
 
@@ -333,7 +333,6 @@ This skill is used by:
 | File | Purpose |
 |------|---------|
 | `.shipkit/ui-goals.json` | Persistent goals — loaded on every run |
-| `.shipkit/stack.json` | Framework detection (Next.js vs React Router vs other) |
 | `package.json` | Dev server port inference, Playwright dependency check |
 | `tests/e2e/*.spec.ts` | Existing tests — checked before regenerating |
 
@@ -371,7 +370,7 @@ The `ui-goals.json` file is the long-term artifact here — keep it current as t
 - [ ] Goals presented to user for confirmation on first run; not written until confirmed
 - [ ] Subsequent runs ask about changes before proceeding
 - [ ] Test files generated with one spec per page, describe per persona, test per goal
-- [ ] Each test includes a `// Goal:` comment tracing to the goal text
+- [ ] Each test includes a `// Goal ID:` comment tracing to the goal ID
 - [ ] Custom (non-generated) test files are preserved
 - [ ] Tests run headlessly via `npx playwright test --project=chromium`
 - [ ] Screenshots captured to `tests/e2e/screenshots/` on failure (or all assertions with `--screenshots`)

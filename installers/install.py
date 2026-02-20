@@ -573,6 +573,8 @@ def install_shared_core(repo_root, target_dir, language, edition):
     shutil.copy2(hooks_src / "shipkit-after-skill-router.py", hooks_dest / "after-skill-router.py")
     shutil.copy2(hooks_src / "shipkit-track-skill-usage.py", hooks_dest / "shipkit-track-skill-usage.py")
     shutil.copy2(hooks_src / "shipkit-relentless-stop-hook.py", hooks_dest / "shipkit-relentless-stop-hook.py")
+    shutil.copy2(hooks_src / "shipkit-teammate-idle-hook.py", hooks_dest / "shipkit-teammate-idle-hook.py")
+    shutil.copy2(hooks_src / "shipkit-task-completed-hook.py", hooks_dest / "shipkit-task-completed-hook.py")
     print_success("Hooks installed")
 
     # Install framework rules
@@ -875,6 +877,27 @@ def _build_hooks_config():
                     {
                         "type": "prompt",
                         "prompt": "Context compaction is approaching. If significant work is in progress, consider running /shipkit-work-memory to save your current work state before details are lost."
+                    }
+                ]
+            }
+        ],
+        "TeammateIdle": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python -X utf8 .claude/hooks/shipkit-teammate-idle-hook.py"
+                    }
+                ]
+            }
+        ],
+        "TaskCompleted": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python -X utf8 .claude/hooks/shipkit-task-completed-hook.py",
+                        "timeout": 120
                     }
                 ]
             }

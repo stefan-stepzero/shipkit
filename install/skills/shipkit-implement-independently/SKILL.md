@@ -233,7 +233,7 @@ To cleanup stale worktrees: /shipkit-cleanup-worktrees
 ## Context Files This Skill Writes
 
 **Write Strategy: CREATE**
-- `.shipkit/worktrees/{task-slug}/` - Isolated working directory
+- Git worktree managed by Claude Code's `isolation: worktree` (auto-created in `.claude/worktrees/`)
 - Git branch: `impl/{task-slug}`
 - GitHub PR targeting source branch
 
@@ -278,7 +278,7 @@ User: /shipkit-implement-independently .shipkit/specs/active/user-settings.json
 
 Claude:
 1. Captures source branch: feature/dashboard
-2. Creates worktree: .shipkit/worktrees/user-settings/
+2. Creates worktree via isolation: worktree
 3. Creates branch: impl/user-settings
 4. Spawns implementation agent
 5. [Agent works autonomously - implements, tests, creates PR]
@@ -331,7 +331,7 @@ Claude:
 
 **If merged:** Changes are now in your source branch. Continue with your workflow.
 
-**If skipped:** Worktree preserved at `.shipkit/worktrees/{slug}/`. Options:
+**If skipped:** Worktree preserved in `.claude/worktrees/`. Options:
 - Review PR manually on GitHub
 - Continue work in worktree later
 - Run `/shipkit-cleanup-worktrees` to remove
@@ -359,6 +359,6 @@ Claude:
 - Run: `git branch -D impl/{slug}` then retry
 
 **Agent seems stuck**
-- Check `.shipkit/worktrees/{slug}/` for partial work
+- Check `.claude/worktrees/` for partial work
 - Agent may be running relentless loops
 - Let it finish or manually intervene
