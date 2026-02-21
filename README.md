@@ -91,16 +91,26 @@ All skills use the `shipkit-` prefix for clarity.
 
 ### Installation
 
-**Download and run the Python installer:**
 ```bash
 cd your-project
+npx shipkit init
+```
+
+Add `-y` for non-interactive mode (uses sensible defaults): `npx shipkit init -y`
+
+**Update an existing installation:**
+```bash
+npx shipkit update
+```
+
+<details>
+<summary>Alternative: Python installer</summary>
+
+```bash
 curl -O https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/installers/install.py
 python install.py --from-github
 ```
-
-Add `-y` for non-interactive mode (uses sensible defaults).
-
-**Already have Shipkit?** Update with `/shipkit-update`
+</details>
 
 The installer will:
 - Install all 36 skills

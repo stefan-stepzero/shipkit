@@ -1,0 +1,40 @@
+{
+  "name": "shipkit",
+  "version": "1.10.0",
+  "description": "Streamlined product development framework for Claude Code — 36 skills, 9 agents, structured workflows",
+  "bin": {
+    "shipkit": "./cli/bin/shipkit.js"
+  },
+  "files": [
+    "cli/",
+    "install/",
+    "docs/generated/shipkit-overview.html",
+    "VERSION"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "claude-code",
+    "ai",
+    "developer-tools",
+    "skills",
+    "agents",
+    "product-development",
+    "claude",
+    "anthropic"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stefan-stepzero/shipkit.git"
+  },
+  "homepage": "https://github.com/stefan-stepzero/shipkit#readme",
+  "bugs": {
+    "url": "https://github.com/stefan-stepzero/shipkit/issues"
+  },
+  "license": "MIT",
+  "author": "Stefan / StepZero",
+  "scripts": {
+    "prepublishOnly": "node -e \"const v=require('fs').readFileSync('VERSION','utf8').trim();const p=require('./package.json');if(p.version!==v){console.error('VERSION mismatch: VERSION='+v+' package.json='+p.version);process.exit(1)}\""
+  }
+}
