@@ -105,13 +105,23 @@ Before creating a missing reference file, determine if it's actually needed:
 
 ## Part 4: Installer Integrity
 
-### Installer Files
+Two installers must stay in sync: **npx CLI** (`cli/src/`) and **Python installer** (`installers/install.py`).
+
+### npx CLI Files
+- [ ] `cli/bin/shipkit.js` exists
+- [ ] `cli/src/index.js` loads without error
+- [ ] `cli/src/hooks.js` loads without error
+- [ ] `cli/src/settings.js` loads without error
+- [ ] `package.json` exists with correct `bin` entry
+- [ ] `package.json` version matches `VERSION` file
+
+### Python Installer Files
 - [ ] `installers/install.py` exists
 - [ ] `installers/uninstall.py` exists
 - [ ] Both pass `python -m py_compile`
 
 ### Installer Path References
-The installer requires these paths to exist:
+Both installers require these paths to exist:
 - [ ] `install/shared` — Shared files (hooks, scripts)
 - [ ] `install/shared/hooks` — Hook files
 - [ ] `install/skills` — Skill definitions
@@ -122,19 +132,28 @@ The installer requires these paths to exist:
 - [ ] `docs/generated` — HTML documentation
 
 ### Installer Coverage (CRITICAL)
-**Hooks are hardcoded in the installer** - they must be manually synced!
+**Hooks are hardcoded in BOTH installers** — they must be manually synced!
 
-- [ ] All hooks in `install/shared/hooks/` are listed in installer's `install_shared_core()`
-- [ ] No hooks in installer that don't exist on disk
-- [ ] When adding a new hook: update `installers/install.py`
+- [ ] All hooks in `install/shared/hooks/` are listed in `cli/src/init.js` HOOK_FILES
+- [ ] All hooks in `install/shared/hooks/` are listed in Python installer's `install_shared_core()`
+- [ ] No hooks in either installer that don't exist on disk
+- [ ] When adding a new hook: update `cli/src/init.js`, `cli/src/hooks.js`, AND `installers/install.py`
 
-**Current hardcoded hooks** (check these match disk):
-```python
-shutil.copy2(hooks_src / "shipkit-session-start.py", ...)
-shutil.copy2(hooks_src / "shipkit-after-skill-router.py", ...)
-shutil.copy2(hooks_src / "shipkit-track-skill-usage.py", ...)
-shutil.copy2(hooks_src / "shipkit-relentless-stop-hook.py", ...)
+**Current hook files** (check these match BOTH installers):
 ```
+install/shared/hooks/
+├── shipkit-session-start.py          → session-start.py
+├── shipkit-after-skill-router.py     → after-skill-router.py
+├── shipkit-track-skill-usage.py      → shipkit-track-skill-usage.py
+├── shipkit-relentless-stop-hook.py   → shipkit-relentless-stop-hook.py
+├── shipkit-task-completed-hook.py    → shipkit-task-completed-hook.py
+└── shipkit-teammate-idle-hook.py     → shipkit-teammate-idle-hook.py
+```
+
+### npx CLI ↔ Canonical Settings Consistency
+- [ ] `cli/src/hooks.js` buildHooksConfig() matches `install/settings/shipkit.settings.json` hooks
+- [ ] `cli/src/settings.js` base permissions match canonical settings file
+- [ ] Hook commands in CLI reference correct destination filenames
 
 ### Manifest Validity
 - [ ] `install/profiles/shipkit.manifest.json` exists
@@ -313,8 +332,10 @@ Location: `.claude/skills/shipkit-framework-integrity/.integrity-state.json`
 | Cross-skill ref invalid | Skill references non-existent skill | Yes |
 | Missing required hook | `shipkit-session-start.py` not found | No |
 | Hook syntax error | Python won't compile | Yes |
-| Installer syntax error | `install.py` won't compile | Yes |
+| Installer syntax error | `install.py` won't compile or CLI won't load | Yes |
 | Installer path missing | Required install path doesn't exist | No |
+| CLI/settings mismatch | npx CLI hooks differ from canonical settings | Yes |
+| Version mismatch | `package.json` version differs from `VERSION` | Yes |
 | Invalid manifest JSON | Manifest file malformed | Yes |
 | Missing permission | Skill not in settings.json | No |
 
@@ -408,6 +429,11 @@ PATHS = {
     "overview": "docs/generated/shipkit-overview.html",
     "installer": "installers/install.py",
     "uninstaller": "installers/uninstall.py",
+    "cli_entry": "cli/bin/shipkit.js",
+    "cli_hooks": "cli/src/hooks.js",
+    "cli_settings": "cli/src/settings.js",
+    "cli_init": "cli/src/init.js",
+    "package_json": "package.json",
     "hooks": "install/shared/hooks",
     "skills": "install/skills",
     "agents": "install/agents",

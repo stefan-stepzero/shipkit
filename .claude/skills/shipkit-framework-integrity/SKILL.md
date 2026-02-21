@@ -390,7 +390,16 @@ For each SKILL.md mentioning a hook file:
 
 ### Step 7: Installer Integrity (Cached)
 
-**7.1: Installer syntax validation**:
+Two installers exist and must stay in sync: the **npx CLI** (`cli/src/`) and the **Python installer** (`installers/install.py`).
+
+**7.1a: npx CLI syntax validation**:
+```bash
+node -e "require('./cli/src/index')"
+node -e "require('./cli/src/hooks')"
+node -e "require('./cli/src/settings')"
+```
+
+**7.1b: Python installer syntax validation**:
 ```bash
 python -m py_compile installers/install.py
 python -m py_compile installers/uninstall.py
@@ -398,7 +407,7 @@ python -m py_compile installers/uninstall.py
 
 **7.2: Installer path references**:
 
-The installer (`installers/install.py`) references these paths:
+Both installers reference these paths (must exist on disk):
 ```python
 INSTALLER_REQUIRED_PATHS = [
     "install/shared",
@@ -409,6 +418,20 @@ INSTALLER_REQUIRED_PATHS = [
     "install/claude-md",
     "install/profiles",
     "docs/generated"
+]
+```
+
+The npx CLI also requires:
+```python
+NPX_CLI_REQUIRED_PATHS = [
+    "cli/bin/shipkit.js",
+    "cli/src/index.js",
+    "cli/src/init.js",
+    "cli/src/update.js",
+    "cli/src/hooks.js",
+    "cli/src/settings.js",
+    "VERSION",
+    "package.json"
 ]
 ```
 
@@ -434,38 +457,78 @@ For each .manifest.json in install/profiles/:
 
 **7.4: Installer Coverage Check** (CRITICAL):
 
-The installer has **hardcoded hook copies**. If a new hook is added to `install/shared/hooks/`, it won't be installed unless the installer is updated.
+Both installers have **hardcoded hook mappings**. If a new hook is added to `install/shared/hooks/`, it won't be installed unless BOTH installers are updated.
 
+**npx CLI hooks** — defined in `cli/src/hooks.js` (buildHooksConfig) and `cli/src/init.js` (HOOK_FILES mapping):
+```javascript
+// cli/src/init.js HOOK_FILES — maps source name to installed name
+const HOOK_FILES = {
+    "shipkit-session-start.py": "session-start.py",
+    "shipkit-after-skill-router.py": "after-skill-router.py",
+    "shipkit-relentless-stop-hook.py": "shipkit-relentless-stop-hook.py",
+    "shipkit-track-skill-usage.py": "shipkit-track-skill-usage.py",
+    "shipkit-task-completed-hook.py": "shipkit-task-completed-hook.py",
+    "shipkit-teammate-idle-hook.py": "shipkit-teammate-idle-hook.py"
+};
+
+// cli/src/hooks.js buildHooksConfig — hooks wired in settings.json
+// Must reference the DESTINATION names from HOOK_FILES above
+```
+
+**Python installer hooks** — hardcoded in `install_shared_core()`:
 ```python
-# Extract hardcoded hooks from installers/install.py
-# Look for shutil.copy2() calls in install_shared_core() function
-# Pattern: shutil.copy2(hooks_src / "filename.py", ...)
-
+# Extract from shutil.copy2() calls
 INSTALLER_HARDCODED_HOOKS = [
     "shipkit-session-start.py",
     "shipkit-after-skill-router.py",
     "shipkit-track-skill-usage.py",
-    "shipkit-relentless-stop-hook.py"
+    "shipkit-relentless-stop-hook.py",
+    "shipkit-task-completed-hook.py",
+    "shipkit-teammate-idle-hook.py"
 ]
 ```
 
 **Validate coverage**:
 ```
 1. List all .py files in install/shared/hooks/
-2. Compare to INSTALLER_HARDCODED_HOOKS extracted from installer
-3. For each hook on disk NOT in installer:
-   → ERROR: Hook "{hook}" exists but installer won't install it
-   → Action: Update installers/install.py to include this hook
+2. Compare to HOOK_FILES keys from cli/src/init.js
+3. Compare to INSTALLER_HARDCODED_HOOKS from installers/install.py
+4. For each hook on disk NOT in npx CLI:
+   → ERROR: Hook "{hook}" exists but npx CLI won't install it
+   → Action: Update cli/src/init.js HOOK_FILES
 
-4. For each hook in installer NOT on disk:
-   → ERROR: Installer references hook "{hook}" that doesn't exist
-   → Action: Create the hook or remove from installer
+5. For each hook on disk NOT in Python installer:
+   → ERROR: Hook "{hook}" exists but Python installer won't install it
+   → Action: Update installers/install.py
+
+6. For each hook in settings.json wiring NOT in HOOK_FILES destinations:
+   → ERROR: settings.json references hook "{dest}" but CLI won't copy it
+```
+
+**7.5: npx CLI ↔ Python installer consistency**:
+
+The canonical settings structure is defined in `install/settings/shipkit.settings.json`. Both installers must produce equivalent output.
+
+```
+1. Read cli/src/hooks.js buildHooksConfig() output structure
+2. Read install/settings/shipkit.settings.json hooks section
+3. Compare: hook events, matchers, commands, timeouts must match
+   → ERROR if any mismatch between CLI hooks and canonical settings
+
+4. Read cli/src/settings.js generateSettings() permission list
+5. Read install/settings/shipkit.settings.json permissions
+6. Compare: base permissions (non-Skill entries) must match
+   → WARNING if base permissions differ between CLI and canonical settings
+
+7. Check package.json version matches VERSION file
+   → ERROR if version mismatch (npm publish will fail)
 ```
 
 **Why this matters**:
 - Skills: Driven by manifest → auto-discovered ✓
 - Agents: Driven by manifest → auto-discovered ✓
-- Hooks: **Hardcoded in installer** → must be manually synced ✗
+- Hooks: **Hardcoded in both installers** → must be manually synced ✗
+- Settings: **Duplicated in npx CLI** → must match canonical file ✗
 
 ---
 
@@ -767,10 +830,14 @@ HOOK VALIDATION
 
 INSTALLER INTEGRITY
 ───────────────────
+✓ npx CLI syntax valid (cli/src/*.js)
 ✓ installers/install.py syntax valid
 ✓ installers/uninstall.py syntax valid
-✓ All installer paths exist
+✓ All installer paths exist (shared + CLI)
 ✓ All manifest files valid JSON
+✓ Hook coverage: 6/6 hooks in npx CLI, 6/6 in Python installer
+✓ npx CLI hooks match canonical settings
+✓ package.json version matches VERSION
 
 7-FILE INTEGRATION
 ──────────────────
@@ -930,7 +997,12 @@ This runs up to 3 iterations of check-fix-recheck. Combines with `--fix` for aut
 - `install/skills/shipkit-master/SKILL.md` — Routing table
 
 **Installer files**:
-- `installers/install.py` — Main Python installer
+- `cli/bin/shipkit.js` — npx CLI entry point
+- `cli/src/hooks.js` — npx CLI canonical hooks config
+- `cli/src/settings.js` — npx CLI settings generator
+- `cli/src/init.js` — npx CLI HOOK_FILES mapping
+- `package.json` — npm package config (version must match VERSION)
+- `installers/install.py` — Python installer (fallback)
 - `installers/uninstall.py` — Uninstaller
 
 **All skill files**:

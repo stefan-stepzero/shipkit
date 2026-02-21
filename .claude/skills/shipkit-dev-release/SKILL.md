@@ -106,7 +106,16 @@ Verify `install/install.sh`:
 
 ### Step 3: Update Version
 
-Write new version to `install/VERSION`.
+Write new version to BOTH version sources (must stay in sync):
+1. `VERSION` — Source of truth for framework version
+2. `package.json` — npm registry version (must match VERSION)
+
+```bash
+# Update VERSION file
+echo "X.Y.Z" > VERSION
+# Update package.json version field
+node -e "const p=require('./package.json');p.version='X.Y.Z';require('fs').writeFileSync('package.json',JSON.stringify(p,null,2)+'\n')"
+```
 
 ### Step 4: Update Counts
 
@@ -174,7 +183,7 @@ Present the checklist for user confirmation:
 If user confirms:
 
 ```bash
-git add install/VERSION README.md docs/generated/shipkit-overview.html
+git add VERSION package.json README.md docs/generated/shipkit-overview.html
 git commit -m "v{version}: {summary}"
 git tag v{version}
 ```
@@ -226,7 +235,8 @@ If `--dry-run`: Skip steps 7-8, just report what would happen.
 
 ## Context Files This Skill Reads
 
-- `install/VERSION` — Current version
+- `VERSION` — Current version (source of truth)
+- `package.json` — npm package version (must match VERSION)
 - `README.md` — Skill counts and feature lists
 - `docs/generated/shipkit-overview.html` — Skill counts
 - `install/profiles/shipkit.manifest.json` — Manifest
@@ -235,5 +245,6 @@ If `--dry-run`: Skip steps 7-8, just report what would happen.
 
 ## Context Files This Skill Writes
 
-- `install/VERSION` — Updated version number
+- `VERSION` — Updated version number
+- `package.json` — Updated version field (must match VERSION)
 - Potentially: `README.md`, `docs/generated/shipkit-overview.html` (count updates)
