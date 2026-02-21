@@ -356,7 +356,7 @@ Use WebFetch to get current documentation:
 1. **Install in test project:**
    ```bash
    mkdir test-project && cd test-project
-   python ../shipkit/installers/install.py
+   npx shipkit init
    ```
 
 2. **Invoke the skill:**

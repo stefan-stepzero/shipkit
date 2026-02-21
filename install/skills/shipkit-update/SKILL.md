@@ -1,6 +1,6 @@
 ---
 name: shipkit-update
-description: Install or update Shipkit from GitHub. Detects existing installations, archives them safely, and intelligently merges user content with new version.
+description: Install or update Shipkit via npx. Detects existing installations, archives them safely, and intelligently merges user content with new version.
 disable-model-invocation: true
 argument-hint: "[repo-url]"
 ---
@@ -59,9 +59,8 @@ Present to user:
 ```
 To update Shipkit, I need permission to:
 
-1. **Fetch from GitHub** — Download installer and VERSION file
-2. **Run Python script** — Execute the installer (installs skills, agents, hooks)
-3. **Modify files** — Update .claude/, .shipkit/, and CLAUDE.md
+1. **Run npx installer** — Download and install latest Shipkit from npm
+2. **Modify files** — Update .claude/, .shipkit/, and CLAUDE.md
 
 This will:
 - Archive your current installation (nothing deleted)
@@ -173,48 +172,38 @@ All files preserved in context/ subfolder.
 
 ---
 
-### Step 3: Fetch and Run Python Installer
+### Step 3: Run npx Installer
 
-**Source repository:**
-- Default: `https://github.com/stefan-stepzero/shipkit` (or user-configured)
-- Branch: `main`
-
-**Step 3a: Fetch VERSION to know target version:**
+**Run the npx CLI to install/update framework files:**
 ```bash
-curl -sL https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/VERSION
-```
-Store this for reporting (e.g., "Updating to v1.3.0").
-
-**Step 3b: Fetch and run the Python installer:**
-```bash
-# Download installer to temp location
-curl -sL https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/installers/install.py -o /tmp/shipkit-install.py
-
-# Run installer with --from-github flag
-# - Downloads repo zip, extracts, installs
-# - -y for non-interactive (we already got permission in Step 0)
-# - --claude-md skip (Claude will do intelligent merge in Step 4)
-python /tmp/shipkit-install.py --from-github -y --claude-md skip
-
-# Clean up
-rm /tmp/shipkit-install.py
+npx shipkit update -y --claude-md skip
 ```
 
-**What the installer handles (with `--from-github`):**
-1. Downloads entire repo as zip from GitHub
-2. Extracts to temp directory
-3. Installs:
+- `-y` for non-interactive (we already got permission in Step 0)
+- `--claude-md skip` (Claude will do intelligent merge in Step 4)
+
+**What the installer handles:**
+1. Downloads latest package from npm
+2. Installs:
    - Skills → `.claude/skills/shipkit-*/`
    - Agents → `.claude/agents/`
    - Hooks → `.claude/hooks/`
-   - Settings → `.claude/settings.json` (preserves existing)
-   - Templates → `.shipkit/templates/`
+   - Settings → `.claude/settings.json` (merges — preserves custom permissions)
+   - Rules → `.claude/rules/shipkit.md`
+   - Scripts → `.shipkit/scripts/`
    - HTML Overview → `.shipkit/shipkit-overview.html`
-4. Cleans up temp files automatically
+3. Updates VERSION in `.shipkit/`
 
-**Why use the installer:**
+**Fallback (if npx unavailable):**
+```bash
+curl -sL https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/installers/install.py -o /tmp/shipkit-install.py
+python /tmp/shipkit-install.py --from-github -y --claude-md skip
+rm /tmp/shipkit-install.py
+```
+
+**Why use the npx CLI:**
 - Single source of truth for "what to install"
-- Handles file copying, permissions, platform differences
+- Zero dependencies, handles file copying and settings merge
 - Tested and maintained separately
 - Claude focuses on intelligence (detection, archiving, merging user content)
 
@@ -554,12 +543,11 @@ Ready to use. Review merged files, archive has originals.
 - `CLAUDE.md` - Root instructions
 - `**/CLAUDE.md` - Subfolder instructions
 
-**From GitHub:**
-- `VERSION` - Target version (fetched to report version)
-- `installers/install.py` - Python installer (fetched and executed)
+**From npm (via npx):**
+- `npx shipkit update` — Downloads and installs latest framework files
 
-The installer handles fetching and installing:
-- Skills, agents, hooks, settings, templates, CLAUDE.md template
+The npx CLI handles installing:
+- Skills, agents, hooks, settings, rules, scripts, overview
 
 ---
 
@@ -682,7 +670,7 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 - [ ] Detects all Shipkit variants (current + legacy naming)
 - [ ] Archives completely before any modifications
 - [ ] MANIFEST.md accurately records what was archived with versions
-- [ ] Python installer fetched and executed successfully
+- [ ] npx installer executed successfully (or Python fallback)
 - [ ] Framework files installed fresh match VERSION
 - [ ] CLAUDE.md merged intelligently (user content preserved)
 - [ ] settings.json merged intelligently (user permissions preserved)
@@ -699,8 +687,8 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 ## Security Notes
 
 - Only fetches from specified GitHub repository
-- Executes Python installer from trusted repo (user approved in Step 0)
-- Installer only copies files — no network calls, no data exfiltration
+- Runs npx CLI from npm registry (user approved in Step 0)
+- CLI only copies files — no network calls, no data exfiltration
 - Archives are local, never uploaded
 - settings.local.json never modified (privacy)
 

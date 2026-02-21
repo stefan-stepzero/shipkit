@@ -20,7 +20,7 @@ Shipkit is a collection of **Claude Code skills** that help you build products f
 
 ### Prerequisites
 
-- Python 3.8+
+- Node.js 18+ (for npx)
 - A project directory (new or existing)
 - Claude Code CLI installed
 
@@ -28,8 +28,10 @@ Shipkit is a collection of **Claude Code skills** that help you build products f
 
 ```bash
 cd your-project
-python path/to/shipkit/installers/install.py
+npx shipkit init
 ```
+
+Add `-y` for non-interactive mode with defaults: `npx shipkit init -y`
 
 The installer will:
 1. Create `.claude/skills/` with all Shipkit skills
