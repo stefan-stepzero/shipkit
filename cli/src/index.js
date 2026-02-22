@@ -80,6 +80,17 @@ async function run(argv) {
       await update(packageRoot, flags);
       break;
     }
+    case 'sync-docs': {
+      const { syncDocs } = require('./sync-docs');
+      const { skillCount, agentCount, results } = syncDocs(packageRoot);
+      console.log(`Manifest: ${skillCount} skills, ${agentCount} agents`);
+      for (const r of results) {
+        const label = r.updated ? '\x1b[32m✓\x1b[0m' : '\x1b[90m-\x1b[0m';
+        const name = require('path').relative(packageRoot, r.path);
+        console.log(`  ${label} ${name}${r.reason ? ` (${r.reason})` : ''}`);
+      }
+      break;
+    }
     case 'version': {
       const fs = require('fs');
       const version = fs.readFileSync(path.join(packageRoot, 'VERSION'), 'utf8').trim();
@@ -107,6 +118,7 @@ Usage:
 Commands:
   init       Install Shipkit into the current project
   update     Update an existing Shipkit installation
+  sync-docs  Regenerate skill/agent counts in docs from manifest
   version    Print the installed version
   help       Show this help message
 

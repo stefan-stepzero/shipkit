@@ -2,21 +2,21 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**36 skills** organized for streamlined workflow:
-- **Core Workflow** (5) - Orchestration, status, and context management
-- **Discovery & Planning** (8) - Product discovery, goals, product definition, specification, and bug triage
-- **Implementation** (3) - Architecture, contracts, and integrations
-- **Execution** (7) - Test case generation, relentless build/test/lint, team orchestration, parallel implementation
-- **Quality & Documentation** (10) - Testing, UX, production readiness, prompt architecture, semantic QA, visual QA, and documentation
-- **System** (3) - Updates, community skills, and MCP discovery
+**<!-- sync:skill_count -->36<!-- /sync:skill_count --> skills** organized for streamlined workflow:
+<!-- sync:readme_summary -->- **Vision & Discovery** (7) - why-project, product-discovery, project-context, ...
+- **Spec & Planning** (4) - spec, feedback-bug, plan, ...
+- **Knowledge & Memory** (5) - architecture-memory, data-contracts, integration-docs, ...
+- **Execution** (7) - build-relentlessly, test-relentlessly, lint-relentlessly, ...
+- **Quality & Communication** (9) - verify, preflight, scale-ready, ...
+- **System** (3) - update, get-skills, get-mcps<!-- /sync:readme_summary -->
 
-Plus **9 agent personas** that specialize behaviors for different workflow stages.
+Plus **<!-- sync:agent_count -->9<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
 
 ---
 
 ## What's Inside
 
-### Skills (36 total)
+### Skills (<!-- sync:skill_count -->36<!-- /sync:skill_count --> total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -71,19 +71,19 @@ All skills use the `shipkit-` prefix for clarity.
 *System infrastructure (not counted — auto-triggered, not user-invocable):*
 - `shipkit-detect` - Pattern detection and queue creation (hook infrastructure)
 
-### Agent Personas (9)
+### Agent Personas (<!-- sync:agent_count -->9<!-- /sync:agent_count -->)
 
-| Agent | Used For |
+<!-- sync:readme_agent_table -->| Agent | Used For |
 |-------|----------|
 | `shipkit-project-manager-agent` | Coordination & context |
-| `shipkit-product-owner-agent` | Product/vision focus |
-| `shipkit-ux-designer-agent` | UX/design perspective |
-| `shipkit-architect-agent` | Technical architecture |
-| `shipkit-implementer-agent` | Implementation focus |
+| `shipkit-product-owner-agent` | Vision & requirements |
+| `shipkit-ux-designer-agent` | UI/UX design |
+| `shipkit-architect-agent` | Technical decisions |
+| `shipkit-implementer-agent` | Code implementation |
 | `shipkit-implement-independently-agent` | Isolated parallel implementation |
-| `shipkit-reviewer-agent` | Code review/quality |
-| `shipkit-researcher-agent` | Research/discovery |
-| `shipkit-thinking-partner-agent` | Cognitive thinking partner |
+| `shipkit-reviewer-agent` | Code review & quality |
+| `shipkit-researcher-agent` | Research & analysis |
+| `shipkit-thinking-partner-agent` | Cognitive discussion & thinking partner |<!-- /sync:readme_agent_table -->
 
 ---
 
@@ -113,8 +113,8 @@ python install.py --from-github
 </details>
 
 The installer will:
-- Install all 36 skills
-- Set up 9 agent personas
+- Install all <!-- sync:skill_count -->36<!-- /sync:skill_count --> skills
+- Set up <!-- sync:agent_count -->9<!-- /sync:agent_count --> agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
 
@@ -203,8 +203,8 @@ shipkit/
 │   └── src/                         # Commands, prompts, utilities
 │
 ├── install/                         # Everything that gets installed
-│   ├── skills/                      # 36 shipkit-* skill definitions
-│   ├── agents/                      # 9 shipkit-*-agent personas
+│   ├── skills/                      # <!-- sync:skill_count -->36<!-- /sync:skill_count --> shipkit-* skill definitions
+│   ├── agents/                      # <!-- sync:agent_count -->9<!-- /sync:agent_count --> shipkit-*-agent personas
 │   ├── rules/
 │   │   └── shipkit.md               # Framework rules (auto-loaded)
 │   ├── profiles/
@@ -237,7 +237,7 @@ shipkit/
 ## Key Features
 
 ### Streamlined Workflow
-- 36 focused skills
+- <!-- sync:skill_count -->36<!-- /sync:skill_count --> focused skills
 - All skills use `shipkit-` prefix for clarity
 - Context stored in single `.shipkit/` folder
 - No complex workspace structure

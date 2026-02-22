@@ -119,11 +119,14 @@ node -e "const p=require('./package.json');p.version='X.Y.Z';require('fs').write
 
 ### Step 4: Update Counts
 
-If skill/agent counts changed since last release:
+Run the sync-docs command to regenerate all counts from the manifest:
 
-1. **README.md** — Update skill count in description and features list
-2. **docs/generated/shipkit-overview.html** — Update `<span class="stat-number">` values
-3. **install/profiles/shipkit.manifest.json** — Verify definitions match
+```bash
+node cli/bin/shipkit.js sync-docs
+```
+
+This updates `<!-- sync:* -->` markers in README.md, installers/README.md, and shipkit-overview.html.
+Verify the output shows correct counts and no unexpected changes.
 
 ### Step 5: Generate Changelog Entry
 
