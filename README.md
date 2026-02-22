@@ -96,6 +96,9 @@ cd your-project
 npx shipkit-dev init
 ```
 
+> **Pre-publish note:** Until the npm package is published, use:
+> `npx github:stefan-stepzero/shipkit init`
+
 Add `-y` for non-interactive mode (uses sensible defaults): `npx shipkit-dev init -y`
 
 **Update an existing installation:**

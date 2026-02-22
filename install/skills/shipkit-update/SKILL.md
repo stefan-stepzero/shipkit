@@ -176,14 +176,16 @@ All files preserved in context/ subfolder.
 
 **Run the npx CLI to install/update framework files:**
 ```bash
-npx shipkit-dev update -y --claude-md skip
+npx github:stefan-stepzero/shipkit update -y --claude-md skip
 ```
+
+> When the npm package is published, this becomes: `npx shipkit-dev update -y --claude-md skip`
 
 - `-y` for non-interactive (we already got permission in Step 0)
 - `--claude-md skip` (Claude will do intelligent merge in Step 4)
 
 **What the installer handles:**
-1. Downloads latest package from npm
+1. Downloads latest from GitHub (or npm once published)
 2. Installs:
    - Skills → `.claude/skills/shipkit-*/`
    - Agents → `.claude/agents/`
