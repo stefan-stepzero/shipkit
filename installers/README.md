@@ -1,24 +1,23 @@
 # Shipkit Installers
 
-This directory contains installation scripts for deploying Shipkit to your projects.
+## Recommended: npx CLI
 
-## Available Installers
+```bash
+cd your-project
+npx shipkit init        # Fresh install
+npx shipkit update      # Update existing
+```
 
-### 🖱️ Double-Click Installers (Windows - Easiest!)
+No clone needed. Zero dependencies beyond Node.js 18+. Add `-y` for non-interactive mode.
 
-**Python Version (Recommended):**
-- **File:** `Install-Python.bat`
-- **Requirements:** Python 3.6+ installed
-- **Just double-click** → Follow prompts → Done!
+---
 
-**PowerShell Version:**
-- **File:** `Install-PowerShell.bat`
-- **Requirements:** Windows 10/11 (built-in PowerShell)
-- **Just double-click** → Follow prompts → Done!
+## Alternative Installers
+
+This directory contains alternative installation scripts for environments without Node.js.
 
 ### Python Installer (Cross-Platform)
 **File:** `install.py`
-**✨ Recommended for all platforms**
 
 Works on:
 - ✅ Windows, macOS, Linux
@@ -151,16 +150,8 @@ your-project/
 
 ## Future Installers
 
-This directory is organized to support additional installation methods:
+Potential additional installation methods:
 
-- **PowerShell installer** - Native Windows installation
-- **NPM package** - `npm install -g shipkit`
+- **Claude Code plugin** - Native CC plugin distribution
 - **Homebrew formula** - `brew install shipkit`
 - **VS Code extension** - One-click install from marketplace
-- **Docker image** - Pre-configured development environment
-
-Each installer should:
-1. Create the same file structure
-2. Support the same core options (target directory, non-interactive mode)
-3. Include comprehensive help documentation
-4. Handle updates gracefully (preserve outputs, update definitions)

@@ -9,7 +9,7 @@ argument-hint: "[patch|minor|major] [--dry-run]"
 **Purpose**: Ensure consistent, validated releases of the Shipkit framework
 
 **What it does**:
-- Bumps version in `install/VERSION`
+- Bumps version in `VERSION`
 - Runs all validation (integrity + skill validation)
 - Updates counts in README and overview HTML
 - Generates changelog entry
@@ -41,7 +41,7 @@ argument-hint: "[patch|minor|major] [--dry-run]"
 - Review passed (no blockers from `/shipkit-dev-review`)
 
 **Helpful context**:
-- Current version in `install/VERSION`
+- Current version in `VERSION`
 - Recent git log for changelog generation
 
 ---
@@ -50,7 +50,7 @@ argument-hint: "[patch|minor|major] [--dry-run]"
 
 ### Step 1: Determine Version Bump
 
-Read current version from `install/VERSION`.
+Read current version from `VERSION`.
 
 If argument provided (`patch`, `minor`, `major`), use it. Otherwise, infer:
 

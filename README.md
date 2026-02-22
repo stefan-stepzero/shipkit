@@ -198,34 +198,38 @@ Skills naturally flow from one to another:
 
 ```
 shipkit/
-├── installers/
-│   ├── install.py                # Python installer (cross-platform)
-│   ├── uninstall.py              # Uninstaller
-│   └── README.md                 # Installer documentation
+├── cli/                             # npx CLI (zero dependencies)
+│   ├── bin/shipkit.js               # Entry point
+│   └── src/                         # Commands, prompts, utilities
 │
-├── install/                      # Everything that gets installed
-│   ├── skills/                   # 34 shipkit-* skill definitions
-│   ├── agents/                   # 9 shipkit-*-agent personas
+├── install/                         # Everything that gets installed
+│   ├── skills/                      # 36 shipkit-* skill definitions
+│   ├── agents/                      # 9 shipkit-*-agent personas
 │   ├── rules/
-│   │   └── shipkit.md            # Framework rules (auto-loaded)
+│   │   └── shipkit.md               # Framework rules (auto-loaded)
 │   ├── profiles/
-│   │   └── shipkit.manifest.json # Skill manifest
+│   │   └── shipkit.manifest.json    # Skill manifest
 │   ├── settings/
-│   │   └── shipkit.settings.json # Permissions + hooks
+│   │   └── shipkit.settings.json    # Permissions + hooks
 │   ├── claude-md/
-│   │   └── shipkit.md            # CLAUDE.md template (user-editable)
+│   │   └── shipkit.md               # CLAUDE.md template (user-editable)
 │   ├── shared/
-│   │   ├── hooks/                # Session hooks
-│   │   └── scripts/              # Shared utilities
-│   └── templates/                # Queue templates
+│   │   ├── hooks/                   # Session hooks
+│   │   └── scripts/                 # Shared utilities
+│   └── templates/                   # Queue templates
 │
-├── docs/                         # Documentation
+├── installers/                      # Alternative installers
+│   ├── install.py                   # Python installer (legacy)
+│   └── uninstall.py                 # Uninstaller
+│
+├── docs/                            # Documentation
 │   ├── getting-started.md
 │   ├── architecture.md
 │   ├── skill-reference.md
 │   └── creating-skills.md
 │
-└── README.md                     # This file
+├── package.json                     # npm package config
+└── README.md                        # This file
 ```
 
 ---
@@ -233,7 +237,7 @@ shipkit/
 ## Key Features
 
 ### Streamlined Workflow
-- 35 focused skills
+- 36 focused skills
 - All skills use `shipkit-` prefix for clarity
 - Context stored in single `.shipkit/` folder
 - No complex workspace structure
@@ -287,18 +291,16 @@ Implementation, debugging, testing, refactoring, and code documentation are **na
 
 ## Updating
 
-Use the `shipkit-update` skill:
+```bash
+npx shipkit update
+```
+
+Or use the `shipkit-update` skill from within Claude Code:
 ```bash
 /shipkit-update
 ```
 
-Or re-run the installer:
-```bash
-curl -O https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/installers/install.py
-python install.py -y
-```
-
-This preserves your `.shipkit/` context files while updating skill definitions.
+This preserves your `.shipkit/` context files and custom settings while updating skill definitions.
 
 ---
 
@@ -310,6 +312,8 @@ MIT License
 
 **Ready to ship faster?**
 
-Ask Claude: *"Use /shipkit-update to install Shipkit from https://github.com/stefan-stepzero/shipkit"*
+```bash
+npx shipkit init
+```
 
 **Streamlined product development, guided by AI.**
