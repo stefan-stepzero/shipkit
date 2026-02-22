@@ -33,7 +33,7 @@ async function update(packageRoot, flags) {
   if (!fs.existsSync(settingsPath)) {
     throw new Error(
       'No existing Shipkit installation found (.claude/settings.json missing).\n' +
-      'Run "npx shipkit-dev init" for a fresh install.'
+      'Run "npx github:stefan-stepzero/shipkit init" for a fresh install.'
     );
   }
 
@@ -229,7 +229,7 @@ async function update(packageRoot, flags) {
     console.log();
     ui.bullet('CLAUDE.md was not modified (user-managed file)');
     ui.bullet('.gitignore was not modified');
-    ui.info('If you need to regenerate CLAUDE.md, run: npx shipkit-dev init --claude-md overwrite');
+    ui.info('If you need to regenerate CLAUDE.md, run: npx github:stefan-stepzero/shipkit init --claude-md overwrite');
     console.log();
 
   } finally {

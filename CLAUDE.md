@@ -253,7 +253,7 @@ Location: `install/skills/`
 
 **System infrastructure:** `shipkit-detect` (auto-triggered hook, not user-invocable)
 
-**Total:** 36 skills
+**Total:** 36 user-invocable skills + 1 infrastructure (detect)
 
 ### Agents
 Location: `install/agents/`
@@ -266,6 +266,9 @@ Location: `install/agents/`
 - `install/shared/hooks/shipkit-session-start.py` — Session initialization
 - `install/shared/hooks/shipkit-after-skill-router.py` — Auto-detection routing
 - `install/shared/hooks/shipkit-relentless-stop-hook.py` — Relentless execution loop
+- `install/shared/hooks/shipkit-track-skill-usage.py` — Skill usage tracking
+- `install/shared/hooks/shipkit-task-completed-hook.py` — Task completion quality gate
+- `install/shared/hooks/shipkit-teammate-idle-hook.py` — Teammate idle quality gate
 
 ### Reference Materials (Local Only - Gitignored)
 - `docs/development/REFERENCES-BEST-PRACTICES.md` — PRIMARY REFERENCE
