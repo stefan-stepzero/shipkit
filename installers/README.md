@@ -97,55 +97,28 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ---
 
-### Bash Installer (Cross-Platform)
-**File:** `install.sh`
-**✨ Recommended for Git Bash/macOS/Linux users**
+### Bash Installer (Deprecated)
+**File:** `deprecated/install.sh`
 
-Works on:
-- macOS
-- Linux
-- Windows (Git Bash, WSL)
+> **Note:** Use `npx shipkit init` instead. This installer is no longer maintained.
 
-**Basic usage:**
-```bash
-cd your-project
-bash ../shipkit/installers/install.sh
-```
-
-**Advanced usage:**
-```bash
-# Install to specific directory
-bash install.sh --target /path/to/project
-
-# Non-interactive mode
-bash install.sh /path/to/project -y
-
-# Clone from GitHub and install
-bash install.sh --github https://github.com/user/shipkit.git --target ~/my-project
-
-# Show help
-bash install.sh --help
-```
+Works on macOS, Linux, Windows (Git Bash, WSL). Requires a local clone of the repo.
 
 ## What Gets Installed
 
-All installers create the same structure in your project:
+All installation methods create the same structure in your project:
 
 ```
 your-project/
 ├── CLAUDE.md                 # Project instructions for Claude
 ├── .claude/
 │   ├── settings.json         # Permissions + hooks
-│   ├── skills/               # 24 skill definitions
-│   ├── agents/               # 7 agent personas
-│   └── hooks/                # Session enforcement
+│   ├── skills/               # 36 skill definitions
+│   ├── agents/               # 9 agent personas
+│   ├── rules/                # Framework rules
+│   └── hooks/                # Session hooks
 └── .shipkit/
-    ├── scripts/bash/         # Shared utilities
-    └── skills/               # 24 skill implementations
-        */scripts/            # Automation
-        */templates/          # Templates
-        */references/         # Extended docs
-        */outputs/            # Artifacts (protected)
+    └── [context files]       # Specs, plans, architecture, etc.
 ```
 
 ## Future Installers
