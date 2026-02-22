@@ -176,7 +176,7 @@ All files preserved in context/ subfolder.
 
 **Run the npx CLI to install/update framework files:**
 ```bash
-npx shipkit update -y --claude-md skip
+npx shipkit-dev update -y --claude-md skip
 ```
 
 - `-y` for non-interactive (we already got permission in Step 0)
@@ -544,7 +544,7 @@ Ready to use. Review merged files, archive has originals.
 - `**/CLAUDE.md` - Subfolder instructions
 
 **From npm (via npx):**
-- `npx shipkit update` — Downloads and installs latest framework files
+- `npx shipkit-dev update` — Downloads and installs latest framework files
 
 The npx CLI handles installing:
 - Skills, agents, hooks, settings, rules, scripts, overview

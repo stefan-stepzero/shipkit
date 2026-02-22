@@ -17,7 +17,7 @@ You're building **RecipeShare** — a simple app where users can save and share 
 ```bash
 mkdir recipeshare && cd recipeshare
 git init
-npx shipkit init
+npx shipkit-dev init
 ```
 
 ### Define Your Vision

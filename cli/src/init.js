@@ -236,7 +236,7 @@ async function init(packageRoot, flags) {
     ui.bullet('Run /shipkit-why-project to define your project vision');
     console.log();
     ui.info(`To enable MCPs: ${ui.colors.dim}cp .mcp.json.example .mcp.json${ui.colors.reset}`);
-    ui.info(`To update later: ${ui.colors.dim}npx shipkit update${ui.colors.reset}`);
+    ui.info(`To update later: ${ui.colors.dim}npx shipkit-dev update${ui.colors.reset}`);
     console.log();
 
   } finally {

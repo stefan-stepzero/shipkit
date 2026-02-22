@@ -28,10 +28,10 @@ Shipkit is a collection of **Claude Code skills** that help you build products f
 
 ```bash
 cd your-project
-npx shipkit init
+npx shipkit-dev init
 ```
 
-Add `-y` for non-interactive mode with defaults: `npx shipkit init -y`
+Add `-y` for non-interactive mode with defaults: `npx shipkit-dev init -y`
 
 The installer will:
 1. Create `.claude/skills/` with all Shipkit skills

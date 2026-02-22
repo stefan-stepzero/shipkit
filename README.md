@@ -93,14 +93,14 @@ All skills use the `shipkit-` prefix for clarity.
 
 ```bash
 cd your-project
-npx shipkit init
+npx shipkit-dev init
 ```
 
-Add `-y` for non-interactive mode (uses sensible defaults): `npx shipkit init -y`
+Add `-y` for non-interactive mode (uses sensible defaults): `npx shipkit-dev init -y`
 
 **Update an existing installation:**
 ```bash
-npx shipkit update
+npx shipkit-dev update
 ```
 
 <details>
@@ -292,7 +292,7 @@ Implementation, debugging, testing, refactoring, and code documentation are **na
 ## Updating
 
 ```bash
-npx shipkit update
+npx shipkit-dev update
 ```
 
 Or use the `shipkit-update` skill from within Claude Code:
@@ -313,7 +313,7 @@ MIT License
 **Ready to ship faster?**
 
 ```bash
-npx shipkit init
+npx shipkit-dev init
 ```
 
 **Streamlined product development, guided by AI.**

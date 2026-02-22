@@ -4,8 +4,8 @@
 
 ```bash
 cd your-project
-npx shipkit init        # Fresh install
-npx shipkit update      # Update existing
+npx shipkit-dev init        # Fresh install
+npx shipkit-dev update      # Update existing
 ```
 
 No clone needed. Zero dependencies beyond Node.js 18+. Add `-y` for non-interactive mode.
@@ -100,7 +100,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ### Bash Installer (Deprecated)
 **File:** `deprecated/install.sh`
 
-> **Note:** Use `npx shipkit init` instead. This installer is no longer maintained.
+> **Note:** Use `npx shipkit-dev init` instead. This installer is no longer maintained.
 
 Works on macOS, Linux, Windows (Git Bash, WSL). Requires a local clone of the repo.
 

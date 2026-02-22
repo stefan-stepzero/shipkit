@@ -113,7 +113,7 @@ function printHelp() {
 Shipkit — Streamlined product development framework for Claude Code
 
 Usage:
-  npx shipkit <command> [options]
+  npx shipkit-dev <command> [options]
 
 Commands:
   init       Install Shipkit into the current project
@@ -133,10 +133,10 @@ Options:
   -y, --yes            Non-interactive mode (accept all defaults)
 
 Examples:
-  npx shipkit init                    Interactive install
-  npx shipkit init -y                 Install with defaults (all skills, all agents)
-  npx shipkit init --profile minimal  Install minimal profile
-  npx shipkit update                  Update to latest version
+  npx shipkit-dev init                    Interactive install
+  npx shipkit-dev init -y                 Install with defaults (all skills, all agents)
+  npx shipkit-dev init --profile minimal  Install minimal profile
+  npx shipkit-dev update                  Update to latest version
 `);
 }
 

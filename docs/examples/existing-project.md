@@ -17,7 +17,7 @@ You have an existing Next.js e-commerce app. You want to use Shipkit to:
 
 ```bash
 cd your-existing-project
-npx shipkit init
+npx shipkit-dev init
 ```
 
 The installer detects you have existing code and adjusts accordingly.

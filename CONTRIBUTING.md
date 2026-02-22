@@ -111,7 +111,7 @@ Before submitting:
 2. Test installation in a scratch project:
    ```bash
    mkdir test-project && cd test-project
-   npx shipkit init
+   npx shipkit-dev init
    ```
    Or from local repo: `node ../shipkit/cli/bin/shipkit.js init`
 3. Make changes to skills/agents
