@@ -8,7 +8,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
-*No unreleased changes*
+### Added
+- **npx CLI for one-command install and update** — `npx github:stefan-stepzero/shipkit init` (zero dependencies, Node 18+). Full interactive and non-interactive modes with profile selection, skill/agent toggles, and CLAUDE.md merge strategies. Package name: `shipkit-dev` (pending npm publish).
+- **`sync-docs` command** — `node cli/bin/shipkit.js sync-docs` regenerates skill/agent counts across README.md, installers/README.md, and shipkit-overview.html from the manifest using `<!-- sync:* -->` markers. Eliminates manual count tracking.
+- **Artifact-aware pipeline startup** — `/shipkit-team --template pipeline` now scans `.shipkit/` on startup, maps existing artifacts to phases, and skips completed phases automatically.
+
+### Changed
+- Pipeline template updated with artifact-to-phase mapping, partial completion detection, and status display
+- `shipkit-update` skill now uses npx CLI as primary method (Python installer as fallback)
+- `shipkit-dev-release` Step 4 uses `sync-docs` instead of manual count audit
+- `shipkit-framework-integrity` validates both npx CLI and Python installer (dual-installer coverage)
+- All docs and skills updated to reference `npx shipkit-dev` (with `github:` pre-publish notes)
+- Bash installer marked as deprecated
+- CLAUDE.md Configuration Files section now lists all 6 hook files
+
+### Fixed
+- Stale `install/VERSION` path references (VERSION is at repo root)
+- Skill count inconsistencies across README, CLAUDE.md, installers/README.md, and overview HTML
+- CLI completion messages use working `github:` form pre-publish
 
 ---
 
