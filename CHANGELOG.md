@@ -8,6 +8,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+---
+
+## [1.11.0] - 2026-02-27
+
+### Added
+- **`primaryIntent` field on personas** — Product discovery personas now include a `primaryIntent` field for multi-user app support. Enables downstream skills to map mechanisms and criteria to specific user types (e.g., teachers vs students, buyers vs sellers).
+- **`personaIntents` map in product-definition** — Solution blueprints now include a `personaIntents` object mapping persona IDs to their intents for multi-user products.
+- **Derivation patterns reference** — New `references/derivation-patterns.md` for goals skill documenting mechanism→criteria, pattern→criteria, differentiator→criteria, and MVP boundary→gate derivation patterns.
+
+### Changed
+- **Discovery chain reordered** — `why → discovery → definition → goals → spec → plan` (was: `why → goals → discovery → definition`). Goals now derive from the solution blueprint instead of being defined before it exists.
+- **`shipkit-product-definition` rewritten as solution blueprint** — Captures mechanisms, UX patterns, differentiators, design decisions, stack direction, and MVP scope boundary. Replaces the previous feature portfolio mapper approach. New v2 schema with ID-based graph (`M-001`, `P-001`, `D-001`, `F-001`).
+- **`shipkit-goals` rewritten as success criteria** — Produces measurable criteria with thresholds and verification methods, organized into stage gates. Replaces the previous strategic objectives approach. New v2 schema with criteria + gates model.
+- Updated 10 dependent skills for chain consistency: master routing, why-project, spec, plan, architecture-memory, team, project-status, product-discovery, and team templates
+- Updated manifests, rules, README, getting-started, skill-reference, and overview HTML
+- Pipeline template phases renamed: Phase 1 = Discovery (why + discovery), Phase 2 = Solution Design (definition + goals)
+
+### Removed
+- `references/goal-templates.md` — replaced by `references/derivation-patterns.md`
+
+---
+
+## [1.10.0] - 2026-02-25
+
 ### Added
 - **npx CLI for one-command install and update** — `npx github:stefan-stepzero/shipkit init` (zero dependencies, Node 18+). Full interactive and non-interactive modes with profile selection, skill/agent toggles, and CLAUDE.md merge strategies. Package name: `shipkit-dev` (pending npm publish).
 - **`sync-docs` command** — `node cli/bin/shipkit.js sync-docs` regenerates skill/agent counts across README.md, installers/README.md, and shipkit-overview.html from the manifest using `<!-- sync:* -->` markers. Eliminates manual count tracking.
