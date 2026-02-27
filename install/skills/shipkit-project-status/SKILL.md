@@ -77,8 +77,10 @@ Per the Skill Artifact Dependency Graph, Phase 1 files are:
 **Also check these Phase 2+ files if they exist**:
 
 ```bash
-# Phase 2: Discovery
-.shipkit/goals.json            # Strategic goals (from /shipkit-goals)
+# Phase 2: Solution Design
+.shipkit/product-discovery.json # User needs & personas (from /shipkit-product-discovery)
+.shipkit/product-definition.json # Solution blueprint (from /shipkit-product-definition)
+.shipkit/goals.json            # Success criteria & stage gates (from /shipkit-goals)
 
 # Phase 3: Design (cross-cutting)
 .shipkit/architecture.json     # Tech decisions (from /shipkit-architecture-memory)
@@ -213,8 +215,8 @@ fi
 - If approaching release but `/shipkit-preflight` stale → Suggest it
 
 **Skill categories for analysis**:
-- **Discovery**: shipkit-product-discovery, shipkit-why-project, shipkit-project-context
-- **Planning**: shipkit-spec, shipkit-plan, shipkit-product-definition
+- **Discovery**: shipkit-why-project, shipkit-product-discovery, shipkit-product-definition, shipkit-goals, shipkit-project-context
+- **Planning**: shipkit-spec, shipkit-plan
 - **Implementation**: shipkit-architecture-memory, shipkit-data-contracts, shipkit-integration-docs
 - **Quality**: shipkit-verify, shipkit-preflight, shipkit-ux-audit
 
@@ -243,7 +245,7 @@ Location: .shipkit/status.json
     ✓ schema.json (fresh)
     ✗ codebase-index.json (missing)
 
-  Discovery: goals.json ✓ | architecture.json ✓
+  Discovery: product-discovery.json ✓ | product-definition.json ✓ | goals.json ✓ | architecture.json ✓
   Workflow: 2 specs | 0 plans | 5 tasks
 
   Gaps Found: 3
@@ -330,8 +332,14 @@ ELSE IF codebase-index.json missing AND project has >10 source files:
   → "Run /shipkit-codebase-index to accelerate code understanding"
 
 # Discovery checks (Phase 2)
-ELSE IF goals.json missing AND why.json exists:
-  → "Run /shipkit-goals to define strategic goals"
+ELSE IF product-discovery.json missing AND why.json exists:
+  → "Run /shipkit-product-discovery to define user needs and personas"
+
+ELSE IF product-definition.json missing AND product-discovery.json exists:
+  → "Run /shipkit-product-definition to design solution blueprint"
+
+ELSE IF goals.json missing AND product-definition.json exists:
+  → "Run /shipkit-goals to define success criteria and stage gates"
 
 # Workflow checks (Phase 3+)
 ELSE IF active specs exist AND no plans exist:
@@ -460,9 +468,19 @@ Copy and track:
 
 **Discovery (Phase 2)**:
 
-- `/shipkit-goals` - When goals.json is missing but why.json exists
-  - **When**: Foundation complete but no strategic goals defined
-  - **Why**: Goals guide spec prioritization
+- `/shipkit-product-discovery` - When product-discovery.json is missing but why.json exists
+  - **When**: Foundation complete but no user needs defined
+  - **Why**: Discovery informs solution design
+  - **Trigger**: Discovery gap detected
+
+- `/shipkit-product-definition` - When product-definition.json is missing but product-discovery.json exists
+  - **When**: User needs defined but no solution blueprint
+  - **Why**: Definition captures HOW to solve discovered needs
+  - **Trigger**: Discovery gap detected
+
+- `/shipkit-goals` - When goals.json is missing but product-definition.json exists
+  - **When**: Solution designed but no success criteria defined
+  - **Why**: Goals provide measurable criteria for verifying the solution works
   - **Trigger**: Discovery gap detected
 
 **Workflow (Phase 3+)**:
@@ -488,7 +506,9 @@ Copy and track:
 - `.shipkit/codebase-index.json` - Code understanding accelerator
 
 **Discovery/Design files (Phase 2-3 - checks if exist)**:
-- `.shipkit/goals.json` - Strategic goals
+- `.shipkit/product-discovery.json` - User needs & personas
+- `.shipkit/product-definition.json` - Solution blueprint (mechanisms, patterns, features)
+- `.shipkit/goals.json` - Success criteria & stage gates
 - `.shipkit/architecture.json` - Tech decisions
 - `.shipkit/contracts.json` - Data contracts
 

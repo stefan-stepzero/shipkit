@@ -450,7 +450,7 @@
                     <div class="quick-ref-item">
                         <div class="icon">🗺️</div>
                         <div class="text">
-                            <div class="when">Map goals to features?</div>
+                            <div class="when">Design solution blueprint?</div>
                             <div class="skill-name">/shipkit-product-definition</div>
                         </div>
                     </div>
@@ -493,7 +493,17 @@
                             <td class="creates">why.json</td>
                         </tr>
                         <tr>
-                            <td class="trigger">Set objectives & priorities</td>
+                            <td class="trigger">Define personas, journeys, user needs</td>
+                            <td><span class="skill">/shipkit-product-discovery</span></td>
+                            <td class="creates">product-discovery.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Design solution blueprint</td>
+                            <td><span class="skill">/shipkit-product-definition</span></td>
+                            <td class="creates">product-definition.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Define success criteria & stage gates</td>
                             <td><span class="skill">/shipkit-goals</span></td>
                             <td class="creates">goals.json</td>
                         </tr>
@@ -513,19 +523,9 @@
                             <td class="creates">Appends to CLAUDE.md</td>
                         </tr>
                         <tr>
-                            <td class="trigger">Define personas, journeys, stories</td>
-                            <td><span class="skill">/shipkit-product-discovery</span></td>
-                            <td class="creates">product-discovery.json</td>
-                        </tr>
-                        <tr>
                             <td class="trigger">Check project health & gaps</td>
                             <td><span class="skill">/shipkit-project-status</span></td>
                             <td class="creates">Status report (terminal)</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Map goals to features, coverage analysis</td>
-                            <td><span class="skill">/shipkit-product-definition</span></td>
-                            <td class="creates">product-definition.json</td>
                         </tr>
                     </table>
                 </div>
@@ -712,10 +712,10 @@
                         <li><span class="name">/shipkit-project-context</span> <span class="desc">— Auto-scan codebase to detect tech stack, frameworks, and patterns. Creates stack.json.</span></li>
                         <li><span class="name">/shipkit-codebase-index</span> <span class="desc">— Generate navigation index for faster file discovery. Creates codebase-index.json.</span></li>
                         <li><span class="name">/shipkit-claude-md</span> <span class="desc">— Append learnings, preferences, or project patterns to CLAUDE.md for persistence.</span></li>
-                        <li><span class="name">/shipkit-product-discovery</span> <span class="desc">— Define user personas, journeys, and stories. Captures who you're building for.</span></li>
+                        <li><span class="name">/shipkit-product-discovery</span> <span class="desc">— Define user personas, journeys, and needs. Captures who you're building for and what they need.</span></li>
+                        <li><span class="name">/shipkit-product-definition</span> <span class="desc">— Design the solution blueprint: core mechanisms, UX patterns, differentiators, and MVP scope boundary.</span></li>
+                        <li><span class="name">/shipkit-goals</span> <span class="desc">— Derive measurable success criteria from the solution blueprint. Stage gates that verify the solution works.</span></li>
                         <li><span class="name">/shipkit-project-status</span> <span class="desc">— Health check: scans specs, plans, progress to show what's done and pending.</span></li>
-                        <li><span class="name">/shipkit-goals</span> <span class="desc">— Capture structured project goals with priorities, status, and success criteria. Bridges vision to specs.</span></li>
-                        <li><span class="name">/shipkit-product-definition</span> <span class="desc">— Map goals to features with dependency ordering and coverage analysis. The product blueprint.</span></li>
                     </ul>
                 </div>
 

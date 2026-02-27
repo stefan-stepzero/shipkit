@@ -274,13 +274,17 @@ The pipeline template orchestrates the full product development lifecycle — fr
 ### Pipeline Phases
 
 ```
-Phase 1: Discovery ──────→ Phase 2: Product Definition ──→ Phase 3: Specification
+Phase 1: Discovery ──────→ Phase 2: Solution Design ─────→ Phase 3: Specification
     │                            │                              │
     ▼                            ▼                              ▼
 why.json                  product-definition.json          specs/*.json
-goals.json                (feature portfolio +             (one per feature,
-product-discovery.json     goal coverage matrix)            batch from product-def)
-stack.json (parallel)           │
+product-discovery.json    (solution blueprint:             (one per feature,
+stack.json (parallel)      mechanisms, patterns,            batch from product-def)
+                           differentiators, MVP)
+                          goals.json
+                          (success criteria +
+                           stage gates)
+                                │
                           Phase 4: Architecture ──→ Phase 5: Planning
                                │                        │
                                ▼                        ▼
@@ -297,21 +301,21 @@ stack.json (parallel)           │
 
 #### Phase 1: Discovery
 - **Agent**: Product Owner (Sonnet)
-- **Skills**: `/shipkit-why-project`, `/shipkit-goals`, `/shipkit-product-discovery` (sequential); `/shipkit-project-context` (parallel if codebase exists)
-- **Gate**: `why.json` + `goals.json` + `product-discovery.json` written and confirmed
-- **Notes**: Vision first — why-project has no dependencies, everything else flows from it. Sequential: why → goals → personas. `project-context` runs in parallel because it reads the codebase (not vision artifacts). For greenfield projects with no code yet, `project-context` may produce minimal output and can re-run after scaffolding. The product goal from `$ARGUMENTS` is passed as context to each skill.
+- **Skills**: `/shipkit-why-project`, `/shipkit-product-discovery` (sequential); `/shipkit-project-context` (parallel if codebase exists)
+- **Gate**: `why.json` + `product-discovery.json` written and confirmed
+- **Notes**: Vision first — why-project has no dependencies, discovery flows from it. Sequential: why → discovery (personas, user needs, journeys). `project-context` runs in parallel because it reads the codebase (not vision artifacts). For greenfield projects with no code yet, `project-context` may produce minimal output and can re-run after scaffolding. The product goal from `$ARGUMENTS` is passed as context to each skill.
 
-#### Phase 2: Product Definition
+#### Phase 2: Solution Design
 - **Agent**: Product Owner (Sonnet)
-- **Skills**: `/shipkit-product-definition`
-- **Gate**: `product-definition.json` written and confirmed — feature portfolio with goal coverage matrix
-- **Notes**: **KEY GATE** — This is where the product blueprint is confirmed. All downstream work derives from this artifact. Reads: goals.json, product-discovery.json, why.json, stack.json. In default mode, always pause here regardless of previous auto-confirms.
+- **Skills**: `/shipkit-product-definition`, `/shipkit-goals` (sequential)
+- **Gate**: `product-definition.json` + `goals.json` written and confirmed — solution blueprint with success criteria
+- **Notes**: **KEY GATE** — This is where the solution design is confirmed. Product definition creates the solution blueprint (mechanisms, UX patterns, differentiators, MVP boundary). Goals derives measurable success criteria from the blueprint. All downstream work derives from these artifacts. Reads: product-discovery.json, why.json, stack.json. In default mode, always pause here regardless of previous auto-confirms.
 
 #### Phase 3: Specification
 - **Agent**: Product Owner (Opus)
 - **Skills**: `/shipkit-spec` (batch mode from product-definition)
-- **Gate**: All features in `product-definition.json` have specs written
-- **Notes**: Uses Opus for complex spec reasoning. Iterates features in dependency order from `product-definition.json`.
+- **Gate**: All MVP features in `product-definition.json` have specs written
+- **Notes**: Uses Opus for complex spec reasoning. Iterates MVP features in dependency order from `product-definition.json`.
 
 #### Phase 4: Architecture
 - **Agent**: Architect (Sonnet)
@@ -342,10 +346,10 @@ These are invoked directly by the pipeline phases:
 | Phase | Skill | Role |
 |-------|-------|------|
 | 1 | `/shipkit-why-project` | Vision → why.json |
-| 1 | `/shipkit-goals` | Outcomes → goals.json |
-| 1 | `/shipkit-product-discovery` | Personas → product-discovery.json |
+| 1 | `/shipkit-product-discovery` | User needs → product-discovery.json |
 | 1 | `/shipkit-project-context` | Stack detection → stack.json (parallel) |
-| 2 | `/shipkit-product-definition` | Feature portfolio → product-definition.json |
+| 2 | `/shipkit-product-definition` | Solution blueprint → product-definition.json |
+| 2 | `/shipkit-goals` | Success criteria → goals.json |
 | 3 | `/shipkit-spec` | Feature specs → specs/*.json (batch) |
 | 4 | `/shipkit-architecture-memory` | Architecture proposal → architecture.json |
 | 5 | `/shipkit-plan` | Implementation plans → plans/*.json |
@@ -410,8 +414,8 @@ Write `.shipkit/team-state.local.json` with pipeline-specific fields:
   "mode": "default",
   "created": "ISO timestamp",
   "phases": [
-    {"id": 1, "name": "Discovery", "status": "in_progress", "gate": "why + goals + personas confirmed"},
-    {"id": 2, "name": "Product Definition", "status": "pending", "gate": "product-definition.json confirmed"},
+    {"id": 1, "name": "Discovery", "status": "in_progress", "gate": "why + personas/discovery confirmed"},
+    {"id": 2, "name": "Solution Design", "status": "pending", "gate": "product-definition.json + goals.json confirmed"},
     {"id": 3, "name": "Specification", "status": "pending", "gate": "All feature specs written"},
     {"id": 4, "name": "Architecture", "status": "pending", "gate": "architecture.json confirmed"},
     {"id": 5, "name": "Planning", "status": "pending", "gate": "All plans written"},
@@ -441,8 +445,8 @@ On pipeline startup, scan `.shipkit/` before doing anything else. Map existing a
 
 | Phase | Required Artifacts | Complete When |
 |-------|--------------------|---------------|
-| 1 Discovery | `why.json`, `goals.json`, `product-discovery.json` | All 3 exist and non-empty. `stack.json` optional (parallel). |
-| 2 Product Definition | `product-definition.json` | Exists with `features[]` array. |
+| 1 Discovery | `why.json`, `product-discovery.json` | Both exist and non-empty. `stack.json` optional (parallel). |
+| 2 Solution Design | `product-definition.json`, `goals.json` | Both exist. Definition has `features[]` array. Goals has `criteria[]` array. |
 | 3 Specification | `specs/todo/*.json` or `specs/active/*.json` | Spec count ≥ feature count from product-definition. |
 | 4 Architecture | `architecture.json` | Exists with at least one entry. `contracts.json` optional. |
 | 5 Planning | `plans/todo/*.json` or `plans/active/*.json` | Plan count ≥ spec count. |
@@ -472,8 +476,8 @@ Always show the scan result before proceeding:
 
 ```
 Pipeline Artifact Scan:
-  ✅ Phase 1 (Discovery): why.json, goals.json, product-discovery.json, stack.json
-  ✅ Phase 2 (Product Definition): product-definition.json (12 features)
+  ✅ Phase 1 (Discovery): why.json, product-discovery.json, stack.json
+  ✅ Phase 2 (Solution Design): product-definition.json, goals.json (12 criteria, 2 gates)
   ⚠️ Phase 3 (Specification): 3/12 specs written — 9 remaining
   ❌ Phase 4 (Architecture): not started
   ❌ Phase 5 (Planning): not started

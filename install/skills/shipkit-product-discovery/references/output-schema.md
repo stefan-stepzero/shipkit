@@ -26,6 +26,7 @@ This document defines the JSON schema for `.shipkit/product-discovery.json` prod
       "id": "persona-1",
       "name": "Solo Developer",
       "role": "Full-stack developer",
+      "primaryIntent": "Ship side projects to production quickly",
       "goals": ["Ship MVP fast", "Avoid context loss"],
       "frustrations": ["Starting over each session", "Forgetting decisions"],
       "techComfort": "high",
@@ -112,6 +113,7 @@ This document defines the JSON schema for `.shipkit/product-discovery.json` prod
 | `id` | string | Stable ID: `persona-{n}` |
 | `name` | string | Persona name or archetype |
 | `role` | string | Role or job title |
+| `primaryIntent` | string | Core motivation for using the product (e.g., "Create worksheets efficiently"). For multi-user apps, each persona should have a distinct intent. |
 | `goals` | string[] | What they want to achieve |
 | `frustrations` | string[] | Current pain points (human-readable) |
 | `techComfort` | string | `"high"`, `"medium"`, or `"low"` |

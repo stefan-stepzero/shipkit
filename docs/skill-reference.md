@@ -14,11 +14,11 @@ Complete reference for all 23 Shipkit skills.
 | | `shipkit-codebase-index` | Semantic indexing |
 | | `shipkit-claude-md` | CLAUDE.md management |
 | **Discovery** | `shipkit-why-project` | Vision definition |
-| | `shipkit-goals` | Project goals & priorities |
-| | `shipkit-product-discovery` | Personas and journeys |
+| | `shipkit-product-discovery` | Personas, journeys, user needs |
+| | `shipkit-product-definition` | Solution blueprint (mechanisms, patterns, MVP) |
+| | `shipkit-goals` | Success criteria & stage gates |
 | | `shipkit-spec` | Feature specification |
 | | `shipkit-plan` | Implementation planning |
-| | `shipkit-product-definition` | Feature portfolio from goals |
 | **Implementation** | `shipkit-architecture-memory` | Architecture decisions & proposals |
 | | `shipkit-data-contracts` | Type definitions |
 | | `shipkit-integration-docs` | External API patterns |
@@ -188,14 +188,14 @@ Suggested: Create a spec with /shipkit-spec
 
 ### shipkit-product-definition
 
-**Purpose:** Synthesizes vision artifacts into a feature portfolio mapped to goals with dependency ordering and coverage analysis.
+**Purpose:** Creates a solution blueprint: core mechanisms, UX patterns, differentiators, design decisions, and MVP scope boundary.
 
 **When to use:**
-- After defining goals and personas
-- Need a complete feature portfolio before writing specs
-- Want goal-to-feature traceability
+- After product discovery, before defining success criteria
+- Need to design HOW the product works, not just WHAT it does
+- Want mechanism-level thinking before jumping to features
 
-**Reads:** `.shipkit/goals.json`, `.shipkit/product-discovery.json`, `.shipkit/why.json`, `.shipkit/stack.json`
+**Reads:** `.shipkit/product-discovery.json`, `.shipkit/why.json`, `.shipkit/stack.json`
 **Writes:** `.shipkit/product-definition.json`
 
 ---

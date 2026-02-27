@@ -115,8 +115,8 @@ See the **Pipeline Template** section in the main skill file for full phase deta
 
 **Summary:**
 ```
-Phase 1: Discovery        — why → goals → personas (+ project-context parallel)
-Phase 2: Product Definition — feature portfolio with goal coverage
+Phase 1: Discovery        — why → discovery (+ project-context parallel)
+Phase 2: Solution Design   — definition → goals
 Phase 3: Specification     — batch specs from product-definition
 Phase 4: Architecture      — solution architect proposes from all context
 Phase 5: Planning          — one plan per spec, dependency-ordered

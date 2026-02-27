@@ -63,12 +63,12 @@ If `$ARGUMENTS` is empty, proceed normally from Step -1.
 Check if a product definition exists with features to spec:
 
 1. Read `.shipkit/product-definition.json` (if exists)
-2. If found, check for features where `status` is `"todo"` (no spec written yet)
+2. If found, check for features where `mvp` is `true` and no spec exists yet
 3. If unspecced features exist:
-   - Sort by `dependencyOrder` field
+   - Sort by `dependencies` field (features with no dependencies first)
    - Announce: "Product definition found. {N} features need specs. Starting with: **{first feature name}** — {description}"
-   - For the first unspecced feature, proceed to Step 0 (Propose Mode) with the feature's context (goalsServed, personasServed, description, dependsOn)
-   - After writing the spec, update `product-definition.json`: set `specPath` to the written file path and `status` to `"specced"`
+   - For the first unspecced feature, proceed to Step 0 (Propose Mode) with the feature's context (mechanisms, patterns, description, dependencies)
+   - After writing the spec, note completion
    - Ask: "Continue to next feature?" (in pipeline/YOLO mode, auto-continue)
    - Repeat for each unspecced feature
 4. If no `product-definition.json` or no unspecced features: proceed to Step 0
@@ -79,12 +79,12 @@ Check if a product definition exists with features to spec:
 
 Check if sufficient context exists to propose a spec without interactive questions:
 
-**Context sufficiency**: `product-definition.json` exists for this feature, OR (`goals.json` AND `why.json` exist)
+**Context sufficiency**: `product-definition.json` exists for this feature, OR (`why.json` exists with sufficient context)
 
 1. Read available context in parallel:
-   - `.shipkit/product-definition.json` — feature description, goals served, personas
-   - `.shipkit/goals.json` — what outcomes we need
-   - `.shipkit/product-discovery.json` — persona details
+   - `.shipkit/product-definition.json` — solution blueprint: mechanisms, patterns, features
+   - `.shipkit/goals.json` — success criteria and stage gates (if exists)
+   - `.shipkit/product-discovery.json` — persona details and user needs
    - `.shipkit/stack.json` — tech constraints
    - `.shipkit/architecture.json` — existing architecture decisions
    - `.shipkit/codebase-index.json` — existing code patterns

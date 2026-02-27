@@ -33,6 +33,9 @@ All project context lives in `.shipkit/`:
 | File | Purpose |
 |------|---------|
 | `why.json` | Vision, constraints, approach |
+| `product-discovery.json` | User needs, personas, journeys |
+| `product-definition.json` | Solution blueprint (mechanisms, patterns, MVP) |
+| `goals.json` | Success criteria & stage gates |
 | `stack.json` | Tech choices (auto-scanned) |
 | `architecture.json` | Decisions log (append-only) |
 | `progress.json` | Session continuity |
@@ -68,13 +71,18 @@ If `.shipkit/codebase-index.json` exists:
 | Check project health | `/shipkit-project-status` |
 | Index codebase for navigation | `/shipkit-codebase-index` |
 
+### Solution Design
+| When... | Use |
+|---------|-----|
+| Design solution blueprint | `/shipkit-product-definition` |
+| Define success criteria & stage gates | `/shipkit-goals` |
+
 ### Spec & Planning
 | When... | Use |
 |---------|-----|
 | Create feature specification | `/shipkit-spec` |
 | Process feedback into investigated bug specs | `/shipkit-feedback-bug` |
 | Plan implementation steps | `/shipkit-plan` |
-| Map goals to features | `/shipkit-product-definition` |
 | Think through decisions | `/shipkit-thinking-partner` |
 
 ### Knowledge & Memory

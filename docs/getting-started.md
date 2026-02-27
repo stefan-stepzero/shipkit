@@ -118,17 +118,21 @@ Checks your implementation against the spec and flags issues.
 ## Core Workflow
 
 ```
-/shipkit-why-project       →  Define vision & constraints
+/shipkit-why-project           →  Define vision & constraints
         ↓
-/shipkit-project-context   →  Scan codebase, detect stack
+/shipkit-product-discovery     →  Define personas & user needs
         ↓
-/shipkit-spec              →  Create feature specification
+/shipkit-product-definition    →  Design solution blueprint
         ↓
-/shipkit-plan              →  Plan implementation steps
+/shipkit-goals                 →  Define success criteria & stage gates
         ↓
-(implement)                →  Build it (natural capability)
+/shipkit-spec                  →  Create feature specification
         ↓
-/shipkit-verify            →  Verify quality
+/shipkit-plan                  →  Plan implementation steps
+        ↓
+(implement)                    →  Build it (natural capability)
+        ↓
+/shipkit-verify                →  Verify quality
 ```
 
 ---
@@ -203,7 +207,7 @@ Appends a decision to `.shipkit/architecture.json` with rationale.
 /shipkit-product-definition
 ```
 
-Maps goals to a feature portfolio with dependency ordering and coverage analysis.
+Creates a solution blueprint: core mechanisms, UX patterns, differentiators, and MVP scope boundary.
 
 ### End a Session
 

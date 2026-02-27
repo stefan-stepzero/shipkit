@@ -1,8 +1,8 @@
 {
   "$schema": "shipkit-artifact",
   "type": "goals",
-  "version": "1.0",
-  "lastUpdated": "2025-01-15",
+  "version": "2.0",
+  "lastUpdated": "2026-02-27T15:00:00Z",
   "source": "shipkit-goals",
 
   "stage": {
@@ -10,103 +10,256 @@
     "target": "production"
   },
 
-  "summary": {
-    "total": 6,
-    "byPriority": { "p0": 2, "p1": 3, "p2": 1 },
-    "byStatus": { "not-started": 2, "in-progress": 2, "achieved": 1, "deferred": 1 },
-    "byLens": { "technical": 2, "product": 2, "growth": 1, "operational": 1 }
+  "derivedFrom": {
+    "productDefinition": ".shipkit/product-definition.json",
+    "productDiscovery": ".shipkit/product-discovery.json"
   },
 
-  "goals": [
+  "criteria": [
     {
-      "id": "auth-hardened",
-      "name": "Auth Hardened",
-      "lens": "technical",
-      "priority": "p0",
-      "status": "achieved",
-      "objective": "Authentication secure enough for production use",
-      "successCriteria": [
-        "Session expiry configured",
-        "Rate limiting on auth endpoints",
-        "Brute force prevention active"
-      ],
-      "linkedSpecs": [],
-      "notes": "Completed 2025-01-10"
+      "id": "criterion-generation-speed",
+      "name": "Worksheet generation speed",
+      "category": "technical-performance",
+      "metric": "Time from submit to first streamed content",
+      "threshold": "< 5 seconds",
+      "currentValue": null,
+      "verificationMethod": "automated-test",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "mechanism",
+        "id": "M-001"
+      },
+      "painPointAddressed": "pain-time-creating",
+      "notes": "Streaming first content, not full worksheet. Full generation may take 10-15s but user sees progress."
     },
     {
-      "id": "error-recovery",
-      "name": "Error Recovery Exists",
-      "lens": "technical",
-      "priority": "p0",
-      "status": "in-progress",
-      "objective": "System handles failures gracefully",
-      "successCriteria": [
-        "Retry logic on transient failures",
-        "Graceful degradation for non-critical features",
-        "User sees actionable error messages"
-      ],
-      "linkedSpecs": [],
-      "notes": "Retry logic done, working on degradation"
+      "id": "criterion-content-quality",
+      "name": "Generated content is grade-appropriate",
+      "category": "technical-performance",
+      "metric": "Accuracy of generated questions against grade-level standards",
+      "threshold": "> 90% accuracy on manual review of 20 samples",
+      "currentValue": null,
+      "verificationMethod": "manual-check",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "mechanism",
+        "id": "M-001"
+      },
+      "painPointAddressed": "pain-generic-content",
+      "notes": "Review sample should span at least 3 grade levels and 3 math domains"
     },
     {
-      "id": "onboarding-flow",
-      "name": "Onboarding Flow Complete",
-      "lens": "product",
-      "priority": "p1",
-      "status": "in-progress",
-      "objective": "New users guided through first key actions",
-      "successCriteria": [
-        "First-run experience exists",
-        "User completes activation within first session",
-        "Empty states guide next actions"
-      ],
-      "linkedSpecs": ["specs/active/onboarding.json"],
-      "notes": null
+      "id": "criterion-generation-reliability",
+      "name": "Generation completes without error",
+      "category": "technical-performance",
+      "metric": "Percentage of generation requests that complete successfully",
+      "threshold": "> 99%",
+      "currentValue": null,
+      "verificationMethod": "analytics",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "mechanism",
+        "id": "M-001"
+      },
+      "painPointAddressed": null,
+      "notes": "Track via error rate monitoring. Includes LLM timeouts and malformed responses."
     },
     {
-      "id": "webhook-verification",
-      "name": "Webhook Signature Verification",
-      "lens": "technical",
-      "priority": "p1",
-      "status": "not-started",
-      "objective": "Payment webhooks verified before processing",
-      "successCriteria": [
-        "Stripe webhook signatures validated",
-        "Invalid webhooks rejected with logging",
-        "Replay attacks prevented"
-      ],
-      "linkedSpecs": ["specs/active/payments.json"],
-      "notes": "Blocked until payments integration starts"
+      "id": "criterion-wizard-completion-time",
+      "name": "Teacher creates worksheet quickly",
+      "category": "user-outcome",
+      "metric": "Time from wizard start to worksheet preview",
+      "threshold": "80% of users complete in < 2 minutes",
+      "currentValue": null,
+      "verificationMethod": "analytics",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "pattern",
+        "id": "P-001"
+      },
+      "painPointAddressed": "pain-time-creating",
+      "notes": "Excludes time spent reviewing/iterating on preview"
     },
     {
-      "id": "user-docs",
-      "name": "User-Facing Documentation",
-      "lens": "operational",
-      "priority": "p1",
-      "status": "not-started",
-      "objective": "Users can self-serve answers to common questions",
-      "successCriteria": [
-        "FAQ covers top 10 questions",
-        "Getting started guide exists",
-        "Help accessible from within app"
-      ],
-      "linkedSpecs": [],
-      "notes": null
+      "id": "criterion-wizard-completion-rate",
+      "name": "Users finish the creation flow",
+      "category": "user-outcome",
+      "metric": "Percentage of users who start wizard and reach export",
+      "threshold": "> 80%",
+      "currentValue": null,
+      "verificationMethod": "analytics",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "pattern",
+        "id": "P-001"
+      },
+      "painPointAddressed": null,
+      "notes": "Funnel: topic selection → standards → parameters → preview → export"
     },
     {
-      "id": "invite-flow",
-      "name": "User Can Invite Others",
-      "lens": "growth",
-      "priority": "p2",
-      "status": "deferred",
-      "objective": "Enable organic growth through user referrals",
-      "successCriteria": [
-        "Invite link generation works",
-        "Invited users see referrer context",
-        "Referral tracking in analytics"
-      ],
-      "linkedSpecs": [],
-      "notes": "Deferred to post-launch - focus on core value first"
+      "id": "criterion-preview-responsiveness",
+      "name": "Preview updates feel instant",
+      "category": "user-outcome",
+      "metric": "Time from parameter change to preview update",
+      "threshold": "< 500ms for non-generation changes",
+      "currentValue": null,
+      "verificationMethod": "automated-test",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "pattern",
+        "id": "P-002"
+      },
+      "painPointAddressed": null,
+      "notes": "Layout and formatting changes should be instant. New generation triggers streaming."
+    },
+    {
+      "id": "criterion-standards-mapping-accuracy",
+      "name": "Standards alignment is correct",
+      "category": "technical-performance",
+      "metric": "Generated questions correctly align to selected curriculum standard",
+      "threshold": "> 95% alignment verified by curriculum expert",
+      "currentValue": null,
+      "verificationMethod": "manual-check",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "mechanism",
+        "id": "M-003"
+      },
+      "painPointAddressed": "pain-generic-content",
+      "notes": "Critical for teacher trust. Misaligned content undermines the core value prop."
+    },
+    {
+      "id": "criterion-export-works",
+      "name": "PDF export produces usable worksheets",
+      "category": "user-outcome",
+      "metric": "Exported PDF renders correctly and is print-ready",
+      "threshold": "100% of exports produce valid, printable PDFs",
+      "currentValue": null,
+      "verificationMethod": "automated-test",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "pattern",
+        "id": "P-003"
+      },
+      "painPointAddressed": "pain-time-creating",
+      "notes": "Test across standard paper sizes (Letter, A4). Include answer key as separate page."
+    },
+    {
+      "id": "criterion-mvp-completeness",
+      "name": "All MVP features functional end-to-end",
+      "category": "technical-performance",
+      "metric": "MVP-scoped features pass smoke test",
+      "threshold": "100% of inScope items pass",
+      "currentValue": null,
+      "verificationMethod": "manual-check",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "mvpBoundary",
+        "id": "mvp"
+      },
+      "painPointAddressed": null,
+      "notes": "Checklist: Worksheet Creator (F-001), Standards Browser (F-002), Export & Print (F-003)"
+    },
+    {
+      "id": "criterion-differentiation-perceived",
+      "name": "Teachers perceive speed advantage",
+      "category": "business-metric",
+      "metric": "User satisfaction with creation speed vs manual methods",
+      "threshold": "> 80% rate as 'significantly faster' than manual worksheet creation",
+      "currentValue": null,
+      "verificationMethod": "user-feedback",
+      "gate": "gate-beta-ready",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "differentiator",
+        "id": "D-003"
+      },
+      "painPointAddressed": "pain-time-creating",
+      "notes": "Post-creation survey: 'How does this compare to creating worksheets manually?'"
+    },
+    {
+      "id": "criterion-standards-trust",
+      "name": "Teachers trust standards alignment",
+      "category": "business-metric",
+      "metric": "Teacher confidence in standards alignment of generated content",
+      "threshold": "> 75% rate alignment as 'trustworthy' or 'very trustworthy'",
+      "currentValue": null,
+      "verificationMethod": "user-feedback",
+      "gate": "gate-beta-ready",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "differentiator",
+        "id": "D-002"
+      },
+      "painPointAddressed": "pain-generic-content",
+      "notes": "Critical for adoption. Teachers won't use if they have to re-verify every question."
+    },
+    {
+      "id": "criterion-return-usage",
+      "name": "Teachers come back to create more",
+      "category": "business-metric",
+      "metric": "7-day return rate after first worksheet creation",
+      "threshold": "> 40%",
+      "currentValue": null,
+      "verificationMethod": "analytics",
+      "gate": "gate-beta-ready",
+      "status": "not-measured",
+      "derivedFrom": {
+        "type": "differentiator",
+        "id": "D-003"
+      },
+      "painPointAddressed": null,
+      "notes": "Leading indicator of product-market fit. Track cohort-based return rate."
     }
-  ]
+  ],
+
+  "gates": [
+    {
+      "id": "gate-mvp-launch",
+      "name": "MVP Launch Ready",
+      "description": "All core functionality works, performs acceptably, and users can complete the primary flow. Must pass before any external users.",
+      "criteria": [
+        "criterion-generation-speed",
+        "criterion-content-quality",
+        "criterion-generation-reliability",
+        "criterion-wizard-completion-time",
+        "criterion-wizard-completion-rate",
+        "criterion-preview-responsiveness",
+        "criterion-standards-mapping-accuracy",
+        "criterion-export-works",
+        "criterion-mvp-completeness"
+      ],
+      "status": "blocked",
+      "passedAt": null
+    },
+    {
+      "id": "gate-beta-ready",
+      "name": "Beta Ready",
+      "description": "MVP Launch criteria met plus user perception validated. Teachers find it valuable and trust the output. Must pass before expanding beyond initial test users.",
+      "criteria": [
+        "criterion-differentiation-perceived",
+        "criterion-standards-trust",
+        "criterion-return-usage"
+      ],
+      "status": "blocked",
+      "passedAt": null
+    }
+  ],
+
+  "summary": {
+    "totalCriteria": 12,
+    "byCategory": { "user-outcome": 4, "technical-performance": 5, "business-metric": 3 },
+    "byStatus": { "not-measured": 12, "below-threshold": 0, "at-threshold": 0, "exceeded": 0 },
+    "totalGates": 2,
+    "gatesPassed": 0
+  }
 }

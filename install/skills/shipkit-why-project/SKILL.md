@@ -31,8 +31,9 @@ agent: shipkit-product-owner-agent
 
 **Recommended order:**
 1. `/shipkit-why-project` - Define strategic vision
-2. `/shipkit-project-context` - Scan technical stack
-3. Start building
+2. `/shipkit-product-discovery` - Define personas & user needs
+3. `/shipkit-product-definition` - Design solution blueprint
+4. `/shipkit-goals` - Define success criteria
 
 ---
 
@@ -168,7 +169,7 @@ If .shipkit/why.json does NOT exist:
 - Location of file (`.shipkit/why.json`)
 - Note about auto-loading at session start
 - Counts of success criteria, constraints, non-goals captured
-- Suggest `/shipkit-goals` to define actionable objectives
+- Suggest `/shipkit-product-discovery` to define user needs and personas
 
 ---
 
@@ -188,7 +189,7 @@ Copy and track:
 - [ ] Captured constraints (or explicitly skipped)
 - [ ] Captured non-goals (or explicitly skipped)
 - [ ] Saved to `.shipkit/why.json`
-- [ ] Suggested `/shipkit-goals` for actionable objectives
+- [ ] Suggested `/shipkit-product-discovery` for user needs
 
 ---
 
@@ -208,8 +209,8 @@ Copy and track:
 - None (can be first skill)
 
 ### After This Skill
-- `/shipkit-goals` - **Recommended next step** — Define actionable objectives with priorities and tracking
-- `/shipkit-project-context` - Scan technical stack
+- `/shipkit-product-discovery` - **Recommended next step** — Define personas, user needs, and journeys
+- `/shipkit-project-context` - Scan technical stack (can run in parallel with discovery)
 - `/shipkit-architecture-memory` - Log architectural decisions
 - `/shipkit-spec` - Create feature specs (can reference vision for alignment)
 

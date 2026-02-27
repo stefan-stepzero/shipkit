@@ -107,9 +107,9 @@ This skill provides:
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
 | "Define vision", "Why this project?", "Project goals" | `/shipkit-why-project` | .shipkit/why.json |
-| "Set goals", "Objectives", "Priorities", "What to build toward" | `/shipkit-goals` | .shipkit/why.json, goals.json |
 | "Who are our users?", "Create personas", "User research", "User journey" | `/shipkit-product-discovery` | .shipkit/why.json, stack.json |
-| "Define features", "Product definition", "Feature portfolio", "Map goals to features", "What to build" | `/shipkit-product-definition` | .shipkit/goals.json, product-discovery.json, why.json |
+| "Define solution", "Product definition", "Solution blueprint", "How to solve this", "What to build" | `/shipkit-product-definition` | .shipkit/product-discovery.json, why.json |
+| "Success criteria", "Measure success", "Goals", "Stage gates", "How do we know it works" | `/shipkit-goals` | .shipkit/product-definition.json, why.json |
 
 ### Context & Status
 
@@ -256,9 +256,9 @@ This skill is the **central router** that connects all other skills.
 
 | Category | Skills Routed To |
 |----------|------------------|
-| Vision/Discovery | `shipkit-why-project`, `shipkit-goals`, `shipkit-product-discovery` |
+| Vision/Discovery | `shipkit-why-project`, `shipkit-product-discovery`, `shipkit-product-definition`, `shipkit-goals` |
 | Context/Status | `shipkit-project-status`, `shipkit-project-context`, `shipkit-work-memory` |
-| Spec/Planning | `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-product-definition`, `shipkit-thinking-partner` |
+| Spec/Planning | `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-thinking-partner` |
 | Knowledge | `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`, `shipkit-claude-md` |
 | Quality | `shipkit-verify`, `shipkit-ux-audit`, `shipkit-prompt-audit`, `shipkit-semantic-qa`, `shipkit-qa-visual`, `shipkit-user-instructions`, `shipkit-communications` |
 

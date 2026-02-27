@@ -1,6 +1,6 @@
 # Goals Output Schema
 
-This document defines the JSON schema for `.shipkit/goals.json`.
+This document defines the JSON schema for `.shipkit/goals.json` (v2 — success criteria & stage gates).
 
 ## Full JSON Schema
 
@@ -8,38 +8,58 @@ This document defines the JSON schema for `.shipkit/goals.json`.
 {
   "$schema": "shipkit-artifact",
   "type": "goals",
-  "version": "1.0",
-  "lastUpdated": "YYYY-MM-DD",
+  "version": "2.0",
+  "lastUpdated": "YYYY-MM-DDTHH:MM:SSZ",
   "source": "shipkit-goals",
-
-  "summary": {
-    "total": 5,
-    "byPriority": { "p0": 2, "p1": 2, "p2": 1 },
-    "byStatus": { "not-started": 2, "in-progress": 2, "achieved": 1, "deferred": 0 },
-    "byLens": { "technical": 2, "product": 1, "growth": 1, "operational": 1 }
-  },
 
   "stage": {
     "current": "mvp",
     "target": "production"
   },
 
-  "goals": [
+  "derivedFrom": {
+    "productDefinition": ".shipkit/product-definition.json",
+    "productDiscovery": ".shipkit/product-discovery.json"
+  },
+
+  "criteria": [
     {
-      "id": "goal-slug",
-      "name": "Human-readable goal name",
-      "lens": "technical",
-      "priority": "p0",
-      "status": "in-progress",
-      "objective": "What we're trying to achieve",
-      "successCriteria": [
-        "Measurable criterion 1",
-        "Measurable criterion 2"
-      ],
-      "linkedSpecs": ["specs/active/feature-x.json"],
+      "id": "criterion-slug",
+      "name": "Human-readable name",
+      "category": "user-outcome|technical-performance|business-metric",
+      "metric": "What to measure",
+      "threshold": "Target value (e.g., '> 80%', '< 3 seconds')",
+      "currentValue": null,
+      "verificationMethod": "manual-check|analytics|automated-test|user-feedback",
+      "gate": "gate-slug",
+      "status": "not-measured|below-threshold|at-threshold|exceeded",
+      "derivedFrom": {
+        "type": "mechanism|pattern|differentiator|mvpBoundary",
+        "id": "M-001"
+      },
+      "painPointAddressed": "pain-1",
       "notes": "Optional context"
     }
-  ]
+  ],
+
+  "gates": [
+    {
+      "id": "gate-slug",
+      "name": "Gate name",
+      "description": "What passing this gate means",
+      "criteria": ["criterion-slug-1", "criterion-slug-2"],
+      "status": "blocked|partial|passed",
+      "passedAt": null
+    }
+  ],
+
+  "summary": {
+    "totalCriteria": 0,
+    "byCategory": { "user-outcome": 0, "technical-performance": 0, "business-metric": 0 },
+    "byStatus": { "not-measured": 0, "below-threshold": 0, "at-threshold": 0, "exceeded": 0 },
+    "totalGates": 0,
+    "gatesPassed": 0
+  }
 }
 ```
 
@@ -49,97 +69,136 @@ This document defines the JSON schema for `.shipkit/goals.json`.
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `$schema` | string | yes | Always `"shipkit-artifact"` - identifies this as a Shipkit-managed file |
-| `type` | string | yes | Always `"goals"` - artifact type for routing/rendering |
-| `version` | string | yes | Schema version for forward compatibility |
-| `lastUpdated` | string | yes | ISO date of last modification |
-| `source` | string | yes | Skill that created/updated this file |
-| `summary` | object | yes | Aggregated counts for dashboard rendering |
+| `$schema` | string | yes | Always `"shipkit-artifact"` |
+| `type` | string | yes | Always `"goals"` |
+| `version` | string | yes | `"2.0"` for success criteria format |
+| `lastUpdated` | string | yes | ISO timestamp of last modification |
+| `source` | string | yes | Always `"shipkit-goals"` |
 | `stage` | object | yes | Current and target project stage |
-| `goals` | array | yes | The actual goals |
+| `derivedFrom` | object | yes | Source artifacts for traceability |
+| `criteria` | array | yes | Measurable success criteria |
+| `gates` | array | yes | Named stage gates composed of criteria |
+| `summary` | object | yes | Aggregated counts |
 
 ### Stage Object
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `current` | string | yes | Current stage: `"poc"` \| `"mvp"` \| `"production"` \| `"scale"` |
-| `target` | string | yes | Target stage for this goal set |
+| `target` | string | yes | Target stage for this criteria set |
 
-### Goal Object Fields
+### Derived From Object
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `id` | string | yes | Slug identifier (kebab-case) |
-| `name` | string | yes | Display name |
-| `lens` | enum | yes | `"technical"` \| `"product"` \| `"growth"` \| `"operational"` |
-| `priority` | enum | yes | `"p0"` \| `"p1"` \| `"p2"` |
-| `status` | enum | yes | `"not-started"` \| `"in-progress"` \| `"achieved"` \| `"deferred"` |
-| `objective` | string | yes | What we're trying to achieve |
-| `successCriteria` | string[] | yes | How we know it's done |
-| `linkedSpecs` | string[] | no | Paths to related spec files |
+| `productDefinition` | string | yes | Path to product-definition.json |
+| `productDiscovery` | string | no | Path to product-discovery.json (if used for traceability) |
+
+### Criterion Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | string | yes | Slug identifier (kebab-case, prefixed with `criterion-`) |
+| `name` | string | yes | Human-readable name |
+| `category` | enum | yes | `"user-outcome"` \| `"technical-performance"` \| `"business-metric"` |
+| `metric` | string | yes | What specifically to measure (e.g., "wizard completion rate") |
+| `threshold` | string | yes | Target value with comparator (e.g., "> 80%", "< 3 seconds", "= 0 critical bugs") |
+| `currentValue` | string\|null | yes | Latest measurement, or `null` if not yet measured |
+| `verificationMethod` | enum | yes | `"manual-check"` \| `"analytics"` \| `"automated-test"` \| `"user-feedback"` |
+| `gate` | string | yes | ID of the stage gate this criterion belongs to |
+| `status` | enum | yes | `"not-measured"` \| `"below-threshold"` \| `"at-threshold"` \| `"exceeded"` |
+| `derivedFrom` | object | yes | Traceability to solution blueprint |
+| `painPointAddressed` | string | no | Pain point ID from product-discovery.json |
 | `notes` | string | no | Additional context |
 
-### Lens Values
+### Derived From Object (within Criterion)
 
-| Lens | Focus |
-|------|-------|
-| `technical` | Does it work? Security, reliability, infrastructure |
-| `product` | Can users succeed? UX, onboarding, usability |
-| `growth` | Can it scale organically? Activation, virality, retention |
-| `operational` | Can we support it? Docs, monitoring, support |
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `type` | enum | yes | `"mechanism"` \| `"pattern"` \| `"differentiator"` \| `"mvpBoundary"` |
+| `id` | string | yes | ID from product-definition.json (e.g., "M-001", "P-001", "D-001") |
 
-### Priority Levels
+### Category Values
 
-| Priority | Meaning |
-|----------|---------|
-| `p0` | Must have - critical for launch/success |
-| `p1` | Should have - important but not blocking |
-| `p2` | Nice to have - future consideration |
+| Category | Focus | Derived From |
+|----------|-------|-------------|
+| `user-outcome` | Can users accomplish their goals? Task completion, satisfaction, time-to-value | UX patterns, differentiators |
+| `technical-performance` | Does the system perform? Speed, reliability, quality, scalability | Mechanisms |
+| `business-metric` | Does it drive the business? Retention, conversion, engagement | Differentiators, MVP boundary |
+
+### Verification Methods
+
+| Method | When to Use | Example |
+|--------|------------|---------|
+| `manual-check` | Human review required | "Review 20 generated worksheets for accuracy" |
+| `analytics` | Track in product analytics | "Measure wizard completion rate in Mixpanel" |
+| `automated-test` | Programmatic verification | "Load test: 95th percentile response < 3s" |
+| `user-feedback` | Ask users directly | "Survey: 'Did the worksheet match your needs?'" |
 
 ### Status Values
 
 | Status | Meaning |
 |--------|---------|
-| `not-started` | Goal defined but work hasn't begun |
-| `in-progress` | Actively working toward this goal |
-| `achieved` | Goal completed successfully |
-| `deferred` | Postponed to future milestone |
+| `not-measured` | Criterion defined but no measurement taken yet |
+| `below-threshold` | Measured but not meeting the threshold |
+| `at-threshold` | Meeting the threshold value |
+| `exceeded` | Exceeding the threshold value |
 
-## Summary Object
+### Gate Object
 
-The `summary` field MUST be kept in sync with the `goals` array. It exists so the dashboard can render overview cards without iterating the full array.
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | string | yes | Slug identifier (kebab-case) |
+| `name` | string | yes | Human-readable gate name (e.g., "MVP Launch Ready") |
+| `description` | string | yes | What passing this gate means for the project |
+| `criteria` | string[] | yes | Array of criterion IDs that must pass for this gate |
+| `status` | enum | yes | `"blocked"` \| `"partial"` \| `"passed"` |
+| `passedAt` | string\|null | yes | ISO timestamp when gate passed, or `null` |
 
-```json
-{
-  "total": 5,
-  "byPriority": { "p0": 2, "p1": 2, "p2": 1 },
-  "byStatus": { "not-started": 2, "in-progress": 2, "achieved": 1, "deferred": 0 },
-  "byLens": { "technical": 2, "product": 1, "growth": 1, "operational": 1 }
-}
-```
+### Gate Status Values
+
+| Status | Meaning |
+|--------|---------|
+| `blocked` | No criteria in this gate have been measured or met |
+| `partial` | Some criteria met, others still below threshold or not measured |
+| `passed` | All criteria in this gate are at-threshold or exceeded |
+
+### Summary Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `totalCriteria` | number | yes | Count of criteria array |
+| `byCategory` | object | yes | Counts per category |
+| `byStatus` | object | yes | Counts per status |
+| `totalGates` | number | yes | Count of gates array |
+| `gatesPassed` | number | yes | Count of gates with status "passed" |
 
 **Recompute summary every time the file is written.**
 
+## Graph Relationships
+
+The ID-based cross-references enable these traversals:
+
+| From | To | Via |
+|------|----|-----|
+| Criterion | Mechanism/Pattern/Differentiator (definition) | `criteria[].derivedFrom` |
+| Criterion | Pain Point (discovery) | `criteria[].painPointAddressed` |
+| Criterion | Gate | `criteria[].gate` |
+| Gate | Criteria | `gates[].criteria` |
+| Goals artifact | Product Definition | `derivedFrom.productDefinition` |
+| Goals artifact | Product Discovery | `derivedFrom.productDiscovery` |
+
 ## Shipkit Artifact Convention
 
-This skill follows the **Shipkit JSON artifact convention** - a standard structure for all `.shipkit/*.json` files that enables dashboard visualization.
-
-**Every JSON artifact MUST include these top-level fields:**
+Every JSON artifact MUST include these top-level fields:
 
 ```json
 {
   "$schema": "shipkit-artifact",
   "type": "<artifact-type>",
-  "version": "1.0",
-  "lastUpdated": "YYYY-MM-DD",
+  "version": "2.0",
+  "lastUpdated": "YYYY-MM-DDTHH:MM:SSZ",
   "source": "<skill-name>",
   "summary": { ... }
 }
 ```
-
-- `$schema` - Always `"shipkit-artifact"`. Identifies Shipkit artifact files.
-- `type` - The artifact type (`"goals"`, `"spec"`, `"plan"`, etc.). Dashboard uses this for rendering.
-- `version` - Schema version. Bump when fields change.
-- `lastUpdated` - When this file was last written.
-- `source` - Which skill wrote this file.
-- `summary` - Aggregated data for dashboard cards. Structure varies by type.

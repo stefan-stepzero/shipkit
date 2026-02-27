@@ -28,10 +28,10 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-claude-md` - CLAUDE.md management
 
 **Discovery & Planning (8 skills):**
-- `shipkit-product-discovery` - Personas, journeys, user stories
 - `shipkit-why-project` - Strategic vision definition
-- `shipkit-goals` - Project goals, priorities, and success criteria
-- `shipkit-product-definition` - Map goals to features with coverage analysis
+- `shipkit-product-discovery` - Personas, journeys, user needs
+- `shipkit-product-definition` - Solution blueprint (mechanisms, patterns, MVP boundary)
+- `shipkit-goals` - Success criteria & stage gates
 - `shipkit-spec` - Feature specification
 - `shipkit-feedback-bug` - Process feedback into investigated bug specs (5 Whys root cause)
 - `shipkit-plan` - Implementation planning

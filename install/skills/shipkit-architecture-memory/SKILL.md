@@ -1,6 +1,6 @@
 ---
 name: shipkit-architecture-memory
-description: "Two modes: (1) Solution Architect — proposes complete architecture from goals, stack, and specs. (2) Decision Logger — logs individual architecture decisions. Triggers: 'propose architecture', 'log decision', 'architecture choice'."
+description: "Two modes: (1) Solution Architect — proposes complete architecture from product definition, stack, and specs. (2) Decision Logger — logs individual architecture decisions. Triggers: 'propose architecture', 'log decision', 'architecture choice'."
 argument-hint: "<decision to log> or --propose"
 context: fork
 agent: shipkit-architect-agent
@@ -8,7 +8,7 @@ agent: shipkit-architect-agent
 
 # shipkit-architecture-memory - Architecture Decision Logger + Solution Architect
 
-**Purpose**: Two modes: (1) **Solution Architect** — proposes a complete architecture from goals, stack, and specs. (2) **Decision Logger** — logs individual architecture decisions with rationale. Both maintain the same graph structure in `architecture.json`.
+**Purpose**: Two modes: (1) **Solution Architect** — proposes a complete architecture from product definition, stack, and specs. (2) **Decision Logger** — logs individual architecture decisions with rationale. Both maintain the same graph structure in `architecture.json`.
 
 ---
 
@@ -49,7 +49,7 @@ IF $ARGUMENTS contains "--propose":
   → Solution Architect mode (force proposal even if architecture.json exists)
 
 ELSE IF .shipkit/architecture.json does NOT exist
-  AND (.shipkit/goals.json exists OR .shipkit/stack.json exists):
+  AND (.shipkit/product-definition.json exists OR .shipkit/stack.json exists):
   → Solution Architect mode (no architecture yet, context available)
 
 ELSE:
@@ -66,15 +66,15 @@ Read all available context in parallel:
 
 ```
 Read in parallel:
-1. .shipkit/goals.json         — what outcomes we need
+1. .shipkit/product-definition.json — solution blueprint (mechanisms, patterns, features)
 2. .shipkit/stack.json         — technology constraints
 3. .shipkit/why.json           — project purpose and stage
-4. .shipkit/product-definition.json — feature portfolio
+4. .shipkit/goals.json         — success criteria and stage gates (optional)
 5. .shipkit/specs/todo/*.json  — feature specs (glob)
 6. .shipkit/codebase-index.json — existing code structure
 ```
 
-If goals.json is missing, warn: "No goals found. Run `/shipkit-goals` first for a goal-aligned architecture proposal. Proceeding with best inference from available context."
+If product-definition.json is missing, warn: "No solution blueprint found. Run `/shipkit-product-definition` first for a well-informed architecture proposal. Proceeding with best inference from available context."
 
 #### SA-2: Determine Project Stage
 
@@ -595,7 +595,7 @@ Copy and track:
 **Before shipkit-architecture-memory**:
 - `/shipkit-goals` - Produces goals.json (recommended for solution architect mode)
 - `/shipkit-project-context` - Generates stack.json (recommended for solution architect mode)
-- `/shipkit-product-definition` - Produces feature portfolio (enriches proposals)
+- `/shipkit-product-definition` - Produces solution blueprint (enriches proposals)
 - `/shipkit-spec` - Feature specs (enriches proposals; also makes approach decisions worth logging)
 - `/shipkit-plan` - Establishes patterns worth documenting (decision logger mode)
 
@@ -615,7 +615,7 @@ Copy and track:
 - `.shipkit/goals.json` - Goal list for alignment
 - `.shipkit/stack.json` - Technology constraints
 - `.shipkit/why.json` - Project purpose and stage
-- `.shipkit/product-definition.json` - Feature portfolio
+- `.shipkit/product-definition.json` - Solution blueprint (mechanisms, patterns, MVP boundary)
 - `.shipkit/specs/todo/*.json` - Feature specs
 - `.shipkit/codebase-index.json` - Existing code structure
 

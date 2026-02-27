@@ -138,10 +138,12 @@ options:
 **Create file using Write tool**: `.shipkit/product-discovery.json`
 
 **Content includes**:
-1. **Personas** (1-3 lightweight personas with IDs for cross-referencing)
+1. **Personas** (1-3 lightweight personas with IDs, primary intent, and cross-referencing)
 2. **Pain Points** (extracted from personas, linked by ID)
 3. **User Journeys** (step-by-step with emotion tracking and pain point references)
 4. **Opportunities** (linked to pain points and personas)
+
+**Multi-user apps**: When the product serves distinct user types (e.g., teachers + students, buyers + sellers), each persona MUST have a distinct `primaryIntent` that captures their core motivation. This ensures downstream skills (product-definition, goals, spec) can map mechanisms and criteria to specific user intents.
 
 **All entities use stable IDs** (`persona-1`, `pain-1`, `journey-1`, `opp-1`) to enable graph traversal and relationship mapping across the artifact.
 
@@ -159,7 +161,7 @@ The output MUST conform to the Shipkit JSON Artifact Convention.
   "lastUpdated": "2025-01-15T10:00:00Z",
   "source": "shipkit-product-discovery",
   "summary": { "totalPersonas", "totalJourneys", "totalPainPoints", "totalOpportunities", "primaryPersona", "topPainPoint" },
-  "personas": [{ "id", "name", "role", "goals", "frustrations", "techComfort", "context", "isPrimary" }],
+  "personas": [{ "id", "name", "role", "primaryIntent", "goals", "frustrations", "techComfort", "context", "isPrimary" }],
   "painPoints": [{ "id", "description", "severity", "affectedPersonas", "currentWorkaround", "frequency" }],
   "journeys": [{ "id", "name", "persona", "steps": [{ "id", "action", "emotion", "painPoints", "touchpoints" }] }],
   "opportunities": [{ "id", "description", "addressesPainPoints", "impactedPersonas", "effort", "impact" }]

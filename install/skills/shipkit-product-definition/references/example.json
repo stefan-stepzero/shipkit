@@ -1,0 +1,216 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "product-definition",
+  "version": "2.0",
+  "lastUpdated": "2026-02-27T14:00:00Z",
+  "source": "shipkit-product-definition",
+
+  "product": {
+    "name": "WorksheetForge",
+    "vision": "AI-powered worksheet generator that helps teachers create differentiated practice materials in minutes",
+    "stage": "mvp"
+  },
+
+  "problemSpace": {
+    "summary": "Teachers spend 2-4 hours per week creating worksheets manually. Existing tools produce generic, one-size-fits-all content. Teachers need materials adapted to different student skill levels within the same classroom.",
+    "keyPainPoints": ["pain-time-creating", "pain-generic-content", "pain-differentiation"],
+    "primaryPersona": "persona-classroom-teacher",
+    "personaIntents": {
+      "persona-classroom-teacher": "Create differentiated worksheets quickly for diverse classrooms"
+    }
+  },
+
+  "solutionApproach": "Use LLM-powered generation chains to produce worksheets from topic + difficulty parameters, with adaptive difficulty calibration based on student performance data. Deliver through a wizard-style interface with real-time preview so teachers can iterate quickly before printing or assigning digitally.",
+
+  "mechanisms": [
+    {
+      "id": "M-001",
+      "name": "LLM Generation Chain",
+      "description": "Multi-step LLM pipeline: topic analysis → difficulty calibration → question generation → format assembly → answer key generation. Each step is a focused prompt that feeds into the next, enabling quality control at each stage.",
+      "addressesNeeds": ["pain-time-creating", "pain-generic-content"],
+      "designChoices": [
+        {
+          "decision": "Multi-step chain over single-prompt generation",
+          "rationale": "Single prompts produce inconsistent quality. Chaining allows validation between steps and targeted retry on failures.",
+          "alternatives": ["Single prompt with detailed instructions", "Template-based fill-in (no LLM)"]
+        },
+        {
+          "decision": "Stream partial results during generation",
+          "rationale": "Worksheets take 5-15 seconds to generate. Streaming the preview as it builds keeps perceived wait time low.",
+          "alternatives": ["Loading spinner with estimated time", "Background generation with notification"]
+        }
+      ]
+    },
+    {
+      "id": "M-002",
+      "name": "Adaptive Difficulty Engine",
+      "description": "Analyzes student performance data (completion rates, error patterns) to recommend difficulty adjustments per student or group. Maps curriculum standards to difficulty bands and adjusts question complexity, vocabulary level, and scaffold amount.",
+      "addressesNeeds": ["pain-differentiation"],
+      "designChoices": [
+        {
+          "decision": "Difficulty bands (3 levels) over continuous scoring",
+          "rationale": "Teachers think in groups (struggling, on-level, advanced), not in continuous scores. Three bands match classroom reality.",
+          "alternatives": ["10-point difficulty scale", "Per-student continuous adaptation"]
+        }
+      ]
+    },
+    {
+      "id": "M-003",
+      "name": "Curriculum Standard Mapper",
+      "description": "Maps user-selected topics to curriculum standards (Common Core, state standards). Ensures generated questions align to specific learning objectives. Enables teachers to tag worksheets by standard for compliance.",
+      "addressesNeeds": ["pain-generic-content"],
+      "designChoices": [
+        {
+          "decision": "Pre-built standard mappings over free-form topic entry",
+          "rationale": "Teachers need standards alignment for accountability. Pre-built mappings reduce errors and save time.",
+          "alternatives": ["Free-form topic only", "Manual standard tagging after generation"]
+        }
+      ]
+    }
+  ],
+
+  "uxPatterns": [
+    {
+      "id": "P-001",
+      "name": "Wizard Flow",
+      "description": "Step-by-step creation flow: Select topic → Choose standards → Set difficulty → Preview → Export. Each step is one screen with clear progress indicators. Users can go back to any step.",
+      "usedIn": ["F-001", "F-002"],
+      "rationale": "Teachers have limited planning time. A guided flow reduces cognitive load compared to a settings-heavy form. Each step is completable in under 30 seconds."
+    },
+    {
+      "id": "P-002",
+      "name": "Live Preview",
+      "description": "Real-time worksheet preview that updates as the teacher adjusts parameters. Shows the actual formatted output (not raw text). Supports zoom and page navigation.",
+      "usedIn": ["F-001"],
+      "rationale": "Teachers need to see what students will see. A live preview eliminates the generate-check-regenerate loop that wastes time."
+    },
+    {
+      "id": "P-003",
+      "name": "Export Dialog",
+      "description": "Multi-format export: PDF (print), Google Docs (digital), and direct assignment to classroom platform. Includes answer key as separate document. Supports batch export for differentiated sets.",
+      "usedIn": ["F-003"],
+      "rationale": "Teachers use diverse tools. Supporting multiple export targets removes friction between creation and distribution."
+    }
+  ],
+
+  "differentiators": [
+    {
+      "id": "D-001",
+      "statement": "Adaptive difficulty that automatically creates differentiated worksheet sets for the same topic — one creation flow produces materials for struggling, on-level, and advanced students",
+      "enabledBy": ["M-002", "P-001"]
+    },
+    {
+      "id": "D-002",
+      "statement": "Standards-aligned generation that maps directly to curriculum objectives, enabling teachers to prove instructional alignment without manual tagging",
+      "enabledBy": ["M-003", "M-001"]
+    },
+    {
+      "id": "D-003",
+      "statement": "Real-time preview with streaming output — teachers see the worksheet taking shape in seconds, not minutes, enabling rapid iteration",
+      "enabledBy": ["M-001", "P-002"]
+    }
+  ],
+
+  "designDecisions": [
+    {
+      "decision": "No login required for first worksheet",
+      "rationale": "Teachers evaluate tools during scarce prep periods. Requiring signup before seeing value kills adoption. First worksheet is free and instant.",
+      "alternatives": ["Require email before generation", "Free trial with signup wall"]
+    },
+    {
+      "decision": "Mobile-responsive but desktop-optimized",
+      "rationale": "Worksheet creation involves detailed review. Teachers primarily create at their desk. Mobile works for quick edits but wizard is designed for desktop-first.",
+      "alternatives": ["Mobile-first design", "Separate mobile app"]
+    },
+    {
+      "decision": "PDF as primary export format",
+      "rationale": "80%+ of teachers still print worksheets. PDF ensures consistent formatting across printers. Digital formats (Google Docs) are secondary.",
+      "alternatives": ["HTML-first with print CSS", "Google Docs as primary"]
+    }
+  ],
+
+  "stackDirection": {
+    "recommended": {
+      "frontend": "Next.js 15 (App Router) + Tailwind CSS",
+      "backend": "Next.js API routes + OpenAI API",
+      "database": "Supabase (PostgreSQL + Auth)",
+      "hosting": "Vercel"
+    },
+    "rationale": "Next.js handles both the wizard UI and API routes in one codebase. Vercel provides edge deployment for low-latency streaming. Supabase provides auth + database without managing infrastructure. OpenAI API for the LLM generation chain.",
+    "constraints": [
+      "Streaming support needed for live preview (SSE/ReadableStream)",
+      "PDF generation requires server-side rendering (API route, not edge)",
+      "Teacher accounts need persistent storage for saved worksheets"
+    ]
+  },
+
+  "mvpBoundary": {
+    "inScope": [
+      "Core worksheet generation (wizard + preview + PDF export)",
+      "Standards-aligned topic selection (Common Core Math grades 3-8)",
+      "Single difficulty level per worksheet"
+    ],
+    "deferred": [
+      "Adaptive difficulty with student performance data (requires student tracking)",
+      "Google Docs / classroom platform integration (requires OAuth setup)"
+    ],
+    "rationale": "MVP validates the core value proposition: teachers can create a standards-aligned worksheet faster than manually. Adaptive difficulty requires student data we won't have at launch. Integrations add complexity without validating the core."
+  },
+
+  "features": [
+    {
+      "id": "F-001",
+      "name": "Worksheet Creator",
+      "description": "Wizard flow for creating a worksheet: select topic/standards, set parameters, preview with streaming output, iterate until satisfied",
+      "mechanisms": ["M-001", "M-003"],
+      "patterns": ["P-001", "P-002"],
+      "mvp": true,
+      "dependencies": []
+    },
+    {
+      "id": "F-002",
+      "name": "Standards Browser",
+      "description": "Browse and select curriculum standards by grade and domain. Pre-built mappings for Common Core Math. Search and filter.",
+      "mechanisms": ["M-003"],
+      "patterns": ["P-001"],
+      "mvp": true,
+      "dependencies": []
+    },
+    {
+      "id": "F-003",
+      "name": "Export & Print",
+      "description": "Export worksheets as formatted PDF with answer key. Print-optimized layout. Save to account for reuse.",
+      "mechanisms": ["M-001"],
+      "patterns": ["P-003"],
+      "mvp": true,
+      "dependencies": ["F-001"]
+    },
+    {
+      "id": "F-004",
+      "name": "Differentiated Sets",
+      "description": "Generate 3 difficulty variants of the same worksheet in one flow. Analyzes student performance data to recommend difficulty bands.",
+      "mechanisms": ["M-001", "M-002"],
+      "patterns": ["P-001"],
+      "mvp": false,
+      "dependencies": ["F-001"]
+    },
+    {
+      "id": "F-005",
+      "name": "Classroom Integration",
+      "description": "Export directly to Google Classroom, Canvas, or Schoology. Assign to students with due dates. Sync completion data back.",
+      "mechanisms": ["M-001"],
+      "patterns": ["P-003"],
+      "mvp": false,
+      "dependencies": ["F-003"]
+    }
+  ],
+
+  "summary": {
+    "totalMechanisms": 3,
+    "totalPatterns": 3,
+    "totalDifferentiators": 3,
+    "totalFeatures": 5,
+    "mvpFeatures": 3,
+    "deferredFeatures": 2
+  }
+}

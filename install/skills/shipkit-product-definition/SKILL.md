@@ -1,6 +1,6 @@
 ---
 name: shipkit-product-definition
-description: "Synthesizes vision artifacts (why, goals, personas, stack) into a product definition — feature portfolio mapped to goals with dependency ordering and coverage analysis"
+description: "Design the solution blueprint — core mechanisms, UX patterns, differentiators, and MVP scope that define HOW we solve discovered user needs"
 argument-hint: "[product name or focus area]"
 context: fork
 agent: shipkit-product-owner-agent
@@ -14,23 +14,31 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# shipkit-product-definition
+# shipkit-product-definition — Solution Blueprint
 
-Bridges the gap between vision artifacts and feature specifications. Reads why.json, goals.json, product-discovery.json, and stack.json, then proposes a complete feature portfolio with goal-to-feature traceability, dependency ordering, and coverage analysis.
+Designs HOW we solve discovered user needs. Reads product-discovery.json (pain points, personas, opportunities) and produces a solution blueprint: core mechanisms, UX patterns, differentiators, design decisions, stack direction, MVP boundary, and features grounded in those mechanisms.
 
-This is the product blueprint — everything downstream (specs, architecture, plans, implementation) derives from it.
+This is the product blueprint — everything downstream (goals, specs, architecture, plans, implementation) derives from it.
 
 ---
 
-## Process
+## When to Invoke
 
-### Step 1: Load Context
+**User triggers**:
+- "How should we solve this?", "Design the solution", "Solution blueprint"
+- "Define features", "Product definition", "What to build"
+- "Core approach", "How will it work?"
 
-Read all available vision artifacts:
+**Workflow position**:
+- After `/shipkit-product-discovery` (needs discovered user needs)
+- Before `/shipkit-goals` (goals derive success criteria from the blueprint)
+
+---
+
+## Prerequisites
 
 **Required** (fail gracefully if missing):
-- `.shipkit/goals.json` — what outcomes we need
-- `.shipkit/product-discovery.json` — who the users are (personas)
+- `.shipkit/product-discovery.json` — who the users are and what they need
 
 **Recommended** (enrich the proposal):
 - `.shipkit/why.json` — project purpose and stage
@@ -38,265 +46,476 @@ Read all available vision artifacts:
 
 **Optional** (for existing projects):
 - `.shipkit/codebase-index.json` — what already exists
-- `.shipkit/specs/todo/*.json` or `.shipkit/specs/active/*.json` — specs already written
 
-If goals.json is missing, tell the user: "Run `/shipkit-goals` first — I need goals to map features against." and stop.
+If product-discovery.json is missing, tell the user: "Run `/shipkit-product-discovery` first — I need to understand user needs before designing a solution." and stop.
 
-If product-discovery.json is missing but goals.json exists, warn but proceed: "No personas found. Feature mapping will be goal-only. Run `/shipkit-product-discovery` for persona coverage."
+---
 
-### Step 2: Check for Existing Product Definition
+## Process
 
-If `.shipkit/product-definition.json` exists:
+### Step 0: Check for Existing File
 
-1. Read it
-2. Show summary:
-   ```
-   Existing product definition found.
-   Features: {N} ({N} todo, {N} specced, {N} planned, {N} implemented)
-   Goal coverage: {N}/{N} goals covered
-   Last updated: {timestamp}
-   ```
-3. Ask: "Update this definition, or start fresh?"
-4. If updating, load existing features as the base for modifications
+1. Check if `.shipkit/product-definition.json` exists
+2. If exists AND modified < 5 minutes ago: Show user, ask "Use this or regenerate?"
+3. If exists AND modified > 5 minutes ago: Proceed to File Exists Workflow (Step 0b)
+4. If doesn't exist: Skip to Step 1 (generate new)
 
-If `$ARGUMENTS` contains `--refresh`, skip the question and start fresh.
+**File Exists Workflow (Step 0b)**:
+- Options: View / Update / Replace / Cancel
+- View: Display current file, then ask what to do
+- Update: Read existing, ask what to change, regenerate with updates
+- Replace: Archive old version, generate completely new
+- Cancel: Exit without changes
 
-### Step 3: Analyze Goals and Personas
+---
 
-Extract from loaded artifacts:
+### Step 0c: Propose Mode (Context-Driven)
 
-1. **Goals** — list each goal with its ID, text, and priority from goals.json
-2. **Personas** — list each persona with their key needs and pain points
-3. **Stage** — from why.json, determine project stage (MVP, growth, scale)
-4. **Tech capabilities** — from stack.json, note what the tech stack supports (real-time, offline, mobile, etc.)
+If `.shipkit/product-discovery.json` exists, attempt to propose a solution approach without asking:
 
-For existing projects, also scan:
-- What features are already partially built (from codebase-index)
-- What specs already exist (from specs/)
+1. Read `.shipkit/product-discovery.json` (pain points, personas, opportunities)
+2. Read `.shipkit/why.json` if exists (vision, stage, constraints)
+3. Read `.shipkit/stack.json` if exists (technology capabilities)
+4. For each major pain point, propose a mechanism that addresses it
+5. For each mechanism, identify UX patterns that support it
+6. Present the proposal as a Problem → Mechanism → Feature flow:
 
-### Step 4: Propose Feature Portfolio
+```
+Based on discovered user needs, here's a proposed solution:
 
-Based on the analysis, propose a feature set. For each feature:
+Pain: [pain point from discovery]
+  → Mechanism: [how we solve it]
+    → Features: [what users interact with]
 
+Pain: [another pain point]
+  → Mechanism: [solution approach]
+    → Features: [user-facing capabilities]
+
+Differentiators: [what makes this unique]
+
+Confirm, adjust, or switch to interactive mode?
+```
+
+7. If confirmed → proceed to Step 5 (MVP boundary) with the proposed data
+8. If adjusted → incorporate changes, proceed to Step 5
+9. If interactive requested → fall through to Step 1
+
+If `.shipkit/product-discovery.json` does NOT exist → fail with message to run discovery first.
+
+---
+
+### Step 1: Gather Context
+
+**Read these files:**
+
+```
+.shipkit/product-discovery.json  → pain points, personas, opportunities (REQUIRED)
+.shipkit/why.json                → vision, stage, constraints (RECOMMENDED)
+.shipkit/stack.json              → tech capabilities (RECOMMENDED)
+.shipkit/codebase-index.json     → existing code (OPTIONAL)
+```
+
+**Multi-user detection**: If discovery has 2+ personas with distinct `primaryIntent` values, this is a multi-user product. Flag this upfront and ensure each mechanism, pattern, and feature explicitly maps to the persona(s) it serves via `addressesNeeds` tracing back through pain points.
+
+---
+
+### Step 2: Design Core Mechanisms
+
+For each major user need/pain point from discovery, define a mechanism:
+
+**Use AskUserQuestion tool:**
+
+```
+header: "Mechanisms"
+question: "For [pain point], what's the core mechanism? How will the system solve this?"
+options:
+  - label: "[Proposed mechanism from context]"
+    description: "Based on the pain point and opportunities"
+  - label: "Different approach"
+    description: "I have another idea"
+```
+
+For each mechanism, capture:
+- **Name** — concise mechanism name
+- **Description** — how it works at a conceptual level
+- **Addresses needs** — which pain point IDs from discovery
+- **Key design choices** — decisions made with rationale and alternatives
+
+Aim for 2-4 mechanisms. Each should address at least one pain point. Every major pain point should be addressed by at least one mechanism.
+
+---
+
+### Step 3: Define UX Patterns
+
+Based on the mechanisms, identify the key interaction patterns:
+
+```
+header: "UX Patterns"
+question: "How should users interact with [mechanism]?"
+options:
+  - label: "[Proposed pattern]"
+    description: "[Why this pattern fits]"
+  - label: "Different pattern"
+    description: "I have another UX approach in mind"
+```
+
+For each pattern, capture:
+- **Name** — pattern name (e.g., "wizard flow", "live preview", "progressive disclosure")
+- **Description** — how users experience it
+- **Used in** — which features will use this pattern
+- **Rationale** — why this pattern over alternatives
+
+Aim for 2-4 patterns. Patterns can be shared across features.
+
+---
+
+### Step 4: Identify Differentiators
+
+Based on mechanisms and patterns, articulate what makes this solution unique:
+
+- What do competitors do differently?
+- What combination of mechanisms/patterns creates unique value?
+- What would be hard to replicate?
+
+Capture 1-3 differentiator statements, each tied to the mechanisms or patterns that enable it.
+
+---
+
+### Step 5: Define MVP Boundary
+
+**Use AskUserQuestion tool:**
+
+```
+header: "MVP Scope"
+question: "Which of these should ship in v1?"
+multiSelect: true
+options:
+  - label: "[Feature A]"
+    description: "Uses [mechanism], addresses [pain point]"
+  - label: "[Feature B]"
+    description: "Uses [mechanism], addresses [pain point]"
+  ...
+```
+
+Separate features into:
+- **In scope (v1)** — minimum needed to validate the solution
+- **Deferred (Phase 2+)** — valuable but not required for first validation
+
+Capture rationale for the boundary.
+
+---
+
+### Step 6: Stack Direction (Greenfield Only)
+
+**Skip if `.shipkit/stack.json` already exists.**
+
+For greenfield projects, ask about technology direction:
+
+```
+header: "Stack"
+question: "What tech direction for this solution?"
+options:
+  - label: "[Recommended stack based on mechanisms]"
+    description: "[Why it fits the solution design]"
+  - label: "Different stack"
+    description: "I have preferences"
+```
+
+Capture:
+- Recommended technologies (frontend, backend, database, hosting)
+- Rationale tied to the solution design
+- Constraints that drove the choice
+
+---
+
+### Step 7: Map Features
+
+Based on mechanisms, patterns, and MVP boundary, define features:
+
+For each feature:
 1. **Name** — concise feature name
 2. **Description** — 1-2 sentences on what it does
-3. **Goals served** — which goal IDs this feature helps achieve
-4. **Personas served** — which personas benefit
-5. **Priority tier**:
-   - Tier 1 (foundation): Auth, data model, core infrastructure — must exist before other features
-   - Tier 2 (core): The features that make this product useful — the reason users come
-   - Tier 3 (enhancement): Polish, notifications, analytics, integrations — nice to have
-6. **Dependencies** — which other features must exist first
-7. **Existing work** — for existing projects, note what's already built
+3. **Mechanisms** — which mechanism IDs this feature uses
+4. **Patterns** — which UX pattern IDs this feature follows
+5. **MVP** — boolean: ships in v1 or deferred
+6. **Dependencies** — which other feature IDs must exist first
 
 **Feature count guidance**:
-- MVP stage: 3-5 features (foundation + core only)
-- Growth stage: 5-8 features (foundation + core + some enhancements)
-- Scale stage: 7-12 features (full portfolio)
+- POC: 2-3 features
+- MVP: 3-6 features
+- Growth: 5-10 features
 
-**Stack awareness**: Only propose features the tech stack can support. If goals require real-time but stack has no WebSocket/SSE support, flag it as a constraint.
+---
 
-### Step 5: Build Goal Coverage Matrix
+### Step 8: Present Blueprint and Confirm
 
-Map every goal to features and every feature to goals:
+Present the full solution blueprint:
 
+**View 1: Solution Design**
 ```
-## Goal Coverage
+## Solution Blueprint: [Product Name]
 
-| Goal | Features | Coverage |
-|------|----------|----------|
-| G-001: Users can track progress | F-001 (Auth), F-004 (Dashboard) | Full |
-| G-002: Spaced repetition scheduling | F-003 (SR Engine) | Full |
-| G-003: Multiple quiz formats | F-002 (Quiz Engine) | Full |
-| G-004: Instructor content management | — | UNCOVERED |
+### Problem Space
+[Summary from discovery — key pain points and personas]
 
-## Feature Justification
+### Solution Approach
+[2-3 sentences on how we solve it]
 
-| Feature | Goals Served | Justified? |
-|---------|-------------|------------|
-| F-001: Auth + Profile | G-001, G-004 | Yes |
-| F-002: Quiz Engine | G-003 | Yes |
-```
+### Core Mechanisms
+1. M-001: [Name] — [description]
+   Addresses: [pain points]
+2. M-002: [Name] — [description]
 
-**Flag issues**:
-- Goals with no features → "UNCOVERED — needs a feature or is out of scope for this stage"
-- Features with no goals → "UNJUSTIFIED — consider removing or linking to a goal"
+### UX Patterns
+1. P-001: [Name] — [description]
+2. P-002: [Name] — [description]
 
-### Step 6: Present Proposal
+### Differentiators
+- D-001: [statement] (enabled by M-001 + P-002)
 
-Present the full proposal in two views:
-
-**View 1: Feature Portfolio**
-```
-## Proposed Features (ordered by dependency)
-
-### Tier 1: Foundation
-1. F-001: Auth + User Profile
-   Goals: G-001, G-004 | Personas: learner, instructor | Deps: none
-
-### Tier 2: Core
-2. F-002: Quiz Engine
-   Goals: G-003 | Personas: learner | Deps: F-001
-3. F-003: Spaced Repetition Engine
-   Goals: G-002 | Personas: learner | Deps: F-002
-
-### Tier 3: Enhancement
-4. F-005: Notification System
-   Goals: G-005 | Personas: learner | Deps: F-003, F-004
+### MVP Boundary
+In scope: [features]
+Deferred: [features]
 ```
 
-**View 2: Goal Coverage Matrix** (from Step 5)
+**View 2: Feature Map**
+```
+### Features (ordered by dependency)
 
-Then ask: **"Confirm this product definition, or adjust?"**
+MVP:
+  F-001: [Name] — mechanisms: M-001 | patterns: P-001 | deps: none
+  F-002: [Name] — mechanisms: M-001, M-002 | patterns: P-002 | deps: F-001
+
+Deferred:
+  F-004: [Name] — mechanisms: M-003 | patterns: P-001 | deps: F-002
+```
+
+Then ask: **"Confirm this solution blueprint, or adjust?"**
 
 User can:
 - Confirm as-is
-- Add features ("add a feature for instructor analytics")
-- Remove features ("drop notifications for MVP")
-- Reorder/reprioritize ("move dashboard to Tier 1")
-- Split or merge features
-- Adjust goal mappings
+- Add/remove/modify mechanisms, patterns, or features
+- Adjust MVP boundary
+- Change differentiators
 
 Incorporate adjustments and re-present if changed significantly.
 
-### Step 7: Write Product Definition
+---
 
-After confirmation, write `.shipkit/product-definition.json`:
+### Step 9: Write Product Definition
+
+After confirmation, write `.shipkit/product-definition.json`.
+
+See [Product Definition JSON Schema](#product-definition-json-schema) below.
+
+---
+
+### Step 10: Suggest Next Steps
+
+```
+Solution blueprint written to .shipkit/product-definition.json
+Mechanisms: {N} | Patterns: {N} | Features: {N} ({N} MVP, {N} deferred)
+
+Next:
+  1. /shipkit-goals — Define success criteria for this solution
+  2. /shipkit-spec — Create specs for MVP features
+  3. /shipkit-architecture-memory — Log key architecture decisions
+
+Ready to define success criteria?
+```
+
+---
+
+## Product Definition JSON Schema (Quick Reference)
 
 ```json
 {
   "$schema": "shipkit-artifact",
   "type": "product-definition",
-  "version": "1.0",
+  "version": "2.0",
   "lastUpdated": "ISO timestamp",
   "source": "shipkit-product-definition",
   "product": {
     "name": "Product name",
     "vision": "One-line from why.json",
-    "stage": "mvp|growth|scale"
+    "stage": "poc|mvp|production|scale"
+  },
+  "problemSpace": {
+    "summary": "Brief summary of discovered user needs",
+    "keyPainPoints": ["pain-1"],
+    "primaryPersona": "persona-1",
+    "personaIntents": {
+      "persona-1": "Their primaryIntent from discovery",
+      "persona-2": "Their primaryIntent (multi-user apps only)"
+    }
+  },
+  "solutionApproach": "How the solution addresses discovered needs",
+  "mechanisms": [
+    {
+      "id": "M-001",
+      "name": "Mechanism name",
+      "description": "What this does and how",
+      "addressesNeeds": ["pain-1"],
+      "designChoices": [
+        { "decision": "Choice", "rationale": "Why", "alternatives": ["Rejected option"] }
+      ]
+    }
+  ],
+  "uxPatterns": [
+    {
+      "id": "P-001",
+      "name": "Pattern name",
+      "description": "How users interact with this",
+      "usedIn": ["F-001"],
+      "rationale": "Why this pattern"
+    }
+  ],
+  "differentiators": [
+    {
+      "id": "D-001",
+      "statement": "What makes this unique",
+      "enabledBy": ["M-001", "P-001"]
+    }
+  ],
+  "designDecisions": [
+    {
+      "decision": "Key choice",
+      "rationale": "Why",
+      "alternatives": ["What was considered"]
+    }
+  ],
+  "stackDirection": {
+    "recommended": { "frontend": "...", "backend": "...", "database": "...", "hosting": "..." },
+    "rationale": "Why these choices",
+    "constraints": ["Driving factors"],
+    "note": "Only for greenfield. Skipped if stack.json exists."
+  },
+  "mvpBoundary": {
+    "inScope": ["What ships in v1"],
+    "deferred": ["Phase 2+"],
+    "rationale": "Why this boundary"
   },
   "features": [
     {
       "id": "F-001",
-      "name": "Auth + User Profile",
-      "description": "User registration, login, profile management",
-      "goalsServed": ["G-001", "G-004"],
-      "personasServed": ["learner", "instructor"],
-      "priority": 1,
-      "tier": "foundation",
-      "dependsOn": [],
-      "status": "todo",
-      "specPath": null
+      "name": "Feature name",
+      "description": "What it does",
+      "mechanisms": ["M-001"],
+      "patterns": ["P-001"],
+      "mvp": true,
+      "dependencies": []
     }
   ],
-  "goalCoverage": {
-    "G-001": {
-      "goal": "Users can track learning progress",
-      "features": ["F-001", "F-004"],
-      "coverage": "full"
-    }
-  },
-  "dependencyOrder": ["F-001", "F-002", "F-003", "F-004", "F-005"],
   "summary": {
-    "totalFeatures": 5,
-    "byTier": {"foundation": 1, "core": 3, "enhancement": 1},
-    "goalsFullyCovered": 4,
-    "goalsPartiallyCovered": 0,
-    "goalsUncovered": 1
+    "totalMechanisms": 0,
+    "totalPatterns": 0,
+    "totalDifferentiators": 0,
+    "totalFeatures": 0,
+    "mvpFeatures": 0,
+    "deferredFeatures": 0
   }
 }
 ```
 
-**Dependency order**: Topological sort — features with no dependencies first, then features whose dependencies are all earlier in the list.
+**Full schema reference**: See `references/output-schema.md`
+**Realistic example**: See `references/example.json`
 
-**Feature IDs**: Use F-001, F-002, etc. Sequential, stable. If updating an existing definition, preserve existing IDs.
+### Graph Relationships
 
-### Step 8: Suggest Next Steps
+The ID-based cross-references enable these graph traversals:
 
-After writing:
-
-```
-Product definition written to .shipkit/product-definition.json
-Features: {N} ({tier counts})
-Goal coverage: {covered}/{total} goals covered
-
-Next: Run `/shipkit-spec` to generate specs for each feature (batch mode from product-definition)
-```
+- **Mechanism -> Pain Points**: `mechanisms[].addressesNeeds` references `painPoints[].id` from product-discovery.json
+- **UX Pattern -> Features**: `uxPatterns[].usedIn` references `features[].id`
+- **Feature -> Mechanisms**: `features[].mechanisms` references `mechanisms[].id`
+- **Feature -> Patterns**: `features[].patterns` references `uxPatterns[].id`
+- **Differentiator -> Mechanisms/Patterns**: `differentiators[].enabledBy` references mechanism and pattern IDs
 
 ---
 
 ## When $ARGUMENTS is Provided
 
-If `$ARGUMENTS` contains text (e.g., `/shipkit-product-definition "learning app"` or `/shipkit-product-definition --refresh`):
-
-- **Product name/description**: Use as seed for the product name and to focus the feature proposals
+If `$ARGUMENTS` contains text:
+- **Product name/description**: Use as seed for product name and to focus the solution proposal
 - **`--refresh`**: Start fresh even if product-definition.json exists
-- **`--coverage`**: Only run the coverage analysis (Steps 5-6) against existing definition — useful for checking if new goals are covered
+- **`--mvp`**: Focus only on MVP boundary review (Steps 5-6 only against existing definition)
+
+---
+
+## When This Skill Integrates with Others
+
+### Before This Skill
+| Skill | Why |
+|-------|-----|
+| `shipkit-why-project` | Produces why.json — project purpose and stage |
+| `shipkit-product-discovery` | Produces product-discovery.json — required input (user needs) |
+| `shipkit-project-context` | Produces stack.json — tech capabilities |
+
+### After This Skill
+| Skill | How |
+|-------|-----|
+| `shipkit-goals` | Reads product-definition.json to derive success criteria from the solution design |
+| `shipkit-spec` | Reads product-definition.json features — one spec per feature |
+| `shipkit-architecture-memory` | Reads product-definition.json for solution context in architecture decisions |
+| `shipkit-plan` | Indirectly — plans derive from specs which come from product-definition |
+
+---
+
+## Context Files This Skill Reads
+
+| File | Purpose | If Missing |
+|------|---------|------------|
+| `.shipkit/product-discovery.json` | User needs, pain points, personas | Route to `/shipkit-product-discovery` |
+| `.shipkit/why.json` | Project purpose and stage | Proceed with user input |
+| `.shipkit/stack.json` | Tech capabilities and constraints | Ask about stack (greenfield) or proceed |
+| `.shipkit/codebase-index.json` | Existing code for existing projects | Skip |
+| `.shipkit/product-definition.json` | Previous definition (for update mode) | Generate new |
+
+## Context Files This Skill Writes
+
+**Write Strategy: OVERWRITE**
+
+| File | When |
+|------|------|
+| `.shipkit/product-definition.json` | Created on first run, updated on subsequent runs |
+
+**Archive location** (if replacing):
+- `.shipkit/archive/product-definition/product-definition.[timestamp].json`
 
 ---
 
 <!-- SECTION:after-completion -->
 ## After Completion
 
-The product definition is the central planning artifact. Keep it current as the product evolves:
+**Guardrails Check:** Before moving to next task, verify:
 
-- After adding new goals → re-run with `--coverage` to check if features cover them
-- After completing features → update status fields (the spec skill does this automatically)
-- Before each development cycle → review the definition for priority changes
+1. **Persistence** - Has important context been saved to `.shipkit/`?
+2. **Prerequisites** - Does the next action need goals or a spec first?
+3. **Session length** - Long session? Consider `/shipkit-work-memory` for continuity.
 
-The goal coverage matrix is your product health indicator. Uncovered goals mean missing features. Unjustified features mean scope creep.
+**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
+
+**Suggest skill when:** User needs to define success criteria (`/shipkit-goals`), create detailed specs (`/shipkit-spec`), or log architecture decisions (`/shipkit-architecture-memory`).
 <!-- /SECTION:after-completion -->
 
 <!-- SECTION:success-criteria -->
 ## Success Criteria
 
-- [ ] All vision artifacts read (goals.json required, others recommended)
-- [ ] Feature portfolio proposed with 3-12 features appropriate to project stage
-- [ ] Every feature has goals served, personas served, priority tier, and dependencies
-- [ ] Goal coverage matrix shows coverage for every goal
-- [ ] Uncovered goals flagged explicitly
-- [ ] Unjustified features (no goals) flagged explicitly
-- [ ] Dependency order is a valid topological sort (no circular deps)
-- [ ] User confirmed the portfolio before writing
-- [ ] product-definition.json written with complete schema
-- [ ] Feature IDs are stable (preserved across updates)
+Solution blueprint is complete when:
+- [ ] Product-discovery.json read and problem space summarized
+- [ ] 2-4 mechanisms defined, each addressing at least one pain point
+- [ ] Every major pain point addressed by at least one mechanism
+- [ ] 2-4 UX patterns defined with rationale
+- [ ] 1-3 differentiators tied to mechanisms/patterns
+- [ ] Key design decisions captured with rationale
+- [ ] MVP boundary explicitly defined with rationale
+- [ ] Stack direction captured (greenfield only)
+- [ ] Features reference mechanisms and patterns by ID
+- [ ] All cross-references use stable IDs (M-001, P-001, F-001, D-001)
+- [ ] Summary counts match actual array lengths
+- [ ] User confirmed the blueprint before writing
+- [ ] File saved to `.shipkit/product-definition.json`
 <!-- /SECTION:success-criteria -->
 
 ---
 
-## Integration
-
-### Before This Skill
-| Skill | Why |
-|-------|-----|
-| `shipkit-why-project` | Produces why.json — project purpose and stage |
-| `shipkit-goals` | Produces goals.json — required input |
-| `shipkit-product-discovery` | Produces product-discovery.json — personas |
-| `shipkit-project-context` | Produces stack.json — tech capabilities |
-
-### After This Skill
-| Skill | How |
-|-------|-----|
-| `shipkit-spec` | Reads product-definition.json in batch mode — one spec per feature |
-| `shipkit-architecture-memory` | Reads product-definition.json for feature scope in solution architect mode |
-| `shipkit-plan` | Indirectly — plans are generated from specs which come from product-definition |
-
----
-
-## Context Files This Skill Reads
-
-| File | Purpose |
-|------|---------|
-| `.shipkit/goals.json` | Goal list — required input |
-| `.shipkit/product-discovery.json` | Personas — recommended input |
-| `.shipkit/why.json` | Project purpose and stage |
-| `.shipkit/stack.json` | Tech capabilities and constraints |
-| `.shipkit/codebase-index.json` | Existing code for existing projects |
-| `.shipkit/specs/*.json` | Existing specs (for update mode) |
-| `.shipkit/product-definition.json` | Previous definition (for update mode) |
-
-## Context Files This Skill Writes
-
-| File | When |
-|------|------|
-| `.shipkit/product-definition.json` | Created on first run, updated on subsequent runs |
+**Remember**: This skill captures the solution design — HOW you solve discovered needs. It's the bridge between understanding users (discovery) and measuring success (goals). Update it as the solution evolves. The mechanism/pattern structure makes it easy to trace from user pain points through to features.

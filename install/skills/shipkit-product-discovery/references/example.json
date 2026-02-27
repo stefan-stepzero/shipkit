@@ -17,6 +17,7 @@
       "id": "persona-1",
       "name": "Solo Founder",
       "role": "Technical founder building MVP",
+      "primaryIntent": "Ship side project to production with structured workflow",
       "goals": [
         "Ship MVP within 4 weeks",
         "Validate idea with early users",
@@ -35,6 +36,7 @@
       "id": "persona-2",
       "name": "Agency Developer",
       "role": "Full-stack developer at digital agency",
+      "primaryIntent": "Deliver client projects on time with consistent quality",
       "goals": [
         "Deliver client projects on time",
         "Maintain quality across multiple projects",
@@ -53,6 +55,7 @@
       "id": "persona-3",
       "name": "Junior Developer",
       "role": "Early-career developer learning best practices",
+      "primaryIntent": "Learn professional workflows through guided project building",
       "goals": [
         "Learn professional development workflows",
         "Build portfolio projects",

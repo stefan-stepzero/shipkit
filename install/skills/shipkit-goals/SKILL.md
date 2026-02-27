@@ -1,34 +1,34 @@
 ---
 name: shipkit-goals
-description: "Capture structured project goals that bridge why.json vision to concrete specs. Triggers: 'set goals', 'project goals', 'objectives', 'priorities'."
-argument-hint: "[goal topic]"
+description: "Derive measurable success criteria from the solution blueprint. Triggers: 'success criteria', 'how do we measure', 'goals', 'stage gates'."
+argument-hint: "[goal topic or criteria focus]"
 agent: shipkit-product-owner-agent
 ---
 
-# shipkit-goals - Project Goals & Objectives
+# shipkit-goals — Success Criteria & Stage Gates
 
-**Purpose**: Capture structured, trackable project goals that bridge `.shipkit/why.json` vision to concrete specs — with priorities, status, and success criteria.
+**Purpose**: Derive measurable success criteria from the solution blueprint (product-definition.json). Each mechanism, UX pattern, and differentiator implies criteria for "how do we know this works?" — this skill makes those criteria explicit, measurable, and trackable.
 
-**What it does**: Proposes stage-appropriate goals based on project context, lets user validate and customize, then generates `.shipkit/goals.json` with structured goals that persist across sessions.
+**What it does**: Reads the solution blueprint and discovered user needs, proposes success criteria with measurable thresholds and verification methods, lets user validate and customize, then generates `.shipkit/goals.json` with structured criteria that serve as stage gates for execution.
 
-**Philosophy**: Goals are 80% predictable from project stage and type. This skill does the grunt work — proposing smart defaults across Technical, Product/UX, Growth, and Operational lenses — so users validate rather than create from scratch. **For MVPs, first impressions are critical** — users form opinions in seconds, so UX goals are weighted heavily.
+**Philosophy**: Success criteria are derivable from the solution design. Each mechanism implies performance and quality criteria. Each UX pattern implies usability criteria. Each differentiator implies validation criteria. This skill does the derivation — users validate thresholds and add business metrics.
 
-**Output format**: JSON — readable by Claude, machine-readable by other tools, and the single source of truth for project goals.
+**Output format**: JSON — readable by Claude, machine-readable by other tools, and the source of truth for what "done" means.
 
 ---
 
 ## When to Invoke
 
 **User triggers**:
-- "Set goals for this project"
-- "What are our objectives?"
-- "Define priorities"
-- "What should we build toward?"
-- "Goals for the MVP"
+- "Define success criteria", "How do we measure success?"
+- "Set goals", "What are our goals?"
+- "Stage gates", "Launch criteria"
+- "When is this done?"
 
 **Workflow position**:
-- After `/shipkit-why-project` (vision exists) — goals make the vision actionable
-- Before `/shipkit-spec` — goals inform which features to spec first
+- After `/shipkit-product-definition` (reads the solution blueprint)
+- Before `/shipkit-spec` — criteria inform feature specifications
+- Before `/shipkit-verify` — criteria become verification checks
 
 ---
 
@@ -36,11 +36,9 @@ agent: shipkit-product-owner-agent
 
 | File | Required? | Provides | If Missing |
 |------|-----------|----------|------------|
-| `.shipkit/why.json` | **Yes** | `currentState` (stage), vision, problem | Route to `/shipkit-why-project` |
-| `.shipkit/codebase-index.json` | Recommended | `concepts`, `recentlyActive`, framework | Suggest `/shipkit-codebase-index` or proceed with generic stage goals |
-| `.shipkit/stack.json` | Optional | Tech context for feasibility | Use framework from codebase-index |
-
-**Why these matter**: Goals are proposed based on current stage (from why.json) and detected capabilities (from codebase-index). Without context, goals are generic.
+| `.shipkit/product-definition.json` | **Yes** | Mechanisms, patterns, differentiators, MVP boundary | Route to `/shipkit-product-definition` |
+| `.shipkit/product-discovery.json` | Recommended | Pain points for traceability | Proceed without traceability |
+| `.shipkit/why.json` | Recommended | Stage context (POC/MVP/Production/Scale) | Ask user for stage |
 
 ---
 
@@ -48,26 +46,14 @@ agent: shipkit-product-owner-agent
 
 ### Step 0: Check for Existing File
 
-```markdown
 1. Check if `.shipkit/goals.json` exists
-
-2. If exists AND modified < 5 minutes ago:
-   - Show user: "Found recent goals (modified X ago)"
-   - Ask: "Use these or regenerate?"
-   - If "use these" → Exit early (save tokens)
-   - If "regenerate" → Proceed to Step 1
-
-3. If exists AND modified > 5 minutes ago:
-   - Read and display current goals as a formatted summary
-   - Ask: "View/Update/Replace/Cancel?"
-
-4. If doesn't exist:
-   - Skip to Step 1 (generate new)
-```
+2. If exists AND modified < 5 minutes ago: Show user, ask "Use these or regenerate?"
+3. If exists AND modified > 5 minutes ago: Read and display summary, ask "View/Update/Replace/Cancel?"
+4. If doesn't exist: Skip to Step 1
 
 **If Update:**
 - Read existing goals.json
-- Ask: "What should change? (new goals, reprioritize, mark achieved, etc.)"
+- Ask: "What should change? (add criteria, adjust thresholds, mark achieved, etc.)"
 - Regenerate incorporating updates
 
 **If Replace:**
@@ -76,178 +62,240 @@ agent: shipkit-product-owner-agent
 
 ---
 
-### Step 1: Gather Context
+### Step 1: Load Context
 
 **Read these files:**
 
 ```
-.shipkit/why.json           → currentState, vision, problem (REQUIRED)
-.shipkit/codebase-index.json → concepts, framework, recentlyActive (RECOMMENDED)
-.shipkit/stack.json          → tech context (OPTIONAL)
+.shipkit/product-definition.json  → mechanisms, patterns, differentiators, MVP boundary (REQUIRED)
+.shipkit/product-discovery.json   → pain points for traceability (RECOMMENDED)
+.shipkit/why.json                 → project stage (RECOMMENDED)
 ```
 
-**If why.json missing**: Route to `/shipkit-why-project` first.
-
-**If codebase-index.json missing**:
-- Suggest: "For better goal proposals, run `/shipkit-codebase-index` first. Or continue with stage-based goals?"
-- If user continues → use generic stage goals without concept modifiers
+**If product-definition.json missing**: Route to `/shipkit-product-definition` first.
 
 ---
 
-### Step 2: Determine Stage and Select Templates
+### Step 2: Determine Stage and Criteria Complexity
 
-**Map currentState to stage** (see `references/goal-templates.md`):
+Read stage from `product-definition.json` (product.stage) or `why.json`:
 
-| why.json `currentState` | Stage | Next Stage |
-|------------------------|-------|------------|
-| "starting", "idea", "POC" | POC | → MVP |
-| "MVP", "alpha", "prototype" | MVP | → Production |
-| "beta", "production", "live" | Production | → Scale |
-| "growth", "scale", "enterprise" | Scale | → Enterprise |
-
-**Select goal templates** from `references/goal-templates.md`:
-1. Pull goals for current → next stage transition
-2. Apply concept modifiers based on `codebase-index.json`:
-   - If `concepts.auth` → add auth-hardening goals
-   - If `concepts.payments` → add payment-readiness goals
-   - If `concepts.database` → add data integrity goals
-3. Adjust lens weights based on project type (SaaS, CLI, library, API)
+| Stage | Criteria Complexity | Focus |
+|-------|-------------------|-------|
+| POC | Basic: "it works" checks | Functional completeness |
+| MVP | Moderate: user outcome thresholds | Usability + core performance |
+| Production | Full: performance + reliability gates | Reliability + scalability |
+| Scale | Comprehensive: business metrics + SLAs | Growth + operational excellence |
 
 ---
 
-### Step 3: Propose Goals for Validation
+### Step 3: Derive Criteria from Solution Blueprint
 
-**Present proposed goals organized by lens:**
+For each section of product-definition.json, derive criteria:
+
+**From mechanisms:**
+- Performance criteria (how fast?)
+- Reliability criteria (how often does it work?)
+- Quality criteria (how good is the output?)
+
+**From UX patterns:**
+- Usability criteria (can users complete the flow?)
+- Completion rate criteria (what % finish?)
+- Responsiveness criteria (how fast does it feel?)
+
+**From differentiators:**
+- Validation criteria (does it actually differentiate?)
+- User perception criteria (do users notice/value it?)
+
+**From MVP boundary:**
+- Completeness gate (are all MVP items functional?)
+- Integration gate (do MVP features work together?)
+
+See `references/derivation-patterns.md` for detailed derivation examples.
+
+---
+
+### Step 4: Propose Criteria for Validation
+
+**Present proposed criteria grouped by category:**
 
 ```
-Based on your project:
-  Stage: MVP → Production
-  Vision: "{from why.json}"
-  Detected: auth, payments, database
+Based on your solution blueprint:
 
-Proposed goals:
+USER OUTCOMES:
+  □ Worksheet completion: Teacher creates worksheet in < 2 minutes
+    Threshold: 80% of users complete in < 2 min
+    Verify: analytics (time-to-complete tracking)
+    Derived from: P-001 (Wizard Flow)
 
-TECHNICAL (P0):
-  □ Auth hardened (session expiry, rate limiting)
-  □ Error recovery exists (retry logic, graceful degradation)
-  □ CI/CD pipeline operational
+  □ Content quality: Generated questions are grade-appropriate
+    Threshold: 90%+ accuracy on manual review sample
+    Verify: manual-check (teacher review of 20 samples)
+    Derived from: M-001 (LLM Generation Chain)
 
-PRODUCT/UX (P0) — First impressions & trust:
-  □ Onboarding completes in <2 minutes (fast time-to-value)
-  □ Error messages are actionable (user knows what to do)
-  □ Trust signals visible before payment (security badges, clear pricing)
-  □ Feedback on every action (no silent failures)
+TECHNICAL PERFORMANCE:
+  □ Generation speed: Worksheet generates within acceptable time
+    Threshold: < 5 seconds for streaming first content
+    Verify: automated-test (load test with timer)
+    Derived from: M-001 (LLM Generation Chain)
 
-PAYMENTS (P1 - detected):
-  □ Webhook signature verification
-  □ Failed payment handling
-
-OPERATIONAL (P1):
-  □ User-facing documentation
-  □ Error logging with context
+BUSINESS METRICS:
+  □ Return usage: Teachers come back to create more
+    Threshold: 40%+ 7-day return rate
+    Verify: analytics (cohort tracking)
+    Derived from: D-003 (Real-time preview)
 
 Accept these? Or:
-  - Add: "I also need X"
-  - Remove: "Skip the payments goals"
-  - Reprioritize: "Make trust signals P0"
-  - Custom: "Replace with my own list"
+  - Add: "I also want to track X"
+  - Remove: "Skip the return rate metric for now"
+  - Adjust threshold: "Make generation speed < 3 seconds"
+  - Custom: "Replace with my own criteria"
 ```
-
-**Why propose first**: 80% of goals are predictable from stage + concepts. User validates rather than creates from scratch. This captures human priorities while reducing cognitive load.
 
 **If user modifies**: Incorporate changes. Re-present if major changes.
 
-**If user wants fully custom**: Fall back to asking open-ended questions (legacy mode).
+---
+
+### Step 5: Define Stage Gates
+
+Group confirmed criteria into named gates:
+
+```
+STAGE GATES:
+
+MVP Launch Ready (all must pass):
+  - criterion-worksheet-completion
+  - criterion-generation-speed
+  - criterion-content-quality
+  - criterion-mvp-completeness
+
+Beta Ready (MVP Launch + these):
+  - criterion-return-usage
+  - criterion-differentiation-validation
+```
+
+Ask user to confirm gate composition.
 
 ---
 
-### Step 4: Generate Goals JSON
+### Step 6: Generate Goals JSON
 
-**Create file using Write tool**: `.shipkit/goals.json`
+After confirmation, write `.shipkit/goals.json`.
 
-The output MUST conform to the schema below. This is a strict contract — other skills depend on this structure.
+See [Goals JSON Schema](#goals-json-schema) below.
 
 ---
 
-## JSON Schema
+### Step 7: Save and Suggest Next Steps
 
-**Full schema reference**: See `references/output-schema.md`
-**Example output**: See `references/example.json`
+```
+Success criteria saved to .shipkit/goals.json
 
-### Quick Reference
+  Criteria: {N} total
+    User outcomes: {N}
+    Technical performance: {N}
+    Business metrics: {N}
+
+  Gates: {N}
+    MVP Launch Ready: {N} criteria
+    {Other gates}: {N} criteria each
+
+  Status: {N} not-measured
+
+Next:
+  1. /shipkit-spec — Create specs for MVP features (criteria inform acceptance tests)
+  2. /shipkit-plan — Plan implementation
+  3. /shipkit-verify — Check criteria status after building
+
+Ready to start speccing?
+```
+
+---
+
+## Goals JSON Schema (Quick Reference)
 
 ```json
 {
   "$schema": "shipkit-artifact",
   "type": "goals",
-  "version": "1.0",
-  "lastUpdated": "YYYY-MM-DD",
+  "version": "2.0",
+  "lastUpdated": "YYYY-MM-DDTHH:MM:SSZ",
   "source": "shipkit-goals",
-  "summary": { "total": N, "byPriority": {...}, "byStatus": {...} },
-  "goals": [
+
+  "stage": {
+    "current": "mvp",
+    "target": "production"
+  },
+
+  "derivedFrom": {
+    "productDefinition": ".shipkit/product-definition.json",
+    "productDiscovery": ".shipkit/product-discovery.json"
+  },
+
+  "criteria": [
     {
-      "id": "goal-slug",
-      "name": "Goal Name",
-      "priority": "p0|p1|p2",
-      "status": "not-started|in-progress|achieved|deferred",
-      "objective": "What we're trying to achieve",
-      "successCriteria": ["Criterion 1", "Criterion 2"],
-      "linkedSpecs": ["specs/active/feature.json"],
-      "notes": "Optional"
+      "id": "criterion-slug",
+      "name": "Human-readable name",
+      "category": "user-outcome|technical-performance|business-metric",
+      "metric": "What to measure",
+      "threshold": "Target value (e.g., '> 80%', '< 3 seconds')",
+      "currentValue": null,
+      "verificationMethod": "manual-check|analytics|automated-test|user-feedback",
+      "gate": "gate-slug",
+      "status": "not-measured|below-threshold|at-threshold|exceeded",
+      "derivedFrom": {
+        "type": "mechanism|pattern|differentiator|mvpBoundary",
+        "id": "M-001"
+      },
+      "painPointAddressed": "pain-1",
+      "notes": "Optional context"
     }
-  ]
+  ],
+
+  "gates": [
+    {
+      "id": "gate-slug",
+      "name": "Gate name",
+      "description": "What passing this gate means",
+      "criteria": ["criterion-slug-1", "criterion-slug-2"],
+      "status": "blocked|partial|passed",
+      "passedAt": null
+    }
+  ],
+
+  "summary": {
+    "totalCriteria": 0,
+    "byCategory": { "user-outcome": 0, "technical-performance": 0, "business-metric": 0 },
+    "byStatus": { "not-measured": 0, "below-threshold": 0, "at-threshold": 0, "exceeded": 0 },
+    "totalGates": 0,
+    "gatesPassed": 0
+  }
 }
 ```
 
-**Key fields**: `id` (kebab-case slug), `priority` (p0/p1/p2), `status` (tracking), `successCriteria` (measurable).
-
-**Summary**: Recompute `summary` counts every time the file is written.
-
----
-
-### Step 5: Save and Suggest Next Step
-
-**Use Write tool to create/overwrite**: `.shipkit/goals.json`
-
-**Output to user** (formatted summary, not raw JSON):
-```
-Goals saved.
-
-Location: .shipkit/goals.json
-
-  P0 (must have): 2 goals
-  P1 (should have): 2 goals
-  P2 (nice to have): 1 goal
-
-  Status: 2 not started, 2 in progress, 1 achieved
-
-Next steps:
-  1. /shipkit-spec - Create specs for your P0 goals
-  2. /shipkit-plan - Plan implementation for an existing spec
-  3. /shipkit-project-status - See overall project health
-
-Ready to spec your top-priority goal?
-```
-
----
+**Full schema reference**: See `references/output-schema.md`
+**Derivation patterns**: See `references/derivation-patterns.md`
+**Realistic example**: See `references/example.json`
 
 ---
 
 ## When This Skill Integrates with Others
 
-### Before shipkit-goals
-- `/shipkit-why-project` - Define vision first (optional but recommended)
-- `/shipkit-project-context` - Know your stack (optional)
+### Before This Skill
+- `/shipkit-product-definition` — Produces the solution blueprint (required)
+- `/shipkit-product-discovery` — Produces user needs for traceability (recommended)
+- `/shipkit-why-project` — Provides stage context (recommended)
 
-### After shipkit-goals
-- `/shipkit-spec` - Create specs for P0 goals
-- `/shipkit-plan` - Plan implementation for specs
-- `/shipkit-project-status` - See how goals map to project health
+### After This Skill
+- `/shipkit-spec` — Criteria inform acceptance tests within feature specs
+- `/shipkit-plan` — Plans can reference criteria for verification steps (future integration)
+- `/shipkit-verify` — Can reference criteria when checking implementation quality (future integration)
+- `/shipkit-project-status` — Displays criteria and gate status
 
-### When shipkit-goals Runs Again
+### When This Skill Runs Again
 - File exists workflow activates
-- User can view/update/replace existing goals
-- Common update: mark goals as achieved, reprioritize, add new goals
+- User can view/update/replace existing criteria
+- Common updates: adjust thresholds, mark criteria as measured, add new criteria
 
 ---
 
@@ -255,12 +303,9 @@ Ready to spec your top-priority goal?
 
 | File | Purpose | If Missing |
 |------|---------|------------|
-| `.shipkit/why.json` | `currentState` determines stage, vision grounds proposals | Route to `/shipkit-why-project` |
-| `.shipkit/codebase-index.json` | `concepts` trigger domain-specific goals | Suggest running it, or use generic goals |
-| `.shipkit/stack.json` | Tech context for feasibility | Use framework from codebase-index |
-| `.shipkit/specs/active/*.json` | Link goals to existing specs | Goals stand alone |
-
-**Template reference**: `references/goal-templates.md` — stage definitions, goal templates by lens, concept modifiers.
+| `.shipkit/product-definition.json` | Solution blueprint — derive criteria from | Route to `/shipkit-product-definition` |
+| `.shipkit/product-discovery.json` | Pain points for traceability | Proceed without traceability |
+| `.shipkit/why.json` | Project stage for criteria complexity | Ask user for stage |
 
 ---
 
@@ -269,106 +314,10 @@ Ready to spec your top-priority goal?
 **Write Strategy: OVERWRITE**
 
 **Creates/Updates**:
-- `.shipkit/goals.json` - Structured project goals (JSON artifact)
-
-**Update Behavior**:
-- File exists → File Exists Workflow (view/update/replace/cancel)
-- Recent file (< 5 min) → Quick Exit Check (use or regenerate)
-- Replace → Archive old version first
-- Update → Read existing, incorporate changes
-- Each write REPLACES entire file contents
+- `.shipkit/goals.json` — Structured success criteria (JSON artifact)
 
 **Archive location** (if replacing):
 - `.shipkit/.archive/goals.YYYY-MM-DD.json`
-
----
-
-## Success Criteria
-
-- [ ] Stage determined from why.json `currentState`
-- [ ] Goal templates selected from `references/goal-templates.md`
-- [ ] Concept modifiers applied based on codebase-index (if available)
-- [ ] Goals proposed to user across relevant lenses (Technical, Product/UX, Growth, Operational)
-- [ ] User validated/customized proposed goals
-- [ ] Goals are structured with priority levels (P0/P1/P2)
-- [ ] Each goal has measurable success criteria
-- [ ] Output conforms to JSON schema
-- [ ] Summary field is accurate
-- [ ] File saved to `.shipkit/goals.json`
-- [ ] Old version archived (if replaced)
-
----
-
-## Common Scenarios
-
-### Scenario 1: New Project with Context
-
-```
-User: "Set goals for this project"
-
-Claude:
-1. Check .shipkit/goals.json (doesn't exist)
-2. Read .shipkit/why.json → currentState: "MVP"
-3. Read .shipkit/codebase-index.json → concepts: auth, payments, database
-4. Determine: MVP → Production transition
-5. Select templates from goal-templates.md, apply concept modifiers
-6. Propose:
-   "Based on MVP → Production with auth, payments, database detected:
-
-   TECHNICAL (P0): Auth hardened, Error recovery, CI/CD
-   PRODUCT/UX (P0): Onboarding flow, Actionable errors
-   PAYMENTS (P1): Webhook verification, Failed payment handling
-   OPERATIONAL (P1): User docs, Error logging
-
-   Accept these? Or add/remove/reprioritize?"
-
-7. User: "Accept, but make onboarding P0"
-8. Adjust, generate goals.json, save
-```
-
-### Scenario 2: New Project without Codebase Index
-
-```
-User: "Set goals"
-
-Claude:
-1. Read .shipkit/why.json → currentState: "POC"
-2. Check .shipkit/codebase-index.json (doesn't exist)
-3. Suggest: "For better goal proposals, run /shipkit-codebase-index first.
-   Or continue with stage-based goals?"
-   User: "Continue"
-4. Use generic POC → MVP templates (no concept modifiers)
-5. Propose goals, user validates
-```
-
-### Scenario 3: Update Goals (File Exists)
-
-```
-User: "Update our goals"
-
-Claude:
-1. Check .shipkit/goals.json (exists, modified 2 days ago)
-2. Read and display formatted summary
-3. Ask: "View/Update/Replace/Cancel?"
-   User: "Update"
-4. Ask: "What should change?"
-   User: "We achieved the MVP goal, and I want to add onboarding"
-5. Move MVP status to "achieved", add onboarding goal from templates
-6. Recompute summary counts
-7. Overwrite .shipkit/goals.json
-```
-
-### Scenario 4: Quick Exit (Recent File)
-
-```
-User: "Show me our goals"
-
-Claude:
-1. Check .shipkit/goals.json (exists, modified 2 minutes ago)
-2. Show: "Found recent goals (2 min ago). Use these or regenerate?"
-   User: "Use these"
-3. Read JSON, display formatted summary, exit
-```
 
 ---
 
@@ -383,9 +332,27 @@ Claude:
 
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 
-**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+**Suggest skill when:** User needs to create specs (`/shipkit-spec`), plan implementation (`/shipkit-plan`), or verify criteria (`/shipkit-verify`).
 <!-- /SECTION:after-completion -->
+
+<!-- SECTION:success-criteria -->
+## Success Criteria
+
+Goals artifact is complete when:
+- [ ] Product-definition.json read and mechanisms/patterns/differentiators extracted
+- [ ] Criteria derived from each mechanism (performance + quality + reliability)
+- [ ] Criteria derived from each UX pattern (usability + completion rate)
+- [ ] Criteria derived from differentiators (validation)
+- [ ] Each criterion has measurable threshold (not vague)
+- [ ] Each criterion has verification method (how to measure)
+- [ ] Criteria grouped into stage gates
+- [ ] User confirmed criteria and thresholds
+- [ ] Gate composition confirmed
+- [ ] derivedFrom traceability links are valid
+- [ ] Summary counts match actual array lengths
+- [ ] File saved to `.shipkit/goals.json`
+<!-- /SECTION:success-criteria -->
 
 ---
 
-**Remember**: Goals are 80% predictable from stage + detected capabilities. Propose smart defaults, let users validate. The skill does the grunt work — users make the final call on priorities. Update goals as the project evolves.
+**Remember**: Success criteria are the acceptance tests for your product. They answer "how do we know this works?" for every mechanism, pattern, and differentiator in the solution blueprint. Update them as the solution evolves. Gate status drives execution — keep building until gates pass.
