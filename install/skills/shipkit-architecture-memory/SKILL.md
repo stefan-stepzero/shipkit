@@ -66,7 +66,8 @@ Read all available context in parallel:
 
 ```
 Read in parallel:
-1. .shipkit/product-definition.json — solution blueprint (mechanisms, patterns, features)
+1. .shipkit/product-definition.json — product blueprint (features, patterns, differentiators)
+1b. .shipkit/engineering-definition.json — engineering blueprint (mechanisms, components, design decisions)
 2. .shipkit/stack.json         — technology constraints
 3. .shipkit/why.json           — project purpose and stage
 4. .shipkit/goals.json         — success criteria and stage gates (optional)
@@ -74,7 +75,7 @@ Read in parallel:
 6. .shipkit/codebase-index.json — existing code structure
 ```
 
-If product-definition.json is missing, warn: "No solution blueprint found. Run `/shipkit-product-definition` first for a well-informed architecture proposal. Proceeding with best inference from available context."
+If product-definition.json is missing, warn: "No product blueprint found. Run `/shipkit-product-definition` first for a well-informed architecture proposal. Proceeding with best inference from available context."
 
 #### SA-2: Determine Project Stage
 
@@ -615,7 +616,8 @@ Copy and track:
 - `.shipkit/goals.json` - Goal list for alignment
 - `.shipkit/stack.json` - Technology constraints
 - `.shipkit/why.json` - Project purpose and stage
-- `.shipkit/product-definition.json` - Solution blueprint (mechanisms, patterns, features)
+- `.shipkit/product-definition.json` - Product blueprint (features, patterns, differentiators)
+- `.shipkit/engineering-definition.json` - Engineering blueprint (mechanisms, components, design decisions)
 - `.shipkit/specs/todo/*.json` - Feature specs
 - `.shipkit/codebase-index.json` - Existing code structure
 

@@ -113,7 +113,7 @@ your-project/
 ├── CLAUDE.md                 # Project instructions for Claude
 ├── .claude/
 │   ├── settings.json         # Permissions + hooks
-│   ├── skills/               # <!-- sync:skill_count -->36<!-- /sync:skill_count --> skill definitions
+│   ├── skills/               # <!-- sync:skill_count -->37<!-- /sync:skill_count --> skill definitions
 │   ├── agents/               # <!-- sync:agent_count -->9<!-- /sync:agent_count --> agent personas
 │   ├── rules/                # Framework rules
 │   └── hooks/                # Session hooks

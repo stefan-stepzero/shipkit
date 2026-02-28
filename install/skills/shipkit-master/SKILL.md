@@ -108,8 +108,9 @@ This skill provides:
 |-----------|----------|--------------|
 | "Define vision", "Why this project?", "Project goals" | `/shipkit-why-project` | .shipkit/why.json |
 | "Who are our users?", "Create personas", "User research", "User journey" | `/shipkit-product-discovery` | .shipkit/why.json, stack.json |
-| "Define solution", "Product definition", "Solution blueprint", "How to solve this", "What to build" | `/shipkit-product-definition` | .shipkit/product-discovery.json, why.json |
-| "Success criteria", "Measure success", "Goals", "Stage gates", "How do we know it works" | `/shipkit-goals` | .shipkit/product-definition.json, why.json |
+| "Define solution", "Product definition", "What to build", "Features", "Differentiators" | `/shipkit-product-definition` | .shipkit/product-discovery.json, why.json |
+| "Technical approach", "Engineering design", "How to build", "Mechanisms", "Components" | `/shipkit-engineering-definition` | .shipkit/product-definition.json, stack.json |
+| "Success criteria", "Measure success", "Goals", "Stage gates", "How do we know it works" | `/shipkit-goals` | .shipkit/product-definition.json, engineering-definition.json |
 
 ### Context & Status
 
@@ -150,6 +151,7 @@ This skill provides:
 |-----------|----------|--------------|
 | "Verify", "Check my work", "Ready to commit?", "Review changes" | `/shipkit-verify` | Git diff, specs, architecture |
 | "Preflight", "Production ready", "Ready to ship?", "Go live", "Launch check" | `/shipkit-preflight` | stack.json, why.json, architecture.json |
+| "Scale ready", "Enterprise ready", "Scale audit", "Observability", "Reliability" | `/shipkit-scale-ready` | stack.json, architecture.json |
 | "Audit UX", "Check UX patterns", "UX gaps" | `/shipkit-ux-audit` | implementations/ |
 | "Create task", "Track TODO", "User tasks" | `/shipkit-user-instructions` | user-tasks/active.md |
 | "Visualize", "HTML report", "Visual communication" | `/shipkit-communications` | Relevant files based on request |
@@ -256,11 +258,11 @@ This skill is the **central router** that connects all other skills.
 
 | Category | Skills Routed To |
 |----------|------------------|
-| Vision/Discovery | `shipkit-why-project`, `shipkit-product-discovery`, `shipkit-product-definition`, `shipkit-goals` |
+| Vision/Discovery | `shipkit-why-project`, `shipkit-product-discovery`, `shipkit-product-definition`, `shipkit-engineering-definition`, `shipkit-goals` |
 | Context/Status | `shipkit-project-status`, `shipkit-project-context`, `shipkit-work-memory` |
 | Spec/Planning | `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-thinking-partner` |
 | Knowledge | `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`, `shipkit-claude-md` |
-| Quality | `shipkit-verify`, `shipkit-ux-audit`, `shipkit-prompt-audit`, `shipkit-semantic-qa`, `shipkit-qa-visual`, `shipkit-user-instructions`, `shipkit-communications` |
+| Quality | `shipkit-verify`, `shipkit-preflight`, `shipkit-scale-ready`, `shipkit-ux-audit`, `shipkit-prompt-audit`, `shipkit-semantic-qa`, `shipkit-qa-visual`, `shipkit-user-instructions`, `shipkit-communications` |
 
 **Does NOT Route:**
 - Natural capabilities (implement, debug, test, refactor) - Claude handles directly

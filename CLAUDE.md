@@ -241,7 +241,7 @@ Location: `install/skills/`
 
 **Core Workflow:** `shipkit-master`, `shipkit-project-status`, `shipkit-project-context`, `shipkit-codebase-index`, `shipkit-claude-md`
 
-**Discovery & Planning:** `shipkit-product-discovery`, `shipkit-why-project`, `shipkit-goals`, `shipkit-product-definition`, `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-thinking-partner`
+**Discovery & Planning:** `shipkit-product-discovery`, `shipkit-why-project`, `shipkit-product-definition`, `shipkit-engineering-definition`, `shipkit-goals`, `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-thinking-partner`
 
 **Implementation:** `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`
 
@@ -253,7 +253,7 @@ Location: `install/skills/`
 
 **System infrastructure:** `shipkit-detect` (auto-triggered hook, not user-invocable)
 
-**Total:** 36 user-invocable skills + 1 infrastructure (detect)
+**Total:** 37 user-invocable skills + 1 infrastructure (detect)
 
 ### Agents
 Location: `install/agents/`

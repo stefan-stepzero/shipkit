@@ -7,11 +7,11 @@ agent: shipkit-product-owner-agent
 
 # shipkit-goals — Success Criteria & Stage Gates
 
-**Purpose**: Derive measurable success criteria from the solution blueprint (product-definition.json). Each mechanism, UX pattern, and differentiator implies criteria for "how do we know this works?" — this skill makes those criteria explicit, measurable, and trackable.
+**Purpose**: Derive measurable success criteria from the product and engineering blueprints. Each feature, mechanism, UX pattern, and differentiator implies criteria for "how do we know this works?" — this skill makes those criteria explicit, measurable, and trackable.
 
-**What it does**: Reads the solution blueprint and discovered user needs, proposes success criteria with measurable thresholds and verification methods, lets user validate and customize, then generates `.shipkit/goals.json` with structured criteria that serve as stage gates for execution.
+**What it does**: Reads the product blueprint (features, patterns, differentiators) and engineering blueprint (mechanisms, components), proposes success criteria with measurable thresholds and verification methods, lets user validate and customize, then generates `.shipkit/goals.json` with structured criteria that serve as stage gates for execution.
 
-**Philosophy**: Success criteria are derivable from the solution design. Each mechanism implies performance and quality criteria. Each UX pattern implies usability criteria. Each differentiator implies validation criteria. This skill does the derivation — users validate thresholds and add business metrics.
+**Philosophy**: Success criteria are derivable from the solution design. Each mechanism implies performance and quality criteria. Each UX pattern implies usability criteria. Each differentiator implies validation criteria. Each feature implies completeness criteria. This skill does the derivation — users validate thresholds and add business metrics.
 
 **Output format**: JSON — readable by Claude, machine-readable by other tools, and the source of truth for what "done" means.
 
@@ -26,7 +26,7 @@ agent: shipkit-product-owner-agent
 - "When is this done?"
 
 **Workflow position**:
-- After `/shipkit-product-definition` (reads the solution blueprint)
+- After `/shipkit-engineering-definition` (reads both product + engineering blueprints)
 - Before `/shipkit-spec` — criteria inform feature specifications
 - Before `/shipkit-verify` — criteria become verification checks
 
@@ -36,7 +36,8 @@ agent: shipkit-product-owner-agent
 
 | File | Required? | Provides | If Missing |
 |------|-----------|----------|------------|
-| `.shipkit/product-definition.json` | **Yes** | Mechanisms, patterns, differentiators, features | Route to `/shipkit-product-definition` |
+| `.shipkit/product-definition.json` | **Yes** | Features, patterns, differentiators | Route to `/shipkit-product-definition` |
+| `.shipkit/engineering-definition.json` | **Yes** | Mechanisms, components, design decisions | Route to `/shipkit-engineering-definition` |
 | `.shipkit/product-discovery.json` | Recommended | Pain points for traceability | Proceed without traceability |
 | `.shipkit/why.json` | Recommended | Stage context (POC/MVP/Production/Scale) | Ask user for stage |
 
@@ -67,12 +68,14 @@ agent: shipkit-product-owner-agent
 **Read these files:**
 
 ```
-.shipkit/product-definition.json  → mechanisms, patterns, differentiators, features (REQUIRED)
-.shipkit/product-discovery.json   → pain points for traceability (RECOMMENDED)
-.shipkit/why.json                 → project stage (RECOMMENDED)
+.shipkit/product-definition.json      → features, patterns, differentiators (REQUIRED)
+.shipkit/engineering-definition.json  → mechanisms, components, design decisions (REQUIRED)
+.shipkit/product-discovery.json       → pain points for traceability (RECOMMENDED)
+.shipkit/why.json                     → project stage (RECOMMENDED)
 ```
 
 **If product-definition.json missing**: Route to `/shipkit-product-definition` first.
+**If engineering-definition.json missing**: Route to `/shipkit-engineering-definition` first.
 
 ---
 
@@ -89,25 +92,25 @@ Read stage from `product-definition.json` (product.stage) or `why.json`:
 
 ---
 
-### Step 3: Derive Criteria from Solution Blueprint
+### Step 3: Derive Criteria from Product + Engineering Blueprints
 
-For each section of product-definition.json, derive criteria:
+For each section of product-definition.json and engineering-definition.json, derive criteria:
 
-**From mechanisms:**
+**From mechanisms** (engineering-definition.json):
 - Performance criteria (how fast?)
 - Reliability criteria (how often does it work?)
 - Quality criteria (how good is the output?)
 
-**From UX patterns:**
+**From UX patterns** (product-definition.json):
 - Usability criteria (can users complete the flow?)
 - Completion rate criteria (what % finish?)
 - Responsiveness criteria (how fast does it feel?)
 
-**From differentiators:**
+**From differentiators** (product-definition.json):
 - Validation criteria (does it actually differentiate?)
 - User perception criteria (do users notice/value it?)
 
-**From features:**
+**From features** (product-definition.json):
 - Completeness gate (are all gate-scoped features functional?)
 - Integration gate (do features work together end-to-end?)
 
@@ -229,6 +232,7 @@ Ready to start speccing?
 
   "derivedFrom": {
     "productDefinition": ".shipkit/product-definition.json",
+    "engineeringDefinition": ".shipkit/engineering-definition.json",
     "productDiscovery": ".shipkit/product-discovery.json"
   },
 
@@ -282,7 +286,8 @@ Ready to start speccing?
 ## When This Skill Integrates with Others
 
 ### Before This Skill
-- `/shipkit-product-definition` — Produces the solution blueprint (required)
+- `/shipkit-product-definition` — Produces the product blueprint: features, patterns, differentiators (required)
+- `/shipkit-engineering-definition` — Produces the engineering blueprint: mechanisms, components (required)
 - `/shipkit-product-discovery` — Produces user needs for traceability (recommended)
 - `/shipkit-why-project` — Provides stage context (recommended)
 
@@ -303,7 +308,8 @@ Ready to start speccing?
 
 | File | Purpose | If Missing |
 |------|---------|------------|
-| `.shipkit/product-definition.json` | Solution blueprint — derive criteria from | Route to `/shipkit-product-definition` |
+| `.shipkit/product-definition.json` | Product blueprint — features, patterns, differentiators | Route to `/shipkit-product-definition` |
+| `.shipkit/engineering-definition.json` | Engineering blueprint — mechanisms, components | Route to `/shipkit-engineering-definition` |
 | `.shipkit/product-discovery.json` | Pain points for traceability | Proceed without traceability |
 | `.shipkit/why.json` | Project stage for criteria complexity | Ask user for stage |
 
@@ -339,7 +345,8 @@ Ready to start speccing?
 ## Success Criteria
 
 Goals artifact is complete when:
-- [ ] Product-definition.json read and mechanisms/patterns/differentiators extracted
+- [ ] Product-definition.json read and features/patterns/differentiators extracted
+- [ ] Engineering-definition.json read and mechanisms extracted
 - [ ] Criteria derived from each mechanism (performance + quality + reliability)
 - [ ] Criteria derived from each UX pattern (usability + completion rate)
 - [ ] Criteria derived from differentiators (validation)
@@ -355,4 +362,4 @@ Goals artifact is complete when:
 
 ---
 
-**Remember**: Success criteria are the acceptance tests for your product. They answer "how do we know this works?" for every mechanism, pattern, and differentiator in the solution blueprint. Update them as the solution evolves. Gate status drives execution — keep building until gates pass.
+**Remember**: Success criteria are the acceptance tests for your product. They answer "how do we know this works?" for every feature, mechanism, pattern, and differentiator across both the product and engineering blueprints. Update them as the solution evolves. Gate status drives execution — keep building until gates pass.

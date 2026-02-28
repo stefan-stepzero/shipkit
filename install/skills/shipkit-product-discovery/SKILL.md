@@ -143,7 +143,7 @@ options:
 3. **User Journeys** (step-by-step with emotion tracking and pain point references)
 4. **Opportunities** (linked to pain points and personas)
 
-**Multi-user apps**: When the product serves distinct user types (e.g., teachers + students, buyers + sellers), each persona MUST have a distinct `primaryIntent` that captures their core motivation. This ensures downstream skills (product-definition, goals, spec) can map mechanisms and criteria to specific user intents.
+**Multi-user apps**: When the product serves distinct user types (e.g., teachers + students, buyers + sellers), each persona MUST have a distinct `primaryIntent` that captures their core motivation. This ensures downstream skills (product-definition, engineering-definition, goals, spec) can map features, mechanisms, and criteria to specific user intents.
 
 **All entities use stable IDs** (`persona-1`, `pain-1`, `journey-1`, `opp-1`) to enable graph traversal and relationship mapping across the artifact.
 

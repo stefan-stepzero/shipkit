@@ -102,6 +102,7 @@
       "Skill(shipkit-spec)",
       "Skill(shipkit-feedback-bug)",
       "Skill(shipkit-product-definition)",
+      "Skill(shipkit-engineering-definition)",
       "Skill(shipkit-architecture-memory)",
       "Skill(shipkit-ux-audit)",
       "Skill(shipkit-data-contracts)",

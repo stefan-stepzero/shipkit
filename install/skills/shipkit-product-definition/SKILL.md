@@ -1,6 +1,6 @@
 ---
 name: shipkit-product-definition
-description: "Design the solution blueprint — core mechanisms, UX patterns, differentiators, and design decisions that define HOW we solve discovered user needs"
+description: "Define what to build — features, UX patterns, and differentiators that solve discovered user needs. Triggers: 'product definition', 'what to build', 'features', 'solution design'."
 argument-hint: "[product name or focus area]"
 context: fork
 agent: shipkit-product-owner-agent
@@ -14,24 +14,25 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# shipkit-product-definition — Solution Blueprint
+# shipkit-product-definition — Product Blueprint
 
-Designs HOW we solve discovered user needs. Reads product-discovery.json (pain points, personas, opportunities) and produces a solution blueprint: core mechanisms, UX patterns, differentiators, design decisions, stack direction, and features grounded in those mechanisms.
+Defines WHAT we build to solve discovered user needs. Reads product-discovery.json (pain points, personas, opportunities) and produces a product blueprint: features, UX patterns, and differentiators.
 
-This is the product blueprint — everything downstream (goals, specs, architecture, plans, implementation) derives from it. Feature phasing (what to build now vs. later) is handled by `/shipkit-goals` through stage gates, not here.
+This is the product blueprint — it defines the user-facing solution. The technical approach (mechanisms, design decisions, stack) is handled by `/shipkit-engineering-definition`. Feature phasing (what to build now vs. later) is handled by `/shipkit-goals` through stage gates.
 
 ---
 
 ## When to Invoke
 
 **User triggers**:
-- "How should we solve this?", "Design the solution", "Solution blueprint"
-- "Define features", "Product definition", "What to build"
-- "Core approach", "How will it work?"
+- "What should we build?", "Define features", "Product definition"
+- "UX patterns", "Differentiators", "What to build"
+- "Solution design", "Product blueprint"
 
 **Workflow position**:
 - After `/shipkit-product-discovery` (needs discovered user needs)
-- Before `/shipkit-goals` (goals derive success criteria from the blueprint)
+- Before `/shipkit-engineering-definition` (engineering designs mechanisms for these features)
+- Before `/shipkit-goals` (goals derive criteria from features and mechanisms)
 
 ---
 
@@ -42,9 +43,9 @@ This is the product blueprint — everything downstream (goals, specs, architect
 
 **Recommended** (enrich the proposal):
 - `.shipkit/why.json` — project purpose and stage
-- `.shipkit/stack.json` — technology constraints and capabilities
 
 **Optional** (for existing projects):
+- `.shipkit/stack.json` — technology constraints (informs feasibility)
 - `.shipkit/codebase-index.json` — what already exists
 
 If product-discovery.json is missing, tell the user: "Run `/shipkit-product-discovery` first — I need to understand user needs before designing a solution." and stop.
@@ -71,34 +72,33 @@ If product-discovery.json is missing, tell the user: "Run `/shipkit-product-disc
 
 ### Step 0c: Propose Mode (Context-Driven)
 
-If `.shipkit/product-discovery.json` exists, attempt to propose a solution approach without asking:
+If `.shipkit/product-discovery.json` exists, attempt to propose a solution without asking:
 
 1. Read `.shipkit/product-discovery.json` (pain points, personas, opportunities)
 2. Read `.shipkit/why.json` if exists (vision, stage, constraints)
-3. Read `.shipkit/stack.json` if exists (technology capabilities)
-4. For each major pain point, propose a mechanism that addresses it
-5. For each mechanism, identify UX patterns that support it
-6. Present the proposal as a Problem → Mechanism → Feature flow:
+3. For each major pain point, propose features that address it
+4. For each feature, identify UX patterns that support it
+5. Present the proposal as a Problem → Feature → UX flow:
 
 ```
-Based on discovered user needs, here's a proposed solution:
+Based on discovered user needs, here's a proposed product:
 
 Pain: [pain point from discovery]
-  → Mechanism: [how we solve it]
-    → Features: [what users interact with]
+  → Feature: [what users interact with]
+    → UX: [how they experience it]
 
 Pain: [another pain point]
-  → Mechanism: [solution approach]
-    → Features: [user-facing capabilities]
+  → Feature: [user-facing capability]
+    → UX: [interaction pattern]
 
 Differentiators: [what makes this unique]
 
 Confirm, adjust, or switch to interactive mode?
 ```
 
-7. If confirmed → proceed to Step 5 (stack direction) with the proposed data
-8. If adjusted → incorporate changes, proceed to Step 5
-9. If interactive requested → fall through to Step 1
+6. If confirmed → proceed to Step 4 (differentiators) with the proposed data
+7. If adjusted → incorporate changes, proceed to Step 4
+8. If interactive requested → fall through to Step 1
 
 If `.shipkit/product-discovery.json` does NOT exist → fail with message to run discovery first.
 
@@ -111,47 +111,51 @@ If `.shipkit/product-discovery.json` does NOT exist → fail with message to run
 ```
 .shipkit/product-discovery.json  → pain points, personas, opportunities (REQUIRED)
 .shipkit/why.json                → vision, stage, constraints (RECOMMENDED)
-.shipkit/stack.json              → tech capabilities (RECOMMENDED)
-.shipkit/codebase-index.json     → existing code (OPTIONAL)
+.shipkit/stack.json              → tech capabilities (OPTIONAL — feasibility check)
 ```
 
-**Multi-user detection**: If discovery has 2+ personas with distinct `primaryIntent` values, this is a multi-user product. Flag this upfront and ensure each mechanism, pattern, and feature explicitly maps to the persona(s) it serves via `addressesNeeds` tracing back through pain points.
+**Multi-user detection**: If discovery has 2+ personas with distinct `primaryIntent` values, this is a multi-user product. Flag this upfront and ensure each feature explicitly maps to the persona(s) it serves via `addressesNeeds` tracing back through pain points.
 
 ---
 
-### Step 2: Design Core Mechanisms
+### Step 2: Define Features
 
-For each major user need/pain point from discovery, define a mechanism:
+For each major user need/pain point from discovery, define features:
 
 **Use AskUserQuestion tool:**
 
 ```
-header: "Mechanisms"
-question: "For [pain point], what's the core mechanism? How will the system solve this?"
+header: "Features"
+question: "For [pain point], what should users be able to do?"
 options:
-  - label: "[Proposed mechanism from context]"
+  - label: "[Proposed feature from context]"
     description: "Based on the pain point and opportunities"
-  - label: "Different approach"
+  - label: "Different feature"
     description: "I have another idea"
 ```
 
-For each mechanism, capture:
-- **Name** — concise mechanism name
-- **Description** — how it works at a conceptual level
-- **Addresses needs** — which pain point IDs from discovery
-- **Key design choices** — decisions made with rationale and alternatives
+For each feature:
+1. **Name** — concise feature name
+2. **Description** — 1-2 sentences on what it does from the user's perspective
+3. **Addresses needs** — which pain point IDs from discovery
+4. **Dependencies** — which other feature IDs must exist first
 
-Aim for 2-4 mechanisms. Each should address at least one pain point. Every major pain point should be addressed by at least one mechanism.
+**Feature count guidance**:
+- POC: 2-3 features
+- MVP: 3-6 features
+- Growth: 5-10 features
+
+**Note**: Feature phasing (now/next/later) is handled by `/shipkit-goals` through stage gates. This skill defines WHAT exists, not WHEN it ships.
 
 ---
 
 ### Step 3: Define UX Patterns
 
-Based on the mechanisms, identify the key interaction patterns:
+Based on the features, identify the key interaction patterns:
 
 ```
 header: "UX Patterns"
-question: "How should users interact with [mechanism]?"
+question: "How should users interact with [feature]?"
 options:
   - label: "[Proposed pattern]"
     description: "[Why this pattern fits]"
@@ -171,107 +175,61 @@ Aim for 2-4 patterns. Patterns can be shared across features.
 
 ### Step 4: Identify Differentiators
 
-Based on mechanisms and patterns, articulate what makes this solution unique:
+Based on features and UX patterns, articulate what makes this product unique:
 
 - What do competitors do differently?
-- What combination of mechanisms/patterns creates unique value?
+- What combination of features/patterns creates unique value?
 - What would be hard to replicate?
 
-Capture 1-3 differentiator statements, each tied to the mechanisms or patterns that enable it.
+Capture 1-3 differentiator statements, each tied to the features or patterns that enable it.
 
 ---
 
-### Step 5: Stack Direction (Greenfield Only)
+### Step 5: Present Blueprint and Confirm
 
-**Skip if `.shipkit/stack.json` already exists.**
+Present the full product blueprint:
 
-For greenfield projects, ask about technology direction:
-
+**View 1: Product Design**
 ```
-header: "Stack"
-question: "What tech direction for this solution?"
-options:
-  - label: "[Recommended stack based on mechanisms]"
-    description: "[Why it fits the solution design]"
-  - label: "Different stack"
-    description: "I have preferences"
-```
-
-Capture:
-- Recommended technologies (frontend, backend, database, hosting)
-- Rationale tied to the solution design
-- Constraints that drove the choice
-
----
-
-### Step 6: Map Features
-
-Based on mechanisms and patterns, define features:
-
-For each feature:
-1. **Name** — concise feature name
-2. **Description** — 1-2 sentences on what it does
-3. **Mechanisms** — which mechanism IDs this feature uses
-4. **Patterns** — which UX pattern IDs this feature follows
-5. **Dependencies** — which other feature IDs must exist first
-
-**Feature count guidance**:
-- POC: 2-3 features
-- MVP: 3-6 features
-- Growth: 5-10 features
-
-**Note**: Feature phasing (now/next/later) is handled by `/shipkit-goals` through stage gates. This skill defines WHAT exists, not WHEN it ships.
-
----
-
-### Step 7: Present Blueprint and Confirm
-
-Present the full solution blueprint:
-
-**View 1: Solution Design**
-```
-## Solution Blueprint: [Product Name]
+## Product Blueprint: [Product Name]
 
 ### Problem Space
 [Summary from discovery — key pain points and personas]
 
-### Solution Approach
-[2-3 sentences on how we solve it]
-
-### Core Mechanisms
-1. M-001: [Name] — [description]
+### Features (ordered by dependency)
+1. F-001: [Name] — [description]
    Addresses: [pain points]
-2. M-002: [Name] — [description]
+2. F-002: [Name] — [description]
 
 ### UX Patterns
 1. P-001: [Name] — [description]
 2. P-002: [Name] — [description]
 
 ### Differentiators
-- D-001: [statement] (enabled by M-001 + P-002)
+- D-001: [statement] (enabled by F-001 + P-002)
 ```
 
 **View 2: Feature Map**
 ```
-### Features (ordered by dependency)
+### Feature → UX Pattern Map
 
-  F-001: [Name] — mechanisms: M-001 | patterns: P-001 | deps: none
-  F-002: [Name] — mechanisms: M-001, M-002 | patterns: P-002 | deps: F-001
-  F-003: [Name] — mechanisms: M-003 | patterns: P-001 | deps: F-002
+  F-001: [Name] — patterns: P-001 | deps: none | addresses: pain-1
+  F-002: [Name] — patterns: P-001, P-002 | deps: F-001 | addresses: pain-2
+  F-003: [Name] — patterns: P-003 | deps: F-002 | addresses: pain-1, pain-3
 ```
 
-Then ask: **"Confirm this solution blueprint, or adjust?"**
+Then ask: **"Confirm this product blueprint, or adjust?"**
 
 User can:
 - Confirm as-is
-- Add/remove/modify mechanisms, patterns, or features
+- Add/remove/modify features or patterns
 - Change differentiators
 
 Incorporate adjustments and re-present if changed significantly.
 
 ---
 
-### Step 8: Write Product Definition
+### Step 6: Write Product Definition
 
 After confirmation, write `.shipkit/product-definition.json`.
 
@@ -279,18 +237,18 @@ See [Product Definition JSON Schema](#product-definition-json-schema) below.
 
 ---
 
-### Step 9: Suggest Next Steps
+### Step 7: Suggest Next Steps
 
 ```
-Solution blueprint written to .shipkit/product-definition.json
-Mechanisms: {N} | Patterns: {N} | Features: {N}
+Product blueprint written to .shipkit/product-definition.json
+Features: {N} | Patterns: {N} | Differentiators: {N}
 
 Next:
-  1. /shipkit-goals — Define success criteria for this solution
-  2. /shipkit-spec — Create specs for MVP features
-  3. /shipkit-architecture-memory — Log key architecture decisions
+  1. /shipkit-engineering-definition — Design the technical approach for these features
+  2. /shipkit-goals — Define success criteria (after engineering definition)
+  3. /shipkit-spec — Create specs for features (after goals)
 
-Ready to define success criteria?
+Ready to design the engineering approach?
 ```
 
 ---
@@ -301,7 +259,7 @@ Ready to define success criteria?
 {
   "$schema": "shipkit-artifact",
   "type": "product-definition",
-  "version": "2.0",
+  "version": "3.0",
   "lastUpdated": "ISO timestamp",
   "source": "shipkit-product-definition",
   "product": {
@@ -318,16 +276,15 @@ Ready to define success criteria?
       "persona-2": "Their primaryIntent (multi-user apps only)"
     }
   },
-  "solutionApproach": "How the solution addresses discovered needs",
-  "mechanisms": [
+  "solutionApproach": "High-level product approach to addressing discovered needs",
+  "features": [
     {
-      "id": "M-001",
-      "name": "Mechanism name",
-      "description": "What this does and how",
+      "id": "F-001",
+      "name": "Feature name",
+      "description": "What it does from user's perspective",
       "addressesNeeds": ["pain-1"],
-      "designChoices": [
-        { "decision": "Choice", "rationale": "Why", "alternatives": ["Rejected option"] }
-      ]
+      "patterns": ["P-001"],
+      "dependencies": []
     }
   ],
   "uxPatterns": [
@@ -343,37 +300,13 @@ Ready to define success criteria?
     {
       "id": "D-001",
       "statement": "What makes this unique",
-      "enabledBy": ["M-001", "P-001"]
-    }
-  ],
-  "designDecisions": [
-    {
-      "decision": "Key choice",
-      "rationale": "Why",
-      "alternatives": ["What was considered"]
-    }
-  ],
-  "stackDirection": {
-    "recommended": { "frontend": "...", "backend": "...", "database": "...", "hosting": "..." },
-    "rationale": "Why these choices",
-    "constraints": ["Driving factors"],
-    "note": "Only for greenfield. Skipped if stack.json exists."
-  },
-  "features": [
-    {
-      "id": "F-001",
-      "name": "Feature name",
-      "description": "What it does",
-      "mechanisms": ["M-001"],
-      "patterns": ["P-001"],
-      "dependencies": []
+      "enabledBy": ["F-001", "P-001"]
     }
   ],
   "summary": {
-    "totalMechanisms": 0,
+    "totalFeatures": 0,
     "totalPatterns": 0,
-    "totalDifferentiators": 0,
-    "totalFeatures": 0
+    "totalDifferentiators": 0
   }
 }
 ```
@@ -385,18 +318,17 @@ Ready to define success criteria?
 
 The ID-based cross-references enable these graph traversals:
 
-- **Mechanism -> Pain Points**: `mechanisms[].addressesNeeds` references `painPoints[].id` from product-discovery.json
-- **UX Pattern -> Features**: `uxPatterns[].usedIn` references `features[].id`
-- **Feature -> Mechanisms**: `features[].mechanisms` references `mechanisms[].id`
+- **Feature -> Pain Points**: `features[].addressesNeeds` references `painPoints[].id` from product-discovery.json
 - **Feature -> Patterns**: `features[].patterns` references `uxPatterns[].id`
-- **Differentiator -> Mechanisms/Patterns**: `differentiators[].enabledBy` references mechanism and pattern IDs
+- **UX Pattern -> Features**: `uxPatterns[].usedIn` references `features[].id`
+- **Differentiator -> Features/Patterns**: `differentiators[].enabledBy` references feature and pattern IDs
 
 ---
 
 ## When $ARGUMENTS is Provided
 
 If `$ARGUMENTS` contains text:
-- **Product name/description**: Use as seed for product name and to focus the solution proposal
+- **Product name/description**: Use as seed for product name and to focus the proposal
 - **`--refresh`**: Start fresh even if product-definition.json exists
 
 ---
@@ -408,14 +340,13 @@ If `$ARGUMENTS` contains text:
 |-------|-----|
 | `shipkit-why-project` | Produces why.json — project purpose and stage |
 | `shipkit-product-discovery` | Produces product-discovery.json — required input (user needs) |
-| `shipkit-project-context` | Produces stack.json — tech capabilities |
 
 ### After This Skill
 | Skill | How |
 |-------|-----|
-| `shipkit-goals` | Reads product-definition.json to derive success criteria from the solution design |
+| `shipkit-engineering-definition` | Reads product-definition.json features — designs mechanisms for each feature |
+| `shipkit-goals` | Reads product-definition.json to derive criteria from features and patterns |
 | `shipkit-spec` | Reads product-definition.json features — one spec per feature |
-| `shipkit-architecture-memory` | Reads product-definition.json for solution context in architecture decisions |
 | `shipkit-plan` | Indirectly — plans derive from specs which come from product-definition |
 
 ---
@@ -426,7 +357,7 @@ If `$ARGUMENTS` contains text:
 |------|---------|------------|
 | `.shipkit/product-discovery.json` | User needs, pain points, personas | Route to `/shipkit-product-discovery` |
 | `.shipkit/why.json` | Project purpose and stage | Proceed with user input |
-| `.shipkit/stack.json` | Tech capabilities and constraints | Ask about stack (greenfield) or proceed |
+| `.shipkit/stack.json` | Tech capabilities (feasibility check) | Proceed without |
 | `.shipkit/codebase-index.json` | Existing code for existing projects | Skip |
 | `.shipkit/product-definition.json` | Previous definition (for update mode) | Generate new |
 
@@ -449,27 +380,25 @@ If `$ARGUMENTS` contains text:
 **Guardrails Check:** Before moving to next task, verify:
 
 1. **Persistence** - Has important context been saved to `.shipkit/`?
-2. **Prerequisites** - Does the next action need goals or a spec first?
+2. **Prerequisites** - Does the next action need engineering definition or goals first?
 3. **Session length** - Long session? Consider `/shipkit-work-memory` for continuity.
 
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 
-**Suggest skill when:** User needs to define success criteria (`/shipkit-goals`), create detailed specs (`/shipkit-spec`), or log architecture decisions (`/shipkit-architecture-memory`).
+**Suggest skill when:** User needs to define technical approach (`/shipkit-engineering-definition`), define success criteria (`/shipkit-goals`), or create detailed specs (`/shipkit-spec`).
 <!-- /SECTION:after-completion -->
 
 <!-- SECTION:success-criteria -->
 ## Success Criteria
 
-Solution blueprint is complete when:
+Product blueprint is complete when:
 - [ ] Product-discovery.json read and problem space summarized
-- [ ] 2-4 mechanisms defined, each addressing at least one pain point
-- [ ] Every major pain point addressed by at least one mechanism
+- [ ] Features defined, each addressing at least one pain point
+- [ ] Every major pain point addressed by at least one feature
 - [ ] 2-4 UX patterns defined with rationale
-- [ ] 1-3 differentiators tied to mechanisms/patterns
-- [ ] Key design decisions captured with rationale
-- [ ] Stack direction captured (greenfield only)
-- [ ] Features reference mechanisms and patterns by ID
-- [ ] All cross-references use stable IDs (M-001, P-001, F-001, D-001)
+- [ ] 1-3 differentiators tied to features/patterns
+- [ ] Features reference patterns by ID
+- [ ] All cross-references use stable IDs (F-001, P-001, D-001)
 - [ ] Summary counts match actual array lengths
 - [ ] User confirmed the blueprint before writing
 - [ ] File saved to `.shipkit/product-definition.json`
@@ -477,4 +406,4 @@ Solution blueprint is complete when:
 
 ---
 
-**Remember**: This skill captures the solution design — HOW you solve discovered needs. It's the bridge between understanding users (discovery) and measuring success (goals). Feature phasing (now/next/later) is handled by `/shipkit-goals` through stage gates. Update the blueprint as the solution evolves. The mechanism/pattern structure makes it easy to trace from user pain points through to features.
+**Remember**: This skill captures the product design — WHAT you build to solve discovered needs. The technical approach (mechanisms, components, stack) is handled by `/shipkit-engineering-definition`. Feature phasing (now/next/later) is handled by `/shipkit-goals`. Update the blueprint as the product evolves.

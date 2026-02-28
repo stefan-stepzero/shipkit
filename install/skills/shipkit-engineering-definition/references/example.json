@@ -1,0 +1,129 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "engineering-definition",
+  "version": "1.0",
+  "lastUpdated": "2026-02-28T14:00:00Z",
+  "source": "shipkit-engineering-definition",
+
+  "product": {
+    "name": "WorksheetForge",
+    "stage": "mvp"
+  },
+
+  "mechanisms": [
+    {
+      "id": "M-001",
+      "name": "LLM Generation Chain",
+      "description": "Multi-step LLM pipeline: topic analysis -> difficulty calibration -> question generation -> format assembly -> answer key generation. Each step is a focused prompt that feeds into the next, enabling quality control at each stage.",
+      "implementsFeatures": ["F-001", "F-003", "F-004"],
+      "designChoices": [
+        {
+          "decision": "Multi-step chain over single-prompt generation",
+          "rationale": "Single prompts produce inconsistent quality. Chaining allows validation between steps and targeted retry on failures.",
+          "alternatives": ["Single prompt with detailed instructions", "Template-based fill-in (no LLM)"]
+        },
+        {
+          "decision": "Stream partial results during generation",
+          "rationale": "Worksheets take 5-15 seconds to generate. Streaming the preview as it builds keeps perceived wait time low.",
+          "alternatives": ["Loading spinner with estimated time", "Background generation with notification"]
+        }
+      ]
+    },
+    {
+      "id": "M-002",
+      "name": "Adaptive Difficulty Engine",
+      "description": "Analyzes student performance data (completion rates, error patterns) to recommend difficulty adjustments per student or group. Maps curriculum standards to difficulty bands and adjusts question complexity, vocabulary level, and scaffold amount.",
+      "implementsFeatures": ["F-004"],
+      "designChoices": [
+        {
+          "decision": "Difficulty bands (3 levels) over continuous scoring",
+          "rationale": "Teachers think in groups (struggling, on-level, advanced), not in continuous scores. Three bands match classroom reality.",
+          "alternatives": ["10-point difficulty scale", "Per-student continuous adaptation"]
+        }
+      ]
+    },
+    {
+      "id": "M-003",
+      "name": "Curriculum Standard Mapper",
+      "description": "Maps user-selected topics to curriculum standards (Common Core, state standards). Ensures generated questions align to specific learning objectives. Enables teachers to tag worksheets by standard for compliance.",
+      "implementsFeatures": ["F-002"],
+      "designChoices": [
+        {
+          "decision": "Pre-built standard mappings over free-form topic entry",
+          "rationale": "Teachers need standards alignment for accountability. Pre-built mappings reduce errors and save time.",
+          "alternatives": ["Free-form topic only", "Manual standard tagging after generation"]
+        }
+      ]
+    }
+  ],
+
+  "components": [
+    {
+      "id": "C-001",
+      "name": "Generation Service",
+      "responsibility": "Orchestrates the LLM generation chain — prompt construction, step sequencing, streaming, retry logic",
+      "mechanisms": ["M-001"],
+      "interfaces": ["REST API from C-003 (wizard UI)", "SSE stream to C-003 (live preview)"]
+    },
+    {
+      "id": "C-002",
+      "name": "Standards Database",
+      "responsibility": "Stores and queries curriculum standards by grade, domain, and topic. Provides search and filtering.",
+      "mechanisms": ["M-003"],
+      "interfaces": ["Query API to C-001 (standard lookup)", "Browse API to C-003 (standards browser UI)"]
+    },
+    {
+      "id": "C-003",
+      "name": "Teacher UI",
+      "responsibility": "Wizard flow, live preview, export dialog. All teacher-facing interaction.",
+      "mechanisms": ["M-001", "M-002", "M-003"],
+      "interfaces": ["REST/SSE to C-001 (generation)", "Query to C-002 (standards)", "Auth to C-004 (accounts)"]
+    },
+    {
+      "id": "C-004",
+      "name": "Account Service",
+      "responsibility": "Teacher accounts, saved worksheets, usage tracking. Auth and persistence.",
+      "mechanisms": [],
+      "interfaces": ["Auth API to C-003 (login/signup)", "Storage API to C-003 (saved worksheets)"]
+    }
+  ],
+
+  "designDecisions": [
+    {
+      "decision": "No login required for first worksheet",
+      "rationale": "Teachers evaluate tools during scarce prep periods. Requiring signup before seeing value kills adoption. First worksheet is free and instant.",
+      "alternatives": ["Require email before generation", "Free trial with signup wall"]
+    },
+    {
+      "decision": "Mobile-responsive but desktop-optimized",
+      "rationale": "Worksheet creation involves detailed review. Teachers primarily create at their desk. Mobile works for quick edits but wizard is designed for desktop-first.",
+      "alternatives": ["Mobile-first design", "Separate mobile app"]
+    },
+    {
+      "decision": "PDF as primary export format",
+      "rationale": "80%+ of teachers still print worksheets. PDF ensures consistent formatting across printers. Digital formats (Google Docs) are secondary.",
+      "alternatives": ["HTML-first with print CSS", "Google Docs as primary"]
+    }
+  ],
+
+  "stackDirection": {
+    "recommended": {
+      "frontend": "Next.js 15 (App Router) + Tailwind CSS",
+      "backend": "Next.js API routes + OpenAI API",
+      "database": "Supabase (PostgreSQL + Auth)",
+      "hosting": "Vercel"
+    },
+    "rationale": "Next.js handles both the wizard UI and API routes in one codebase. Vercel provides edge deployment for low-latency streaming. Supabase provides auth + database without managing infrastructure. OpenAI API for the LLM generation chain.",
+    "constraints": [
+      "Streaming support needed for live preview (SSE/ReadableStream)",
+      "PDF generation requires server-side rendering (API route, not edge)",
+      "Teacher accounts need persistent storage for saved worksheets"
+    ]
+  },
+
+  "summary": {
+    "totalMechanisms": 3,
+    "totalComponents": 4,
+    "totalDesignDecisions": 3
+  }
+}

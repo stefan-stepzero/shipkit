@@ -122,7 +122,9 @@ Checks your implementation against the spec and flags issues.
         ↓
 /shipkit-product-discovery     →  Define personas & user needs
         ↓
-/shipkit-product-definition    →  Design solution blueprint
+/shipkit-product-definition    →  Define what to build (features, patterns)
+        ↓
+/shipkit-engineering-definition → Design how to build it (mechanisms, components)
         ↓
 /shipkit-goals                 →  Define success criteria & stage gates
         ↓

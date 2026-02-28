@@ -1,6 +1,6 @@
 # Skill Reference
 
-Complete reference for all 36 Shipkit skills.
+Complete reference for all 37 Shipkit skills.
 
 ---
 
@@ -15,7 +15,8 @@ Complete reference for all 36 Shipkit skills.
 | | `shipkit-claude-md` | CLAUDE.md management |
 | **Discovery & Planning** | `shipkit-why-project` | Vision definition |
 | | `shipkit-product-discovery` | Personas, journeys, user needs |
-| | `shipkit-product-definition` | Solution blueprint (mechanisms, patterns, features) |
+| | `shipkit-product-definition` | Product blueprint (features, patterns, differentiators) |
+| | `shipkit-engineering-definition` | Engineering blueprint (mechanisms, components, stack) |
 | | `shipkit-goals` | Success criteria & stage gates |
 | | `shipkit-spec` | Feature specification |
 | | `shipkit-feedback-bug` | Bug investigation (5 Whys) |

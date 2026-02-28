@@ -1,14 +1,14 @@
 # Criteria Derivation Patterns
 
-This reference shows how to derive measurable success criteria from each section of `product-definition.json`. The `/shipkit-goals` skill uses these patterns to propose criteria — users validate thresholds and add business metrics.
+This reference shows how to derive measurable success criteria from `product-definition.json` (features, patterns, differentiators) and `engineering-definition.json` (mechanisms, components). The `/shipkit-goals` skill uses these patterns to propose criteria — users validate thresholds and add business metrics.
 
-**Philosophy:** Every mechanism, pattern, and differentiator in the solution blueprint implies criteria for "how do we know this works?" These patterns make that derivation explicit.
+**Philosophy:** Every feature, mechanism, pattern, and differentiator implies criteria for "how do we know this works?" These patterns make that derivation explicit.
 
 ---
 
 ## Pattern 1: Mechanism → Performance + Quality + Reliability Criteria
 
-Each mechanism in `product-definition.json` implies three types of criteria:
+Each mechanism in `engineering-definition.json` implies three types of criteria:
 
 ### Performance: How fast?
 
@@ -76,7 +76,7 @@ Mechanism: "LLM Generation Chain" (M-001)
 
 ## Pattern 2: UX Pattern → Usability + Completion + Responsiveness Criteria
 
-Each UX pattern in `product-definition.json` implies criteria about the user experience:
+Each UX pattern in `product-definition.json` implies criteria about the user experience (mechanisms come from `engineering-definition.json`):
 
 ### Usability: Can users complete the flow?
 
@@ -142,7 +142,7 @@ Pattern: "Live Preview" (P-002)
 
 ## Pattern 3: Differentiator → Validation Criteria
 
-Each differentiator in `product-definition.json` is a claim about what makes the product unique. Criteria verify the claim holds:
+Each differentiator in `product-definition.json` is a claim about what makes the product unique. Criteria verify the claim holds (mechanisms that enable differentiators are in `engineering-definition.json`):
 
 ### Functional Validation: Does it actually work as claimed?
 
@@ -267,7 +267,8 @@ After deriving individual criteria, group them into named gates:
 
 The `/shipkit-goals` skill should:
 
-1. **Read product-definition.json** — extract mechanisms, uxPatterns, differentiators, features
+1. **Read product-definition.json** — extract features, uxPatterns, differentiators
+1b. **Read engineering-definition.json** — extract mechanisms, components
 2. **For each mechanism** — derive performance + quality + reliability criteria (Pattern 1)
 3. **For each UX pattern** — derive usability + completion + responsiveness criteria (Pattern 2)
 4. **For each differentiator** — derive validation criteria (Pattern 3)

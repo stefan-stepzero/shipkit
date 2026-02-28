@@ -44,7 +44,8 @@
         {"name": "shipkit-project-context", "desc": "Scan codebase, detect stack"},
         {"name": "shipkit-project-status", "desc": "Check project health & gaps"},
         {"name": "shipkit-codebase-index", "desc": "Index codebase for navigation"},
-        {"name": "shipkit-product-definition", "desc": "Design solution blueprint (mechanisms, patterns, MVP)"},
+        {"name": "shipkit-product-definition", "desc": "Define what to build (features, patterns, differentiators)"},
+        {"name": "shipkit-engineering-definition", "desc": "Design technical approach (mechanisms, components, stack)"},
         {"name": "shipkit-goals", "desc": "Define success criteria & stage gates"}
       ],
       "Spec & Planning": [

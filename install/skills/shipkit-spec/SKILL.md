@@ -82,7 +82,8 @@ Check if sufficient context exists to propose a spec without interactive questio
 **Context sufficiency**: `product-definition.json` exists for this feature, OR (`why.json` exists with sufficient context)
 
 1. Read available context in parallel:
-   - `.shipkit/product-definition.json` — solution blueprint: mechanisms, patterns, features
+   - `.shipkit/product-definition.json` — product blueprint: features, patterns, differentiators
+   - `.shipkit/engineering-definition.json` — engineering blueprint: mechanisms, components
    - `.shipkit/goals.json` — success criteria and stage gates (if exists)
    - `.shipkit/product-discovery.json` — persona details and user needs
    - `.shipkit/stack.json` — tech constraints

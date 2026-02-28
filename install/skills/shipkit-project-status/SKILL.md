@@ -507,7 +507,8 @@ Copy and track:
 
 **Discovery/Design files (Phase 2-3 - checks if exist)**:
 - `.shipkit/product-discovery.json` - User needs & personas
-- `.shipkit/product-definition.json` - Solution blueprint (mechanisms, patterns, features)
+- `.shipkit/product-definition.json` - Product blueprint (features, patterns, differentiators)
+- `.shipkit/engineering-definition.json` - Engineering blueprint (mechanisms, components)
 - `.shipkit/goals.json` - Success criteria & stage gates
 - `.shipkit/architecture.json` - Tech decisions
 - `.shipkit/contracts.json` - Data contracts

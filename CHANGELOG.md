@@ -10,6 +10,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [1.12.0] - 2026-02-28
+
+### Added
+- **`shipkit-engineering-definition` skill** — New skill (37th) that owns the technical approach: mechanisms, components, design decisions, and stack direction. Mechanisms map to features via `implementsFeatures` cross-references.
+- **Component structure** in engineering-definition — `components[]` with `id`, `name`, `responsibility`, `mechanisms[]`, and `interfaces[]` for system decomposition.
+
+### Changed
+- **`shipkit-product-definition` v3** — Slimmed to pure product concerns: features, UX patterns, and differentiators. Features gain `addressesNeeds` for pain point traceability. Mechanisms, designDecisions, and stackDirection moved to engineering-definition.
+- **Discovery chain extended** — `why → discovery → product-definition → engineering-definition → goals → spec → plan`. Separation of concerns: product-definition owns WHAT to build, engineering-definition owns HOW to build it.
+- **`shipkit-goals` updated** — Now reads both product-definition.json and engineering-definition.json. Derives criteria from both blueprints (mechanisms from engineering, patterns from product).
+- Updated 8 downstream skills to read engineering-definition.json: goals, spec, plan, architecture-memory, project-status, product-discovery, team
+- Added `shipkit-scale-ready` to master routing table (was missing)
+- Updated all 7-file integration: manifest, settings, master routing, overview HTML, README, CLAUDE.md, rules
+
+### Fixed
+- `shipkit-scale-ready` missing from master routing table
+- `package.json` description showed 36 skills instead of 37
+
+---
+
 ## [1.11.0] - 2026-02-27
 
 ### Added

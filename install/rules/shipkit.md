@@ -34,7 +34,8 @@ All project context lives in `.shipkit/`:
 |------|---------|
 | `why.json` | Vision, constraints, approach |
 | `product-discovery.json` | User needs, personas, journeys |
-| `product-definition.json` | Solution blueprint (mechanisms, patterns, MVP) |
+| `product-definition.json` | Product blueprint (features, patterns, differentiators) |
+| `engineering-definition.json` | Engineering blueprint (mechanisms, components) |
 | `goals.json` | Success criteria & stage gates |
 | `stack.json` | Tech choices (auto-scanned) |
 | `architecture.json` | Decisions log (append-only) |
