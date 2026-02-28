@@ -591,7 +591,7 @@ Copy and track:
 - `/shipkit-spec` - Creates feature specification (required)
 - `/shipkit-project-context` - Generates stack.json, schema.json
 - `/shipkit-architecture-memory` - Logs past decisions
-- `/shipkit-product-definition` - Solution blueprint (mechanisms, patterns, MVP boundary)
+- `/shipkit-product-definition` - Solution blueprint (mechanisms, patterns, features)
 
 ### After This Skill
 - `implement (no skill needed)` - Executes the plan

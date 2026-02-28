@@ -34,7 +34,7 @@ This document defines the JSON schema for `.shipkit/goals.json` (v2 — success 
       "gate": "gate-slug",
       "status": "not-measured|below-threshold|at-threshold|exceeded",
       "derivedFrom": {
-        "type": "mechanism|pattern|differentiator|mvpBoundary",
+        "type": "mechanism|pattern|differentiator|feature",
         "id": "M-001"
       },
       "painPointAddressed": "pain-1",
@@ -115,7 +115,7 @@ This document defines the JSON schema for `.shipkit/goals.json` (v2 — success 
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `type` | enum | yes | `"mechanism"` \| `"pattern"` \| `"differentiator"` \| `"mvpBoundary"` |
+| `type` | enum | yes | `"mechanism"` \| `"pattern"` \| `"differentiator"` \| `"feature"` |
 | `id` | string | yes | ID from product-definition.json (e.g., "M-001", "P-001", "D-001") |
 
 ### Category Values
@@ -124,7 +124,7 @@ This document defines the JSON schema for `.shipkit/goals.json` (v2 — success 
 |----------|-------|-------------|
 | `user-outcome` | Can users accomplish their goals? Task completion, satisfaction, time-to-value | UX patterns, differentiators |
 | `technical-performance` | Does the system perform? Speed, reliability, quality, scalability | Mechanisms |
-| `business-metric` | Does it drive the business? Retention, conversion, engagement | Differentiators, MVP boundary |
+| `business-metric` | Does it drive the business? Retention, conversion, engagement | Differentiators, features |
 
 ### Verification Methods
 

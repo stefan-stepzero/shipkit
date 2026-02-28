@@ -30,7 +30,7 @@ All skills use the `shipkit-` prefix for clarity.
 **Discovery & Planning (8 skills):**
 - `shipkit-why-project` - Strategic vision definition
 - `shipkit-product-discovery` - Personas, journeys, user needs
-- `shipkit-product-definition` - Solution blueprint (mechanisms, patterns, MVP boundary)
+- `shipkit-product-definition` - Solution blueprint (mechanisms, patterns, features)
 - `shipkit-goals` - Success criteria & stage gates
 - `shipkit-spec` - Feature specification
 - `shipkit-feedback-bug` - Process feedback into investigated bug specs (5 Whys root cause)
@@ -143,20 +143,26 @@ your-project/
 ### Basic Workflow
 
 ```
-/shipkit-why-project       → Define vision & goals (new projects)
+/shipkit-why-project         → Define vision & purpose (new projects)
     ↓
-/shipkit-project-context   → Scan codebase, detect stack
+/shipkit-product-discovery   → Personas, pain points, journeys
     ↓
-/shipkit-spec              → Create feature specification
+/shipkit-product-definition  → Solution blueprint (mechanisms, patterns, features)
     ↓
-/shipkit-plan              → Generate implementation plan
+/shipkit-goals               → Success criteria & stage gates (feature phasing)
     ↓
-(implement)                → Build the feature (natural capability)
+/shipkit-spec                → Create feature specification
     ↓
-/shipkit-verify            → Verify quality before commit
+/shipkit-plan                → Generate implementation plan
     ↓
-/shipkit-work-memory       → Checkpoint progress for next session
+(implement)                  → Build the feature (natural capability)
+    ↓
+/shipkit-verify              → Verify quality before commit
+    ↓
+/shipkit-work-memory         → Checkpoint progress for next session
 ```
+
+> **Shortcut:** If you already know what to build, skip straight to `/shipkit-spec`. The discovery chain (why → discovery → definition → goals) is most valuable for new products or when exploring problem space.
 
 ---
 
@@ -187,12 +193,14 @@ Your project context is stored in:
 Skills naturally flow from one to another:
 
 ```
-/shipkit-project-context → Detects your stack
+/shipkit-why-project → Defines vision
+    → /shipkit-product-discovery → Understands users
+    → /shipkit-product-definition → Designs the solution
+    → /shipkit-goals → Defines success criteria & phasing
     → /shipkit-spec → Creates feature spec
     → /shipkit-plan → Generates implementation plan
     → (implement) → Builds the feature
     → /shipkit-verify → Checks quality
-    → /shipkit-work-memory → Saves progress
 ```
 
 ---

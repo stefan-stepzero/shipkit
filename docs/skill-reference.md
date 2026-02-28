@@ -1,6 +1,6 @@
 # Skill Reference
 
-Complete reference for all 23 Shipkit skills.
+Complete reference for all 36 Shipkit skills.
 
 ---
 
@@ -13,24 +13,40 @@ Complete reference for all 23 Shipkit skills.
 | | `shipkit-project-context` | Codebase scanning |
 | | `shipkit-codebase-index` | Semantic indexing |
 | | `shipkit-claude-md` | CLAUDE.md management |
-| **Discovery** | `shipkit-why-project` | Vision definition |
+| **Discovery & Planning** | `shipkit-why-project` | Vision definition |
 | | `shipkit-product-discovery` | Personas, journeys, user needs |
-| | `shipkit-product-definition` | Solution blueprint (mechanisms, patterns, MVP) |
+| | `shipkit-product-definition` | Solution blueprint (mechanisms, patterns, features) |
 | | `shipkit-goals` | Success criteria & stage gates |
 | | `shipkit-spec` | Feature specification |
+| | `shipkit-feedback-bug` | Bug investigation (5 Whys) |
 | | `shipkit-plan` | Implementation planning |
+| | `shipkit-thinking-partner` | Cognitive decision frameworks |
 | **Implementation** | `shipkit-architecture-memory` | Architecture decisions & proposals |
 | | `shipkit-data-contracts` | Type definitions |
 | | `shipkit-integration-docs` | External API patterns |
-| **Quality** | `shipkit-verify` | Quality verification |
+| **Execution** | `shipkit-test-cases` | Code-anchored test case specs |
+| | `shipkit-build-relentlessly` | Build until compiles |
+| | `shipkit-test-relentlessly` | Test until green |
+| | `shipkit-lint-relentlessly` | Lint until clean |
+| | `shipkit-implement-independently` | Parallel isolated implementation |
+| | `shipkit-team` | Agent team from plan |
+| | `shipkit-cleanup-worktrees` | Clean stale worktrees |
+| **Quality & Docs** | `shipkit-verify` | Quality verification |
 | | `shipkit-preflight` | Production readiness |
+| | `shipkit-scale-ready` | Scale & enterprise audit |
+| | `shipkit-prompt-audit` | LLM prompt audit |
+| | `shipkit-semantic-qa` | Semantic QA for API/UI |
+| | `shipkit-qa-visual` | Visual QA with Playwright |
 | | `shipkit-ux-audit` | UX analysis |
 | | `shipkit-user-instructions` | User-facing docs |
 | | `shipkit-communications` | Visual reports |
 | | `shipkit-work-memory` | Session continuity |
-| **System** | `shipkit-detect` | Auto-triggered detection |
+| **System** | `shipkit-update` | Install/update Shipkit |
 | | `shipkit-get-skills` | Find Claude Code skills |
 | | `shipkit-get-mcps` | Find MCP servers |
+
+*System infrastructure (not counted — auto-triggered, not user-invocable):*
+- `shipkit-detect` — Pattern detection and queue creation (hook infrastructure)
 
 ---
 
@@ -116,22 +132,16 @@ Suggested: Create a spec with /shipkit-spec
 
 ---
 
-## Discovery & Planning (6 skills)
+## Discovery & Planning (8 skills)
 
 ### shipkit-why-project
 
-**Purpose:** Defines project vision, constraints, and success criteria.
+**Purpose:** Defines project vision, purpose, and constraints.
 
 **When to use:**
 - Starting a new project
 - Project direction is unclear
 - Need to document "why" for future sessions
-
-**Questions asked:**
-- What problem are you solving?
-- Who is this for?
-- What does success look like?
-- What constraints exist?
 
 **Reads:** Nothing
 **Writes:** `.shipkit/why.json`
@@ -140,7 +150,7 @@ Suggested: Create a spec with /shipkit-spec
 
 ### shipkit-product-discovery
 
-**Purpose:** Creates user personas and journey maps.
+**Purpose:** Lightweight product discovery — personas, pain points, journeys, and opportunities.
 
 **When to use:**
 - Need to understand target users
@@ -148,7 +158,35 @@ Suggested: Create a spec with /shipkit-spec
 - Want structured user research
 
 **Reads:** `.shipkit/why.json`
-**Writes:** `.shipkit/personas/*.md`
+**Writes:** `.shipkit/product-discovery.json`
+
+---
+
+### shipkit-product-definition
+
+**Purpose:** Creates a solution blueprint: core mechanisms, UX patterns, differentiators, design decisions, and features grounded in those mechanisms.
+
+**When to use:**
+- After product discovery, before defining success criteria
+- Need to design HOW the product works, not just WHAT it does
+- Want mechanism-level thinking before jumping to features
+
+**Reads:** `.shipkit/product-discovery.json`, `.shipkit/why.json`, `.shipkit/stack.json`
+**Writes:** `.shipkit/product-definition.json`
+
+---
+
+### shipkit-goals
+
+**Purpose:** Defines measurable success criteria with thresholds and verification methods, organized into stage gates that determine feature phasing (now/next/later).
+
+**When to use:**
+- After product definition, before creating specs
+- Need to define what "done" looks like for each stage
+- Want measurable criteria derived from the solution blueprint
+
+**Reads:** `.shipkit/product-definition.json`, `.shipkit/product-discovery.json`, `.shipkit/why.json`
+**Writes:** `.shipkit/goals.json`
 
 ---
 
@@ -161,14 +199,22 @@ Suggested: Create a spec with /shipkit-spec
 - Need to clarify requirements
 - Want documented acceptance criteria
 
-**Reads:** `.shipkit/why.json`, `.shipkit/stack.json`
+**Reads:** `.shipkit/why.json`, `.shipkit/stack.json`, `.shipkit/product-definition.json`
 **Writes:** `.shipkit/specs/active/*.json`
 
-**Spec includes:**
-- Overview
-- User flow
-- Acceptance criteria (Given/When/Then)
-- Technical approach
+---
+
+### shipkit-feedback-bug
+
+**Purpose:** Processes user feedback or bug reports into investigated specs using 5 Whys root cause analysis.
+
+**When to use:**
+- Bug report needs investigation
+- User feedback needs structured analysis
+- Want to trace symptoms to root causes
+
+**Reads:** Codebase, `.shipkit/specs/`
+**Writes:** `.shipkit/specs/active/*.json`
 
 ---
 
@@ -186,17 +232,17 @@ Suggested: Create a spec with /shipkit-spec
 
 ---
 
-### shipkit-product-definition
+### shipkit-thinking-partner
 
-**Purpose:** Creates a solution blueprint: core mechanisms, UX patterns, differentiators, design decisions, and MVP scope boundary.
+**Purpose:** Structured thinking partner for decisions using cognitive frameworks (pre-mortem, inversion, etc.).
 
 **When to use:**
-- After product discovery, before defining success criteria
-- Need to design HOW the product works, not just WHAT it does
-- Want mechanism-level thinking before jumping to features
+- Facing a difficult decision
+- Want to stress-test an approach
+- Need to think through trade-offs
 
-**Reads:** `.shipkit/product-discovery.json`, `.shipkit/why.json`, `.shipkit/stack.json`
-**Writes:** `.shipkit/product-definition.json`
+**Reads:** Context as needed
+**Writes:** Nothing (conversation only)
 
 ---
 
@@ -214,19 +260,6 @@ Suggested: Create a spec with /shipkit-spec
 
 **Reads:** `.shipkit/goals.json`, `.shipkit/stack.json`, `.shipkit/specs/`, `.shipkit/architecture.json`
 **Writes:** `.shipkit/architecture.json`
-
-**Entry format:**
-```markdown
-## 2026-02-03: [Decision Title]
-
-**Decision:** What you decided
-
-**Rationale:** Why you decided it
-
-**Alternatives considered:** What else you considered
-
-**Trade-offs:** What you're giving up
-```
 
 ---
 
@@ -256,20 +289,85 @@ Suggested: Create a spec with /shipkit-spec
 **Reads:** `.shipkit/stack.json`
 **Writes:** `references/[service]-patterns.md`
 
-**Supported services:**
-- Lemon Squeezy, Stripe, Paddle (payments)
-- Supabase, PlanetScale (database)
-- OpenAI, Anthropic (AI)
-- Resend, SendGrid (email)
-- Clerk, Auth0 (auth)
+---
+
+## Execution (7 skills)
+
+### shipkit-test-cases
+
+**Purpose:** Generates code-anchored test case specs from implementation.
+
+**When to use:**
+- Need test coverage plan
+- Want structured test cases before writing tests
+- Preparing test strategy
+
+**Reads:** Source code, specs
+**Writes:** Test case specifications
 
 ---
 
-## Quality & Documentation (6 skills)
+### shipkit-build-relentlessly
+
+**Purpose:** Runs build until it compiles, fixing errors iteratively.
+
+**When to use:** After code changes, need clean build.
+
+---
+
+### shipkit-test-relentlessly
+
+**Purpose:** Runs tests until green, fixing failures iteratively.
+
+**When to use:** After implementation, need passing tests.
+
+---
+
+### shipkit-lint-relentlessly
+
+**Purpose:** Runs linter until clean, fixing violations iteratively.
+
+**When to use:** Before commit, need clean lint.
+
+---
+
+### shipkit-implement-independently
+
+**Purpose:** Implements a feature in an isolated git worktree for parallel development.
+
+**When to use:**
+- Feature can be built independently
+- Want to avoid branch conflicts
+- Need parallel implementation
+
+---
+
+### shipkit-team
+
+**Purpose:** Creates an agent team from an implementation plan for parallel execution.
+
+**When to use:**
+- Plan has 3+ parallel tasks
+- Want coordinated multi-agent execution
+- Need phase-gated parallel work
+
+**Reads:** `.shipkit/plans/active/*.json`, `.shipkit/specs/active/*.json`
+
+---
+
+### shipkit-cleanup-worktrees
+
+**Purpose:** Cleans up stale git worktrees from previous implementations.
+
+**When to use:** Worktrees accumulating, need cleanup.
+
+---
+
+## Quality & Documentation (10 skills)
 
 ### shipkit-verify
 
-**Purpose:** Verifies implementation quality across 12 dimensions.
+**Purpose:** Verifies implementation quality across multiple dimensions.
 
 **When to use:**
 - After completing a feature
@@ -278,14 +376,6 @@ Suggested: Create a spec with /shipkit-spec
 
 **Reads:** Spec, plan, implementation
 **Writes:** Verification report
-
-**Dimensions checked:**
-- Spec compliance
-- Acceptance criteria
-- Error handling
-- Security basics
-- Performance
-- Accessibility
 
 ---
 
@@ -298,8 +388,49 @@ Suggested: Create a spec with /shipkit-spec
 - After major changes
 - Production checklist
 
-**Reads:** Codebase, configuration
-**Writes:** Preflight report
+---
+
+### shipkit-scale-ready
+
+**Purpose:** Scale and enterprise readiness audit.
+
+**When to use:**
+- Preparing for growth
+- Enterprise requirements check
+- Infrastructure readiness
+
+---
+
+### shipkit-prompt-audit
+
+**Purpose:** Audits LLM prompt architecture for quality and security.
+
+**When to use:**
+- Building LLM-powered features
+- Reviewing prompt design
+- Checking for prompt injection risks
+
+---
+
+### shipkit-semantic-qa
+
+**Purpose:** Semantic QA for API outputs and UI screenshots.
+
+**When to use:**
+- Validating API response quality
+- Checking UI against requirements
+- Semantic correctness checks
+
+---
+
+### shipkit-qa-visual
+
+**Purpose:** Visual QA with Playwright — UI goals + autonomous test generation.
+
+**When to use:**
+- Need visual regression testing
+- Want autonomous UI test generation
+- Checking UI rendering
 
 ---
 
@@ -312,9 +443,6 @@ Suggested: Create a spec with /shipkit-spec
 - Want UX review
 - Checking consistency
 
-**Reads:** UI components
-**Writes:** UX audit report
-
 ---
 
 ### shipkit-user-instructions
@@ -326,7 +454,6 @@ Suggested: Create a spec with /shipkit-spec
 - Tracking setup steps
 - Deployment prerequisites
 
-**Reads:** Nothing
 **Writes:** `.shipkit/user-instructions.md`
 
 ---
@@ -340,9 +467,6 @@ Suggested: Create a spec with /shipkit-spec
 - Want visual summary
 - Creating stakeholder update
 
-**Reads:** `.shipkit/` context
-**Writes:** HTML report
-
 ---
 
 ### shipkit-work-memory
@@ -354,27 +478,19 @@ Suggested: Create a spec with /shipkit-spec
 - Before long break
 - Switching contexts
 
-**Reads:** Recent work
 **Writes:** `.shipkit/progress.json`
 
 ---
 
 ## System (3 skills)
 
-### shipkit-detect
+### shipkit-update
 
-**Purpose:** Auto-triggered pattern detection that creates work queues.
+**Purpose:** Installs or updates Shipkit from GitHub.
 
-**When to use:** Never invoked directly — triggered by hooks after other skills complete.
-
-**Modes:**
-- `services` — Detects external services in specs
-- `contracts` — Detects data structures in plans
-- `changes` — Detects modified files
-- `ux-gaps` — Detects UX review needs
-
-**Reads:** Various based on mode
-**Writes:** `.shipkit/.queues/*.md`
+**When to use:**
+- New installation
+- Updating to latest version
 
 ---
 
@@ -385,10 +501,6 @@ Suggested: Create a spec with /shipkit-spec
 **When to use:**
 - Looking for specific capability
 - Want to extend Claude Code
-- Exploring skill ecosystem
-
-**Reads:** Nothing
-**Writes:** Installation instructions
 
 ---
 
@@ -399,10 +511,6 @@ Suggested: Create a spec with /shipkit-spec
 **When to use:**
 - Need external tool integration
 - Looking for MCP capabilities
-- Extending Claude Code
-
-**Reads:** Nothing
-**Writes:** MCP configuration
 
 ---
 
@@ -425,16 +533,17 @@ These are things Claude does well without skills:
 
 ## Skill Workflows
 
-### New Feature
+### New Product (Full Discovery)
+
+```
+/shipkit-why-project → /shipkit-product-discovery → /shipkit-product-definition
+    → /shipkit-goals → /shipkit-spec → /shipkit-plan → (implement) → /shipkit-verify
+```
+
+### New Feature (Existing Product)
 
 ```
 /shipkit-spec → /shipkit-plan → (implement) → /shipkit-verify
-```
-
-### New Project
-
-```
-/shipkit-why-project → /shipkit-project-context → /shipkit-spec → ...
 ```
 
 ### Session End

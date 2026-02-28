@@ -163,8 +163,8 @@
       "gate": "gate-mvp-launch",
       "status": "not-measured",
       "derivedFrom": {
-        "type": "mvpBoundary",
-        "id": "mvp"
+        "type": "feature",
+        "id": "F-001"
       },
       "painPointAddressed": null,
       "notes": "Checklist: Worksheet Creator (F-001), Standards Browser (F-002), Export & Print (F-003)"

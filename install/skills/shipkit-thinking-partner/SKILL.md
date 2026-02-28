@@ -89,7 +89,7 @@ Based on the topic, propose 2-4 semantic exit criteria — specific decisions or
 Exit criteria examples:
 - "We've chosen between SSR and CSR with clear rationale"
 - "We've identified and mitigated the top 3 risks"
-- "We've defined the MVP scope boundary"
+- "We've defined the feature scope and phasing"
 - "We've resolved the authentication architecture question"
 
 Ask the user to confirm, modify, or add to the exit criteria.

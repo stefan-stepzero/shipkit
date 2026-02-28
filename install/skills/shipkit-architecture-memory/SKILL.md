@@ -615,7 +615,7 @@ Copy and track:
 - `.shipkit/goals.json` - Goal list for alignment
 - `.shipkit/stack.json` - Technology constraints
 - `.shipkit/why.json` - Project purpose and stage
-- `.shipkit/product-definition.json` - Solution blueprint (mechanisms, patterns, MVP boundary)
+- `.shipkit/product-definition.json` - Solution blueprint (mechanisms, patterns, features)
 - `.shipkit/specs/todo/*.json` - Feature specs
 - `.shipkit/codebase-index.json` - Existing code structure
 

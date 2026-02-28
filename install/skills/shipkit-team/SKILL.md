@@ -309,7 +309,7 @@ stack.json (parallel)      mechanisms, patterns,            batch from product-d
 - **Agent**: Product Owner (Sonnet)
 - **Skills**: `/shipkit-product-definition`, `/shipkit-goals` (sequential)
 - **Gate**: `product-definition.json` + `goals.json` written and confirmed — solution blueprint with success criteria
-- **Notes**: **KEY GATE** — This is where the solution design is confirmed. Product definition creates the solution blueprint (mechanisms, UX patterns, differentiators, MVP boundary). Goals derives measurable success criteria from the blueprint. All downstream work derives from these artifacts. Reads: product-discovery.json, why.json, stack.json. In default mode, always pause here regardless of previous auto-confirms.
+- **Notes**: **KEY GATE** — This is where the solution design is confirmed. Product definition creates the solution blueprint (mechanisms, UX patterns, differentiators, features). Goals derives measurable success criteria and stage gates (feature phasing) from the blueprint. All downstream work derives from these artifacts. Reads: product-discovery.json, why.json, stack.json. In default mode, always pause here regardless of previous auto-confirms.
 
 #### Phase 3: Specification
 - **Agent**: Product Owner (Opus)

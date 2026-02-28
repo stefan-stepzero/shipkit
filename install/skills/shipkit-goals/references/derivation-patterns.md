@@ -172,26 +172,26 @@ Differentiator: "Real-time preview with streaming output" (D-003)
 
 ---
 
-## Pattern 4: MVP Boundary → Completeness + Integration Gates
+## Pattern 4: Features → Completeness + Integration Gates
 
-The `mvpBoundary` section in `product-definition.json` defines what ships in v1. This implies two gate criteria:
+The `features` array in `product-definition.json` defines what the product does. Goals assigns features to stage gates (phasing). For each gate, derive completeness and integration criteria:
 
-### Completeness Gate: Are all MVP items functional?
+### Completeness Gate: Are all gate-scoped features functional?
 
 ```
-MVP Boundary → inScope items
-→ Criterion: "MVP feature completeness"
-  Metric: "All MVP-scoped features functional end-to-end"
-  Threshold: "100% of inScope items pass smoke test"
+Features assigned to gate
+→ Criterion: "Gate feature completeness"
+  Metric: "All gate-scoped features functional end-to-end"
+  Threshold: "100% of gate features pass smoke test"
   Verification: manual-check (feature walkthrough checklist)
 ```
 
-### Integration Gate: Do MVP features work together?
+### Integration Gate: Do features work together?
 
 ```
-MVP Boundary → inScope items with dependencies
-→ Criterion: "MVP integration"
-  Metric: "Core user flow works across all MVP features"
+Features with dependencies
+→ Criterion: "Feature integration"
+  Metric: "Core user flow works across gate features"
   Threshold: "Complete user journey (create → preview → export) works"
   Verification: automated-test (end-to-end test suite)
 ```
@@ -267,12 +267,13 @@ After deriving individual criteria, group them into named gates:
 
 The `/shipkit-goals` skill should:
 
-1. **Read product-definition.json** — extract mechanisms, uxPatterns, differentiators, mvpBoundary
+1. **Read product-definition.json** — extract mechanisms, uxPatterns, differentiators, features
 2. **For each mechanism** — derive performance + quality + reliability criteria (Pattern 1)
 3. **For each UX pattern** — derive usability + completion + responsiveness criteria (Pattern 2)
 4. **For each differentiator** — derive validation criteria (Pattern 3)
-5. **From MVP boundary** — derive completeness + integration criteria (Pattern 4)
-6. **Adjust complexity** — based on project stage
+5. **From features** — derive completeness + integration criteria per gate (Pattern 4)
+6. **Assign features to gates** — determine phasing (now/next/later)
+7. **Adjust complexity** — based on project stage
 7. **Propose to user** — with suggested thresholds from this reference
 8. **Group into gates** — based on common gate patterns above
 9. **Let user customize** — adjust thresholds, add business metrics, modify gate composition

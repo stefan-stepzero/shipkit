@@ -8,7 +8,7 @@ Extended documentation, derivation patterns, and examples for shipkit-goals (v2 
 | File | Purpose |
 |------|---------|
 | `output-schema.md` | Full JSON schema for `.shipkit/goals.json` v2 — criteria, gates, and all field definitions |
-| `derivation-patterns.md` | How to derive criteria from product-definition.json: mechanism → performance/quality/reliability, pattern → usability/completion/responsiveness, differentiator → validation, MVP boundary → completeness |
+| `derivation-patterns.md` | How to derive criteria from product-definition.json: mechanism → performance/quality/reliability, pattern → usability/completion/responsiveness, differentiator → validation, features → completeness/integration |
 | `example.json` | Realistic WorksheetForge example with 12 criteria across 2 stage gates |
 
 ## When to Use

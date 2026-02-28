@@ -71,12 +71,6 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v2
     "note": "Only for greenfield"
   },
 
-  "mvpBoundary": {
-    "inScope": ["What ships in v1"],
-    "deferred": ["Phase 2+"],
-    "rationale": "Why this boundary"
-  },
-
   "features": [
     {
       "id": "F-001",
@@ -84,7 +78,6 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v2
       "description": "What it does",
       "mechanisms": ["M-001"],
       "patterns": ["P-001"],
-      "mvp": true,
       "dependencies": []
     }
   ],
@@ -93,9 +86,7 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v2
     "totalMechanisms": 0,
     "totalPatterns": 0,
     "totalDifferentiators": 0,
-    "totalFeatures": 0,
-    "mvpFeatures": 0,
-    "deferredFeatures": 0
+    "totalFeatures": 0
   }
 }
 ```
@@ -119,7 +110,6 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v2
 | `differentiators` | array | yes | What makes this unique |
 | `designDecisions` | array | yes | Key choices with rationale |
 | `stackDirection` | object | no | Technology recommendations (greenfield only) |
-| `mvpBoundary` | object | yes | Explicit v1 scope boundary |
 | `features` | array | yes | Feature list grounded in mechanisms/patterns |
 | `summary` | object | yes | Aggregated counts |
 
@@ -199,14 +189,6 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v2
 
 **Note**: `stackDirection` is only populated for greenfield projects. If `.shipkit/stack.json` already exists, this section is omitted.
 
-### MVP Boundary Object
-
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `inScope` | string[] | yes | What ships in v1 (feature names or descriptions) |
-| `deferred` | string[] | yes | What's Phase 2+ (feature names or descriptions) |
-| `rationale` | string | yes | Why this boundary was chosen |
-
 ### Feature Object
 
 | Field | Type | Required | Description |
@@ -216,7 +198,6 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v2
 | `description` | string | yes | What this feature does (1-2 sentences) |
 | `mechanisms` | string[] | yes | Mechanism IDs this feature uses |
 | `patterns` | string[] | yes | UX pattern IDs this feature follows |
-| `mvp` | boolean | yes | `true` if ships in v1, `false` if deferred |
 | `dependencies` | string[] | yes | Feature IDs that must exist first (empty array if none) |
 
 ### Summary Object
@@ -227,8 +208,6 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v2
 | `totalPatterns` | number | yes | Count of uxPatterns array |
 | `totalDifferentiators` | number | yes | Count of differentiators array |
 | `totalFeatures` | number | yes | Count of features array |
-| `mvpFeatures` | number | yes | Count of features where `mvp: true` |
-| `deferredFeatures` | number | yes | Count of features where `mvp: false` |
 
 **Recompute summary every time the file is written.**
 

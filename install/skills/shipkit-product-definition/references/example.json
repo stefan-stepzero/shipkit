@@ -144,19 +144,6 @@
     ]
   },
 
-  "mvpBoundary": {
-    "inScope": [
-      "Core worksheet generation (wizard + preview + PDF export)",
-      "Standards-aligned topic selection (Common Core Math grades 3-8)",
-      "Single difficulty level per worksheet"
-    ],
-    "deferred": [
-      "Adaptive difficulty with student performance data (requires student tracking)",
-      "Google Docs / classroom platform integration (requires OAuth setup)"
-    ],
-    "rationale": "MVP validates the core value proposition: teachers can create a standards-aligned worksheet faster than manually. Adaptive difficulty requires student data we won't have at launch. Integrations add complexity without validating the core."
-  },
-
   "features": [
     {
       "id": "F-001",
@@ -164,7 +151,6 @@
       "description": "Wizard flow for creating a worksheet: select topic/standards, set parameters, preview with streaming output, iterate until satisfied",
       "mechanisms": ["M-001", "M-003"],
       "patterns": ["P-001", "P-002"],
-      "mvp": true,
       "dependencies": []
     },
     {
@@ -173,7 +159,6 @@
       "description": "Browse and select curriculum standards by grade and domain. Pre-built mappings for Common Core Math. Search and filter.",
       "mechanisms": ["M-003"],
       "patterns": ["P-001"],
-      "mvp": true,
       "dependencies": []
     },
     {
@@ -182,7 +167,6 @@
       "description": "Export worksheets as formatted PDF with answer key. Print-optimized layout. Save to account for reuse.",
       "mechanisms": ["M-001"],
       "patterns": ["P-003"],
-      "mvp": true,
       "dependencies": ["F-001"]
     },
     {
@@ -191,7 +175,6 @@
       "description": "Generate 3 difficulty variants of the same worksheet in one flow. Analyzes student performance data to recommend difficulty bands.",
       "mechanisms": ["M-001", "M-002"],
       "patterns": ["P-001"],
-      "mvp": false,
       "dependencies": ["F-001"]
     },
     {
@@ -200,7 +183,6 @@
       "description": "Export directly to Google Classroom, Canvas, or Schoology. Assign to students with due dates. Sync completion data back.",
       "mechanisms": ["M-001"],
       "patterns": ["P-003"],
-      "mvp": false,
       "dependencies": ["F-003"]
     }
   ],
@@ -209,8 +191,6 @@
     "totalMechanisms": 3,
     "totalPatterns": 3,
     "totalDifferentiators": 3,
-    "totalFeatures": 5,
-    "mvpFeatures": 3,
-    "deferredFeatures": 2
+    "totalFeatures": 5
   }
 }

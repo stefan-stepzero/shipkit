@@ -207,7 +207,7 @@ Appends a decision to `.shipkit/architecture.json` with rationale.
 /shipkit-product-definition
 ```
 
-Creates a solution blueprint: core mechanisms, UX patterns, differentiators, and MVP scope boundary.
+Creates a solution blueprint: core mechanisms, UX patterns, differentiators, and features grounded in those mechanisms.
 
 ### End a Session
 

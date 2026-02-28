@@ -36,7 +36,7 @@ agent: shipkit-product-owner-agent
 
 | File | Required? | Provides | If Missing |
 |------|-----------|----------|------------|
-| `.shipkit/product-definition.json` | **Yes** | Mechanisms, patterns, differentiators, MVP boundary | Route to `/shipkit-product-definition` |
+| `.shipkit/product-definition.json` | **Yes** | Mechanisms, patterns, differentiators, features | Route to `/shipkit-product-definition` |
 | `.shipkit/product-discovery.json` | Recommended | Pain points for traceability | Proceed without traceability |
 | `.shipkit/why.json` | Recommended | Stage context (POC/MVP/Production/Scale) | Ask user for stage |
 
@@ -67,7 +67,7 @@ agent: shipkit-product-owner-agent
 **Read these files:**
 
 ```
-.shipkit/product-definition.json  → mechanisms, patterns, differentiators, MVP boundary (REQUIRED)
+.shipkit/product-definition.json  → mechanisms, patterns, differentiators, features (REQUIRED)
 .shipkit/product-discovery.json   → pain points for traceability (RECOMMENDED)
 .shipkit/why.json                 → project stage (RECOMMENDED)
 ```
@@ -107,9 +107,9 @@ For each section of product-definition.json, derive criteria:
 - Validation criteria (does it actually differentiate?)
 - User perception criteria (do users notice/value it?)
 
-**From MVP boundary:**
-- Completeness gate (are all MVP items functional?)
-- Integration gate (do MVP features work together?)
+**From features:**
+- Completeness gate (are all gate-scoped features functional?)
+- Integration gate (do features work together end-to-end?)
 
 See `references/derivation-patterns.md` for detailed derivation examples.
 
@@ -244,7 +244,7 @@ Ready to start speccing?
       "gate": "gate-slug",
       "status": "not-measured|below-threshold|at-threshold|exceeded",
       "derivedFrom": {
-        "type": "mechanism|pattern|differentiator|mvpBoundary",
+        "type": "mechanism|pattern|differentiator|feature",
         "id": "M-001"
       },
       "painPointAddressed": "pain-1",

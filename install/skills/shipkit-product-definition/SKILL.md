@@ -1,6 +1,6 @@
 ---
 name: shipkit-product-definition
-description: "Design the solution blueprint — core mechanisms, UX patterns, differentiators, and MVP scope that define HOW we solve discovered user needs"
+description: "Design the solution blueprint — core mechanisms, UX patterns, differentiators, and design decisions that define HOW we solve discovered user needs"
 argument-hint: "[product name or focus area]"
 context: fork
 agent: shipkit-product-owner-agent
@@ -16,9 +16,9 @@ allowed-tools:
 
 # shipkit-product-definition — Solution Blueprint
 
-Designs HOW we solve discovered user needs. Reads product-discovery.json (pain points, personas, opportunities) and produces a solution blueprint: core mechanisms, UX patterns, differentiators, design decisions, stack direction, MVP boundary, and features grounded in those mechanisms.
+Designs HOW we solve discovered user needs. Reads product-discovery.json (pain points, personas, opportunities) and produces a solution blueprint: core mechanisms, UX patterns, differentiators, design decisions, stack direction, and features grounded in those mechanisms.
 
-This is the product blueprint — everything downstream (goals, specs, architecture, plans, implementation) derives from it.
+This is the product blueprint — everything downstream (goals, specs, architecture, plans, implementation) derives from it. Feature phasing (what to build now vs. later) is handled by `/shipkit-goals` through stage gates, not here.
 
 ---
 
@@ -96,7 +96,7 @@ Differentiators: [what makes this unique]
 Confirm, adjust, or switch to interactive mode?
 ```
 
-7. If confirmed → proceed to Step 5 (MVP boundary) with the proposed data
+7. If confirmed → proceed to Step 5 (stack direction) with the proposed data
 8. If adjusted → incorporate changes, proceed to Step 5
 9. If interactive requested → fall through to Step 1
 
@@ -181,31 +181,7 @@ Capture 1-3 differentiator statements, each tied to the mechanisms or patterns t
 
 ---
 
-### Step 5: Define MVP Boundary
-
-**Use AskUserQuestion tool:**
-
-```
-header: "MVP Scope"
-question: "Which of these should ship in v1?"
-multiSelect: true
-options:
-  - label: "[Feature A]"
-    description: "Uses [mechanism], addresses [pain point]"
-  - label: "[Feature B]"
-    description: "Uses [mechanism], addresses [pain point]"
-  ...
-```
-
-Separate features into:
-- **In scope (v1)** — minimum needed to validate the solution
-- **Deferred (Phase 2+)** — valuable but not required for first validation
-
-Capture rationale for the boundary.
-
----
-
-### Step 6: Stack Direction (Greenfield Only)
+### Step 5: Stack Direction (Greenfield Only)
 
 **Skip if `.shipkit/stack.json` already exists.**
 
@@ -228,26 +204,27 @@ Capture:
 
 ---
 
-### Step 7: Map Features
+### Step 6: Map Features
 
-Based on mechanisms, patterns, and MVP boundary, define features:
+Based on mechanisms and patterns, define features:
 
 For each feature:
 1. **Name** — concise feature name
 2. **Description** — 1-2 sentences on what it does
 3. **Mechanisms** — which mechanism IDs this feature uses
 4. **Patterns** — which UX pattern IDs this feature follows
-5. **MVP** — boolean: ships in v1 or deferred
-6. **Dependencies** — which other feature IDs must exist first
+5. **Dependencies** — which other feature IDs must exist first
 
 **Feature count guidance**:
 - POC: 2-3 features
 - MVP: 3-6 features
 - Growth: 5-10 features
 
+**Note**: Feature phasing (now/next/later) is handled by `/shipkit-goals` through stage gates. This skill defines WHAT exists, not WHEN it ships.
+
 ---
 
-### Step 8: Present Blueprint and Confirm
+### Step 7: Present Blueprint and Confirm
 
 Present the full solution blueprint:
 
@@ -272,22 +249,15 @@ Present the full solution blueprint:
 
 ### Differentiators
 - D-001: [statement] (enabled by M-001 + P-002)
-
-### MVP Boundary
-In scope: [features]
-Deferred: [features]
 ```
 
 **View 2: Feature Map**
 ```
 ### Features (ordered by dependency)
 
-MVP:
   F-001: [Name] — mechanisms: M-001 | patterns: P-001 | deps: none
   F-002: [Name] — mechanisms: M-001, M-002 | patterns: P-002 | deps: F-001
-
-Deferred:
-  F-004: [Name] — mechanisms: M-003 | patterns: P-001 | deps: F-002
+  F-003: [Name] — mechanisms: M-003 | patterns: P-001 | deps: F-002
 ```
 
 Then ask: **"Confirm this solution blueprint, or adjust?"**
@@ -295,14 +265,13 @@ Then ask: **"Confirm this solution blueprint, or adjust?"**
 User can:
 - Confirm as-is
 - Add/remove/modify mechanisms, patterns, or features
-- Adjust MVP boundary
 - Change differentiators
 
 Incorporate adjustments and re-present if changed significantly.
 
 ---
 
-### Step 9: Write Product Definition
+### Step 8: Write Product Definition
 
 After confirmation, write `.shipkit/product-definition.json`.
 
@@ -310,11 +279,11 @@ See [Product Definition JSON Schema](#product-definition-json-schema) below.
 
 ---
 
-### Step 10: Suggest Next Steps
+### Step 9: Suggest Next Steps
 
 ```
 Solution blueprint written to .shipkit/product-definition.json
-Mechanisms: {N} | Patterns: {N} | Features: {N} ({N} MVP, {N} deferred)
+Mechanisms: {N} | Patterns: {N} | Features: {N}
 
 Next:
   1. /shipkit-goals — Define success criteria for this solution
@@ -390,11 +359,6 @@ Ready to define success criteria?
     "constraints": ["Driving factors"],
     "note": "Only for greenfield. Skipped if stack.json exists."
   },
-  "mvpBoundary": {
-    "inScope": ["What ships in v1"],
-    "deferred": ["Phase 2+"],
-    "rationale": "Why this boundary"
-  },
   "features": [
     {
       "id": "F-001",
@@ -402,7 +366,6 @@ Ready to define success criteria?
       "description": "What it does",
       "mechanisms": ["M-001"],
       "patterns": ["P-001"],
-      "mvp": true,
       "dependencies": []
     }
   ],
@@ -410,9 +373,7 @@ Ready to define success criteria?
     "totalMechanisms": 0,
     "totalPatterns": 0,
     "totalDifferentiators": 0,
-    "totalFeatures": 0,
-    "mvpFeatures": 0,
-    "deferredFeatures": 0
+    "totalFeatures": 0
   }
 }
 ```
@@ -437,7 +398,6 @@ The ID-based cross-references enable these graph traversals:
 If `$ARGUMENTS` contains text:
 - **Product name/description**: Use as seed for product name and to focus the solution proposal
 - **`--refresh`**: Start fresh even if product-definition.json exists
-- **`--mvp`**: Focus only on MVP boundary review (Steps 5-6 only against existing definition)
 
 ---
 
@@ -507,7 +467,6 @@ Solution blueprint is complete when:
 - [ ] 2-4 UX patterns defined with rationale
 - [ ] 1-3 differentiators tied to mechanisms/patterns
 - [ ] Key design decisions captured with rationale
-- [ ] MVP boundary explicitly defined with rationale
 - [ ] Stack direction captured (greenfield only)
 - [ ] Features reference mechanisms and patterns by ID
 - [ ] All cross-references use stable IDs (M-001, P-001, F-001, D-001)
@@ -518,4 +477,4 @@ Solution blueprint is complete when:
 
 ---
 
-**Remember**: This skill captures the solution design — HOW you solve discovered needs. It's the bridge between understanding users (discovery) and measuring success (goals). Update it as the solution evolves. The mechanism/pattern structure makes it easy to trace from user pain points through to features.
+**Remember**: This skill captures the solution design — HOW you solve discovered needs. It's the bridge between understanding users (discovery) and measuring success (goals). Feature phasing (now/next/later) is handled by `/shipkit-goals` through stage gates. Update the blueprint as the solution evolves. The mechanism/pattern structure makes it easy to trace from user pain points through to features.
