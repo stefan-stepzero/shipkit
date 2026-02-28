@@ -549,12 +549,16 @@ If mismatch:
   → WARNING: HTML shows {html_count} skills, manifest has {manifest_count}
 ```
 
-**File 3: shipkit.md skill reference**:
+**File 3: Rules file skill reference**:
 ```
-Read: install/claude-md/shipkit.md
-For each skill in manifest (excluding shipkit-detect):
+Read: install/rules/shipkit.md
+For each skill in manifest (excluding shipkit-detect, shipkit-master):
   If "/{skill_name}" NOT found:
-    → WARNING: {skill_name} not in shipkit.md skill reference
+    → WARNING: {skill_name} not in rules skill reference table
+
+Note: The skill reference table lives in install/rules/shipkit.md (not
+install/claude-md/shipkit.md). This file is installed to .claude/rules/
+and auto-loaded every session, so missing skills = invisible to users.
 ```
 
 **File 4: Manifest** — Covered in Step 7.3
@@ -843,7 +847,7 @@ INSTALLER INTEGRITY
 ──────────────────
 ✓ File 1: All SKILL.md files exist
 ✓ File 2: Overview HTML complete
-⚠ File 3: shipkit.md missing 1 skill
+⚠ File 3: rules/shipkit.md missing 1 skill
 ✓ File 4: Manifest valid
 ✓ File 5: Hooks valid
 ✓ File 6: Master routing complete
@@ -916,7 +920,7 @@ State saved to: .claude/skills/shipkit-framework-integrity/.integrity-state.json
 | Missing permission | ERROR | No | Skill not in settings.json allow list |
 | Count mismatch | WARNING | No | Doc counts don't match manifest |
 | Missing from routing | WARNING | No | Skill not in master routing table |
-| Missing from docs | WARNING | No | Skill not in shipkit.md reference |
+| Missing from docs | WARNING | No | Skill not in rules/shipkit.md skill reference table |
 | Stale reference | WARNING | Yes | Reference exists but isn't actively used (triage needed) |
 | Unknown hook event | WARNING | No | Hook handles event not in changelog's known events |
 | Deprecated pattern | WARNING | No | Code uses pattern deprecated in changelog |
@@ -993,7 +997,8 @@ This runs up to 3 iterations of check-fix-recheck. Combines with `--fix` for aut
 **Core files**:
 - `install/profiles/shipkit.manifest.json` — Source of truth for skills/agents
 - `install/settings/shipkit.settings.json` — Permissions list
-- `install/claude-md/shipkit.md` — Skill reference documentation
+- `install/claude-md/shipkit.md` — User-facing project instructions template
+- `install/rules/shipkit.md` — Skill reference table (auto-loaded every session)
 - `install/skills/shipkit-master/SKILL.md` — Routing table
 
 **Installer files**:

@@ -227,9 +227,10 @@ async function update(packageRoot, flags) {
     ui.section('Update Complete');
     ui.success(`Shipkit updated to v${version}`);
     console.log();
-    ui.bullet('CLAUDE.md was not modified (user-managed file)');
+    ui.warning('CLAUDE.md was not updated (your customizations were preserved)');
+    ui.info(`  Framework rules are auto-loaded from .claude/rules/shipkit.md`);
+    ui.info(`  To refresh CLAUDE.md: run /shipkit-claude-md in Claude Code`);
     ui.bullet('.gitignore was not modified');
-    ui.info('If you need to regenerate CLAUDE.md, run: npx github:stefan-stepzero/shipkit init --claude-md overwrite');
     console.log();
 
   } finally {

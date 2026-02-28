@@ -2,9 +2,7 @@
 
 Solo dev framework for shipping MVPs. AI-assisted, fast iteration, production-ready core paths.
 
-<!-- Framework rules loaded from .claude/rules/shipkit.md -->
-@.claude/rules/shipkit.md
-
+<!-- Framework rules auto-loaded from .claude/rules/shipkit.md -->
 <!-- Project context auto-loaded if present. These files are created by Shipkit skills. -->
 @.shipkit/architecture.json
 @.shipkit/stack.json

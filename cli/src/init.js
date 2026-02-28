@@ -180,8 +180,12 @@ async function init(packageRoot, flags) {
     ui.success('settings.json configured');
 
     // 13. CLAUDE.md
+    let claudeMdPreserved = false;
     if (handleClaudeMd(packageRoot, targetDir, version, claudeMdAction)) {
       ui.success(`CLAUDE.md ${claudeMdAction === 'install' ? 'created' : claudeMdAction + 'ed'}`);
+    } else if (claudeMdAction === 'merge') {
+      claudeMdPreserved = true;
+      ui.info('CLAUDE.md preserved (already has Shipkit content)');
     } else {
       ui.info('CLAUDE.md skipped');
     }
@@ -235,6 +239,12 @@ async function init(packageRoot, flags) {
     ui.bullet('Run /shipkit-master to see available skills');
     ui.bullet('Run /shipkit-why-project to define your project vision');
     console.log();
+    if (claudeMdPreserved) {
+      ui.warning('CLAUDE.md was not updated (your customizations were preserved)');
+      ui.info(`  Framework rules are auto-loaded from .claude/rules/shipkit.md`);
+      ui.info(`  To refresh CLAUDE.md: ${ui.colors.dim}run /shipkit-claude-md in Claude Code${ui.colors.reset}`);
+      console.log();
+    }
     ui.info(`To enable MCPs: ${ui.colors.dim}cp .mcp.json.example .mcp.json${ui.colors.reset}`);
     ui.info(`To update later: ${ui.colors.dim}npx github:stefan-stepzero/shipkit update${ui.colors.reset}`);
     console.log();

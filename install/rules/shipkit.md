@@ -76,6 +76,7 @@ If `.shipkit/codebase-index.json` exists:
 | When... | Use |
 |---------|-----|
 | Design solution blueprint | `/shipkit-product-definition` |
+| Design technical approach | `/shipkit-engineering-definition` |
 | Define success criteria & stage gates | `/shipkit-goals` |
 
 ### Spec & Planning
@@ -114,6 +115,8 @@ If `.shipkit/codebase-index.json` exists:
 | Scale & enterprise readiness | `/shipkit-scale-ready` |
 | Audit LLM prompt architecture | `/shipkit-prompt-audit` |
 | Audit UX patterns | `/shipkit-ux-audit` |
+| Semantic QA for API/LLM outputs | `/shipkit-semantic-qa` |
+| Visual QA with Playwright | `/shipkit-qa-visual` |
 | Track manual tasks for user | `/shipkit-user-instructions` |
 | Create visual HTML report | `/shipkit-communications` |
 
