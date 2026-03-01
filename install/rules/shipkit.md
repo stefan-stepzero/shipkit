@@ -130,7 +130,10 @@ If `.shipkit/codebase-index.json` exists:
 
 **No skill needed for:** implementing, debugging, testing, refactoring, documenting code.
 
-**Built-in commands:** Claude Code includes `/simplify` (quick code quality review) and `/batch` (multi-file operations). Use `/simplify` for fast single-pass quality checks. Use `/shipkit-verify` for comprehensive multi-dimensional review (12 quality dimensions).
+**Built-in commands:**
+- `/simplify` — Launches 3 parallel agents (reuse, quality, efficiency) to review changed code and auto-fix issues. Good for post-implementation cleanup.
+- `/batch <instruction>` — Decomposes a large mechanical change into 5–30 independent units, spawns parallel worktree agents that each open a PR. For migrations, bulk refactors, mass renames.
+- Use `/simplify` for code cleanup after writing. Use `/shipkit-verify` for comprehensive spec-aligned review (12 quality dimensions, relentless fix loop).
 
 ---
 
