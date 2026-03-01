@@ -91,6 +91,7 @@
   },
 
   "agents": [
+    {"name": "shipkit-master-agent", "desc": "Autonomous orchestration & routing"},
     {"name": "shipkit-project-manager-agent", "desc": "Coordination & context"},
     {"name": "shipkit-product-owner-agent", "desc": "Vision & requirements"},
     {"name": "shipkit-ux-designer-agent", "desc": "UI/UX design"},

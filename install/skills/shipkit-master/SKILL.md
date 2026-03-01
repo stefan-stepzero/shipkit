@@ -1,14 +1,25 @@
 ---
 name: shipkit-master
-description: Orchestrator that manages context loading at session start and routes user requests to appropriate shipkit skills. Auto-loaded via session-start hook.
+description: Autonomous orchestrator that assesses project state, decides what to do next, and routes user requests to appropriate shipkit skills. Auto-loaded via session-start hook.
+agent: shipkit-master
 disable-model-invocation: true
 ---
 
-# shipkit-master - Lightweight Orchestration & Routing
+# shipkit-master - Autonomous Orchestration & Routing
 
-**Purpose**: Session orchestrator that checks file freshness, loads context efficiently, and routes user requests to appropriate shipkit skills.
+**Purpose**: Autonomous orchestrator that assesses project state, decides what to do next, invokes skills dynamically, and routes explicit requests via keyword matching.
 
 **Role**: THE master orchestrator for Shipkit. Loaded automatically at every session start.
+
+## Autonomous Mode
+
+When the `agent:` persona is loaded, the master operates in **autonomous mode** for open-ended requests:
+
+- User says "work on recipe sharing" → agent scans `.shipkit/`, finds specs but no plans → runs `/shipkit-plan`
+- User says "what's next?" → agent identifies current phase, suggests and executes the next skill
+- User says "continue" → agent picks up where the last session left off
+
+**The routing tables below remain as fallback** for explicit keyword-matched requests (e.g., "spec this feature" → `/shipkit-spec`). Both paths coexist — the agent handles ambiguous/open-ended requests, routing tables handle explicit ones.
 
 ---
 

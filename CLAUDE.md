@@ -258,7 +258,7 @@ Location: `install/skills/`
 ### Agents
 Location: `install/agents/`
 
-`shipkit-project-manager-agent`, `shipkit-product-owner-agent`, `shipkit-ux-designer-agent`, `shipkit-architect-agent`, `shipkit-implementer-agent`, `shipkit-implement-independently-agent`, `shipkit-reviewer-agent`, `shipkit-researcher-agent`, `shipkit-thinking-partner-agent`
+`shipkit-master-agent`, `shipkit-project-manager-agent`, `shipkit-product-owner-agent`, `shipkit-ux-designer-agent`, `shipkit-architect-agent`, `shipkit-implementer-agent`, `shipkit-implement-independently-agent`, `shipkit-reviewer-agent`, `shipkit-researcher-agent`, `shipkit-thinking-partner-agent`
 
 ### Configuration Files
 - `install/settings/shipkit.settings.json` — Permissions and configuration

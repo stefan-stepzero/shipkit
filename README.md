@@ -10,7 +10,7 @@ A focused collection of **Claude Code skills** for efficient product development
 - **Quality & Communication** (9) - verify, preflight, scale-ready, ...
 - **System** (3) - update, get-skills, get-mcps<!-- /sync:readme_summary -->
 
-Plus **<!-- sync:agent_count -->9<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
+Plus **<!-- sync:agent_count -->10<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
 
 ---
 
@@ -72,7 +72,7 @@ All skills use the `shipkit-` prefix for clarity.
 *System infrastructure (not counted — auto-triggered, not user-invocable):*
 - `shipkit-detect` - Pattern detection and queue creation (hook infrastructure)
 
-### Agent Personas (<!-- sync:agent_count -->9<!-- /sync:agent_count -->)
+### Agent Personas (<!-- sync:agent_count -->10<!-- /sync:agent_count -->)
 
 <!-- sync:readme_agent_table -->| Agent | Used For |
 |-------|----------|
@@ -118,7 +118,7 @@ python install.py --from-github
 
 The installer will:
 - Install all <!-- sync:skill_count -->37<!-- /sync:skill_count --> skills
-- Set up <!-- sync:agent_count -->9<!-- /sync:agent_count --> agent personas
+- Set up <!-- sync:agent_count -->10<!-- /sync:agent_count --> agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
 
@@ -133,7 +133,7 @@ your-project/
 │   ├── rules/
 │   │   └── shipkit.md           # Framework rules (managed by /shipkit-update)
 │   ├── skills/                  # 37 skill definitions
-│   ├── agents/                  # 9 agent personas
+│   ├── agents/                  # 10 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
     ├── specs/                   # Feature specifications
@@ -219,7 +219,7 @@ shipkit/
 │
 ├── install/                         # Everything that gets installed
 │   ├── skills/                      # <!-- sync:skill_count -->37<!-- /sync:skill_count --> shipkit-* skill definitions
-│   ├── agents/                      # <!-- sync:agent_count -->9<!-- /sync:agent_count --> shipkit-*-agent personas
+│   ├── agents/                      # <!-- sync:agent_count -->10<!-- /sync:agent_count --> shipkit-*-agent personas
 │   ├── rules/
 │   │   └── shipkit.md               # Framework rules (auto-loaded)
 │   ├── profiles/
