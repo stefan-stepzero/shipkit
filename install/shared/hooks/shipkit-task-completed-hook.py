@@ -23,6 +23,19 @@ import sys
 from pathlib import Path
 
 
+def find_project_root(start: Path) -> Path | None:
+    """Walk up from start to find the project root (directory containing .shipkit/ or .claude/)."""
+    current = start.resolve()
+    for _ in range(20):
+        if (current / '.shipkit').is_dir() or (current / '.claude').is_dir():
+            return current
+        parent = current.parent
+        if parent == current:
+            break
+        current = parent
+    return None
+
+
 def detect_build_command(project_dir: Path) -> list[str] | None:
     """Auto-detect the project's build command."""
     if (project_dir / "package.json").exists():
@@ -95,8 +108,10 @@ def main():
     except (json.JSONDecodeError, EOFError):
         pass
 
-    # Find project directory
-    project_dir = Path(os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd()))
+    # Find project directory — walk up from CWD to handle subdirectories
+    env_dir = os.environ.get("CLAUDE_PROJECT_DIR", "")
+    start_dir = Path(env_dir) if env_dir else Path(hook_input.get("cwd", os.getcwd()))
+    project_dir = find_project_root(start_dir) or start_dir
     shipkit_dir = project_dir / ".shipkit"
 
     # Quick exit if not in team mode

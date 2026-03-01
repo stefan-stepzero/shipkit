@@ -50,6 +50,19 @@ STANDBY_STATE_FILE = "standby-state.local.md"
 LOOP_GLOB = "*-loop.local.md"
 
 
+def find_project_root(start: Path) -> Path | None:
+    """Walk up from start to find the project root (directory containing .shipkit/ or .claude/)."""
+    current = start.resolve()
+    for _ in range(20):
+        if (current / '.shipkit').is_dir() or (current / '.claude').is_dir():
+            return current
+        parent = current.parent
+        if parent == current:
+            break
+        current = parent
+    return None
+
+
 def is_instance_scoped(path: Path) -> bool:
     """Check if a state file uses instance-scoped naming (has .{8chars}.local.md suffix)."""
     return bool(re.match(r'.*\.[a-zA-Z0-9]{8}\.local\.md$', path.name))
@@ -94,9 +107,11 @@ def main():
     sid8 = session_id[:8] if session_id != "unknown" else "unknown"
     last_message = hook_input.get("last_assistant_message", "")
 
-    # Find project directory
-    project_dir = os.environ.get("CLAUDE_PROJECT_DIR", os.getcwd())
-    shipkit_dir = Path(project_dir) / ".shipkit"
+    # Find project directory — walk up from CWD to handle subdirectories
+    env_dir = os.environ.get("CLAUDE_PROJECT_DIR", "")
+    start_dir = Path(env_dir) if env_dir else Path(hook_input.get("cwd", os.getcwd()))
+    project_dir = find_project_root(start_dir) or start_dir
+    shipkit_dir = project_dir / ".shipkit"
 
     # Find active state file: relentless (per-skill) takes priority over standby
     state_file = None
