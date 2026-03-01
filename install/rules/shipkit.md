@@ -134,6 +134,7 @@ If `.shipkit/codebase-index.json` exists:
 - `/simplify` — Launches 3 parallel agents (reuse, quality, efficiency) to review changed code and auto-fix issues. Good for post-implementation cleanup.
 - `/batch <instruction>` — Decomposes a large mechanical change into 5–30 independent units, spawns parallel worktree agents that each open a PR. For migrations, bulk refactors, mass renames.
 - Use `/simplify` for code cleanup after writing. Use `/shipkit-verify` for comprehensive spec-aligned review (12 quality dimensions, relentless fix loop).
+- Use `/shipkit-team --worktree` for spec-aware parallel execution — like `/batch` but with acceptance criteria, architecture context, and spec-based review per PR.
 
 ---
 

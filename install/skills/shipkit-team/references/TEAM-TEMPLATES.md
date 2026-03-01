@@ -126,3 +126,49 @@ Phase 6: Implementation    — parallel team build + verify + preflight
 **Model selection:** Sonnet for PO/Architect/Implementers, Opus for Spec (Phase 3) and Reviewer (Phase 6).
 
 **Risk:** Vision quality depends on the product goal passed in `$ARGUMENTS`. Be specific — "Build a spaced repetition learning app for medical students" is better than "Build a learning app".
+
+---
+
+## Template 6: Worktree Parallel Implementation
+
+**When:** You have independent clusters with no file overlap and want each to produce its own PR for incremental merge.
+
+**Command:** `/shipkit-team recipe-sharing --worktree`
+
+```
+For each cluster, spawn a worktree-isolated agent:
+
+Agent tool parameters:
+  subagent_type: "general-purpose"
+  isolation: "worktree"
+  run_in_background: true
+  prompt: {self-contained worker prompt with inlined context}
+
+Reviewer agent (no worktree):
+  subagent_type: "general-purpose"
+  run_in_background: true
+  prompt: {reviewer instructions — validates PRs via gh pr diff}
+
+Lead (you):
+  - Renders progress table
+  - Sends PR URLs to reviewer as agents complete
+  - Merges approved PRs
+  - Runs /shipkit-verify on merged state
+  - Verifies phase gates before spawning next phase
+```
+
+**Branch naming:** `impl/{cluster-slug}` (e.g., `impl/recipe-api`, `impl/recipe-ui`)
+
+**PR flow per cluster:**
+1. Agent implements tasks in isolated worktree
+2. Agent runs build/test/lint relentlessly
+3. Agent commits, pushes, opens PR against source branch
+4. Reviewer validates PR against spec acceptance criteria
+5. Lead merges approved PRs
+
+**Model selection:** Sonnet for all (worktree agents have narrow focused scope).
+
+**When NOT to use:**
+- Clusters share types/interfaces across boundaries
+- Work requires real-time coordination between agents
+- Only 1-2 clusters (shared mode is simpler)

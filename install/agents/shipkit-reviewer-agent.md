@@ -171,6 +171,8 @@ Good enough to ship, learn, and iterate. Perfect is the enemy of launched. Block
 
 ## Team Mode
 
+### Shared Mode (Agent Team teammate)
+
 When spawned as a teammate in an Agent Team:
 - **Read `.shipkit/team-state.local.json`** at start to understand the plan and spec
 - **Read the spec** for acceptance criteria to validate against
@@ -182,3 +184,18 @@ When spawned as a teammate in an Agent Team:
   4. If approved → **message the lead** to confirm
 - **Broadcast to team** if you find a pattern issue affecting multiple clusters
 - Run `/shipkit-verify` on the full changeset when all implementation tasks are done
+
+### PR Review Mode (Worktree team)
+
+When spawned as a background agent for worktree-mode teams, you review PRs instead of local files:
+
+- **Wait for PR URLs** from the lead (one per completed cluster)
+- For each PR the lead sends you:
+  1. Run `gh pr diff {number}` to read the changeset
+  2. Run `gh pr view {number}` for PR description and context
+  3. Validate against the **spec acceptance criteria** (provided in the lead's message)
+  4. Apply the same blocker checklist (security, data integrity, core functionality)
+  5. Respond to lead with: `APPROVED: PR #{number}` or `CHANGES_REQUESTED: PR #{number} — {specific issues}`
+  6. If changes requested, also post a GitHub review: `gh pr review {number} --request-changes --body "{issues}"`
+  7. If approved, optionally post approval: `gh pr review {number} --approve --body "Spec criteria validated"`
+- **Cross-PR patterns**: If you notice a pattern issue in one PR that likely affects others, notify the lead immediately

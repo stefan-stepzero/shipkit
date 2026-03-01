@@ -43,6 +43,14 @@ If found, skip plan selection and proceed to Step 2. If not found, fall back to 
 
 If `$ARGUMENTS` is empty, proceed normally from Step 1.
 
+### Flags
+
+- `--worktree` — Run in **worktree mode**: each cluster gets an isolated git worktree agent that opens its own PR. Use for independent clusters with no file overlap. Default is shared mode (teammates work in same directory).
+- `--template pipeline` — Full lifecycle pipeline (see Pipeline Template below)
+- `--yolo` — Auto-confirm all artifact gates (pipeline mode only)
+
+Flags can combine: `/shipkit-team recipe-sharing --worktree`
+
 ---
 
 ## Process
@@ -117,6 +125,10 @@ Plan task 2.1 (deps: [1.2])     → Team task "2.1" (deps: ["GATE-1"])
 
 ### Step 4: Determine Team Composition
 
+Check if `--worktree` flag was provided. If yes, use **Worktree Mode** (Step 4W). Otherwise use **Shared Mode** (default, below).
+
+#### Shared Mode (default)
+
 **Lead (you, the current session):**
 - Coordinates work, monitors progress
 - Verifies gate tasks
@@ -142,6 +154,30 @@ Plan task 2.1 (deps: [1.2])     → Team task "2.1" (deps: ["GATE-1"])
 | 10-15 tasks | 3 | 1 | 4 |
 | 16+ tasks | 4 | 1 | 5 |
 
+#### Worktree Mode (`--worktree`)
+
+Each cluster becomes an isolated worktree agent that implements, verifies, and opens its own PR. Combines Shipkit's spec-aware planning with batch-style parallel execution.
+
+**When to use worktree mode:**
+- Clusters have zero or minimal file overlap
+- Work is parallelizable (independent features, migrations, module additions)
+- You want PR-per-cluster for incremental review and merge
+
+**When to stay in shared mode:**
+- Clusters have tight interdependencies (types defined in A, used in B)
+- Real-time collaboration needed (one agent builds on another's in-progress work)
+- Small feature with 1-2 clusters (overhead not worth it)
+
+**Worktree mode team composition:**
+
+| Role | Count | Model | Isolation | Notes |
+|------|-------|-------|-----------|-------|
+| Lead (you) | 1 | Current session | None | Coordinates, merges PRs, runs gates |
+| Worktree implementers | 1 per cluster | Sonnet | `isolation: worktree` | Each opens its own PR |
+| Reviewer | 1 | Sonnet | None (`background: true`) | Reviews PRs via `gh pr diff` |
+
+**Continue to Step 5W** (below) if worktree mode, or Step 5 for shared mode.
+
 ### Step 5: Write Team State File
 
 Before creating the team, write `.shipkit/team-state.local.json`:
@@ -165,7 +201,170 @@ Before creating the team, write `.shipkit/team-state.local.json`:
 
 This file is read by the `TaskCompleted` and `TeammateIdle` hooks for validation.
 
-### Step 6: Create the Team
+---
+
+### Worktree Mode Steps (5W–7W)
+
+*Skip these if using shared mode. Jump to Step 6 instead.*
+
+#### Step 5W: Write Worktree Team State
+
+Write `.shipkit/team-state.local.json` with worktree-specific fields:
+
+```json
+{
+  "planPath": ".shipkit/plans/todo/{feature}.json",
+  "specPath": ".shipkit/specs/todo/{feature}.json",
+  "created": "ISO timestamp",
+  "mode": "worktree",
+  "sourceBranch": "dev",
+  "clusters": [
+    {
+      "name": "api-layer",
+      "slug": "feature-api",
+      "taskIds": ["1.1", "1.2", "1.3"],
+      "ownedPaths": ["src/api/", "src/types/"],
+      "worktreeBranch": "impl/feature-api",
+      "status": "pending",
+      "prUrl": null,
+      "prNumber": null,
+      "reviewStatus": null,
+      "agentId": null
+    }
+  ],
+  "gateTasks": ["GATE-1"],
+  "phases": [
+    {
+      "id": 1,
+      "status": "pending",
+      "clusterSlugs": ["feature-api", "feature-ui"],
+      "mergedPrs": []
+    }
+  ]
+}
+```
+
+**Cluster status values:** `pending` → `in_progress` → `pr_created` → `review_passed` → `merged` | `failed`
+
+#### Step 6W: Spawn Worktree Agents
+
+For each cluster in the current phase, use the Agent tool to spawn a `shipkit-implement-independently` agent. **Launch all clusters in a single message block** so they run in parallel.
+
+Each agent's prompt must be **fully self-contained** — inline all context so the agent doesn't waste turns reading files.
+
+**Worker prompt template** (fill per cluster):
+
+```
+## Your Mission
+
+Implement the {cluster.name} cluster for: {plan.overview.goal}
+
+Source branch (PR target): {sourceBranch}
+Branch name: impl/{cluster.slug}
+
+## Spec Acceptance Criteria
+
+{Paste relevant acceptance criteria from spec}
+
+## Tasks
+
+{For each task in this cluster:}
+### Task {id}: {description}
+- Files to create: {files.create}
+- Files to modify: {files.modify}
+- Acceptance criteria: {task.acceptanceCriteria}
+- Dependencies within cluster: {task.dependencies}
+
+## Project Context
+
+- Stack: {inline stack.json summary — language, framework, test runner}
+- Architecture: {inline architecture.json key decisions}
+- Patterns: {plan.codebasePatterns}
+
+## Post-Implementation Checklist
+
+After implementing all tasks:
+1. Use /shipkit-build-relentlessly until clean
+2. Use /shipkit-test-relentlessly until green
+3. Use /shipkit-lint-relentlessly until clean
+4. Commit with descriptive message
+5. Push and create PR: gh pr create --base {sourceBranch} --title "{cluster.name}: {summary}"
+6. Report: end with PR: <url> line
+
+## Constraints
+
+- Implement ONLY the listed tasks
+- Stay within the listed files
+- If you need a type/interface from another cluster, create a minimal stub and note it in the PR
+- Do NOT ask questions — make reasonable decisions and document them
+```
+
+Agent tool parameters per cluster:
+- `subagent_type`: `"general-purpose"`
+- `isolation`: `"worktree"`
+- `run_in_background`: `true`
+- `description`: `"Implement {cluster.name}"`
+
+Simultaneously spawn the reviewer as a background agent (no worktree):
+- `subagent_type`: `"general-purpose"`
+- `run_in_background`: `true`
+- Prompt: reviewer instructions with spec criteria, told to wait for PR URLs from lead
+
+#### Step 7W: Monitor Worktree Progress
+
+After spawning all agents, enter a monitoring loop.
+
+**Render initial progress table:**
+
+```
+## Team Progress: {feature} (worktree mode)
+
+Phase {N} — 0/{total} clusters complete
+
+| Cluster | Status | PR | Review | Files | Lines |
+|---------|--------|----|--------|-------|-------|
+| api-layer | Running | — | — | — | — |
+| ui-components | Running | — | — | — | — |
+```
+
+**As agents complete:**
+
+1. Parse `PR: <url>` from agent result
+2. Update team state: set cluster status to `pr_created`, record `prUrl` and `prNumber`
+3. Send PR to reviewer: "Review PR #{num}: {url} — Cluster: {name}. Spec criteria: {criteria}"
+4. Update progress table
+
+**As reviewer responds:**
+
+5. If `APPROVED` → update cluster `reviewStatus` to `approved`
+6. If `CHANGES_REQUESTED` → note issues, attempt to resume the worktree agent with feedback (or spawn a new fix agent in the same worktree branch)
+7. Update progress table
+
+**When all clusters in a phase are `review_passed`:**
+
+8. Merge all PRs: `gh pr merge {num} --squash --delete-branch` for each
+9. Run `/shipkit-verify` on merged state
+10. Verify phase gate condition
+11. If gate passes and more phases remain → spawn Phase N+1 agents (repeat from Step 6W)
+12. If gate fails → create fix tasks, spawn additional worktree agents
+
+**When all phases complete:**
+- Run `/shipkit-preflight`
+- Report final summary with all PR URLs
+- Proceed to Step 8 (Team Cleanup)
+
+**Failure handling:**
+
+| Failure | Action |
+|---------|--------|
+| Agent exits without PR | Mark `failed`, resume agent or spawn replacement |
+| Agent PR fails review | Send feedback, resume or respawn in same branch |
+| Merge conflict between PRs | Indicates cluster decomposition error — lead resolves manually |
+| Agent timeout (30+ min) | Check status, mark `failed` if unresponsive |
+
+---
+
+### Step 6: Create the Team (Shared Mode)
 
 Now instruct Claude to create the agent team. Use this structure:
 
@@ -330,10 +529,10 @@ stack.json (parallel)      mechanisms, patterns,            batch from product-d
 - **Notes**: One plan per spec. Plans produced in dependency order. Each plan reads previous plans as context. Optionally runs `/shipkit-test-cases` to generate test case specs before implementation.
 
 #### Phase 6: Implementation + Verification
-- **Agents**: Implementers (Sonnet, parallel) + Reviewer (Opus)
+- **Agents**: Implementers (Sonnet, parallel) + Reviewer (Sonnet)
 - **Skills**: `/shipkit-build-relentlessly`, `/shipkit-test-relentlessly`, `/shipkit-lint-relentlessly`, `/shipkit-verify`, `/shipkit-preflight`
 - **Gate**: All features implemented, tests pass, lint clean, verification passes
-- **Notes**: File ownership from plans. Features implemented in dependency order from product-definition. `/shipkit-integration-docs` triggered on-demand when implementers encounter external services. Verify + preflight run after all features complete. For apps with UI, `/shipkit-qa-visual` and `/shipkit-semantic-qa` can run as optional quality checks.
+- **Notes**: File ownership from plans. Features implemented in dependency order from product-definition. `/shipkit-integration-docs` triggered on-demand when implementers encounter external services. Verify + preflight run after all features complete. For apps with UI, `/shipkit-qa-visual` and `/shipkit-semantic-qa` can run as optional quality checks. **Worktree mode**: If `--worktree` was passed, Phase 6 uses worktree execution (Steps 5W–7W) — each cluster gets an isolated worktree agent that opens a PR.
 
 ### Full Skill Coverage (36 user-facing skills)
 
@@ -603,13 +802,21 @@ Phase 6 uses the standard team pattern from this skill (Steps 2-8 above):
 <!-- SECTION:success-criteria -->
 ## Success Criteria
 
+**Both modes:**
 - [ ] Plan read and tasks decomposed into ownership clusters
 - [ ] Team state file written to `.shipkit/team-state.local.json`
-- [ ] Agent team created with implementers + reviewer
 - [ ] All tasks completed and gate conditions verified
 - [ ] `/shipkit-verify` run on full changeset
 - [ ] `/shipkit-preflight` run for production readiness
 - [ ] Team cleaned up, state file deleted
+
+**Shared mode additionally:**
+- [ ] Agent team created with implementers + reviewer
+
+**Worktree mode additionally:**
+- [ ] Each cluster agent created a PR
+- [ ] Reviewer validated each PR against spec criteria
+- [ ] All PRs merged after review approval
 <!-- /SECTION:success-criteria -->
 
 ---
