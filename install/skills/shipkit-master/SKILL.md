@@ -11,13 +11,31 @@ disable-model-invocation: true
 
 **Role**: THE master orchestrator for Shipkit. Loaded automatically at every session start.
 
-## Autonomous Mode
+## Autonomous Mode — Goal-Driven Agent Hierarchy
 
-When the `agent:` persona is loaded, the master operates in **autonomous mode** for open-ended requests:
+When the `agent:` persona is loaded, the master operates in **autonomous mode** using a 4-agent hierarchy:
 
-- User says "work on recipe sharing" → agent scans `.shipkit/`, finds specs but no plans → runs `/shipkit-plan`
-- User says "what's next?" → agent identifies current phase, suggests and executes the next skill
-- User says "continue" → agent picks up where the last session left off
+```
+Master (orchestrator — checks goals, spawns responsible agent)
+  ├── Visionary (WHY — stage, vision, strategic goals)
+  ├── PM / Product Owner (WHAT — product definition, specs, product goals)
+  ├── EM / Architect (HOW — architecture, plans, engineering goals)
+  └── Execution Lead / Project Manager (DO — team implementation, verification)
+```
+
+**Decision loop:**
+1. Read `.shipkit/goals/strategic.json`, `goals/product.json`, `goals/engineering.json`
+2. Identify unmet criteria (priority: strategic > product > engineering)
+3. Spawn the agent responsible for closing the gap
+4. Evaluate results, re-check goals
+5. Gate check with user at key transitions
+
+**Examples:**
+- No goals exist → spawn Visionary to bootstrap
+- Strategic metrics unmet → spawn Visionary to adjust stage/strategy
+- Product outcomes unmet → spawn PM to revise specs/definitions
+- Engineering performance unmet → spawn EM to revise architecture
+- All goals set, implementation pending → spawn Execution Lead
 
 **The routing tables below remain as fallback** for explicit keyword-matched requests (e.g., "spec this feature" → `/shipkit-spec`). Both paths coexist — the agent handles ambiguous/open-ended requests, routing tables handle explicit ones.
 

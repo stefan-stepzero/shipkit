@@ -10,7 +10,7 @@ A focused collection of **Claude Code skills** for efficient product development
 - **Quality & Communication** (9) - verify, preflight, scale-ready, ...
 - **System** (3) - update, get-skills, get-mcps<!-- /sync:readme_summary -->
 
-Plus **<!-- sync:agent_count -->10<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
+Plus **<!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
 
 ---
 
@@ -72,19 +72,21 @@ All skills use the `shipkit-` prefix for clarity.
 *System infrastructure (not counted — auto-triggered, not user-invocable):*
 - `shipkit-detect` - Pattern detection and queue creation (hook infrastructure)
 
-### Agent Personas (<!-- sync:agent_count -->10<!-- /sync:agent_count -->)
+### Agent Personas (<!-- sync:agent_count -->11<!-- /sync:agent_count -->)
 
-<!-- sync:readme_agent_table -->| Agent | Used For |
-|-------|----------|
-| `shipkit-project-manager-agent` | Coordination & context |
-| `shipkit-product-owner-agent` | Vision & requirements |
-| `shipkit-ux-designer-agent` | UI/UX design |
-| `shipkit-architect-agent` | Technical decisions |
-| `shipkit-implementer-agent` | Code implementation |
-| `shipkit-implement-independently-agent` | Isolated parallel implementation |
-| `shipkit-reviewer-agent` | Code review & quality |
-| `shipkit-researcher-agent` | Research & analysis |
-| `shipkit-thinking-partner-agent` | Cognitive discussion & thinking partner |<!-- /sync:readme_agent_table -->
+<!-- sync:readme_agent_table -->| Agent | Role | Used For |
+|-------|------|----------|
+| `shipkit-master-agent` | Orchestrator | Goal-driven orchestration — checks 3 goal levels, spawns responsible agent |
+| `shipkit-visionary-agent` | Visionary | Strategic direction — sets stage, vision, constraints, business goals |
+| `shipkit-product-owner-agent` | Product Manager | Product definitions, specs, feedback, product QA |
+| `shipkit-architect-agent` | Engineering Manager | Architecture, plans, contracts, engineering QA |
+| `shipkit-project-manager-agent` | Execution Lead | Team coordination, verification, shipping |
+| `shipkit-ux-designer-agent` | | UI/UX design |
+| `shipkit-implementer-agent` | | Code implementation |
+| `shipkit-implement-independently-agent` | | Isolated parallel implementation |
+| `shipkit-reviewer-agent` | | Code review & quality |
+| `shipkit-researcher-agent` | | Research & analysis |
+| `shipkit-thinking-partner-agent` | | Cognitive discussion & thinking partner |<!-- /sync:readme_agent_table -->
 
 ---
 
@@ -118,7 +120,7 @@ python install.py --from-github
 
 The installer will:
 - Install all <!-- sync:skill_count -->37<!-- /sync:skill_count --> skills
-- Set up <!-- sync:agent_count -->10<!-- /sync:agent_count --> agent personas
+- Set up <!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
 
@@ -133,7 +135,7 @@ your-project/
 │   ├── rules/
 │   │   └── shipkit.md           # Framework rules (managed by /shipkit-update)
 │   ├── skills/                  # 37 skill definitions
-│   ├── agents/                  # 10 agent personas
+│   ├── agents/                  # 11 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
     ├── specs/                   # Feature specifications
@@ -219,7 +221,7 @@ shipkit/
 │
 ├── install/                         # Everything that gets installed
 │   ├── skills/                      # <!-- sync:skill_count -->37<!-- /sync:skill_count --> shipkit-* skill definitions
-│   ├── agents/                      # <!-- sync:agent_count -->10<!-- /sync:agent_count --> shipkit-*-agent personas
+│   ├── agents/                      # <!-- sync:agent_count -->11<!-- /sync:agent_count --> shipkit-*-agent personas
 │   ├── rules/
 │   │   └── shipkit.md               # Framework rules (auto-loaded)
 │   ├── profiles/

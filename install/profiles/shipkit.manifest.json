@@ -91,11 +91,12 @@
   },
 
   "agents": [
-    {"name": "shipkit-master-agent", "desc": "Autonomous orchestration & routing"},
-    {"name": "shipkit-project-manager-agent", "desc": "Coordination & context"},
-    {"name": "shipkit-product-owner-agent", "desc": "Vision & requirements"},
+    {"name": "shipkit-master-agent", "desc": "Goal-driven orchestrator — checks 3 goal levels, spawns responsible agent"},
+    {"name": "shipkit-visionary-agent", "desc": "Strategic visionary — sets stage, vision, constraints, business goals"},
+    {"name": "shipkit-project-manager-agent", "desc": "Execution lead — team coordination, verification, shipping"},
+    {"name": "shipkit-product-owner-agent", "desc": "Product manager — definitions, specs, feedback, product QA"},
     {"name": "shipkit-ux-designer-agent", "desc": "UI/UX design"},
-    {"name": "shipkit-architect-agent", "desc": "Technical decisions"},
+    {"name": "shipkit-architect-agent", "desc": "Engineering manager — architecture, plans, contracts, engineering QA"},
     {"name": "shipkit-implementer-agent", "desc": "Code implementation"},
     {"name": "shipkit-implement-independently-agent", "desc": "Isolated parallel implementation"},
     {"name": "shipkit-reviewer-agent", "desc": "Code review & quality"},
