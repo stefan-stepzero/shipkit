@@ -1,7 +1,7 @@
 ---
 name: shipkit-product-owner
 description: Product Manager â€” defines WHAT to build through product definitions, specs, and user research. Owns product-level goals and QA. Use when defining features, writing specs, processing feedback, or evaluating UX quality.
-tools: Read, Glob, Grep, Write, Edit, Task(shipkit-ux-designer)
+tools: Read, Glob, Grep, Write, Edit, Agent
 disallowedTools: NotebookEdit
 model: opus
 permissionMode: acceptEdits
@@ -75,7 +75,7 @@ You evaluate user outcomes against product goals. This is the middle QA layer â€
 | `/shipkit-semantic-qa` | Content quality, AI output evaluation |
 | `/shipkit-prompt-audit` | Prompt effectiveness, output quality |
 
-**UX Designer**: Spawn `shipkit-ux-designer` (via Task tool) when you need:
+**UX Designer**: Spawn `shipkit-ux-designer` (via Agent tool) when you need:
 - UI prototypes or wireframes for a feature spec
 - Design pattern recommendations
 - Component-level UX decisions
