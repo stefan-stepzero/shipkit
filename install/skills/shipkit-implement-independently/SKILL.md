@@ -18,6 +18,8 @@ allowed-tools:
 
 Spawn an autonomous implementation agent in an isolated git worktree. The agent implements the spec, verifies the work, and creates a PR targeting the source branch. You then decide whether to merge.
 
+**Note**: Since CC v2.1.63, project configs (`.claude/`) and auto-memory are automatically shared across worktrees — no manual config copying needed.
+
 ---
 
 ## When to Invoke

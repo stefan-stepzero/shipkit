@@ -2,6 +2,7 @@
 name: shipkit-goals
 description: "Derive measurable success criteria from the solution blueprint. Triggers: 'success criteria', 'how do we measure', 'goals', 'stage gates'."
 argument-hint: "[goal topic or criteria focus]"
+context: fork
 agent: shipkit-product-owner-agent
 ---
 

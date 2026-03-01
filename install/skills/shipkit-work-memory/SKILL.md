@@ -6,7 +6,9 @@ argument-hint: "[checkpoint name]"
 
 # shipkit-work-memory - Session Progress & Resume State
 
-**Purpose**: Capture session progress and resume state by inferring from conversation and git. User confirms, Claude does the work.
+**Purpose**: Capture structured session progress — milestones, blockers, decisions, and resume state — by inferring from conversation and git. User confirms, Claude does the work.
+
+**Note**: Claude Code's auto-memory (v2.1.59+) automatically saves basic session context. This skill is for **structured progress tracking** that auto-memory doesn't capture: explicit milestones, decision rationale, blocker status, and handoff state for session continuity.
 
 **Output**: `.shipkit/progress.json` — A timeline graph artifact ideal for session history visualization.
 

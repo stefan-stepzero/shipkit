@@ -1,7 +1,7 @@
 ---
 name: shipkit-implementer
 description: Implementation specialist for coding features, fixing bugs, and writing tests. Use when building functionality, implementing plans, or debugging issues.
-tools: Read, Glob, Grep, Write, Edit, Bash, NotebookEdit
+tools: Read, Glob, Grep, Write, Edit, Bash, NotebookEdit, Task(shipkit-implement-independently)
 model: opus
 permissionMode: default
 memory: project

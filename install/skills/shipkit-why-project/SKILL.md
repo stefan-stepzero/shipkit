@@ -2,6 +2,7 @@
 name: shipkit-why-project
 description: "Use when defining project vision and strategic direction. Triggers: 'why this project', 'define vision', 'project goals', 'what are we building'."
 argument-hint: "[project name]"
+context: fork
 agent: shipkit-product-owner-agent
 ---
 

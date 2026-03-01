@@ -130,6 +130,8 @@ If `.shipkit/codebase-index.json` exists:
 
 **No skill needed for:** implementing, debugging, testing, refactoring, documenting code.
 
+**Built-in commands:** Claude Code includes `/simplify` (quick code quality review) and `/batch` (multi-file operations). Use `/simplify` for fast single-pass quality checks. Use `/shipkit-verify` for comprehensive multi-dimensional review (12 quality dimensions).
+
 ---
 
 ## Meta-Behavior
@@ -161,3 +163,11 @@ Claude Code maintains persistent memory across sessions in `~/.claude/projects/<
 - Link to other files in memory directory for detailed notes
 
 **Note:** Auto memory is separate from `.shipkit/` context files. Use `.shipkit/` for project artifacts (specs, plans, architecture), auto memory for session-to-session learnings.
+
+---
+
+## Sandbox Mode
+
+If sandbox mode is enabled, `.claude/skills/` is write-protected. Shipkit install/update requires either:
+- Sandbox disabled during install, or
+- `.claude/` added to `sandbox.filesystem.allowWrite`

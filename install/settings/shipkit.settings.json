@@ -224,7 +224,10 @@
           }
         ]
       }
-    ]
+    ],
+    "WorktreeCreate": [],
+    "WorktreeRemove": [],
+    "ConfigChange": []
   },
 
   "skills": {
