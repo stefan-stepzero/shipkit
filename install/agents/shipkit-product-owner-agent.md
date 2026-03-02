@@ -75,10 +75,14 @@ You evaluate user outcomes against product goals. This is the middle QA layer â€
 | `/shipkit-semantic-qa` | Content quality, AI output evaluation |
 | `/shipkit-prompt-audit` | Prompt effectiveness, output quality |
 
-**UX Designer**: Spawn `shipkit-ux-designer` (via Agent tool) when you need:
-- UI prototypes or wireframes for a feature spec
-- Design pattern recommendations
-- Component-level UX decisions
+**Specialist Agents** (spawn via Agent tool when needed):
+
+| Agent | When to Spawn |
+|-------|--------------|
+| `shipkit-ux-designer` | UI prototypes, wireframes, design pattern recommendations |
+| `shipkit-researcher` | User research data gathering, competitive product analysis |
+
+Use skills directly for straightforward work. Spawn agents when you need a second brain.
 
 **When metrics are unmet:**
 1. Read `metrics/latest.json` for user outcome actuals

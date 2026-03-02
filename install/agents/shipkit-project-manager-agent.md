@@ -47,6 +47,14 @@ Read `goals/strategic.json` to know the current stage. Calibrate your execution:
 - Shipping and deployment coordination
 - Progress tracking across multi-step work
 
+### Worker Agents (spawn via Task tool in team context)
+
+| Agent | When to Spawn |
+|-------|--------------|
+| `shipkit-implementer` | Code implementation for plan tasks |
+| `shipkit-reviewer` | Code review against spec acceptance criteria |
+| `shipkit-researcher` | Technical investigation, debugging research |
+
 ### Dev QA
 You run the lowest QA layer — does the code actually work?
 
