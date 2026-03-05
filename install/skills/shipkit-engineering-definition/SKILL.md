@@ -1,5 +1,6 @@
 ---
 name: shipkit-engineering-definition
+id: SKL-ENGDEF
 description: "Define the technical approach — mechanisms, design decisions, stack direction, and component structure for building the product. Triggers: 'engineering approach', 'how to build this', 'technical design', 'mechanisms'."
 argument-hint: "[focus area or --refresh]"
 context: fork
@@ -18,7 +19,7 @@ allowed-tools:
 
 Defines HOW we build the product defined in product-definition.json. For each feature, designs the technical mechanisms, captures design decisions, recommends stack direction (greenfield), and defines component structure.
 
-This is the engineering blueprint — it takes the product's features and UX patterns and defines the technical approach to implement them. Downstream skills (goals, architecture-memory, spec) read both product-definition.json and engineering-definition.json.
+This is the engineering blueprint — it takes the product's features and UX patterns and defines the technical approach to implement them. Downstream skills (goals, spec) read both product-definition.json and engineering-definition.json. Architecture decisions are captured directly in this file.
 
 ---
 
@@ -31,7 +32,7 @@ This is the engineering blueprint — it takes the product's features and UX pat
 
 **Workflow position**:
 - After `/shipkit-product-definition` (needs features and UX patterns)
-- Before `/shipkit-goals` (goals derive criteria from mechanisms)
+- Before `/shipkit-product-goals` and `/shipkit-engineering-goals` (goals derive criteria from mechanisms)
 
 ---
 
@@ -168,8 +169,11 @@ For each component, capture:
 - **Responsibility** — what it owns (single responsibility)
 - **Mechanisms** — which mechanism IDs it implements
 - **Interfaces** — how it communicates with other components
+- **Data contracts** — key data shapes flowing in/out (types, schemas, API payloads)
 
 Aim for 2-6 components. Each mechanism should map to at least one component.
+
+**Data contracts note**: Define the key data shapes at component boundaries — request/response types, shared models, event payloads. Use Zod schemas, TypeScript types, or JSON Schema depending on the stack.
 
 ---
 
@@ -265,9 +269,8 @@ Engineering blueprint written to .shipkit/engineering-definition.json
 Mechanisms: {N} | Components: {N} | Design Decisions: {N}
 
 Next:
-  1. /shipkit-goals — Define success criteria (reads both product + engineering definitions)
+  1. /shipkit-product-goals — Define product success criteria; then /shipkit-engineering-goals for engineering criteria
   2. /shipkit-spec — Create specs for features (with mechanism context)
-  3. /shipkit-architecture-memory — Log detailed architecture decisions
 
 Ready to define success criteria?
 ```
@@ -304,7 +307,8 @@ Ready to define success criteria?
       "name": "Component name",
       "responsibility": "What it owns",
       "mechanisms": ["M-001"],
-      "interfaces": ["REST API to C-002", "Event bus to C-003"]
+      "interfaces": ["REST API to C-002", "Event bus to C-003"],
+      "dataContracts": ["Key data shapes at this component's boundaries"]
     }
   ],
   "designDecisions": [
@@ -361,9 +365,9 @@ If `$ARGUMENTS` contains text:
 ### After This Skill
 | Skill | How |
 |-------|-----|
-| `shipkit-goals` | Reads engineering-definition.json to derive criteria from mechanisms |
+| `shipkit-product-goals` | Reads engineering-definition.json to derive product criteria from mechanisms |
+| `shipkit-engineering-goals` | Reads engineering-definition.json to derive engineering criteria from mechanisms |
 | `shipkit-spec` | Reads engineering-definition.json for mechanism context when specifying features |
-| `shipkit-architecture-memory` | Reads engineering-definition.json for solution context in architecture decisions |
 | `shipkit-plan` | Indirectly — plans derive from specs which reference mechanisms |
 
 ---
@@ -403,7 +407,7 @@ If `$ARGUMENTS` contains text:
 
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 
-**Suggest skill when:** User needs to define success criteria (`/shipkit-goals`), create detailed specs (`/shipkit-spec`), or log architecture decisions (`/shipkit-architecture-memory`).
+**Suggest skill when:** User needs to define success criteria (`/shipkit-product-goals`, `/shipkit-engineering-goals`), create detailed specs (`/shipkit-spec`), or update architecture decisions (`/shipkit-engineering-definition`).
 <!-- /SECTION:after-completion -->
 
 <!-- SECTION:success-criteria -->

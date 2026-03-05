@@ -37,10 +37,10 @@ argument-hint: "<feature-name> [--from-opportunity OPP-xxx]"
 - Clear idea of what to build/change (user input or opportunity card)
 
 **Helpful context**:
-- `docs/development/opportunities.json` — if spec is from ideator output
+- `docs/development/dev-progress/DOC-004-opportunities.json` — if spec is from ideator output
 - `CLAUDE.md` — Skill Value Test, framework rules
-- `docs/development/SKILL-QUALITY-AND-PATTERNS.md` — quality standards
-- `docs/development/SHIPKIT-7-FILE-INTEGRATION.md` — integration system
+- `docs/development/quality-standards/skill-quality-and-patterns.md` — quality standards
+- `docs/development/integration/7-file-integration.md` — integration system
 
 ---
 
@@ -107,9 +107,8 @@ Map all files that will be created or modified:
 2. `docs/generated/shipkit-overview.html` — MODIFY (add to list, update count)
 3. `install/claude-md/shipkit.md` — MODIFY (add to reference)
 4. `install/profiles/shipkit.manifest.json` — MODIFY (register)
-5. `install/shared/hooks/shipkit-after-skill-router.py` — MODIFY (if detection needed)
-6. `install/skills/shipkit-master/SKILL.md` — MODIFY (routing)
-7. `install/settings/shipkit.settings.json` — MODIFY (permission)
+5. `install/skills/shipkit-master/SKILL.md` — MODIFY (routing)
+6. `install/settings/shipkit.settings.json` — MODIFY (permission)
 
 **For `new-local-skill`:**
 1. `.claude/skills/shipkit-{name}/SKILL.md` — CREATE
@@ -223,9 +222,9 @@ Ready to plan implementation? Run `/shipkit-dev-plan {feature-name}`
 ## Context Files This Skill Reads
 
 - `CLAUDE.md` — Skill Value Test, framework rules
-- `docs/development/opportunities.json` — If spec is from ideator
-- `docs/development/SKILL-QUALITY-AND-PATTERNS.md` — Quality standards
-- `docs/development/SHIPKIT-7-FILE-INTEGRATION.md` — Integration checklist
+- `docs/development/dev-progress/DOC-004-opportunities.json` — If spec is from ideator
+- `docs/development/quality-standards/skill-quality-and-patterns.md` — Quality standards
+- `docs/development/integration/7-file-integration.md` — Integration checklist
 - `.claude/specs/*.json` — Previous specs (avoid duplicates)
 
 ## Context Files This Skill Writes

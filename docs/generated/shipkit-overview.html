@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shipkit - Quick Reference</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%F0%9F%9A%80</text></svg>">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -218,64 +218,6 @@
             font-size: 0.9em;
         }
 
-        /* Skill Groups */
-        .skill-groups {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 20px;
-        }
-
-        .skill-group {
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 20px;
-        }
-
-        .skill-group:hover {
-            border-color: #667eea;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
-        }
-
-        .skill-group h3 {
-            color: #667eea;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .skill-list {
-            list-style: none;
-        }
-
-        .skill-list li {
-            padding: 8px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            font-size: 0.95em;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .skill-list li:last-child {
-            border-bottom: none;
-        }
-
-        .skill-list .name {
-            font-family: 'Courier New', monospace;
-            color: #7c3aed;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-
-        .skill-list .desc {
-            color: #64748b;
-            font-size: 0.85em;
-            line-height: 1.4;
-            padding-left: 4px;
-        }
-
         /* Principles */
         .principles {
             display: grid;
@@ -328,8 +270,28 @@
         }
 
         .natural-cap::before {
-            content: "✓ ";
+            content: "\2713 ";
             color: #10b981;
+        }
+
+        /* Mermaid Diagrams */
+        .mermaid {
+            max-width: 900px;
+            margin: 20px auto;
+        }
+        .mermaid svg {
+            width: 100%;
+        }
+        .mermaid-wrapper {
+            background: #fafafa;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+        }
+        .mermaid-wrapper h4 {
+            color: #334155;
+            margin-bottom: 12px;
         }
 
         /* Workflow */
@@ -380,6 +342,258 @@
             color: #1e293b;
         }
 
+        /* Matrix Tab */
+        .matrix-container {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .matrix-table {
+            border-collapse: collapse;
+            font-size: 0.82em;
+            width: 100%;
+            min-width: 900px;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            padding: 6px 8px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .matrix-table thead th {
+            background: #1e293b;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .matrix-table thead th.agent-header {
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            padding: 12px 6px;
+            min-width: 38px;
+            font-size: 0.85em;
+        }
+
+        .matrix-table thead th.human-header {
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            padding: 12px 6px;
+            min-width: 38px;
+            background: #059669;
+            font-size: 0.85em;
+        }
+
+        .matrix-table tbody th {
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #7c3aed;
+            background: #f8fafc;
+            position: sticky;
+            left: 0;
+            z-index: 1;
+            font-size: 0.88em;
+            white-space: nowrap;
+        }
+
+        .matrix-table td.category-row {
+            background: #f1f5f9;
+            font-weight: 700;
+            text-align: left;
+            color: #475569;
+            font-size: 0.9em;
+            padding: 10px 8px;
+        }
+
+        .matrix-table .mark-has {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .matrix-table .mark-spawns {
+            color: #f59e0b;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .matrix-table .mark-human {
+            color: #059669;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .matrix-table .mark-auto {
+            color: #94a3b8;
+            font-size: 0.9em;
+        }
+
+        .matrix-table tbody tr:hover {
+            background: #f1f5f9;
+        }
+
+        .matrix-table tbody tr:hover th {
+            background: #e2e8f0;
+        }
+
+        .matrix-legend {
+            display: flex;
+            gap: 25px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .matrix-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9em;
+        }
+
+        .matrix-legend-item .swatch {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Timing Tab */
+        .timing-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88em;
+        }
+
+        .timing-table th {
+            text-align: left;
+            padding: 10px 8px;
+            background: #1e293b;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .timing-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .timing-table tbody tr:hover {
+            background: #f1f5f9;
+        }
+
+        .timing-table td.skill-cell {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #7c3aed;
+            font-size: 0.92em;
+            white-space: nowrap;
+        }
+
+        .timing-table td.phase-cell {
+            color: #64748b;
+            font-size: 0.85em;
+            white-space: nowrap;
+        }
+
+        .timing-table td.desc-cell {
+            color: #475569;
+            font-size: 0.88em;
+            max-width: 260px;
+        }
+
+        .timing-table .category-divider td {
+            background: #f1f5f9;
+            font-weight: 700;
+            color: #475569;
+            font-size: 0.9em;
+            padding: 12px 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .timing-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.82em;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Timing dimension */
+        .timing-setup      { background: #ede9fe; color: #6d28d9; }
+        .timing-gate        { background: #fef3c7; color: #92400e; }
+        .timing-feature     { background: #dbeafe; color: #1e40af; }
+        .timing-session     { background: #ccfbf1; color: #0f766e; }
+        .timing-task        { background: #fef3c7; color: #b45309; }
+        .timing-demand      { background: #f1f5f9; color: #475569; }
+
+        /* Trigger dimension */
+        .trigger-human      { background: #dcfce7; color: #166534; }
+        .trigger-agent      { background: #e0e7ff; color: #3730a3; }
+        .trigger-gate       { background: #fee2e2; color: #991b1b; }
+        .trigger-hook       { background: #f3f4f6; color: #374151; }
+        .trigger-both       { background: linear-gradient(135deg, #dcfce7 50%, #e0e7ff 50%); color: #1e40af; }
+
+        /* Mode dimension */
+        .mode-context       { background: #cffafe; color: #155e75; }
+        .mode-decision      { background: #f3e8ff; color: #6b21a8; }
+        .mode-verify        { background: #fce7f3; color: #9d174d; }
+        .mode-execute       { background: #dcfce7; color: #166534; }
+        .mode-handoff       { background: #fef9c3; color: #854d0e; }
+        .mode-orchestrate   { background: #1e293b; color: #f1f5f9; }
+        .mode-system        { background: #f3f4f6; color: #374151; }
+        .mode-present       { background: #fae8ff; color: #86198f; }
+
+        /* Necessity dimension */
+        .necessity-mandatory  { background: #1e293b; color: #f1f5f9; }
+        .necessity-conditional { background: #f1f5f9; color: #64748b; border: 1px dashed #94a3b8; }
+
+        .timing-legend {
+            display: flex;
+            gap: 30px;
+            margin: 15px 0 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .timing-legend-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .timing-legend-group h4 {
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+
+        .timing-legend-items {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
         /* Footer */
         footer {
             background: #1e293b;
@@ -404,14 +618,14 @@
 <body>
     <div class="container">
         <header>
-            <h1>⚡ Shipkit <span style="font-size: 0.5em; opacity: 0.8;">{{SHIPKIT_VERSION}}</span></h1>
+            <h1>&#x1F680; Shipkit <span style="font-size: 0.5em; opacity: 0.8;">{{SHIPKIT_VERSION}}</span></h1>
             <div class="stats">
                 <div class="stat">
                     <!-- sync:html_skill_count --><span class="stat-number">37</span><!-- /sync:html_skill_count -->
                     <span class="stat-label">Skills</span>
                 </div>
                 <div class="stat">
-                    <!-- sync:html_agent_count --><span class="stat-number">11</span><!-- /sync:html_agent_count -->
+                    <!-- sync:html_agent_count --><span class="stat-number">12</span><!-- /sync:html_agent_count -->
                     <span class="stat-label">Agents</span>
                 </div>
                 <div class="stat">
@@ -422,57 +636,44 @@
         </header>
 
         <div class="tabs">
-            <button class="tab active" onclick="showTab('cheatsheet')">📋 Cheat Sheet</button>
-            <button class="tab" onclick="showTab('skills')">🛠️ All Skills</button>
-            <button class="tab" onclick="showTab('principles')">📐 Principles</button>
-            <button class="tab" onclick="showTab('workflow')">🔄 Workflow</button>
+            <button class="tab active" onclick="showTab('cheatsheet')">&#x1F4CB; Cheat Sheet</button>
+            <button class="tab" onclick="showTab('timing')">&#x23F1;&#xFE0F; Skill Timing</button>
+            <button class="tab" onclick="showTab('matrix')">&#x1F500; Agent &times; Skill Matrix</button>
+            <button class="tab" onclick="showTab('principles')">&#x1F4D0; Principles</button>
+            <button class="tab" onclick="showTab('workflow')">&#x1F504; Workflow</button>
         </div>
 
         <!-- CHEAT SHEET TAB -->
         <div id="cheatsheet" class="tab-content active">
             <div class="quick-ref">
-                <h2>🎯 Quick Decision Guide</h2>
+                <h2>&#x1F3AF; Quick Decision Guide</h2>
                 <div class="quick-ref-grid">
                     <div class="quick-ref-item">
-                        <div class="icon">🚀</div>
+                        <div class="icon">&#x1F680;</div>
                         <div class="text">
                             <div class="when">Starting a project?</div>
-                            <div class="skill-name">/shipkit-why-project → /shipkit-project-context</div>
+                            <div class="skill-name">/shipkit-why-project &rarr; /shipkit-project-context</div>
                         </div>
                     </div>
                     <div class="quick-ref-item">
-                        <div class="icon">💡</div>
+                        <div class="icon">&#x1F4A1;</div>
                         <div class="text">
                             <div class="when">Have a feature idea?</div>
-                            <div class="skill-name">/shipkit-spec → /shipkit-plan</div>
+                            <div class="skill-name">/shipkit-spec &rarr; /shipkit-plan</div>
                         </div>
                     </div>
                     <div class="quick-ref-item">
-                        <div class="icon">🗺️</div>
+                        <div class="icon">&#x1F5FA;&#xFE0F;</div>
                         <div class="text">
-                            <div class="when">Design what & how to build?</div>
-                            <div class="skill-name">/shipkit-product-definition → /shipkit-engineering-definition</div>
+                            <div class="when">Design what &amp; how to build?</div>
+                            <div class="skill-name">/shipkit-product-definition &rarr; /shipkit-engineering-definition</div>
                         </div>
                     </div>
                     <div class="quick-ref-item">
-                        <div class="icon">📝</div>
-                        <div class="text">
-                            <div class="when">Made a tech decision?</div>
-                            <div class="skill-name">/shipkit-architecture-memory</div>
-                        </div>
-                    </div>
-                    <div class="quick-ref-item">
-                        <div class="icon">🔚</div>
+                        <div class="icon">&#x1F51A;</div>
                         <div class="text">
                             <div class="when">Ending/checkpointing?</div>
                             <div class="skill-name">/shipkit-work-memory</div>
-                        </div>
-                    </div>
-                    <div class="quick-ref-item">
-                        <div class="icon">❓</div>
-                        <div class="text">
-                            <div class="when">What's the project status?</div>
-                            <div class="skill-name">/shipkit-project-status</div>
                         </div>
                     </div>
                 </div>
@@ -480,37 +681,196 @@
 
             <div class="cheat-sheet">
                 <div class="cheat-section">
-                    <h3>🎯 Vision & Discovery</h3>
+                    <h3>&#x1F3AF; Discovery &amp; Definition</h3>
                     <table class="cheat-table">
-                        <tr>
+                        <tbody><tr>
                             <th style="width:40%">When you want to...</th>
                             <th style="width:25%">Use</th>
                             <th style="width:35%">Creates</th>
                         </tr>
                         <tr>
-                            <td class="trigger">Define project vision & goals</td>
+                            <td class="trigger">Define project vision &amp; purpose</td>
                             <td><span class="skill">/shipkit-why-project</span></td>
                             <td class="creates">why.json</td>
                         </tr>
                         <tr>
-                            <td class="trigger">Define personas, journeys, user needs</td>
+                            <td class="trigger">Understand target users</td>
                             <td><span class="skill">/shipkit-product-discovery</span></td>
                             <td class="creates">product-discovery.json</td>
                         </tr>
                         <tr>
-                            <td class="trigger">Design solution blueprint</td>
+                            <td class="trigger">Design product blueprint</td>
                             <td><span class="skill">/shipkit-product-definition</span></td>
                             <td class="creates">product-definition.json</td>
                         </tr>
                         <tr>
-                            <td class="trigger">Define success criteria & stage gates</td>
-                            <td><span class="skill">/shipkit-goals</span></td>
-                            <td class="creates">goals.json</td>
+                            <td class="trigger">Design engineering blueprint</td>
+                            <td><span class="skill">/shipkit-engineering-definition</span></td>
+                            <td class="creates">engineering-definition.json</td>
                         </tr>
                         <tr>
-                            <td class="trigger">Scan codebase, detect stack</td>
+                            <td class="trigger">Set project stage &amp; constraints</td>
+                            <td><span class="skill">/shipkit-stage</span></td>
+                            <td class="creates">goals/strategic.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Set product success criteria</td>
+                            <td><span class="skill">/shipkit-product-goals</span></td>
+                            <td class="creates">goals/product.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Set engineering performance criteria</td>
+                            <td><span class="skill">/shipkit-engineering-goals</span></td>
+                            <td class="creates">goals/engineering.json</td>
+                        </tr>
+                    </tbody></table>
+                </div>
+
+                <div class="cheat-section" style="border-left-color: #1e293b;">
+                    <h3 style="color: #1e293b;">&#x1F504; Orchestration</h3>
+                    <table class="cheat-table">
+                        <tbody><tr>
+                            <th style="width:40%">When you want to...</th>
+                            <th style="width:25%">Use</th>
+                            <th style="width:35%">Creates</th>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Run full direction loop</td>
+                            <td><span class="skill">/shipkit-orch-direction</span></td>
+                            <td class="creates">direction-assessment.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Run full planning loop</td>
+                            <td><span class="skill">/shipkit-orch-planning</span></td>
+                            <td class="creates">planning-assessment.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Run full shipping loop</td>
+                            <td><span class="skill">/shipkit-orch-shipping</span></td>
+                            <td class="creates">verification-report.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Review strategic coherence</td>
+                            <td><span class="skill">/shipkit-review-direction</span></td>
+                            <td class="creates">direction-assessment.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Review planning alignment</td>
+                            <td><span class="skill">/shipkit-review-planning</span></td>
+                            <td class="creates">planning-assessment.json</td>
+                        </tr>
+                    </tbody></table>
+                </div>
+
+                <div class="cheat-section">
+                    <h3>&#x1F4CB; Spec, Plan &amp; Execute</h3>
+                    <table class="cheat-table">
+                        <tbody><tr>
+                            <th style="width:40%">When you want to...</th>
+                            <th style="width:25%">Use</th>
+                            <th style="width:35%">Creates</th>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Prioritize which specs to write</td>
+                            <td><span class="skill">/shipkit-spec-roadmap</span></td>
+                            <td class="creates">spec-roadmap.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Create feature specification</td>
+                            <td><span class="skill">/shipkit-spec</span></td>
+                            <td class="creates">specs/active/feature-*.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Investigate bug or feedback</td>
+                            <td><span class="skill">/shipkit-feedback-bug</span></td>
+                            <td class="creates">specs/active/bug-*.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Plan implementation tasks</td>
+                            <td><span class="skill">/shipkit-plan</span></td>
+                            <td class="creates">plans/active/*.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Create agent team from plan</td>
+                            <td><span class="skill">/shipkit-team</span></td>
+                            <td class="creates">Team + tasks</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Think through a decision</td>
+                            <td><span class="skill">/shipkit-thinking-partner</span></td>
+                            <td class="creates">Discussion (no files)</td>
+                        </tr>
+                    </tbody></table>
+                </div>
+
+                <div class="cheat-section">
+                    <h3>&#x2705; Quality &amp; Verification</h3>
+                    <table class="cheat-table">
+                        <tbody><tr>
+                            <th style="width:40%">When you want to...</th>
+                            <th style="width:25%">Use</th>
+                            <th style="width:35%">Creates</th>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Verify work against spec</td>
+                            <td><span class="skill">/shipkit-verify</span></td>
+                            <td class="creates">Report (ephemeral)</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Production readiness audit</td>
+                            <td><span class="skill">/shipkit-preflight</span></td>
+                            <td class="creates">preflight.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Generate test case specs</td>
+                            <td><span class="skill">/shipkit-test-cases</span></td>
+                            <td class="creates">test-cases/*.md</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Audit UX patterns</td>
+                            <td><span class="skill">/shipkit-ux-audit</span></td>
+                            <td class="creates">ux-decisions.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Semantic QA (API/UI)</td>
+                            <td><span class="skill">/shipkit-semantic-qa</span></td>
+                            <td class="creates">Report (ephemeral)</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Visual QA with Playwright</td>
+                            <td><span class="skill">/shipkit-qa-visual</span></td>
+                            <td class="creates">Playwright tests</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Scale &amp; enterprise readiness</td>
+                            <td><span class="skill">/shipkit-scale-ready</span></td>
+                            <td class="creates">scale-readiness.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Audit LLM prompt architecture</td>
+                            <td><span class="skill">/shipkit-prompt-audit</span></td>
+                            <td class="creates">prompt-audit.json</td>
+                        </tr>
+                    </tbody></table>
+                </div>
+
+                <div class="cheat-section">
+                    <h3>&#x1F9E0; Context &amp; Memory</h3>
+                    <table class="cheat-table">
+                        <tbody><tr>
+                            <th style="width:40%">When you want to...</th>
+                            <th style="width:25%">Use</th>
+                            <th style="width:35%">Creates</th>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Save session progress</td>
+                            <td><span class="skill">/shipkit-work-memory</span></td>
+                            <td class="creates">progress.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Scan codebase &amp; detect stack</td>
                             <td><span class="skill">/shipkit-project-context</span></td>
-                            <td class="creates">stack.json, schema.md</td>
+                            <td class="creates">stack.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Index codebase for navigation</td>
@@ -523,170 +883,21 @@
                             <td class="creates">Appends to CLAUDE.md</td>
                         </tr>
                         <tr>
-                            <td class="trigger">Check project health & gaps</td>
-                            <td><span class="skill">/shipkit-project-status</span></td>
-                            <td class="creates">Status report (terminal)</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="cheat-section">
-                    <h3>📋 Specification & Planning</h3>
-                    <table class="cheat-table">
-                        <tr>
-                            <th style="width:40%">When you want to...</th>
-                            <th style="width:25%">Use</th>
-                            <th style="width:35%">Creates</th>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Create Given/When/Then spec</td>
-                            <td><span class="skill">/shipkit-spec</span></td>
-                            <td class="creates">specs/active/feature-[name].json</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Process feedback into investigated bug specs</td>
-                            <td><span class="skill">/shipkit-feedback-bug</span></td>
-                            <td class="creates">specs/active/bug-[name].json</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Plan implementation steps</td>
-                            <td><span class="skill">/shipkit-plan</span></td>
-                            <td class="creates">plans/active/[name].json</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Think through a decision</td>
-                            <td><span class="skill">/shipkit-thinking-partner</span></td>
-                            <td class="creates">Discussion (no files)</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="cheat-section">
-                    <h3>🧠 Knowledge & Memory</h3>
-                    <table class="cheat-table">
-                        <tr>
-                            <th style="width:40%">When you want to...</th>
-                            <th style="width:25%">Use</th>
-                            <th style="width:35%">Creates</th>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Log an architecture decision</td>
-                            <td><span class="skill">/shipkit-architecture-memory</span></td>
-                            <td class="creates">architecture.json (append)</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Define data contracts/types</td>
-                            <td><span class="skill">/shipkit-data-contracts</span></td>
-                            <td class="creates">contracts.json</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Fetch integration patterns</td>
-                            <td><span class="skill">/shipkit-integration-docs</span></td>
-                            <td class="creates">integrations/[service].md</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="cheat-section">
-                    <h3>✅ Quality & Communication</h3>
-                    <table class="cheat-table">
-                        <tr>
-                            <th style="width:40%">When you want to...</th>
-                            <th style="width:25%">Use</th>
-                            <th style="width:35%">Creates</th>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Verify work before commit</td>
-                            <td><span class="skill">/shipkit-verify</span></td>
-                            <td class="creates">Report (ephemeral)</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">MVP production readiness</td>
-                            <td><span class="skill">/shipkit-preflight</span></td>
-                            <td class="creates">preflight.json</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Scale & enterprise readiness</td>
-                            <td><span class="skill">/shipkit-scale-ready</span></td>
-                            <td class="creates">scale-readiness.json</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Audit LLM prompt architecture</td>
-                            <td><span class="skill">/shipkit-prompt-audit</span></td>
-                            <td class="creates">prompt-audit.json</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Audit UX patterns</td>
-                            <td><span class="skill">/shipkit-ux-audit</span></td>
-                            <td class="creates">ux-decisions.json</td>
-                        </tr>
-                        <tr>
                             <td class="trigger">Track manual tasks for user</td>
                             <td><span class="skill">/shipkit-user-instructions</span></td>
-                            <td class="creates">user-tasks/active.md</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Log progress + save resume state</td>
-                            <td><span class="skill">/shipkit-work-memory</span></td>
-                            <td class="creates">progress.json (resume + log)</td>
+                            <td class="creates">user-instructions.md</td>
                         </tr>
                         <tr>
                             <td class="trigger">Create visual HTML report</td>
                             <td><span class="skill">/shipkit-communications</span></td>
                             <td class="creates">.shipkit-comms/latest.html</td>
                         </tr>
-                    </table>
-                </div>
-
-                <div class="cheat-section">
-                    <h3>🔄 Execution</h3>
-                    <table class="cheat-table">
-                        <tr>
-                            <th style="width:40%">When you want to...</th>
-                            <th style="width:25%">Use</th>
-                            <th style="width:35%">Creates</th>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Generate test case specs</td>
-                            <td><span class="skill">/shipkit-test-cases</span></td>
-                            <td class="creates">test-cases/*.md</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Build until compiles</td>
-                            <td><span class="skill">/shipkit-build-relentlessly</span></td>
-                            <td class="creates">Build output</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Test until green</td>
-                            <td><span class="skill">/shipkit-test-relentlessly</span></td>
-                            <td class="creates">Test output</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Lint until clean</td>
-                            <td><span class="skill">/shipkit-lint-relentlessly</span></td>
-                            <td class="creates">Lint output</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Parallel implementation in worktree</td>
-                            <td><span class="skill">/shipkit-implement-independently</span></td>
-                            <td class="creates">PR + worktree</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Create agent team from plan</td>
-                            <td><span class="skill">/shipkit-team</span></td>
-                            <td class="creates">Team + tasks</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Clean up stale worktrees</td>
-                            <td><span class="skill">/shipkit-cleanup-worktrees</span></td>
-                            <td class="creates">Cleanup</td>
-                        </tr>
-                    </table>
+                    </tbody></table>
                 </div>
             </div>
 
             <div class="natural-caps">
-                <h3>🚫 Don't Need a Skill (Just Do It)</h3>
+                <h3>&#x1F6AB; Don't Need a Skill (Just Do It)</h3>
                 <div class="natural-caps-grid">
                     <span class="natural-cap">Implement features</span>
                     <span class="natural-cap">Debug errors</span>
@@ -700,101 +911,757 @@
             </div>
         </div>
 
-        <!-- ALL SKILLS TAB -->
-        <div id="skills" class="tab-content">
-            <h2 class="section-header">All 37 Skills by Category</h2>
+        <!-- SKILL TIMING TAB -->
+        <div id="timing" class="tab-content">
+            <h2 class="section-header">Skill Timing &mdash; When, Why, and How Each Skill Fires</h2>
 
-            <div class="skill-groups">
-                <div class="skill-group">
-                    <h3>🎯 Vision & Discovery</h3>
-                    <ul class="skill-list">
-                        <li><span class="name">/shipkit-why-project</span> <span class="desc">— Define project vision, strategic direction, and goals. Captures the "why" before building.</span></li>
-                        <li><span class="name">/shipkit-project-context</span> <span class="desc">— Auto-scan codebase to detect tech stack, frameworks, and patterns. Creates stack.json.</span></li>
-                        <li><span class="name">/shipkit-codebase-index</span> <span class="desc">— Generate navigation index for faster file discovery. Creates codebase-index.json.</span></li>
-                        <li><span class="name">/shipkit-claude-md</span> <span class="desc">— Append learnings, preferences, or project patterns to CLAUDE.md for persistence.</span></li>
-                        <li><span class="name">/shipkit-product-discovery</span> <span class="desc">— Define user personas, journeys, and needs. Captures who you're building for and what they need.</span></li>
-                        <li><span class="name">/shipkit-product-definition</span> <span class="desc">— Define what to build: features, UX patterns, and differentiators. The product blueprint.</span></li>
-                        <li><span class="name">/shipkit-engineering-definition</span> <span class="desc">— Design how to build it: mechanisms, components, design decisions, and stack direction.</span></li>
-                        <li><span class="name">/shipkit-goals</span> <span class="desc">— Derive measurable success criteria from product + engineering blueprints. Stage gates that verify the solution works.</span></li>
-                        <li><span class="name">/shipkit-project-status</span> <span class="desc">— Health check: scans specs, plans, progress to show what's done and pending.</span></li>
-                    </ul>
+            <div class="timing-legend">
+                <div class="timing-legend-group">
+                    <h4>Timing</h4>
+                    <div class="timing-legend-items">
+                        <span class="timing-pill timing-setup">setup</span>
+                        <span class="timing-pill timing-gate">setup+gate</span>
+                        <span class="timing-pill timing-feature">per-feature</span>
+                        <span class="timing-pill timing-session">per-session</span>
+                        <span class="timing-pill timing-task">per-task</span>
+                        <span class="timing-pill timing-demand">on-demand</span>
+                    </div>
                 </div>
+                <div class="timing-legend-group">
+                    <h4>Trigger</h4>
+                    <div class="timing-legend-items">
+                        <span class="timing-pill trigger-human">human</span>
+                        <span class="timing-pill trigger-agent">agent</span>
+                        <span class="timing-pill trigger-gate">gate</span>
+                        <span class="timing-pill trigger-hook">hook</span>
+                    </div>
+                </div>
+                <div class="timing-legend-group">
+                    <h4>Mode</h4>
+                    <div class="timing-legend-items">
+                        <span class="timing-pill mode-orchestrate">orchestrate</span>
+                        <span class="timing-pill mode-decision">decision-forcing</span>
+                        <span class="timing-pill mode-context">context-capture</span>
+                        <span class="timing-pill mode-execute">execution</span>
+                        <span class="timing-pill mode-verify">verification</span>
+                        <span class="timing-pill mode-handoff">handoff</span>
+                        <span class="timing-pill mode-present">presentation</span>
+                        <span class="timing-pill mode-system">system</span>
+                    </div>
+                </div>
+                <div class="timing-legend-group">
+                    <h4>Necessity</h4>
+                    <div class="timing-legend-items">
+                        <span class="timing-pill necessity-mandatory">mandatory</span>
+                        <span class="timing-pill necessity-conditional">conditional</span>
+                    </div>
+                </div>
+            </div>
 
-                <div class="skill-group">
-                    <h3>📋 Spec & Planning</h3>
-                    <ul class="skill-list">
-                        <li><span class="name">/shipkit-spec</span> <span class="desc">— Create Given/When/Then specifications with acceptance criteria. Defines what to build.</span></li>
-                        <li><span class="name">/shipkit-feedback-bug</span> <span class="desc">— Process feedback into fully investigated bug specs with 5 Whys root cause analysis and blast radius.</span></li>
-                        <li><span class="name">/shipkit-plan</span> <span class="desc">— Generate implementation plan from spec. Breaks features into ordered, actionable steps.</span></li>
-                        <li><span class="name">/shipkit-thinking-partner</span> <span class="desc">— Think through decisions with cognitive frameworks. Discussion-only mode for structured analysis.</span></li>
-                    </ul>
-                </div>
+            <table class="timing-table">
+                <thead>
+                    <tr>
+                        <th>Skill</th>
+                        <th>Phase</th>
+                        <th>Timing</th>
+                        <th>Trigger</th>
+                        <th>Mode</th>
+                        <th>Necessity</th>
+                        <th>What it does</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Core Orchestration -->
+                    <tr class="category-divider"><td colspan="7">Core Orchestration (27 skills)</td></tr>
 
-                <div class="skill-group">
-                    <h3>🧠 Knowledge & Memory</h3>
-                    <ul class="skill-list">
-                        <li><span class="name">/shipkit-architecture-memory</span> <span class="desc">— Log architectural decisions with rationale. Creates searchable decision history.</span></li>
-                        <li><span class="name">/shipkit-data-contracts</span> <span class="desc">— Validate data shapes across API boundaries. Check type alignment between layers.</span></li>
-                        <li><span class="name">/shipkit-integration-docs</span> <span class="desc">— Fetch current API patterns for external services (Stripe, Supabase, etc).</span></li>
-                    </ul>
-                </div>
+                    <tr>
+                        <td class="skill-cell">shipkit-master</td>
+                        <td class="phase-cell">0</td>
+                        <td><span class="timing-pill timing-session">per-session</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-orchestrate">orchestrate</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Read goals, identify gaps, dispatch agents, re-assess. The outermost loop.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-vision</td>
+                        <td class="phase-cell">1</td>
+                        <td><span class="timing-pill timing-setup">setup</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-orchestrate">orchestrate</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Gateway skill &mdash; loads Visionary agent. Master dispatches when strategic gaps detected.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-orch-direction</td>
+                        <td class="phase-cell">1</td>
+                        <td><span class="timing-pill timing-session">per-session</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-orchestrate">orchestrate</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Direction loop &mdash; dispatches strategic skills + coherence review cycle.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-orch-planning</td>
+                        <td class="phase-cell">2-7</td>
+                        <td><span class="timing-pill timing-session">per-session</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-orchestrate">orchestrate</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Planning loop &mdash; dispatches definition/spec skills + alignment review.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-orch-shipping</td>
+                        <td class="phase-cell">8-10</td>
+                        <td><span class="timing-pill timing-session">per-session</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-orchestrate">orchestrate</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Shipping loop &mdash; dispatches implementation + verification + release gate.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-review-direction</td>
+                        <td class="phase-cell">1</td>
+                        <td><span class="timing-pill timing-task">per-task</span></td>
+                        <td><span class="timing-pill trigger-gate">gate</span></td>
+                        <td><span class="timing-pill mode-verify">verification</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Assess strategic artifact coherence (vision, why, goals, stage).</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-review-planning</td>
+                        <td class="phase-cell">2-7</td>
+                        <td><span class="timing-pill timing-task">per-task</span></td>
+                        <td><span class="timing-pill trigger-gate">gate</span></td>
+                        <td><span class="timing-pill mode-verify">verification</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Assess planning artifact alignment (definitions, specs, roadmap).</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-why-project</td>
+                        <td class="phase-cell">1</td>
+                        <td><span class="timing-pill timing-gate">setup+gate</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Set vision, stage, strategic constraints. Requires human confirmation of direction.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-product-discovery</td>
+                        <td class="phase-cell">2</td>
+                        <td><span class="timing-pill timing-gate">setup+gate</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Define personas, journeys, pain points. Human confirms who we're building for.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-product-definition</td>
+                        <td class="phase-cell">3</td>
+                        <td><span class="timing-pill timing-gate">setup+gate</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Define features, UX, differentiators. The product blueprint &mdash; highest fan-out artifact.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-engineering-definition</td>
+                        <td class="phase-cell">4</td>
+                        <td><span class="timing-pill timing-gate">setup+gate</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-context">context-capture</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Design mechanisms, components, data contracts. Re-run at evolution gates to recapture state.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-stage</td>
+                        <td class="phase-cell">5</td>
+                        <td><span class="timing-pill timing-gate">setup+gate</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Set project stage, constraints, business metrics (S-*). Creates stage gates framework.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-product-goals</td>
+                        <td class="phase-cell">5a</td>
+                        <td><span class="timing-pill timing-gate">setup+gate</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Derive user-outcome criteria (P-*). Appends to stage gates.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-engineering-goals</td>
+                        <td class="phase-cell">5b</td>
+                        <td><span class="timing-pill timing-gate">setup+gate</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Derive technical performance criteria. Appends E-* criteria to PM's stage gates.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-spec-roadmap</td>
+                        <td class="phase-cell">6</td>
+                        <td><span class="timing-pill timing-feature">per-feature</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Score and prioritize spec backlog. Re-run with --update after each spec is written.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-spec</td>
+                        <td class="phase-cell">7</td>
+                        <td><span class="timing-pill timing-feature">per-feature</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Write Given/When/Then specs with acceptance criteria. One per feature in priority order.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-feedback-bug</td>
+                        <td class="phase-cell">&mdash;</td>
+                        <td><span class="timing-pill timing-demand">on-demand</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td><span class="timing-pill necessity-conditional">conditional</span></td>
+                        <td class="desc-cell">Process user feedback into bug specs with 5 Whys root cause. Re-enters the spec pipeline.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-plan</td>
+                        <td class="phase-cell">8</td>
+                        <td><span class="timing-pill timing-feature">per-feature</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-context">context-capture</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Break spec into ordered implementation steps with file ownership and dependencies.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-test-cases</td>
+                        <td class="phase-cell">8&ndash;9</td>
+                        <td><span class="timing-pill timing-feature">per-feature</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-context">context-capture</span></td>
+                        <td><span class="timing-pill necessity-conditional">conditional</span></td>
+                        <td class="desc-cell">Generate code-anchored test case specs before implementation. Architect-owned.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-team</td>
+                        <td class="phase-cell">9</td>
+                        <td><span class="timing-pill timing-feature">per-feature</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-execute">execution</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Create agent team from plan. Parallel implementers + reviewer with quality gate hooks.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-verify</td>
+                        <td class="phase-cell">10</td>
+                        <td><span class="timing-pill timing-task">per-task</span></td>
+                        <td><span class="timing-pill trigger-gate">gate</span></td>
+                        <td><span class="timing-pill mode-verify">verification</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Check implementation against specs and goals. Writes criterion statuses back to goal files.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-preflight</td>
+                        <td class="phase-cell">10</td>
+                        <td><span class="timing-pill timing-task">per-task</span></td>
+                        <td><span class="timing-pill trigger-gate">gate</span></td>
+                        <td><span class="timing-pill mode-verify">verification</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Production readiness audit. Must pass before release or code merge.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-ux-audit</td>
+                        <td class="phase-cell">10</td>
+                        <td><span class="timing-pill timing-task">per-task</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-verify">verification</span></td>
+                        <td><span class="timing-pill necessity-conditional">conditional</span></td>
+                        <td class="desc-cell">Audit UI for loading states, errors, empty states, accessibility. PM's verification tool.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-semantic-qa</td>
+                        <td class="phase-cell">10</td>
+                        <td><span class="timing-pill timing-task">per-task</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-verify">verification</span></td>
+                        <td><span class="timing-pill necessity-conditional">conditional</span></td>
+                        <td class="desc-cell">Define criteria, run test scripts, Claude judges API outputs. Content quality check.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-qa-visual</td>
+                        <td class="phase-cell">10</td>
+                        <td><span class="timing-pill timing-task">per-task</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-verify">verification</span></td>
+                        <td><span class="timing-pill necessity-conditional">conditional</span></td>
+                        <td class="desc-cell">Visual QA with Playwright screenshots. UI goals &times; personas validation.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-scale-ready</td>
+                        <td class="phase-cell">10</td>
+                        <td><span class="timing-pill timing-feature">per-feature</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-verify">verification</span></td>
+                        <td><span class="timing-pill necessity-conditional">conditional</span></td>
+                        <td class="desc-cell">Scale-stage readiness: observability, performance, reliability, operations. Architect-owned.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-prompt-audit</td>
+                        <td class="phase-cell">10</td>
+                        <td><span class="timing-pill timing-feature">per-feature</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-verify">verification</span></td>
+                        <td><span class="timing-pill necessity-conditional">conditional</span></td>
+                        <td class="desc-cell">Audit LLM prompt pipelines: decomposition, parallelization, schema validation. Architect-owned.</td>
+                    </tr>
 
-                <div class="skill-group">
-                    <h3>🔄 Execution</h3>
-                    <ul class="skill-list">
-                        <li><span class="name">/shipkit-test-cases</span> <span class="desc">— Generate code-anchored test case specs with staleness detection. Feeds test-relentlessly.</span></li>
-                        <li><span class="name">/shipkit-build-relentlessly</span> <span class="desc">— Build/compile until success. Loops until no errors.</span></li>
-                        <li><span class="name">/shipkit-test-relentlessly</span> <span class="desc">— Run tests until all pass. Uses test-cases for change-aware execution.</span></li>
-                        <li><span class="name">/shipkit-lint-relentlessly</span> <span class="desc">— Lint until clean. Loops until no lint errors.</span></li>
-                        <li><span class="name">/shipkit-implement-independently</span> <span class="desc">— Spawn parallel implementation in isolated git worktree. Creates PR for merge.</span></li>
-                        <li><span class="name">/shipkit-team</span> <span class="desc">— Create agent team from implementation plan. Parallel build with quality gate hooks.</span></li>
-                        <li><span class="name">/shipkit-cleanup-worktrees</span> <span class="desc">— Review and clean up stale implementation worktrees. Shows PR status and age.</span></li>
-                    </ul>
-                </div>
+                    <!-- Memory & Context -->
+                    <tr class="category-divider"><td colspan="7">Memory &amp; Context (3 skills)</td></tr>
 
-                <div class="skill-group">
-                    <h3>✅ Quality & Comms</h3>
-                    <ul class="skill-list">
-                        <li><span class="name">/shipkit-verify</span> <span class="desc">— Review changes across 12 quality dimensions. Reports issues by priority before commit.</span></li>
-                        <li><span class="name">/shipkit-preflight</span> <span class="desc">— MVP production readiness audit: auth, security, UX, payments, legal checklist.</span></li>
-                        <li><span class="name">/shipkit-scale-ready</span> <span class="desc">— Scale & enterprise audit: observability, performance, reliability, operations.</span></li>
-                        <li><span class="name">/shipkit-prompt-audit</span> <span class="desc">— Audit LLM prompt pipeline architecture: decomposition, parallelization, schema validation, fallback paths.</span></li>
-                        <li><span class="name">/shipkit-ux-audit</span> <span class="desc">— Audit UI for missing UX patterns: loading states, errors, empty states, accessibility.</span></li>
-                        <li><span class="name">/shipkit-user-instructions</span> <span class="desc">— Track manual tasks user must complete outside Claude (env vars, DNS, accounts).</span></li>
-                        <li><span class="name">/shipkit-work-memory</span> <span class="desc">— Log session progress and save resume state. Enables seamless session handoffs.</span></li>
-                        <li><span class="name">/shipkit-communications</span> <span class="desc">— Generate visual HTML reports from shipkit content for presentations and sharing.</span></li>
-                        <li><span class="name">/shipkit-semantic-qa</span> <span class="desc">— Semantic QA: define criteria, run test scripts, Claude judges API outputs or UI screenshots.</span></li>
-                        <li><span class="name">/shipkit-qa-visual</span> <span class="desc">— Visual QA: maintain UI goals (pages × personas), generate Playwright tests, run headlessly, capture screenshots.</span></li>
-                    </ul>
-                </div>
+                    <tr>
+                        <td class="skill-cell">shipkit-project-context</td>
+                        <td class="phase-cell">0</td>
+                        <td><span class="timing-pill timing-setup">setup</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-context">context-capture</span></td>
+                        <td><span class="timing-pill necessity-conditional">conditional</span></td>
+                        <td class="desc-cell">Scan package.json, configs, CLIs &rarr; stack.json. Cached for multi-agent efficiency.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-codebase-index</td>
+                        <td class="phase-cell">0</td>
+                        <td><span class="timing-pill timing-setup">setup</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-context">context-capture</span></td>
+                        <td><span class="timing-pill necessity-conditional">conditional</span></td>
+                        <td class="desc-cell">Map concepts &rarr; files, entry points, core files &rarr; codebase-index.json. Navigation cache.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-work-memory</td>
+                        <td class="phase-cell">0</td>
+                        <td><span class="timing-pill timing-session">per-session</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-handoff">handoff</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Save: infer milestones + resume point. Resume: load state for master and human. Session memory.</td>
+                    </tr>
 
-                <div class="skill-group">
-                    <h3>⚙️ System</h3>
-                    <ul class="skill-list">
-                        <li><span class="name">/shipkit-master</span> <span class="desc">— Session orchestrator: loads context at start, routes requests to appropriate skills.</span></li>
-                        <li><span class="name">/shipkit-update</span> <span class="desc">— Install or update Shipkit via npx. Archives existing install, merges user content.</span></li>
-                        <li><span class="name">/shipkit-get-skills</span> <span class="desc">— Search and install skills from skills.sh marketplace. Extend Claude capabilities.</span></li>
-                        <li><span class="name">/shipkit-get-mcps</span> <span class="desc">— Search and install MCP servers to add new tools and integrations.</span></li>
-                    </ul>
-                    <p style="font-size: 0.85em; color: #64748b; margin-top: 8px;">+ <code>shipkit-detect</code> (system hook infrastructure — auto-triggered, not user-invocable)</p>
-                </div>
+                    <!-- Specialist & Support -->
+                    <tr class="category-divider"><td colspan="7">Specialist &amp; Support (4 skills)</td></tr>
 
-                <div class="skill-group">
-                    <h3>🎭 Agent Personas</h3>
-                    <ul class="skill-list">
-                        <li><span class="name">shipkit-master</span> <span class="desc">— Goal-driven orchestrator. Checks 3 goal levels (strategic/product/engineering), spawns responsible agent.</span></li>
-                        <li><span class="name">shipkit-visionary</span> <span class="desc">— Strategic visionary. Sets project stage, vision, constraints, and business goals.</span></li>
-                        <li><span class="name">shipkit-product-owner</span> <span class="desc">— Product manager. Definitions, specs, feedback processing, and product QA.</span></li>
-                        <li><span class="name">shipkit-architect</span> <span class="desc">— Engineering manager. Architecture, plans, data contracts, and engineering QA.</span></li>
-                        <li><span class="name">shipkit-project-manager</span> <span class="desc">— Execution lead. Team coordination, verification, and shipping.</span></li>
-                        <li><span class="name">shipkit-ux-designer</span> <span class="desc">— UI/UX patterns agent for user experience and interface design.</span></li>
-                        <li><span class="name">shipkit-implementer</span> <span class="desc">— Implementation agent optimized for writing production code.</span></li>
-                        <li><span class="name">shipkit-implement-independently</span> <span class="desc">— Isolated parallel implementation agent for worktree-based development.</span></li>
-                        <li><span class="name">shipkit-reviewer</span> <span class="desc">— Code quality agent for reviews, security checks, and best practices.</span></li>
-                        <li><span class="name">shipkit-researcher</span> <span class="desc">— Research agent for investigating options, APIs, and technical solutions.</span></li>
-                        <li><span class="name">shipkit-thinking-partner</span> <span class="desc">— Cognitive thinking partner for decisions, trade-offs, and structured analysis.</span></li>
-                    </ul>
+                    <tr>
+                        <td class="skill-cell">shipkit-thinking-partner</td>
+                        <td class="phase-cell">&mdash;</td>
+                        <td><span class="timing-pill timing-demand">on-demand</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td></td>
+                        <td class="desc-cell">Structured analysis with cognitive frameworks (6 Hats, OODA). Discussion-only.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-claude-md</td>
+                        <td class="phase-cell">&mdash;</td>
+                        <td><span class="timing-pill timing-demand">on-demand</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-handoff">handoff</span></td>
+                        <td></td>
+                        <td class="desc-cell">Append learnings, preferences, project patterns to CLAUDE.md. Cross-session persistence.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-user-instructions</td>
+                        <td class="phase-cell">&mdash;</td>
+                        <td><span class="timing-pill timing-demand">on-demand</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-handoff">handoff</span></td>
+                        <td></td>
+                        <td class="desc-cell">Track tasks Claude can't do &mdash; Stripe setup, DNS, env config. Access gap bridge.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-communications</td>
+                        <td class="phase-cell">&mdash;</td>
+                        <td><span class="timing-pill timing-demand">on-demand</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-present">presentation</span></td>
+                        <td></td>
+                        <td class="desc-cell">Generate HTML diagrams, changelogs, release notes. Presentation gap bridge.</td>
+                    </tr>
+
+                    <!-- System Utilities -->
+                    <tr class="category-divider"><td colspan="7">System Utilities (3 skills)</td></tr>
+
+                    <tr>
+                        <td class="skill-cell">shipkit-update</td>
+                        <td class="phase-cell">&mdash;</td>
+                        <td><span class="timing-pill timing-demand">on-demand</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-system">system</span></td>
+                        <td></td>
+                        <td class="desc-cell">Install or update Shipkit via npx. Archives existing, merges user content.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-get-skills</td>
+                        <td class="phase-cell">&mdash;</td>
+                        <td><span class="timing-pill timing-demand">on-demand</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-system">system</span></td>
+                        <td></td>
+                        <td class="desc-cell">Search and install skills from skills.sh marketplace.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-get-mcps</td>
+                        <td class="phase-cell">&mdash;</td>
+                        <td><span class="timing-pill timing-demand">on-demand</span></td>
+                        <td><span class="timing-pill trigger-human">human</span></td>
+                        <td><span class="timing-pill mode-system">system</span></td>
+                        <td></td>
+                        <td class="desc-cell">Search and install MCP servers for new tool integrations.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- AGENT x SKILL MATRIX TAB -->
+        <div id="matrix" class="tab-content">
+            <h2 class="section-header">Agent &times; Skill Matrix</h2>
+            <p style="color: #64748b; margin-bottom: 10px;">Which agents have access to which skills. 12 agents in 3 groups: Orchestrators, Producer Workers, Judgment Workers.</p>
+
+            <div class="matrix-legend">
+                <div class="matrix-legend-item">
+                    <div class="swatch" style="color: #667eea; background: #eef2ff;">&#x25CF;</div>
+                    <span>Agent has this skill</span>
                 </div>
+                <div class="matrix-legend-item">
+                    <div class="swatch" style="color: #f59e0b; background: #fffbeb;">&#x25C6;</div>
+                    <span>Skill can spawn this agent</span>
+                </div>
+                <div class="matrix-legend-item">
+                    <div class="swatch" style="color: #059669; background: #ecfdf5;">&#x2713;</div>
+                    <span>Human can invoke directly</span>
+                </div>
+                <div class="matrix-legend-item">
+                    <div class="swatch" style="color: #94a3b8; background: #f8fafc;">~</div>
+                    <span>Automated only (not human-invocable)</span>
+                </div>
+            </div>
+
+            <div class="matrix-container">
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; min-width: 200px;">Skill</th>
+                            <!-- Orchestrators (4) -->
+                            <th class="agent-header" style="background: #334155;">Orch-Master</th>
+                            <th class="agent-header" style="background: #334155;">Orch-Direction</th>
+                            <th class="agent-header" style="background: #334155;">Orch-Planning</th>
+                            <th class="agent-header" style="background: #334155;">Orch-Shipping</th>
+                            <!-- Producer Workers (5) -->
+                            <th class="agent-header">Visionary</th>
+                            <th class="agent-header">Product Owner</th>
+                            <th class="agent-header">Architect</th>
+                            <th class="agent-header">Implementer</th>
+                            <th class="agent-header">Thinking Partner</th>
+                            <!-- Judgment Workers (3) -->
+                            <th class="agent-header" style="background: #7f1d1d;">Rev-Direction</th>
+                            <th class="agent-header" style="background: #7f1d1d;">Rev-Planning</th>
+                            <th class="agent-header" style="background: #7f1d1d;">Rev-Shipping</th>
+                            <!-- Human -->
+                            <th class="human-header">Human</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Core Orchestration -->
+                        <tr><td class="category-row" colspan="14">Core Orchestration (27)</td></tr>
+                        <tr>
+                            <th>shipkit-master</th>
+                            <td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-auto">~</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-orch-direction</th>
+                            <td class="mark-spawns">&#x25C6;</td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-auto">~</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-orch-planning</th>
+                            <td class="mark-spawns">&#x25C6;</td><td></td><td class="mark-has">&#x25CF;</td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-auto">~</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-orch-shipping</th>
+                            <td class="mark-spawns">&#x25C6;</td><td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-auto">~</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-vision</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td class="mark-has">&#x25CF;</td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-auto">~</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-why-project</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td class="mark-has">&#x25CF;</td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-product-discovery</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-product-definition</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-engineering-definition</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-stage</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td class="mark-has">&#x25CF;</td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-product-goals</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-engineering-goals</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-spec-roadmap</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-spec</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-feedback-bug</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-plan</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-test-cases</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td class="mark-has">&#x25CF;</td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-team</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td class="mark-has">&#x25CF;</td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-verify</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-preflight</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-review-direction</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td class="mark-auto">~</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-review-planning</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td>
+                            <td class="mark-auto">~</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-ux-audit</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-semantic-qa</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-qa-visual</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-scale-ready</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-prompt-audit</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+
+                        <!-- Memory & Context -->
+                        <tr><td class="category-row" colspan="14">Memory &amp; Context (3)</td></tr>
+                        <tr>
+                            <th>shipkit-project-context</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-codebase-index</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-work-memory</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+
+                        <!-- Specialist & Support -->
+                        <tr><td class="category-row" colspan="14">Specialist &amp; Support (4)</td></tr>
+                        <tr>
+                            <th>shipkit-thinking-partner</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-claude-md</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-user-instructions</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-communications</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+
+                        <!-- System Utilities -->
+                        <tr><td class="category-row" colspan="14">System Utilities (3)</td></tr>
+                        <tr>
+                            <th>shipkit-update</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-get-skills</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-get-mcps</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 20px; background: #f8fafc; padding: 20px; border-radius: 12px;">
+                <h3 style="color: #475569; margin-bottom: 12px;">Reading the Matrix</h3>
+                <ul style="color: #64748b; font-size: 0.9em; line-height: 2;">
+                    <li><strong>Read across a row</strong> &mdash; see which agents can use a given skill</li>
+                    <li><strong>Read down a column</strong> &mdash; see all skills available to a given agent</li>
+                    <li><strong style="color: #667eea;">&#x25CF; Has</strong> &mdash; the agent's persona includes this skill in its toolkit</li>
+                    <li><strong style="color: #f59e0b;">&#x25C6; Spawns</strong> &mdash; this skill creates an instance of that agent (e.g., master spawns direction/planning/shipping orchestrators)</li>
+                    <li><strong style="color: #059669;">&#x2713; Human</strong> &mdash; human can invoke directly via <code>/shipkit-*</code> slash command</li>
+                    <li><strong style="color: #94a3b8;">~ Auto</strong> &mdash; automated infrastructure, not designed for direct human invocation</li>
+                </ul>
+                <h4 style="color: #475569; margin: 16px 0 8px;">Agent Groups</h4>
+                <ul style="color: #64748b; font-size: 0.9em; line-height: 2;">
+                    <li><strong>Orchestrators (4)</strong> &mdash; Orch-Master, Orch-Direction, Orch-Planning, Orch-Shipping &mdash; coordinate and dispatch, never produce artifacts directly</li>
+                    <li><strong>Producer Workers (5)</strong> &mdash; Visionary, Product Owner, Architect, Implementer, Thinking Partner &mdash; create artifacts</li>
+                    <li><strong>Judgment Workers (3)</strong> &mdash; Rev-Direction, Rev-Planning, Rev-Shipping &mdash; assess coherence and quality</li>
+                </ul>
             </div>
         </div>
 
@@ -804,7 +1671,7 @@
 
             <div class="principles">
                 <div class="principle">
-                    <h3>1. MVP ≠ Low Quality</h3>
+                    <h3>1. MVP &#x2260; Low Quality</h3>
                     <p>Core paths bulletproof. Everything else minimal. Auth, payments, security are non-negotiable. Edge cases can wait.</p>
                 </div>
                 <div class="principle">
@@ -828,124 +1695,224 @@
                     <p>User ID on every table. Supabase RLS. Lemon Squeezy webhooks. Basic analytics from day 1. Multi-tenancy baked in.</p>
                 </div>
                 <div class="principle">
-                    <h3>7. Shipping > Perfecting</h3>
+                    <h3>7. Shipping &gt; Perfecting</h3>
                     <p>Launch with known limitations. Document them in progress.json. Real feedback beats hypothetical requirements.</p>
                 </div>
             </div>
 
             <div class="natural-caps" style="margin-top: 30px; background: #fef3c7;">
-                <h3 style="color: #92400e;">💡 The Skill Value Test</h3>
+                <h3 style="color: #92400e;">&#x1F4A1; The Skill Value Test</h3>
                 <p style="font-size: 1.1em; color: #78350f;">A skill is valuable if it: <strong>forces human decisions</strong> OR <strong>creates persistence Claude lacks</strong>.</p>
-                <p style="color: #92400e; margin-top: 10px;">If Claude can do it well without instruction (debug, implement, test) → just do it, no skill needed.</p>
+                <p style="color: #92400e; margin-top: 10px;">If Claude can do it well without instruction (debug, implement, test) &rarr; just do it, no skill needed.</p>
             </div>
         </div>
 
         <!-- WORKFLOW TAB -->
         <div id="workflow" class="tab-content">
-            <h2 class="section-header">Typical Development Flow</h2>
+            <h2 class="section-header">3-Loop Architecture</h2>
+            <p style="color: #64748b; margin-bottom: 16px;">Shipkit uses a 3-loop architecture. The Master sequencer dispatches each loop in order. Each loop runs its producer skills then a judgment review before handing off to the next loop.</p>
 
-            <div class="workflow-diagram">
+            <div class="workflow-diagram" style="border-left: 4px solid #94a3b8;">
+                <div style="font-size: 0.8em; color: #64748b; font-weight: 600; margin-bottom: 8px;">BOOTSTRAP (Master &mdash; optional, run if missing)</div>
+                <div class="workflow-steps">
+                    <div class="workflow-step" style="border-color: #94a3b8;">
+                        <div class="step-skill" style="color: #64748b;">/shipkit-project-context</div>
+                        <div class="step-desc">Detect stack</div>
+                    </div>
+                    <span class="workflow-arrow">+</span>
+                    <div class="workflow-step" style="border-color: #94a3b8;">
+                        <div class="step-skill" style="color: #64748b;">/shipkit-codebase-index</div>
+                        <div class="step-desc">Map codebase</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workflow-diagram" style="margin-top: 8px; border-left: 4px solid #f59e0b;">
+                <div style="font-size: 0.8em; color: #d97706; font-weight: 600; margin-bottom: 8px;">DIRECTION LOOP (Orch-Direction &rarr; Visionary + Rev-Direction)</div>
                 <div class="workflow-steps">
                     <div class="workflow-step">
                         <div class="step-skill">/shipkit-why-project</div>
-                        <div class="step-desc">Define vision</div>
+                        <div class="step-desc">Vision &amp; purpose</div>
                     </div>
-                    <span class="workflow-arrow">→</span>
+                    <span class="workflow-arrow">&rarr;</span>
                     <div class="workflow-step">
-                        <div class="step-skill">/shipkit-project-context</div>
-                        <div class="step-desc">Scan stack</div>
+                        <div class="step-skill">/shipkit-stage</div>
+                        <div class="step-desc">Stage &amp; gates</div>
                     </div>
-                    <span class="workflow-arrow">→</span>
+                    <span class="workflow-arrow">&rarr;</span>
                     <div class="workflow-step">
-                        <div class="step-skill">/shipkit-spec</div>
-                        <div class="step-desc">Define feature</div>
+                        <div class="step-skill">/shipkit-product-goals</div>
+                        <div class="step-desc">Product criteria</div>
                     </div>
-                    <span class="workflow-arrow">→</span>
+                    <span class="workflow-arrow">+</span>
+                    <div class="workflow-step">
+                        <div class="step-skill">/shipkit-engineering-goals</div>
+                        <div class="step-desc">Tech criteria</div>
+                    </div>
+                    <span class="workflow-arrow">&rarr;</span>
+                    <div class="workflow-step" style="border-color: #dc2626; border-width: 2px;">
+                        <div class="step-skill" style="color: #dc2626;">/shipkit-review-direction</div>
+                        <div class="step-desc">Coherence gate</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workflow-diagram" style="margin-top: 8px; border-left: 4px solid #667eea;">
+                <div style="font-size: 0.8em; color: #667eea; font-weight: 600; margin-bottom: 8px;">PLANNING LOOP (Orch-Planning &rarr; PO + Architect + Rev-Planning)</div>
+                <div class="workflow-steps">
+                    <div class="workflow-step" style="border-color: #ec4899;">
+                        <div class="step-skill" style="color: #db2777;">/shipkit-product-discovery</div>
+                        <div class="step-desc">Personas &amp; needs</div>
+                    </div>
+                    <span class="workflow-arrow">&rarr;</span>
+                    <div class="workflow-step" style="border-color: #ec4899;">
+                        <div class="step-skill" style="color: #db2777;">/shipkit-product-definition</div>
+                        <div class="step-desc">What to build</div>
+                    </div>
+                    <span class="workflow-arrow">&rarr;</span>
+                    <div class="workflow-step" style="border-color: #10b981;">
+                        <div class="step-skill" style="color: #059669;">/shipkit-engineering-definition</div>
+                        <div class="step-desc">How to build</div>
+                    </div>
+                </div>
+                <div class="workflow-steps" style="margin-top: 8px;">
+                    <div class="workflow-step" style="border-color: #ec4899;">
+                        <div class="step-skill" style="color: #db2777;">/shipkit-spec-roadmap</div>
+                        <div class="step-desc">Prioritize specs</div>
+                    </div>
+                    <span class="workflow-arrow">&rarr;</span>
+                    <div class="workflow-step" style="border-color: #ec4899;">
+                        <div class="step-skill" style="color: #db2777;">/shipkit-spec</div>
+                        <div class="step-desc">Write specs</div>
+                    </div>
+                    <span class="workflow-arrow">&rarr;</span>
+                    <div class="workflow-step" style="border-color: #dc2626; border-width: 2px;">
+                        <div class="step-skill" style="color: #dc2626;">/shipkit-review-planning</div>
+                        <div class="step-desc">Alignment gate</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workflow-diagram" style="margin-top: 8px; border-left: 4px solid #8b5cf6;">
+                <div style="font-size: 0.8em; color: #7c3aed; font-weight: 600; margin-bottom: 8px;">SHIPPING LOOP (Orch-Shipping &rarr; Architect + Implementer + Rev-Shipping)</div>
+                <div class="workflow-steps">
                     <div class="workflow-step">
                         <div class="step-skill">/shipkit-plan</div>
-                        <div class="step-desc">Plan impl</div>
+                        <div class="step-desc">Plan tasks</div>
                     </div>
-                    <span class="workflow-arrow">→</span>
-                    <div class="workflow-step" style="border-color: #10b981;">
-                        <div class="step-skill" style="color: #059669;">Just Code</div>
-                        <div class="step-desc">Implement it</div>
-                    </div>
-                    <span class="workflow-arrow">→</span>
+                    <span class="workflow-arrow">&rarr;</span>
                     <div class="workflow-step">
-                        <div class="step-skill">/shipkit-work-memory</div>
-                        <div class="step-desc">Log progress</div>
+                        <div class="step-skill">/shipkit-test-cases</div>
+                        <div class="step-desc">Define tests</div>
+                    </div>
+                    <span class="workflow-arrow">&rarr;</span>
+                    <div class="workflow-step">
+                        <div class="step-skill">/shipkit-team</div>
+                        <div class="step-desc">Build in parallel</div>
+                    </div>
+                    <span class="workflow-arrow">&rarr;</span>
+                    <div class="workflow-step">
+                        <div class="step-skill">/shipkit-verify</div>
+                        <div class="step-desc">Check quality</div>
+                    </div>
+                    <span class="workflow-arrow">&rarr;</span>
+                    <div class="workflow-step">
+                        <div class="step-skill">/shipkit-preflight</div>
+                        <div class="step-desc">Release gate</div>
                     </div>
                 </div>
             </div>
 
-            <h2 class="section-header" style="margin-top: 40px;">File Structure</h2>
-            <div style="background: #1e293b; color: #e2e8f0; padding: 25px; border-radius: 12px; font-family: 'Courier New', monospace; font-size: 0.95em; line-height: 1.8;">
-<pre>.shipkit/
-├── why.json               # Project vision
-├── stack.json             # Tech stack (auto-scanned)
-├── architecture.json      # Decisions log
-├── contracts.json         # Data contracts
-├── progress.json          # Session history
-├── specs/
-│   ├── active/            # Current specs
-│   └── implemented/       # Completed specs
-├── plans/
-│   ├── active/            # Current plans
-│   └── implemented/       # Completed plans
-├── implementations/
-│   ├── components/        # Component docs
-│   └── routes/            # Route docs
-├── integrations/          # External service patterns
-├── user-tasks/
-│   └── active.md          # Manual tasks
-└── .queues/               # Auto-generated work queues</pre>
+            <h2 class="section-header" style="margin-top: 40px;">Agent Ownership (12 Agents)</h2>
+            <p style="color: #64748b; margin-bottom: 16px;">The master orchestrator dispatches 3 loop orchestrators. Each loop orchestrator dispatches producer workers and judgment workers.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border-left: 4px solid #1e293b;">
+                    <h4 style="color: #1e293b; margin: 0 0 8px;">Orch-Master</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">Outermost loop &mdash; reads goals, dispatches direction/planning/shipping</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">shipkit-master</p>
+                </div>
+                <div style="background: #fef3c7; padding: 16px; border-radius: 12px; border-left: 4px solid #f59e0b;">
+                    <h4 style="color: #d97706; margin: 0 0 8px;">Orch-Direction</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">Direction loop &mdash; dispatches Visionary + Rev-Direction</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">shipkit-orch-direction</p>
+                </div>
+                <div style="background: #e0e7ff; padding: 16px; border-radius: 12px; border-left: 4px solid #667eea;">
+                    <h4 style="color: #667eea; margin: 0 0 8px;">Orch-Planning</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">Planning loop &mdash; dispatches PO + Architect + Rev-Planning</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">shipkit-orch-planning</p>
+                </div>
+                <div style="background: #ede9fe; padding: 16px; border-radius: 12px; border-left: 4px solid #8b5cf6;">
+                    <h4 style="color: #7c3aed; margin: 0 0 8px;">Orch-Shipping</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">Shipping loop &mdash; dispatches Architect + Implementer + Rev-Shipping</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">shipkit-orch-shipping</p>
+                </div>
+                <div style="background: #f0f9ff; padding: 16px; border-radius: 12px; border-left: 4px solid #667eea;">
+                    <h4 style="color: #667eea; margin: 0 0 8px;">Visionary</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">WHY &mdash; vision, stage, strategic goals</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">why-project, stage</p>
+                </div>
+                <div style="background: #fef3c7; padding: 16px; border-radius: 12px; border-left: 4px solid #d97706;">
+                    <h4 style="color: #d97706; margin: 0 0 8px;">Product Owner</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">WHAT &mdash; discovery, definitions, specs, product goals</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">6 skills incl. spec, feedback-bug, product-goals</p>
+                </div>
+                <div style="background: #ecfdf5; padding: 16px; border-radius: 12px; border-left: 4px solid #10b981;">
+                    <h4 style="color: #059669; margin: 0 0 8px;">Architect</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">HOW &mdash; engineering blueprint, plans, engineering goals</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">5 skills incl. plan, engineering-goals, scale-ready</p>
+                </div>
+                <div style="background: #f0fdf4; padding: 16px; border-radius: 12px; border-left: 4px solid #16a34a;">
+                    <h4 style="color: #16a34a; margin: 0 0 8px;">Implementer</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">BUILD &mdash; test cases, team execution</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">test-cases, team</p>
+                </div>
+                <div style="background: #fff7ed; padding: 16px; border-radius: 12px; border-left: 4px solid #ea580c;">
+                    <h4 style="color: #ea580c; margin: 0 0 8px;">Thinking Partner</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">THINK &mdash; structured analysis, cognitive frameworks</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">thinking-partner</p>
+                </div>
+                <div style="background: #fef2f2; padding: 16px; border-radius: 12px; border-left: 4px solid #dc2626;">
+                    <h4 style="color: #dc2626; margin: 0 0 8px;">Rev-Direction</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">JUDGE &mdash; strategic artifact coherence</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">review-direction</p>
+                </div>
+                <div style="background: #fef2f2; padding: 16px; border-radius: 12px; border-left: 4px solid #dc2626;">
+                    <h4 style="color: #dc2626; margin: 0 0 8px;">Rev-Planning</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">JUDGE &mdash; planning artifact alignment</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">review-planning</p>
+                </div>
+                <div style="background: #fef2f2; padding: 16px; border-radius: 12px; border-left: 4px solid #dc2626;">
+                    <h4 style="color: #dc2626; margin: 0 0 8px;">Rev-Shipping</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">JUDGE &mdash; verify, preflight, UX/semantic/visual QA</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">verify, preflight, ux-audit, semantic-qa, qa-visual</p>
+                </div>
             </div>
 
-            <h2 class="section-header" style="margin-top: 40px;">Default Tech Stack</h2>
-            <div class="skill-groups" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-                <div class="skill-group" style="text-align: center;">
-                    <h3 style="justify-content: center;">Framework</h3>
-                    <p style="font-size: 1.2em; color: #1e293b;">Next.js (App Router)</p>
-                </div>
-                <div class="skill-group" style="text-align: center;">
-                    <h3 style="justify-content: center;">Hosting</h3>
-                    <p style="font-size: 1.2em; color: #1e293b;">Vercel</p>
-                </div>
-                <div class="skill-group" style="text-align: center;">
-                    <h3 style="justify-content: center;">Database</h3>
-                    <p style="font-size: 1.2em; color: #1e293b;">Supabase</p>
-                </div>
-                <div class="skill-group" style="text-align: center;">
-                    <h3 style="justify-content: center;">Payments</h3>
-                    <p style="font-size: 1.2em; color: #1e293b;">Lemon Squeezy</p>
-                </div>
-                <div class="skill-group" style="text-align: center;">
-                    <h3 style="justify-content: center;">Email</h3>
-                    <p style="font-size: 1.2em; color: #1e293b;">Resend</p>
-                </div>
-                <div class="skill-group" style="text-align: center;">
-                    <h3 style="justify-content: center;">Styling</h3>
-                    <p style="font-size: 1.2em; color: #1e293b;">Tailwind + shadcn</p>
+            <h2 class="section-header" style="margin-top: 40px;">Orchestration Loop</h2>
+            <p style="color: #64748b; margin-bottom: 16px;">Shipkit is a goal-driven 3-loop system. The master sequentially dispatches Direction, Planning, and Shipping loops. Each loop has its own orchestrator, producer workers, and judgment reviewers.</p>
+
+            <div style="background: #f8fafc; padding: 24px; border-radius: 12px; font-family: 'Courier New', monospace; font-size: 0.9em; line-height: 1.8; color: #334155;">
+                <div style="font-weight: bold; color: #1e293b;">Master (sequencer)</div>
+                <div style="padding-left: 24px;">
+                    <div style="color: #d97706;">&#x2514;&rarr; <strong>Direction Loop</strong> (why, vision, stage, goals + review-direction)</div>
+                    <div style="color: #667eea;">&#x2514;&rarr; <strong>Planning Loop</strong> (discovery, definitions, specs + review-planning)</div>
+                    <div style="color: #7c3aed;">&#x2514;&rarr; <strong>Shipping Loop</strong> (plan, test-cases, team, verify, preflight)</div>
                 </div>
             </div>
         </div>
 
         <footer>
-            <p>Shipkit {{SHIPKIT_VERSION}} • 37 Skills • 11 Agents • 7 Principles</p>
-            <p style="margin-top: 10px;">Production-ready MVPs for SaaS applications</p>
+            <p>Shipkit &mdash; Built on Claude Code. Ship products, not side projects.</p>
         </footer>
     </div>
 
     <script>
-        function showTab(tabId) {
-            // Hide all tabs
+        function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-
-            // Show selected tab
-            document.getElementById(tabId).classList.add('active');
+            document.getElementById(id).classList.add('active');
             event.target.classList.add('active');
         }
     </script>
-</body>
-</html>
+</body></html>

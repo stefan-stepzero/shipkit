@@ -23,7 +23,7 @@ Teammates:
 
 Rules:
 - Each implementer owns distinct file paths — no overlap
-- Implementers use /shipkit-build-relentlessly + /shipkit-test-relentlessly
+- Implementers build and test after each task — fix errors before moving on
 - Reviewer reads completed work, validates against spec, messages implementers directly
 - Lead verifies phase gates, runs /shipkit-verify + /shipkit-preflight when done
 - Lead does NOT implement — coordinate only
@@ -161,7 +161,7 @@ Lead (you):
 
 **PR flow per cluster:**
 1. Agent implements tasks in isolated worktree
-2. Agent runs build/test/lint relentlessly
+2. Agent builds, tests, and fixes errors iteratively
 3. Agent commits, pushes, opens PR against source branch
 4. Reviewer validates PR against spec acceptance criteria
 5. Lead merges approved PRs

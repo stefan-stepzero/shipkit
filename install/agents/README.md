@@ -1,110 +1,81 @@
-# Shipkit Agents (Subagents)
+# Shipkit Agents
 
-Specialized subagent configurations for the Shipkit workflow. These follow Claude Code's official subagent specification.
+Specialized agent configurations for the Shipkit workflow. Agents are invoked via skills with `context: fork` + `agent:` frontmatter.
 
-## How Subagents Work
-
-Subagents are **not** invoked directly by skills or users. Instead:
-
-1. **Claude auto-delegates** based on the agent's `description` field matching the task
-2. Each subagent runs in its own context with its own system prompt
-3. Subagents can have **preloaded skills** for domain knowledge
-4. Results return to the main conversation when the subagent completes
-
-**Key insight:** The `description` field drives delegation. Write descriptions that clearly state when the agent should be used.
-
-## Available Agents
-
-| Agent | Role | Delegates When |
-|-------|------|----------------|
-| **shipkit-project-manager** | Coordination & context | Project status, context management, workflow orchestration |
-| **shipkit-product-owner** | Vision & requirements | Defining what to build, user research, feature prioritization |
-| **shipkit-ux-designer** | UI/UX design | Designing interfaces, UX reviews, wireframes |
-| **shipkit-architect** | Technical decisions | Planning features, data models, technical choices |
-| **shipkit-implementer** | Code implementation | Building features, fixing bugs, writing tests |
-| **shipkit-reviewer** | Code review & quality | Reviewing code, security checks, validation |
-| **shipkit-researcher** | Research & analysis | Documentation lookup, API research, troubleshooting |
-
-## Agent Format
-
-Each agent uses Claude Code's subagent YAML frontmatter:
-
-```markdown
----
-name: shipkit-architect
-description: Technical architect for system design... Use when planning features...
-tools: Read, Glob, Grep, Write, Edit, Bash
-model: opus
-permissionMode: default
-memory: project
-skills: shipkit-plan, shipkit-architecture-memory
----
-
-You are a Technical Architect...
-```
-
-### Frontmatter Fields
-
-| Field | Purpose |
-|-------|---------|
-| `name` | Unique identifier |
-| `description` | **Drives auto-delegation** - when Claude sees matching tasks |
-| `tools` | Tools the subagent can access |
-| `model` | Model to use (opus, sonnet, haiku) |
-| `permissionMode` | Permission level (default, acceptEdits, bypassPermissions) |
-| `memory` | Memory scope (user, project, local) |
-| `skills` | Preloaded skills for domain knowledge |
-
-## Skills ↔ Agents Relationship
-
-**One-way relationship:**
-
-- ❌ Skills cannot invoke agents
-- ✅ Agents can have skills preloaded
-
-When an agent has `skills: shipkit-plan`, it gets that skill's knowledge automatically loaded.
-
-## How Delegation Happens
+## Architecture
 
 ```
-User: "Plan the authentication feature"
-         ↓
-Claude sees "plan" + "feature" matches architect description
-         ↓
-Auto-delegates to shipkit-architect subagent
-         ↓
-Architect uses its tools + preloaded skills
-         ↓
-Results return to main conversation
+Orchestrators dispatch. Workers produce. Nothing runs inline.
 ```
 
-## Hybrid Mode: Skills + Agents
+Every agent is either an **orchestrator** (checks artifacts, dispatches skills, reports done) or a **worker** (personified domain expert, produces artifacts). Workers are further split into **producers** (create artifacts) and **reviewers** (assess artifact quality).
 
-Shipkit supports **both** direct skill invocation and agent delegation:
+## How Agents Are Invoked
 
-| Mode | How | When to Use |
-|------|-----|-------------|
-| **Direct** | `/shipkit-plan` | Explicit control, know exactly what skill you want |
-| **Natural** | "Plan the auth feature" | Let Claude route to appropriate agent |
+Skills with `context: fork` + `agent: {agent-name}` in their frontmatter spawn the named agent in a forked context. The agent runs with its own tools, model, and persona. Results persist via `.shipkit/` artifacts.
 
-**Both work together:**
-- Skills remain user-invocable with `/skill-name`
-- Agents auto-delegate based on task matching
-- You choose: explicit control OR natural language
+```yaml
+# In a skill's frontmatter:
+context: fork
+agent: shipkit-orch-direction-agent    # spawns this agent
+```
 
-**Example workflows:**
+## Agent Taxonomy
+
+### Orchestrators (4)
+
+Loop dispatchers that check artifacts, invoke skills, and manage feedback cycles. They never produce domain artifacts.
+
+| Agent | Scope | maxTurns |
+|-------|-------|----------|
+| **shipkit-orch-master** | Sequential dispatch: direction → planning → shipping | 200 |
+| **shipkit-orch-direction** | Strategic artifacts + coherence review cycle | 80 |
+| **shipkit-orch-planning** | Definitions/specs + alignment review cycle | 100 |
+| **shipkit-orch-shipping** | Implementation + verification + release gate | 150 |
+
+### Producer Workers (5)
+
+Domain experts that create artifacts. They never dispatch to other skills or manage other agents.
+
+| Agent | Domain | maxTurns |
+|-------|--------|----------|
+| **shipkit-visionary** | Strategic vision, project purpose, stage assessment | 50 |
+| **shipkit-product-owner** | User needs, product definition, feature specs | 50 |
+| **shipkit-architect** | System design, engineering decisions, implementation plans | 50 |
+| **shipkit-implementer** | Code writing, test writing, bug fixing | 80 |
+| **shipkit-thinking-partner** | Socratic questioning, decision exploration | 30 |
+
+### Judgment Workers / Reviewers (3)
+
+Each loop has a dedicated reviewer that assesses artifacts and writes structured reports. Orchestrators read these reports to decide whether to re-dispatch producers.
+
+| Agent | Loop | Assessment Focus | maxTurns |
+|-------|------|-----------------|----------|
+| **shipkit-reviewer-direction** | Direction | Strategic coherence: vision ↔ why, goals complete, stage realistic | 40 |
+| **shipkit-reviewer-planning** | Planning | Alignment: definitions agree, specs cover roadmap, no gaps | 50 |
+| **shipkit-reviewer-shipping** | Shipping | Quality: code meets spec, tests pass, security, UX | 60 |
+
+## Naming Convention
 
 ```
-# Direct mode - you control
-/shipkit-project-status
-/shipkit-plan auth feature
-/shipkit-build-relentlessly
-
-# Natural mode - Claude routes
-"What's the project status?"        → project-manager
-"Plan the authentication feature"   → architect
-"Build until it compiles"           → implementer
+Orchestrators:  shipkit-orch-{scope}-agent.md
+Producers:      shipkit-{role}-agent.md
+Reviewers:      shipkit-reviewer-{loop}-agent.md
 ```
+
+## Universal Loop Pattern
+
+Every loop follows the same cycle:
+
+```
+1. Orchestrator dispatches producer skills → artifacts created
+2. Orchestrator dispatches reviewer skill → assessment written
+3. Orchestrator reads assessment
+4. If pass → done
+5. If gaps → re-dispatch specific producers → re-review
+```
+
+The orchestrator makes routing decisions. The reviewer provides evidence.
 
 ## Installation
 
@@ -113,33 +84,20 @@ Agents are installed to `.claude/agents/` when you run `/shipkit-update`:
 ```
 .claude/
 └── agents/
-    ├── shipkit-project-manager.md
-    ├── shipkit-product-owner.md
-    ├── shipkit-ux-designer.md
-    ├── shipkit-architect.md
-    ├── shipkit-implementer.md
-    ├── shipkit-reviewer.md
-    └── shipkit-researcher.md
+    ├── shipkit-orch-master-agent.md
+    ├── shipkit-orch-direction-agent.md
+    ├── shipkit-orch-planning-agent.md
+    ├── shipkit-orch-shipping-agent.md
+    ├── shipkit-visionary-agent.md
+    ├── shipkit-product-owner-agent.md
+    ├── shipkit-architect-agent.md
+    ├── shipkit-implementer-agent.md
+    ├── shipkit-reviewer-direction-agent.md
+    ├── shipkit-reviewer-planning-agent.md
+    ├── shipkit-reviewer-shipping-agent.md
+    └── shipkit-thinking-partner-agent.md
 ```
-
-## Customization
-
-To customize an agent for your project:
-
-1. Edit the file in `.claude/agents/`
-2. Modify the system prompt (markdown body)
-3. Adjust tools, skills, or model as needed
-4. Local changes take precedence
 
 ## Model Selection
 
-All Shipkit agents default to `opus` for highest quality reasoning. Consider using `sonnet` or `haiku` for:
-
-- High-volume, repetitive tasks
-- Simple lookups or searches
-- Cost-sensitive workflows
-
-## Reference
-
-- [Claude Code Subagents Documentation](https://docs.anthropic.com/en/docs/claude-code/sub-agents)
-- [Shipkit Skills](../skills/)
+All agents use `model: sonnet` — orchestrators need judgment for routing, workers need depth for domain work.

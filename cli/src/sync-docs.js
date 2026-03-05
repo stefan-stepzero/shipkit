@@ -25,9 +25,9 @@ function loadManifest(packageRoot) {
   return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 }
 
-// Infrastructure skills are auto-triggered hooks, not user-invocable.
-// They appear in mandatory[] but are excluded from the public skill count.
-const INFRASTRUCTURE_SKILLS = ['shipkit-detect'];
+// Infrastructure skills that are not user-invocable.
+// Excluded from the public skill count.
+const INFRASTRUCTURE_SKILLS = [];
 
 function countSkills(manifest) {
   const mandatory = (manifest.skills.mandatory || [])

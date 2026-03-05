@@ -91,4 +91,4 @@ All array fields (`successCriteria`, `constraints`, `nonGoals`) can be empty arr
 
 ### Timeline and Milestones
 
-**Note:** Timeline and milestones are NOT captured in `why.json`. For trackable objectives with priorities and status, use `/shipkit-goals` which creates `goals.json`. This separation keeps `why.json` focused on strategic context while `goals.json` handles actionable tracking.
+**Note:** Timeline and milestones are NOT captured in `why.json`. For trackable objectives with priorities and status, use `/shipkit-product-goals` which creates `goals.json`. This separation keeps `why.json` focused on strategic context while `goals.json` handles actionable tracking.

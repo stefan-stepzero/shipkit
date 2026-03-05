@@ -1,5 +1,6 @@
 ---
 name: shipkit-communications
+id: SKL-COMMS
 description: "Use when user wants to visualize or present shipkit content as HTML. Triggers: 'create presentation', 'visualize this', 'HTML report'."
 context: fork
 ---
@@ -77,7 +78,7 @@ Choose a number or describe what you need:
 | Choice | Files to Read | Description Word |
 |--------|---------------|------------------|
 | 1. Architecture Decisions | `.shipkit/architecture.json` | `architecture-decisions` |
-| 2. Project Status | Glob `.shipkit/**/*.json` | `project-status` |
+| 2. Project Status | Glob `.shipkit/**/*.json` | `project-health` |
 | 3. Quality Checklist | `.shipkit/implementations.json`, `.shipkit/specs/{todo,active}/*.json` | `quality-checklist` |
 | 4. Component Documentation | `.shipkit/implementations.json` | `component-docs` |
 | 5. Feature Specs | `.shipkit/specs/{todo,active}/*.json` | `feature-specs` |
@@ -146,7 +147,7 @@ If latest.html does NOT exist:
 
 **Archive naming examples:**
 - `20251228-1430-architecture-decisions.html`
-- `20251228-1515-project-status.html`
+- `20251228-1515-project-health.html`
 - `20251228-1620-quality-checklist.html`
 
 ---
@@ -262,7 +263,7 @@ Write tool:
     latest.html                                    # Always current report
     archive/
       20251228-1430-architecture-decisions.html   # Previous reports
-      20251228-1515-project-status.html
+      20251228-1515-project-health.html
       20251228-1620-quality-checklist.html
 ```
 
@@ -369,8 +370,7 @@ Copy and track:
 **Before shipkit-communications**:
 - Any skill that creates `.shipkit/` content
 - Examples:
-  - `/shipkit-architecture-memory` → Visualize decisions
-  - `/shipkit-project-status` → Visualize status
+  - `/shipkit-engineering-definition` → Visualize decisions
   - `verify manually` → Visualize checklist
   - `document components manually` → Visualize docs
 

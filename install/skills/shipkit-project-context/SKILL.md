@@ -1,5 +1,6 @@
 ---
 name: shipkit-project-context
+id: SKL-PROJCTX
 description: "Use when starting a new project or refreshing tech stack context. Triggers: 'scan project', 'what's my stack', 'refresh context', 'generate stack'."
 model: haiku
 context: fork
@@ -26,7 +27,6 @@ context: fork
 
 **Auto-triggered by**:
 - `shipkit-master` (when stack.json is missing or stale)
-- `shipkit-project-status` (when it detects staleness)
 
 **First run**:
 - No `.shipkit/` directory exists
@@ -456,14 +456,12 @@ Skills that haven't migrated to JSON yet continue writing markdown. The reporter
 - None - This is often the FIRST skill run in a new project
 
 ### After This Skill
-- `/shipkit-project-status` - Uses context to suggest next steps
 - `/shipkit-spec` - References stack.json for technical constraints
 - `/shipkit-plan` - References stack.json for tech choices
 - `implement (no skill needed)` - References stack.json and schema.json while coding
 
 ### Triggered By
 - `/shipkit-master` - When stack.json missing or stale
-- `/shipkit-project-status` - When detecting staleness
 
 ---
 

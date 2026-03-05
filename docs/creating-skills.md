@@ -146,7 +146,7 @@ Skill is complete when:
 - **Max length:** 64 characters
 - **Directory must match name**
 
-Good: `shipkit-architecture-memory`
+Good: `shipkit-engineering-definition`
 Bad: `architecture_memory`, `ArchMemory`
 
 ### 2. Description
@@ -288,7 +288,7 @@ install/skills/shipkit-[name]/SKILL.md
 `install/skills/shipkit-master/SKILL.md` — Add to skill list
 
 ### 5. Update documentation
-`docs/skill-reference.md` — Add skill entry
+`README.md` — Add skill to the appropriate category list
 
 ---
 

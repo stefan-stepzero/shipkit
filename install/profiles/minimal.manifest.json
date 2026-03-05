@@ -15,8 +15,7 @@
     ],
     "optional": {
       "Core Workflow": [
-        {"name": "shipkit-project-context", "desc": "Scan codebase, detect stack"},
-        {"name": "shipkit-project-status", "desc": "Check project health & gaps"}
+        {"name": "shipkit-project-context", "desc": "Scan codebase, detect stack"}
       ],
       "Spec & Planning": [
         {"name": "shipkit-spec", "desc": "Create feature specifications"},

@@ -1,5 +1,6 @@
 ---
 name: shipkit-semantic-qa
+id: SKL-SEMQA
 description: "Semantic QA — define inputs/criteria, generate test scripts, Claude judges API outputs or UI screenshots against quality criteria. Triggers: 'semantic qa', 'quality check', 'visual qa', 'judge outputs', 'QA suite'."
 argument-hint: "[suite-name] [--setup|--run|--judge|--full]"
 allowed-tools:
@@ -390,7 +391,7 @@ Run Setup (if needed) → Run → Judge sequentially.
 
 ## What This Skill Does NOT Do
 
-- Execute unit/integration tests (that's `test-relentlessly`)
+- Execute unit/integration tests (handled during team implementation)
 - Auto-fix quality issues (reports only, user decides)
 - Replace CI/CD test suites
 - Judge prompt text quality (that's `prompt-audit`)

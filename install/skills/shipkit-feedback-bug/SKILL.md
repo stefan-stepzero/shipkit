@@ -1,9 +1,10 @@
 ---
 name: shipkit-feedback-bug
+id: SKL-BUG
 description: "Process user feedback into investigated bug specs with root cause analysis. Triggers: 'triage feedback', 'process bug reports', 'user testing feedback'."
 argument-hint: "<paste feedback or describe source>"
 context: fork
-agent: shipkit-researcher-agent
+agent: shipkit-product-owner-agent
 ---
 
 # shipkit-feedback-bug - Feedback to Investigated Bug Specs
@@ -265,7 +266,7 @@ The original fix "debounce the save button" was a point-fix. After robustness ch
 
 - What caused this bug? (pattern to avoid)
 - What's the better approach? (pattern to use)
-- Significant enough for `/shipkit-architecture-memory`?
+- Significant enough for `/shipkit-engineering-definition`?
 
 ---
 
@@ -429,7 +430,7 @@ Next Steps:
 1. Fix bugs in severity order (start with High)
 2. Run /shipkit-spec for feature requests worth pursuing
 3. Run /shipkit-verify after fixes
-4. Consider /shipkit-architecture-memory for significant learnings
+4. Consider /shipkit-engineering-definition for significant learnings
 ```
 
 ---
@@ -545,7 +546,7 @@ For obvious bugs that don't need deep investigation, use the same JSON schema bu
 - **Implementation (no skill)** - Fix bugs using the investigated specs
 - `/shipkit-spec` - Spec out feature requests found in feedback
 - `/shipkit-verify` - Verify fixes meet acceptance criteria
-- `/shipkit-architecture-memory` - Log significant learnings as decisions
+- `/shipkit-engineering-definition` - Update engineering blueprint with learnings
 
 ---
 
@@ -584,7 +585,7 @@ For obvious bugs that don't need deep investigation, use the same JSON schema bu
 **Natural capabilities** (no skill needed): Implementing fixes, writing tests.
 
 **Suggest skill when:**
-- Significant learnings → `/shipkit-architecture-memory`
+- Significant learnings → `/shipkit-engineering-definition`
 - Fix needs verification → `/shipkit-verify`
 - Feature requests worth pursuing → `/shipkit-spec`
 <!-- /SECTION:after-completion -->

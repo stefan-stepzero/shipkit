@@ -1,7 +1,9 @@
 ---
 name: shipkit-plan
+id: SKL-PLAN
 description: "Use when a spec exists and user wants implementation steps. Triggers: 'how to implement', 'create plan', 'plan this', 'what are the steps'."
 argument-hint: "[spec name]"
+context: fork
 model: opus
 agent: shipkit-architect-agent
 ---
@@ -34,7 +36,7 @@ agent: shipkit-architect-agent
 
 **UI-Heavy Feature Check**:
 - If spec describes significant UI/UX, check if architecture.json has UI patterns or stack.json has a frontend framework
-- If neither exists, warn: "This feature has significant UI — consider running `/shipkit-architecture-memory` first to define UI patterns"
+- If neither exists, warn: "This feature has significant UI — consider running `/shipkit-engineering-definition` first to define UI patterns"
 - Do NOT block on prototyping — proceed with planning
 
 **Optional but helpful**:
@@ -507,7 +509,7 @@ Review Codebase Patterns table:
 
 ### Step 4: Log Decision (if significant)
 
-**If plan makes architectural decision**, offer to log it via `/shipkit-architecture-memory`
+**If plan makes architectural decision**, offer to capture it via `/shipkit-engineering-definition`
 
 ---
 
@@ -590,13 +592,11 @@ Copy and track:
 ### Before This Skill
 - `/shipkit-spec` - Creates feature specification (required)
 - `/shipkit-project-context` - Generates stack.json, schema.json
-- `/shipkit-architecture-memory` - Logs past decisions
 - `/shipkit-product-definition` - Product blueprint (features, patterns, differentiators)
-- `/shipkit-engineering-definition` - Engineering blueprint (mechanisms, components)
+- `/shipkit-engineering-definition` - Engineering blueprint (mechanisms, components, past decisions)
 
 ### After This Skill
 - `implement (no skill needed)` - Executes the plan
-- `/shipkit-architecture-memory` - Logs significant decisions (optional)
 - `/shipkit-verify` - Validates implementation matches plan
 
 ---

@@ -1,18 +1,19 @@
 ---
 name: shipkit-scout
-description: Fetches latest Claude Code documentation, changelog, and GitHub issues to detect new features, breaking changes, and community patterns. Writes a structured scout report for downstream analysis. Use when checking what's new in Claude Code.
-argument-hint: "[--full] [--quick] [--sources github,docs,issues]"
+description: Fetches latest Claude Code documentation, changelog, and source code patterns via 3 parallel agents. Detects new features, breaking changes, and emerging patterns. Writes a structured scout report for downstream analysis. Use when checking what's new in Claude Code.
+argument-hint: "[--full] [--quick]"
 ---
 
 # shipkit-scout - Claude Code Intelligence Scout
 
 **Purpose**: Detect what's new, changed, or emerging in Claude Code so Shipkit can stay current
 
-**What it does**:
-- Fetches Claude Code docs from `code.claude.com/docs/llms.txt` index
-- Fetches CHANGELOG.md from GitHub repo
-- Scans recent GitHub issues for patterns and feature requests
-- Produces a structured `docs/development/scout-report.json` with categorized findings
+**What it does**: Dispatches 3 parallel Sonnet agents across different intelligence vectors:
+- **Docs agent** — Fetches official documentation pages
+- **Changelog agent** — Parses CHANGELOG.md from GitHub
+- **Source agent** — Reads Claude Code source for actual tool definitions and patterns
+
+Then aggregates findings, diffs against previous report, and writes structured output.
 
 ---
 
@@ -23,11 +24,10 @@ argument-hint: "[--full] [--quick] [--sources github,docs,issues]"
 - "Scout for changes"
 - "Check Claude Code updates"
 - "Run the scout"
-- "Any new CC features?"
 
 **Automated trigger:**
 - As the first step of a Shipkit self-improvement team
-- When `docs/development/scout-report.json` is older than 7 days
+- When `docs/development/dev-progress/DOC-002-scout-report.json` is older than 7 days
 - Before running `/shipkit-analyst`
 
 ---
@@ -39,190 +39,252 @@ argument-hint: "[--full] [--quick] [--sources github,docs,issues]"
 - `gh` CLI authenticated (for GitHub API calls)
 
 **Helpful context**:
-- Previous scout report at `docs/development/scout-report.json`
-- Claude Code changelog at `docs/development/claude-code-changelog.md`
-- Changelog metadata at `docs/development/claude-code-changelog.meta.json`
+- Previous scout report at `docs/development/dev-progress/DOC-002-scout-report.json`
+- Claude Code changelog at `docs/development/cc-reference/claude-code-changelog.md`
 
 ---
 
 ## Process
 
-### Step 0: Check Previous Report
+### Step 0: Load Previous Report (Inline)
 
-Read `docs/development/scout-report.json` if it exists. Note the `scoutedAt` timestamp and `latestVersion` to identify what's new since the last run.
+Read `docs/development/dev-progress/DOC-002-scout-report.json` if it exists. Extract `scoutedAt` and `latestVersion` to know what's new since last run. Store as `previous_version`.
 
-### Step 1: Fetch Documentation Index
+### Step 1: Dispatch 3 Parallel Agents
 
-Fetch `https://code.claude.com/docs/llms.txt` to get the full list of documentation pages.
+Launch ALL 3 agents simultaneously using the Agent tool. Each is `subagent_type: "general-purpose"` with `model: "sonnet"`.
 
-**Priority pages to fetch** (most relevant to Shipkit):
+**IMPORTANT**: Launch all 3 in a single message with 3 parallel Agent tool calls.
 
-| Page | Why |
-|------|-----|
-| `skills.md` | Skill authoring spec — frontmatter fields, behavior |
-| `sub-agents.md` | Task tool, agent types, subagent patterns |
-| `hooks.md` | Hook events, exit codes, input schema |
-| `hooks-guide.md` | Hook best practices, patterns |
-| `agent-teams.md` | Team primitives, coordination |
-| `settings.md` | Settings schema, permissions |
-| `permissions.md` | Permission model, allow/deny |
-| `plugins.md` | Plugin system |
-| `plugins-reference.md` | Plugin API reference |
-| `memory.md` | Auto-memory, memory files |
-| `features-overview.md` | Feature catalog |
-| `best-practices.md` | Official best practices |
-| `changelog.md` | Latest changes |
+---
 
-**For `--quick` mode**: Only fetch `changelog.md`, `skills.md`, `hooks.md`, `agent-teams.md`.
+#### Agent 1: Documentation Fetcher
 
-**For `--full` mode**: Fetch all pages listed in llms.txt.
-
-For each page, use WebFetch with a structured extraction prompt:
-
+**Prompt:**
 ```
-Extract from this Claude Code documentation page:
-1. Feature names and descriptions
-2. Any configuration fields/schema
-3. Any breaking changes or deprecations
-4. Any new capabilities since {previous_version}
-5. Code examples showing usage patterns
+Fetch Claude Code documentation from code.claude.com/docs to extract current feature specs.
 
-Return as structured JSON with: features[], breakingChanges[], deprecations[], examples[]
-```
+1. Fetch https://code.claude.com/docs/llms.txt to get the page index
+2. Fetch these priority pages (use WebFetch for each):
+   - skills.md — skill frontmatter fields, behavior
+   - sub-agents.md — Task tool, agent types, subagent patterns
+   - hooks.md — hook events, exit codes, input schema
+   - hooks-guide.md — hook best practices
+   - agent-teams.md — team primitives, coordination
+   - settings.md — settings schema, permissions
+   - permissions.md — permission model
+   - plugins.md — plugin system
+   - plugins-reference.md — plugin API
+   - memory.md — auto-memory, memory files
+   - features-overview.md — feature catalog
+   - best-practices.md — official best practices
 
-### Step 2: Fetch Changelog
+For --full mode, fetch ALL pages in llms.txt.
+For --quick mode, only fetch: skills.md, hooks.md, agent-teams.md, changelog.md
 
-Run the existing fetch script or directly fetch:
+For each page, extract with this WebFetch prompt:
+"Extract from this Claude Code documentation:
+1. Feature names and their configuration fields/schema
+2. Breaking changes or deprecations
+3. New capabilities
+4. Code examples showing usage patterns
+Return as structured text: FEATURES, BREAKING_CHANGES, DEPRECATIONS, EXAMPLES sections"
 
-```bash
-gh api repos/anthropics/claude-code/contents/CHANGELOG.md \
-  --jq '.content' | base64 -d
-```
-
-Parse changelog entries. For each version since `latestVersion` from previous report:
-- Extract new features
-- Extract breaking changes
-- Extract bug fixes
-- Extract new tool/hook/event names
-
-### Step 3: Scan GitHub Issues (Optional, `--sources issues`)
-
-Use `gh` CLI to fetch recent issues:
-
-```bash
-gh issue list --repo anthropics/claude-code --limit 50 --state all --json title,body,labels,createdAt,closedAt
+Return a combined report:
+DOCS_REPORT:
+  pages_fetched: N
+  features: [name, description, docsPage, configFields]
+  breakingChanges: [description, docsPage]
+  deprecations: [what, replacement, docsPage]
+  examples: [pattern, docsPage, code]
 ```
 
-Categorize issues by:
-- **Feature requests** — what users want
-- **Bug reports** — what's broken
-- **Discussions** — emerging patterns and use cases
-- **Labels** — official categorization
+---
 
-### Step 4: Diff Against Previous Report
+#### Agent 2: Changelog Parser
 
-Compare current findings against previous `scout-report.json`:
-- **New features** — not in previous report
-- **Changed features** — spec or behavior changed
-- **Removed features** — deprecated or removed
-- **New patterns** — from issues/discussions
+**Prompt:**
+```
+Fetch and parse the Claude Code CHANGELOG.md from GitHub.
 
-### Step 5: Write Scout Report
+1. Run: gh api repos/anthropics/claude-code/contents/CHANGELOG.md --jq '.content' | base64 -d
+   If that fails, try: bash docs/development/cc-reference/fetch-changelog.sh
 
-Write `docs/development/scout-report.json`:
+2. Parse each version entry. For versions since {previous_version}:
+   - Extract new features (with version number)
+   - Extract breaking changes
+   - Extract bug fixes relevant to skills/hooks/agents
+   - Extract new tool names, hook events, or settings fields
+
+3. Identify the latest version number
+
+Return:
+CHANGELOG_REPORT:
+  latestVersion: "X.Y.Z"
+  previousVersion: "{previous_version}"
+  versionsScanned: N
+  newFeatures: [version, name, description, category (skills|hooks|agents|settings|tools|other)]
+  breakingChanges: [version, description, migrationPath]
+  deprecations: [version, what, replacement]
+  newPrimitives: [version, type (tool|hook-event|setting|frontmatter-field), name, description]
+```
+
+---
+
+#### Agent 3: Source Code Patterns
+
+**Prompt:**
+```
+Examine Claude Code source code on GitHub to find actual tool definitions, hook schemas, and implementation patterns that may not be in docs yet.
+
+1. Fetch key source files using gh api:
+   gh api repos/anthropics/claude-code/contents/src --jq '.[].name' (explore structure)
+
+   Look for files related to:
+   - Tool definitions (what tools exist, their parameters)
+   - Hook event definitions (what events are supported, their schemas)
+   - Skill loading (how skills are parsed, what frontmatter fields are supported)
+   - Agent/subagent spawning (how context:fork works, what fields are passed)
+   - Settings schema (what keys are valid in settings.json)
+
+2. For each interesting file, fetch its content:
+   gh api repos/anthropics/claude-code/contents/{path} --jq '.content' | base64 -d
+
+3. Extract patterns:
+   - Undocumented frontmatter fields
+   - Tool parameter schemas not in docs
+   - Hook event payloads/schemas
+   - Internal feature flags or experimental features
+   - Permission string parsing patterns
+
+Return:
+SOURCE_REPORT:
+  filesExamined: N
+  undocumentedFeatures: [name, file, description]
+  toolDefinitions: [toolName, parameters, file]
+  hookSchemas: [eventName, inputFields, file]
+  frontmatterFields: [field, type, default, file]
+  experimentalFeatures: [name, featureFlag, file]
+  patterns: [name, description, file, codeSnippet]
+```
+
+---
+
+### Step 2: Aggregate & Diff (Inline)
+
+After all 3 agents return:
+
+1. **Merge findings** across all three vectors:
+   - Features found in docs + changelog + source = high confidence
+   - Features in source only = potentially undocumented/experimental
+   - Features in docs but not source = possibly deprecated or moved
+
+2. **Deduplicate** — same feature may appear in multiple vectors
+
+3. **Diff against previous report**:
+   - New features (not in previous report)
+   - Changed features (spec or behavior changed)
+   - Removed features (deprecated or removed)
+
+4. **Assess relevance to Shipkit** for each finding:
+   - high = directly affects skills, agents, hooks, or settings
+   - medium = could enable new Shipkit capabilities
+   - low = informational, no immediate action
+
+### Step 3: Write Scout Report (Inline)
+
+Write `docs/development/dev-progress/DOC-002-scout-report.json`:
 
 ```json
 {
   "$schema": "shipkit-artifact",
   "type": "scout-report",
-  "version": "1.0",
-  "scoutedAt": "2026-02-20T...",
+  "version": "2.0",
+  "scoutedAt": "2026-...",
   "source": "shipkit-scout",
-  "latestVersion": "2.1.34",
-  "previousVersion": "2.1.33",
+  "latestVersion": "X.Y.Z",
+  "previousVersion": "...",
+  "vectors": ["docs", "changelog", "source"],
   "summary": {
-    "newFeatures": 5,
-    "breakingChanges": 1,
-    "deprecations": 2,
-    "newPatterns": 3,
-    "issueInsights": 8
+    "newFeatures": N,
+    "breakingChanges": N,
+    "deprecations": N,
+    "undocumentedFeatures": N,
+    "pagesScanned": N,
+    "sourceFilesExamined": N
   },
   "findings": {
     "newFeatures": [
       {
         "name": "Feature name",
-        "version": "2.1.34",
+        "version": "X.Y.Z",
         "category": "skills|hooks|agents|settings|tools|other",
         "description": "What it does",
-        "docsPage": "skills.md",
+        "vectors": ["docs", "changelog"],
+        "confidence": "high|medium",
         "relevanceToShipkit": "high|medium|low",
-        "relevanceReason": "Why this matters for Shipkit"
+        "relevanceReason": "Why this matters"
       }
     ],
-    "breakingChanges": [
+    "breakingChanges": [...],
+    "deprecations": [...],
+    "undocumentedFeatures": [
       {
-        "name": "Change name",
-        "version": "2.1.34",
-        "description": "What broke",
-        "migrationPath": "How to fix",
-        "affectsShipkit": true,
-        "affectedFiles": ["install/skills/..."]
-      }
-    ],
-    "deprecations": [
-      {
-        "name": "Deprecated thing",
-        "version": "2.1.34",
-        "replacement": "What to use instead",
-        "deadline": "When it's removed (if known)"
-      }
-    ],
-    "newPatterns": [
-      {
-        "name": "Pattern name",
-        "source": "docs|issues|changelog",
-        "description": "What the pattern is",
-        "exampleCode": "..."
-      }
-    ],
-    "issueInsights": [
-      {
-        "title": "Issue title",
-        "url": "https://github.com/...",
-        "category": "feature-request|bug|discussion",
-        "relevance": "Why this matters for Shipkit"
+        "name": "Feature name",
+        "sourceFile": "src/...",
+        "description": "What it appears to do",
+        "confidence": "low",
+        "note": "Found in source only — may be internal/experimental"
       }
     ]
   },
   "docsIndex": {
-    "fetchedPages": ["skills.md", "hooks.md", "..."],
-    "totalAvailable": 57,
-    "keyChanges": {
-      "skills.md": ["New frontmatter field: X"],
-      "hooks.md": ["New hook event: Y"]
-    }
+    "fetchedPages": [...],
+    "totalAvailable": N
   }
 }
 ```
 
-### Step 6: Update Changelog Cache
+### Step 4: Update Changelog Cache (Inline)
 
 If changelog was fetched, update:
-- `docs/development/claude-code-changelog.md` — full changelog
-- `docs/development/claude-code-changelog.meta.json` — timestamp and version
+- `docs/development/cc-reference/claude-code-changelog.md`
+- `docs/development/cc-reference/claude-code-changelog.meta.json`
+
+### Step 5: Present Summary (Inline)
+
+```
+## Scout Report — CC v{version}
+
+**Vectors**: Docs ({N} pages) + Changelog ({N} versions) + Source ({N} files)
+
+### Key Findings
+- {N} new features ({N} high relevance)
+- {N} breaking changes
+- {N} deprecations
+- {N} undocumented/experimental features
+
+### High Relevance
+1. {feature} — {description} (from {vectors})
+2. ...
+
+### Breaking Changes
+1. {change} — {migration}
+
+Ready for analysis? Run `/shipkit-analyst`
+```
 
 ---
 
 ## Output Quality Checklist
 
-Before writing the report, verify:
-- [ ] All priority docs pages fetched (or errors noted)
-- [ ] Changelog parsed with version-by-version breakdown
+- [ ] All 3 vectors returned results (or errors noted)
+- [ ] Findings are deduplicated across vectors
 - [ ] Each finding has `relevanceToShipkit` assessment
-- [ ] Breaking changes include `affectedFiles` list
-- [ ] No duplicate findings across categories
+- [ ] Breaking changes include migration paths
 - [ ] `summary` counts match actual findings arrays
 - [ ] Previous version correctly identified for diffing
+- [ ] Undocumented features clearly marked as low-confidence
 
 ---
 
@@ -233,29 +295,23 @@ Before writing the report, verify:
 
 ### After This Skill
 - `/shipkit-analyst` — Reads scout report, maps findings to Shipkit gaps
-  - **Trigger**: Scout report written with new findings
-  - **Why**: Findings need to be mapped against actual Shipkit codebase
 
 ### Team Composition
-In a self-improvement team:
-- **Scout** runs first (this skill)
-- **Analyst** reads scout output
-- **Ideator** reads analyst output
-- Can be orchestrated by `/shipkit-team` or run manually in sequence
+In a self-improvement team: Scout → Analyst → Ideator → Plan → Implement
 
 ---
 
 ## Context Files This Skill Reads
 
-- `docs/development/scout-report.json` — Previous scout report (for diffing)
-- `docs/development/claude-code-changelog.md` — Cached changelog
-- `docs/development/claude-code-changelog.meta.json` — Cache freshness
+- `docs/development/dev-progress/DOC-002-scout-report.json` — Previous report (for diffing)
+- `docs/development/cc-reference/claude-code-changelog.md` — Cached changelog
+- `docs/development/cc-reference/claude-code-changelog.meta.json` — Cache freshness
 
 ## Context Files This Skill Writes
 
-- `docs/development/scout-report.json` — Structured findings report
-- `docs/development/claude-code-changelog.md` — Updated changelog cache
-- `docs/development/claude-code-changelog.meta.json` — Updated cache metadata
+- `docs/development/dev-progress/DOC-002-scout-report.json` — Structured findings report
+- `docs/development/cc-reference/claude-code-changelog.md` — Updated changelog cache
+- `docs/development/cc-reference/claude-code-changelog.meta.json` — Updated cache metadata
 
 ---
 
@@ -263,9 +319,6 @@ In a self-improvement team:
 
 | Mode | What it does |
 |------|-------------|
-| `--quick` | Changelog + 4 key docs pages only |
-| `--full` | All 57 docs pages + issues + changelog |
-| `--sources github` | GitHub only (changelog + issues) |
-| `--sources docs` | Documentation pages only |
-| `--sources issues` | GitHub issues only |
-| (default) | Changelog + priority docs pages |
+| `--quick` | Changelog + 4 key docs pages only, skip source |
+| `--full` | All docs pages + full source exploration |
+| (default) | Changelog + priority docs pages + key source files |

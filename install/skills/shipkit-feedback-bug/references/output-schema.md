@@ -184,7 +184,7 @@ Bug specs are stored as JSON files following the Shipkit artifact convention. Th
     "Fix the useSave hook with debouncing and AbortController",
     "Apply same pattern to useDelete and useUpdate (blast radius)",
     "/shipkit-verify after implementation",
-    "/shipkit-architecture-memory to document async hook pattern"
+    "/shipkit-engineering-definition to document async hook pattern"
   ]
 }
 ```
@@ -300,7 +300,7 @@ Bug specs are stored as JSON files following the Shipkit artifact convention. Th
 |-------|------|----------|-------------|
 | `patternToAvoid` | string | yes | What caused this bug |
 | `patternToUse` | string | yes | Better approach |
-| `architectureMemoryWorthy` | boolean | yes | Should log to `/shipkit-architecture-memory` |
+| `architectureMemoryWorthy` | boolean | yes | Should log to `/shipkit-engineering-definition` |
 
 ### Resolution
 

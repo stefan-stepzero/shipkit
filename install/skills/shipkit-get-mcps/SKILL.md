@@ -1,5 +1,6 @@
 ---
 name: shipkit-get-mcps
+id: SKL-GETMCPS
 description: Discover and install MCP servers for enhanced Claude capabilities
 argument-hint: "<search query>"
 disable-model-invocation: true
@@ -320,7 +321,6 @@ Check platform via environment or ask user if unclear.
 This skill operates independently. It helps users extend Claude's capabilities.
 
 **Complements:**
-- `/shipkit-project-status` — Could suggest useful MCPs
 - `/shipkit-project-context` — Stack detection might suggest MCPs
 
 **Sibling:**

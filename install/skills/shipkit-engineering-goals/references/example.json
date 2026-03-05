@@ -1,0 +1,110 @@
+{
+  "_comment": "Example: WorksheetForge engineering goals (v4.0)",
+
+  "$schema": "shipkit-artifact",
+  "type": "goals-engineering",
+  "version": "4.0",
+  "lastUpdated": "2026-03-03T12:00:00Z",
+  "source": "shipkit-engineering-goals",
+
+  "derivedFrom": {
+    "engineeringDefinition": ".shipkit/engineering-definition.json"
+  },
+
+  "criteria": [
+    {
+      "id": "E-001",
+      "name": "Worksheet generation speed",
+      "category": "technical-performance",
+      "metric": "Time from submit to first streamed content",
+      "threshold": "< 5 seconds",
+      "currentValue": null,
+      "verificationMethod": "automated-test",
+      "checkability": "verifiable",
+      "verificationTool": "semantic-qa",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": { "type": "mechanism", "id": "M-001" },
+      "notes": "Streaming first content, not full worksheet"
+    },
+    {
+      "id": "E-002",
+      "name": "Content quality",
+      "category": "technical-performance",
+      "metric": "Grade-appropriateness of generated questions",
+      "threshold": "> 90% accuracy on 20-sample review",
+      "currentValue": null,
+      "verificationMethod": "manual-check",
+      "checkability": "verifiable",
+      "verificationTool": "semantic-qa",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": { "type": "mechanism", "id": "M-001" },
+      "notes": "Semantic QA judges output quality against grade-level rubric"
+    },
+    {
+      "id": "E-003",
+      "name": "Generation reliability",
+      "category": "technical-performance",
+      "metric": "Percentage of requests completing without error",
+      "threshold": "> 99%",
+      "currentValue": null,
+      "verificationMethod": "analytics",
+      "checkability": "observable",
+      "verificationTool": "none",
+      "gate": "gate-beta-ready",
+      "status": "not-measured",
+      "derivedFrom": { "type": "mechanism", "id": "M-001" },
+      "notes": "Needs production traffic to measure"
+    },
+    {
+      "id": "E-004",
+      "name": "Standards mapping accuracy",
+      "category": "technical-performance",
+      "metric": "Generated questions align to selected curriculum standard",
+      "threshold": "> 95% alignment",
+      "currentValue": null,
+      "verificationMethod": "manual-check",
+      "checkability": "observable",
+      "verificationTool": "none",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": { "type": "mechanism", "id": "M-003" },
+      "notes": "Requires curriculum domain expert review"
+    },
+    {
+      "id": "E-005",
+      "name": "Build compiles",
+      "category": "technical-performance",
+      "metric": "Build exits with code 0",
+      "threshold": "0 errors",
+      "currentValue": null,
+      "verificationMethod": "automated-test",
+      "checkability": "verifiable",
+      "verificationTool": "build",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": { "type": "mechanism", "id": "M-001" }
+    },
+    {
+      "id": "E-006",
+      "name": "Test suite passes",
+      "category": "technical-performance",
+      "metric": "All tests pass",
+      "threshold": "0 failures",
+      "currentValue": null,
+      "verificationMethod": "automated-test",
+      "checkability": "verifiable",
+      "verificationTool": "test",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": { "type": "mechanism", "id": "M-001" }
+    }
+  ],
+
+  "summary": {
+    "totalCriteria": 6,
+    "byStatus": { "not-measured": 6, "below-threshold": 0, "at-threshold": 0, "exceeded": 0 },
+    "byCheckability": { "verifiable": 4, "observable": 2 }
+  }
+}

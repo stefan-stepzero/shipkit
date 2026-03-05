@@ -1,5 +1,6 @@
 ---
 name: shipkit-spec
+id: SKL-SPEC
 description: "Use when user describes a feature to build. Triggers: 'spec this', 'create specification', 'define requirements', 'I want to build'."
 argument-hint: "<feature name or description>"
 context: fork
@@ -61,11 +62,18 @@ If `$ARGUMENTS` is empty, proceed normally from Step -1.
 
 ### Step -1: Batch Detection
 
-Check if a product definition exists with features to spec:
+Check if a spec roadmap or product definition exists with features to spec:
 
-1. Read `.shipkit/product-definition.json` (if exists)
-2. If found, check for features where `mvp` is `true` and no spec exists yet
-3. If unspecced features exist:
+1. Read `.shipkit/spec-roadmap.json` (if exists)
+2. **If roadmap found**: Use its phase/priority order to determine which feature to spec next
+   - Find the first item across all phases where `specStatus` is `"none"`
+   - Announce: "Spec roadmap found. Next priority: **{feature name}** (Phase: {phase name}, Priority #{priority}) — {description}"
+   - Proceed to Step 0 with that feature's context
+   - After writing the spec, update the item's `specStatus` in the roadmap
+   - Ask: "Continue to next feature?" (in pipeline/YOLO mode, auto-continue)
+3. **If no roadmap**: Read `.shipkit/product-definition.json` (if exists)
+4. If found, check for features where `mvp` is `true` and no spec exists yet
+5. If unspecced features exist:
    - Sort by `dependencies` field (features with no dependencies first)
    - Announce: "Product definition found. {N} features need specs. Starting with: **{first feature name}** — {description}"
    - For the first unspecced feature, proceed to Step 0 (Propose Mode) with the feature's context (mechanisms, patterns, description, dependencies)
@@ -503,7 +511,7 @@ Copy and track:
   - **Why**: Spec defines WHAT to build, plan defines HOW
   - **Trigger**: Spec saved to specs/todo/, user confirms "ready to plan"
 
-- `/shipkit-architecture-memory` - Logs architectural decisions made during spec
+- `/shipkit-engineering-definition` - Update engineering blueprint with decisions
   - **When**: Spec reveals architectural choices (optional step)
   - **Why**: Document tech decisions for future reference
   - **Trigger**: Spec's technical notes reveal important architectural choice

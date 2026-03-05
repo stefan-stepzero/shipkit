@@ -48,7 +48,7 @@ argument-hint: "[--scope recent|branch|skill:<name>|all] [--strict]"
 **Helpful context**:
 - `.claude/specs/{feature}.json` — spec the changes implement
 - `CLAUDE.md` — Skill Value Test, framework rules
-- `docs/development/SKILL-QUALITY-AND-PATTERNS.md` — quality standards
+- `docs/development/quality-standards/skill-quality-and-patterns.md` — quality standards
 
 ---
 
@@ -222,7 +222,7 @@ Present findings inline (not a JSON file — reviews are transient):
 
 - `.claude/specs/{feature}.json` — Spec being implemented (if available)
 - `CLAUDE.md` — Skill Value Test, framework rules
-- `docs/development/SKILL-QUALITY-AND-PATTERNS.md` — Quality standards
+- `docs/development/quality-standards/skill-quality-and-patterns.md` — Quality standards
 - All changed files in scope
 
 ## Context Files This Skill Writes

@@ -1,21 +1,19 @@
 ---
 name: shipkit-framework-integrity
-description: Validates Shipkit framework integrity before release. Checks for broken references, manifest/disk sync, installer validity, hook references, cross-skill dependencies, documentation accuracy, and Claude Code changelog compatibility. Auto-fetches latest changelog and flags deprecated patterns, unknown hook events, and feature adoption gaps. Uses caching to skip unchanged files. Use when preparing releases or after refactoring.
-argument-hint: "[--full] [--quick] [--fix] [--json] [--loop N]"
+description: Validates Shipkit framework integrity before release. Dispatches 5 parallel agents for manifest sync, references, installer/hooks, documentation, and agent cross-refs. Use when preparing releases or after refactoring.
+argument-hint: "[--full] [--quick] [--fix] [--loop N]"
 ---
 
 # shipkit-framework-integrity - Framework Integrity Checker
 
 **Purpose**: Validate the Shipkit framework repo is internally consistent and ready for release
 
-**What it does**: Comprehensive integrity validation with smart caching:
+**What it does**: Dispatches 5 parallel Sonnet agents for fast, token-efficient validation:
 - Manifest ↔ disk sync (skills, agents)
 - Broken file references in all SKILL.md files
-- Cross-skill references validity
-- Hook file references and syntax
-- Installer integrity (paths, syntax)
+- Hook and installer integrity
 - Documentation counts and accuracy
-- Skips unchanged files since last check
+- Agent cross-references from skill frontmatter
 
 ---
 
@@ -27,13 +25,11 @@ argument-hint: "[--full] [--quick] [--fix] [--json] [--loop N]"
 - "Are there broken references?"
 - "Audit shipkit repo"
 - "Pre-release check"
-- "Run integrity check"
 
 **Use when:**
 - Before publishing to GitHub
 - After aggressive refactoring or culling
 - After adding/removing skills
-- When skills fail to load unexpectedly
 - During release preparation
 
 ---
@@ -45,905 +41,305 @@ argument-hint: "[--full] [--quick] [--fix] [--json] [--loop N]"
 - `install/skills/` directory exists
 - `install/profiles/shipkit.manifest.json` exists
 
-**Not required**:
-- No external dependencies
-- No API keys
-
----
-
-## State File (Smart Caching)
-
-**Location**: `.claude/skills/shipkit-framework-integrity/.integrity-state.json`
-
-**Structure**:
-```json
-{
-  "lastFullCheck": "2025-02-05T10:30:00Z",
-  "lastVerifiedVersion": "2.1.34",
-  "fileHashes": {
-    "install/skills/shipkit-spec/SKILL.md": "sha256:abc123...",
-    "install/skills/shipkit-plan/SKILL.md": "sha256:def456...",
-    "installers/install.py": "sha256:789xyz..."
-  },
-  "lastResults": {
-    "errors": 0,
-    "warnings": 2,
-    "skipped": 15
-  }
-}
-```
-
-**Caching Logic**:
-1. On run, compute SHA-256 hash of each file
-2. Compare to stored hash in state file
-3. If unchanged → skip detailed validation, carry forward previous result
-4. If changed → run full validation
-5. Always re-check cross-cutting concerns (counts, manifest sync) since they depend on multiple files
-6. Update state file after check
-
-**Force full check**: Pass `--full` or delete state file
-
 ---
 
 ## Process
 
-### Step 0a: Ensure Changelog Freshness (Always Run)
+### Step 0: Pre-checks (Inline — Before Dispatching Agents)
 
-**Before running any checks, verify the Claude Code changelog is current.**
+Run these quick checks inline before dispatching agents:
 
+**VERSION file:**
 ```
-1. Check if docs/development/claude-code-changelog.meta.json exists
-   If NOT exists → run: bash docs/development/fetch-changelog.sh
-
-2. If exists, read fetchedAt timestamp
-   If older than 7 days → run: bash docs/development/fetch-changelog.sh
-
-3. Read latestVersion from meta.json
-   Store as: claude_code_version (e.g., "2.1.34")
-   Display: "Claude Code changelog: v{claude_code_version} (fetched {date})"
+1. Read VERSION — if missing → ERROR
+2. Read package.json version — if mismatch → ERROR
+3. Check git tag: git describe --tags --abbrev=0 2>/dev/null
+   If tag exists and doesn't match VERSION → WARNING
 ```
 
-**Why**: Framework integrity includes alignment with Claude Code's evolving feature set. Stale changelog = blind spots.
+**Changelog freshness (optional — skip if docs/development/ doesn't exist):**
+```
+1. Read docs/development/cc-reference/claude-code-changelog.meta.json
+2. If missing or fetchedAt > 7 days old → run: bash docs/development/cc-reference/fetch-changelog.sh
+```
+
+### Step 1: Dispatch 5 Parallel Agents
+
+Launch ALL 5 agents simultaneously using the Agent tool. Each agent is `subagent_type: "general-purpose"` with `model: "sonnet"`. Each returns a structured text report.
+
+**IMPORTANT**: Launch all 5 in a single message with 5 parallel Agent tool calls.
 
 ---
 
-### Step 0b: VERSION File Validation (Always Run)
+#### Agent 1: Manifest & Naming Sync
 
-**Check VERSION file exists and is valid**:
+**Prompt:**
 ```
-1. Verify VERSION exists
-   If NOT exists:
-     → ERROR: VERSION file missing (single source of truth for releases)
+Check manifest ↔ disk sync for the Shipkit framework at P:\Projects2\sg-shipkit.
 
-2. Read VERSION content, trim whitespace
-   If empty or invalid semver:
-     → ERROR: VERSION must contain valid semver (e.g., "1.3.0")
+SKILLS:
+1. List all directories: install/skills/shipkit-*/
+2. Read install/profiles/shipkit.manifest.json
+3. Extract all skill names (skills.mandatory[] + skills.optional[*][].name)
+4. Report orphan skills (on disk, not in manifest) and ghost skills (in manifest, not on disk)
 
-3. Check VERSION matches latest git tag (if tags exist):
-   git describe --tags --abbrev=0 2>/dev/null
-   If tag exists and doesn't match VERSION:
-     → WARNING: VERSION ({version}) doesn't match latest git tag ({tag})
-```
+AGENTS:
+1. List all files: install/agents/shipkit-*.md
+2. Extract agent names from manifest agents section (object with orchestrators/producers/reviewers keys)
+3. Report orphan/ghost agents
 
-**Why this matters**: VERSION is the single source of truth. During installation:
-- Written to `_shipkit` key in settings.json
-- Inserted into CLAUDE.md markers
+NAMING:
+1. Check orchestrator skills use shipkit-orch-* prefix (dir name AND name: field)
+2. Check review gateway skills use shipkit-review-* prefix
+3. Check orchestrator agents use shipkit-orch-* prefix
+4. Check reviewer agents use shipkit-reviewer-* prefix
+5. Search for bare "shipkit-direction", "shipkit-planning", "shipkit-shipping" (without orch-) in install/ — report any found
 
-Stale VERSION = users get wrong version after update.
-
----
-
-### Step 1: Load State & Compute Hashes
-
-```python
-import hashlib
-import json
-from pathlib import Path
-from datetime import datetime
-
-STATE_FILE = Path('.claude/skills/shipkit-framework-integrity/.integrity-state.json')
-
-def load_state():
-    if STATE_FILE.exists():
-        return json.loads(STATE_FILE.read_text())
-    return {"fileHashes": {}, "lastResults": {}}
-
-def compute_hash(filepath):
-    content = Path(filepath).read_bytes()
-    return f"sha256:{hashlib.sha256(content).hexdigest()[:16]}"
-
-def file_changed(filepath, state):
-    current_hash = compute_hash(filepath)
-    stored_hash = state.get("fileHashes", {}).get(str(filepath))
-    return current_hash != stored_hash, current_hash
+Report format:
+MANIFEST_SYNC:
+  skills_disk: N
+  skills_manifest: N
+  orphan_skills: [list or "none"]
+  ghost_skills: [list or "none"]
+  agents_disk: N
+  agents_manifest: N
+  orphan_agents: [list or "none"]
+  ghost_agents: [list or "none"]
+NAMING:
+  errors: [list or "none"]
 ```
 
 ---
 
-### Step 2: Inventory Collection
+#### Agent 2: Broken References
 
-**Collect all skills on disk**:
-```bash
-ls -1d install/skills/shipkit-*/
+**Prompt:**
 ```
+Scan ALL SKILL.md files in install/skills/shipkit-*/ for broken file references.
 
-**Collect all skills in manifest**:
-Read `install/profiles/shipkit.manifest.json` and extract:
-- `skills.mandatory[]`
-- `skills.optional[*][].name`
+For EACH skill:
+1. Read the SKILL.md file
+2. Find LOCAL references: pattern references/something.md (without prefix)
+   → Check exists at {skill_dir}/references/{file}
+3. Find SHARED references: pattern shared/references/something.md
+   → Check exists at install/shared/references/{file}
+4. Find CROSS-SKILL references: pattern shipkit-{name}/references/something.md
+   → Check exists at install/skills/shipkit-{name}/references/{file}
 
-**Collect all agents on disk**:
-```bash
-ls -1d install/agents/shipkit-*
-```
+Skip: URLs (http/https), placeholder paths ({variable}), .shipkit/ paths (user project templates)
 
-**Collect all agents in manifest**:
-Read `install/profiles/shipkit.manifest.json` → `agents[].name`
-
----
-
-### Step 3: Manifest ↔ Disk Sync (Always Run)
-
-**Check for orphan skills** (on disk but not in manifest):
-```
-For each skill directory in install/skills/shipkit-*/:
-  If skill_name NOT in manifest.skills.mandatory AND NOT in manifest.skills.optional:
-    → ERROR: Orphan skill "{skill_name}" exists on disk but not in manifest
-```
-
-**Check for ghost skills** (in manifest but not on disk):
-```
-For each skill in manifest:
-  If no directory exists at install/skills/{skill_name}/:
-    → ERROR: Ghost skill "{skill_name}" in manifest but no directory exists
-```
-
-**Check for orphan/ghost agents**: Same logic for `install/agents/`
-
----
-
-### Step 4: Reference Validation in SKILL.md Files (Cached)
-
-**For each skill, if SKILL.md changed since last check**:
-
-**CRITICAL: There are THREE types of references. Handle each differently:**
-
-| Type | Pattern Example | Resolves To | Common Use |
-|------|-----------------|-------------|------------|
-| **Local** | `references/foo.md` | `{skill}/references/foo.md` | Skill-specific docs |
-| **Shared** | `shared/references/foo.md` | `install/shared/references/foo.md` | Cross-skill standards |
-| **Cross-Skill** | `shipkit-spec/references/foo.md` | `install/skills/shipkit-spec/references/foo.md` | Reuse another skill's docs |
-
-#### Type 1: Local References (most common)
-Pattern: `references/foo.md` or `templates/foo.md` (NO prefix)
-
-```
-Example: "See references/best-practices.md for patterns"
-Resolution: {skill_dir}/references/best-practices.md
-Check: Does install/skills/shipkit-spec/references/best-practices.md exist?
-```
-
-**Detection regex**: `(?<![/\w])references/[\w-]+\.md` or `(?<![/\w])templates/[\w-]+\.md`
-(Negative lookbehind ensures no prefix like `shared/` or `shipkit-spec/`)
-
-#### Type 2: Shared References
-Pattern: `shared/references/foo.md`
-
-```
-Example: "See also: shared/references/VERIFICATION-PROTOCOL.md"
-Resolution: install/shared/references/VERIFICATION-PROTOCOL.md
-Check: Does install/shared/references/VERIFICATION-PROTOCOL.md exist?
-```
-
-**Detection regex**: `shared/references/[\w-]+\.md`
-
-#### Type 3: Cross-Skill References
-Pattern: `shipkit-{name}/references/foo.md` or `other-skill/references/foo.md`
-
-```
-Example: "Reference: See shipkit-spec/references/best-practices.md"
-Resolution: install/skills/shipkit-spec/references/best-practices.md
-Check: Does install/skills/shipkit-spec/references/best-practices.md exist?
-```
-
-**Detection regex**: `shipkit-[\w-]+/references/[\w-]+\.md`
-
----
-
-**Validation logic (bash)**:
-```bash
-for skill in install/skills/shipkit-*/; do
-  name=$(basename "$skill")
-
-  # Type 1: Local references (no prefix)
-  local_refs=$(grep -oE '(?<![/\w])references/[\w-]+\.md' "$skill/SKILL.md" 2>/dev/null | sort -u)
-  for ref in $local_refs; do
-    if [ ! -f "$skill/$ref" ]; then
-      echo "BROKEN LOCAL: $name → $ref"
-    fi
-  done
-
-  # Type 2: Shared references
-  shared_refs=$(grep -oE 'shared/references/[\w-]+\.md' "$skill/SKILL.md" 2>/dev/null | sort -u)
-  for ref in $shared_refs; do
-    if [ ! -f "install/$ref" ]; then
-      echo "BROKEN SHARED: $name → $ref"
-    fi
-  done
-
-  # Type 3: Cross-skill references
-  cross_refs=$(grep -oE 'shipkit-[\w-]+/references/[\w-]+\.md' "$skill/SKILL.md" 2>/dev/null | sort -u)
-  for ref in $cross_refs; do
-    if [ ! -f "install/skills/$ref" ]; then
-      echo "BROKEN CROSS-SKILL: $name → $ref"
-    fi
-  done
-done
-```
-
-**Skip validation for**:
-- URLs (http://, https://)
-- Placeholder paths (contains {variable})
-- User project paths (.shipkit/ context - these are templates for user projects)
-
----
-
-### Step 4b: Broken Reference Triage
-
-When a broken reference is found, **don't automatically create the file**. First determine if the reference is necessary.
-
-**Decision Tree**:
-```
-Broken reference found: {skill}/SKILL.md → references/{file}.md
-    │
-    ├─► Is this reference USED in the skill logic?
-    │   (Does the skill say "Read:", "Load:", "See:" this file?)
-    │       │
-    │       ├─► YES, actively used
-    │       │   └─► Does similar content exist elsewhere?
-    │       │       ├─► YES → Consolidate/move content, update reference
-    │       │       └─► NO  → Create the reference file with needed content
-    │       │
-    │       └─► NO, just mentioned/aspirational
-    │           └─► REMOVE the stale reference from SKILL.md
-    │
-    └─► Is this a "shared/references/" path?
-        └─► Check if ANY skill actually needs it
-            ├─► YES → Create shared file
-            └─► NO  → Remove references from all skills
-```
-
-**Reference Necessity Indicators**:
-
-| Pattern in SKILL.md | Likely Necessary | Action |
-|---------------------|------------------|--------|
-| `Read: references/X.md` | Yes - actively loaded | Create or fix |
-| `Load references/X.md` | Yes - actively loaded | Create or fix |
-| `**See:** references/X.md` | Maybe - informational | Check if content exists inline |
-| `See references/X.md for...` | Maybe - informational | Check if content exists inline |
-| Just mentioned in passing | No - stale | Remove reference |
-
-**Report format for broken references**:
-```
-BROKEN REFERENCE TRIAGE
-───────────────────────
-shipkit-spec/SKILL.md → references/best-practices.md
-  Usage: "See references/best-practices.md for quality standards"
-  Necessity: INFORMATIONAL (not actively loaded)
-  Recommendation: Check if content exists inline; if yes, REMOVE reference
-
-shipkit-project-context/SKILL.md → references/bash-commands.md
-  Usage: "**Commands**: See references/bash-commands.md for platform-specific..."
-  Necessity: LIKELY NEEDED (documentation reference)
-  Recommendation: CREATE file or INLINE the content
+Report format:
+BROKEN_REFERENCES:
+  total_skills_scanned: N
+  total_refs_found: N
+  broken: [list with skill name, ref type, missing path — or "none"]
 ```
 
 ---
 
-### Step 5: Cross-Skill Reference Validation (Cached)
+#### Agent 3: Hooks & Installer Integrity
 
-**For each SKILL.md, extract skill references**:
-
-Patterns:
-- `/shipkit-{name}` — slash command references
-- `shipkit-{name}` in "After This Skill" / "Before This Skill" sections
-- `install/skills/shipkit-{name}` — explicit paths
-
-**Validate each reference**:
+**Prompt:**
 ```
-For each referenced skill name:
-  If install/skills/{skill_name}/ does NOT exist:
-    → ERROR: {source_skill} references non-existent skill "{skill_name}"
-```
+Validate hooks and installer integrity for Shipkit at P:\Projects2\sg-shipkit.
 
----
+HOOKS:
+1. Check these required hooks exist in install/shared/hooks/:
+   - shipkit-session-start.py
+   - shipkit-track-skill-usage.py
+   - shipkit-task-completed-hook.py
+   - shipkit-teammate-idle-hook.py
+2. Report any missing
 
-### Step 6: Hook Validation
+INSTALLER PATHS:
+1. Check these paths exist:
+   install/shared, install/shared/hooks, install/skills, install/agents,
+   install/settings, install/claude-md, install/profiles, docs/generated
+2. Check CLI paths exist:
+   cli/bin/shipkit.js, cli/src/index.js, cli/src/init.js, cli/src/update.js,
+   cli/src/hooks.js, cli/src/settings.js, VERSION, package.json
 
-**6.1: Hook files exist**:
-```
-Required hooks in install/shared/hooks/:
-- shipkit-session-start.py
-- shipkit-after-skill-router.py
-- shipkit-track-skill-usage.py
-- shipkit-relentless-stop-hook.py
-
-For each required hook:
-  If NOT exists:
-    → ERROR: Required hook missing: {hook_name}
-```
-
-**6.2: Hook syntax validation**:
-```bash
-python -m py_compile install/shared/hooks/*.py
-```
-
-**6.3: Skills referencing hooks**:
-```
-For each SKILL.md mentioning a hook file:
-  Extract hook filename
-  If hook file does NOT exist:
-    → ERROR: {skill_name} references non-existent hook "{hook_file}"
-```
-
----
-
-### Step 7: Installer Integrity (Cached)
-
-Two installers exist and must stay in sync: the **npx CLI** (`cli/src/`) and the **Python installer** (`installers/install.py`).
-
-**7.1a: npx CLI syntax validation**:
-```bash
-node -e "require('./cli/src/index')"
-node -e "require('./cli/src/hooks')"
-node -e "require('./cli/src/settings')"
-```
-
-**7.1b: Python installer syntax validation**:
-```bash
-python -m py_compile installers/install.py
-python -m py_compile installers/uninstall.py
-```
-
-**7.2: Installer path references**:
-
-Both installers reference these paths (must exist on disk):
-```python
-INSTALLER_REQUIRED_PATHS = [
-    "install/shared",
-    "install/shared/hooks",
-    "install/skills",
-    "install/agents",
-    "install/settings",
-    "install/claude-md",
-    "install/profiles",
-    "docs/generated"
-]
-```
-
-The npx CLI also requires:
-```python
-NPX_CLI_REQUIRED_PATHS = [
-    "cli/bin/shipkit.js",
-    "cli/src/index.js",
-    "cli/src/init.js",
-    "cli/src/update.js",
-    "cli/src/hooks.js",
-    "cli/src/settings.js",
-    "VERSION",
-    "package.json"
-]
-```
-
-**Validate**:
-```
-For each required path:
-  If NOT exists:
-    → ERROR: Installer references missing path: {path}
-```
-
-**7.3: Manifest validity**:
-```
-For each .manifest.json in install/profiles/:
-  Try to parse as JSON
-  If fails:
-    → ERROR: Invalid JSON in {manifest_file}
-
-  Check required keys exist:
-  - skills.mandatory (array)
-  - skills.optional (object)
-  - agents (array)
-```
-
-**7.4: Installer Coverage Check** (CRITICAL):
-
-Both installers have **hardcoded hook mappings**. If a new hook is added to `install/shared/hooks/`, it won't be installed unless BOTH installers are updated.
-
-**npx CLI hooks** — defined in `cli/src/hooks.js` (buildHooksConfig) and `cli/src/init.js` (HOOK_FILES mapping):
-```javascript
-// cli/src/init.js HOOK_FILES — maps source name to installed name
-const HOOK_FILES = {
-    "shipkit-session-start.py": "session-start.py",
-    "shipkit-after-skill-router.py": "after-skill-router.py",
-    "shipkit-relentless-stop-hook.py": "shipkit-relentless-stop-hook.py",
-    "shipkit-track-skill-usage.py": "shipkit-track-skill-usage.py",
-    "shipkit-task-completed-hook.py": "shipkit-task-completed-hook.py",
-    "shipkit-teammate-idle-hook.py": "shipkit-teammate-idle-hook.py"
-};
-
-// cli/src/hooks.js buildHooksConfig — hooks wired in settings.json
-// Must reference the DESTINATION names from HOOK_FILES above
-```
-
-**Python installer hooks** — hardcoded in `install_shared_core()`:
-```python
-# Extract from shutil.copy2() calls
-INSTALLER_HARDCODED_HOOKS = [
-    "shipkit-session-start.py",
-    "shipkit-after-skill-router.py",
-    "shipkit-track-skill-usage.py",
-    "shipkit-relentless-stop-hook.py",
-    "shipkit-task-completed-hook.py",
-    "shipkit-teammate-idle-hook.py"
-]
-```
-
-**Validate coverage**:
-```
+HOOK COVERAGE:
 1. List all .py files in install/shared/hooks/
-2. Compare to HOOK_FILES keys from cli/src/init.js
-3. Compare to INSTALLER_HARDCODED_HOOKS from installers/install.py
-4. For each hook on disk NOT in npx CLI:
-   → ERROR: Hook "{hook}" exists but npx CLI won't install it
-   → Action: Update cli/src/init.js HOOK_FILES
+2. Read cli/src/init.js — find HOOK_FILES mapping (maps source → destination names)
+3. Check each hook on disk is in HOOK_FILES
+4. Report any hooks that exist on disk but the CLI won't install
 
-5. For each hook on disk NOT in Python installer:
-   → ERROR: Hook "{hook}" exists but Python installer won't install it
-   → Action: Update installers/install.py
+SETTINGS CONSISTENCY:
+1. Read install/settings/shipkit.settings.json
+2. Read cli/src/hooks.js — find buildHooksConfig
+3. Check that hook events and commands are consistent between them
+4. Check package.json version matches VERSION file
 
-6. For each hook in settings.json wiring NOT in HOOK_FILES destinations:
-   → ERROR: settings.json references hook "{dest}" but CLI won't copy it
-```
-
-**7.5: npx CLI ↔ Python installer consistency**:
-
-The canonical settings structure is defined in `install/settings/shipkit.settings.json`. Both installers must produce equivalent output.
-
-```
-1. Read cli/src/hooks.js buildHooksConfig() output structure
-2. Read install/settings/shipkit.settings.json hooks section
-3. Compare: hook events, matchers, commands, timeouts must match
-   → ERROR if any mismatch between CLI hooks and canonical settings
-
-4. Read cli/src/settings.js generateSettings() permission list
-5. Read install/settings/shipkit.settings.json permissions
-6. Compare: base permissions (non-Skill entries) must match
-   → WARNING if base permissions differ between CLI and canonical settings
-
-7. Check package.json version matches VERSION file
-   → ERROR if version mismatch (npm publish will fail)
-```
-
-**Why this matters**:
-- Skills: Driven by manifest → auto-discovered ✓
-- Agents: Driven by manifest → auto-discovered ✓
-- Hooks: **Hardcoded in both installers** → must be manually synced ✗
-- Settings: **Duplicated in npx CLI** → must match canonical file ✗
-
----
-
-### Step 8: 7-File Integration Consistency
-
-**File 1: SKILL.md exists** — Covered in Step 3
-
-**File 2: Overview HTML**:
-```
-Read: docs/generated/shipkit-overview.html
-For each skill in manifest:
-  If skill_name NOT found in HTML:
-    → WARNING: {skill_name} not listed in overview HTML
-
-Extract skill count from HTML (stat-number)
-Compare to manifest count
-If mismatch:
-  → WARNING: HTML shows {html_count} skills, manifest has {manifest_count}
-```
-
-**File 3: Rules file skill reference**:
-```
-Read: install/rules/shipkit.md
-For each skill in manifest (excluding shipkit-detect, shipkit-master):
-  If "/{skill_name}" NOT found:
-    → WARNING: {skill_name} not in rules skill reference table
-
-Note: The skill reference table lives in install/rules/shipkit.md (not
-install/claude-md/shipkit.md). This file is installed to .claude/rules/
-and auto-loaded every session, so missing skills = invisible to users.
-```
-
-**File 4: Manifest** — Covered in Step 7.3
-
-**File 5: Hooks** — Covered in Step 6
-
-**File 6: Master routing**:
-```
-Read: install/skills/shipkit-master/SKILL.md
-For each skill in manifest (excluding shipkit-master, shipkit-detect):
-  If skill_name NOT found in master routing:
-    → WARNING: {skill_name} not in master routing table
-```
-
-**File 7: Settings permissions**:
-```
-Read: install/settings/shipkit.settings.json
-Validate JSON syntax
-For each skill in manifest:
-  If "Skill({skill_name})" NOT in permissions.allow:
-    → ERROR: {skill_name} missing from settings permissions
+Report format:
+HOOKS:
+  required_present: N/4
+  missing: [list or "none"]
+INSTALLER:
+  paths_ok: true/false
+  missing_paths: [list or "none"]
+HOOK_COVERAGE:
+  hooks_on_disk: N
+  hooks_in_cli: N
+  uncovered: [list or "none"]
+SETTINGS:
+  version_match: true/false
+  hook_consistency: [issues or "ok"]
 ```
 
 ---
 
-### Step 9: Documentation Count Validation (Always Run)
+#### Agent 4: Documentation Counts & Permissions
 
-**README.md skill count**:
+**Prompt:**
 ```
-Read: README.md
-Extract claimed skill count (pattern: "\d+ skills")
-Compare to actual count from manifest
-If mismatch:
-  → WARNING: README claims {claimed} skills, manifest has {actual}
-```
+Check documentation counts and settings permissions for Shipkit at P:\Projects2\sg-shipkit.
 
-**CLAUDE.md skill count**:
-```
-Read: CLAUDE.md
-Extract claimed skill count from "Total:" line
-Compare to actual count
-If mismatch:
-  → WARNING: CLAUDE.md claims {claimed} skills, manifest has {actual}
-```
+COUNTS:
+1. Read install/profiles/shipkit.manifest.json — count total skills and agents (source of truth)
+2. Read README.md — find ALL skill/agent count claims (sync markers AND plain text like "33 skill definitions")
+3. Read CLAUDE.md — find skill count claims
+4. Read package.json — check description for count claims
+5. Read docs/generated/shipkit-overview.html — check stat-number spans for skill/agent counts
+6. Report any mismatches
 
----
+PERMISSIONS:
+1. Read install/settings/shipkit.settings.json
+2. Extract all Skill() entries from permissions.allow
+3. Compare to manifest skill list
+4. Report skills missing Skill() permission or extra Skill() without manifest entry
 
-### Step 9b: JSON Artifact Migration Tracking (Always Run)
+7-FILE INTEGRATION (spot check):
+1. Read install/rules/shipkit.md — check each manifest skill appears as /shipkit-{name}
+2. Report skills missing from rules file
 
-**Check**: Which skills output structured data to `.shipkit/` and whether they use the JSON artifact convention.
-
-**Logic**:
-```
-1. Scan all SKILL.md files for "Context Files This Skill Writes" sections
-2. Extract output paths that write to .shipkit/
-3. Classify each:
-   - .json with $schema: "shipkit-artifact" → ✓ Migrated
-   - .json without convention → ⚠ JSON but missing convention
-   - .md with structured data (lists, status, counts) → ⚠ Should migrate
-   - .md with narrative content (specs, plans, decisions) → ✓ Correct as markdown
-
-4. Report migration progress
-```
-
-**Classification rules**:
-| Output Pattern | Classification |
-|---------------|---------------|
-| `.shipkit/*.json` with `$schema: "shipkit-artifact"` in SKILL.md | ✓ JSON artifact |
-| `.shipkit/*.md` with structured/countable data | ⚠ Migration candidate |
-| `.shipkit/specs/active/*.json`, `.shipkit/plans/active/*.json` | ✓ Migrated to JSON |
-| `.shipkit/architecture.json` | ✓ Migrated to JSON |
-| `.shipkit/why.json` | ✓ Migrated to JSON |
-| No `.shipkit/` output (NONE strategy) | ⊘ N/A |
-
-**Report format**:
-```
-JSON ARTIFACT MIGRATION
-───────────────────────
-Migrated to JSON:     1/N skills (goals.json)
-Candidates for JSON:  X skills
-Correct as markdown:  Y skills
-No output:           Z skills
-
-Migration candidates:
-  ✓ shipkit-project-status → .shipkit/status.json (migrated)
-  ✓ shipkit-work-memory → .shipkit/progress.json (migrated)
-
-Reference: install/skills/shipkit-goals/SKILL.md (JSON artifact pattern)
-Convention: $schema, type, version, lastUpdated, source, summary
-```
-
-**Why this matters**: JSON artifacts are natively visualizable by external dashboards. Progressive migration ensures tooling gets richer data over time without requiring a big-bang rewrite.
-
----
-
-### Step 9c: Claude Code Compatibility Audit (Always Run)
-
-**Framework-wide check against current Claude Code changelog.**
-
-Read `docs/development/claude-code-changelog.md` and validate:
-
-#### 9b.1: Hook Event Coverage
-
-**Check**: All hook events our hooks handle still exist in Claude Code
-
-```
-Current hook events (from changelog):
-- SessionStart (v1.0.62)
-- PreToolUse (v1.0.38) — supports additionalContext (v2.1.9)
-- PostToolUse (v1.0.38)
-- Stop (v1.0.38)
-- SubagentStart (v2.0.43)
-- SubagentStop (v1.0.41) — has agent_id, agent_transcript_path (v2.0.42)
-- Notification (v2.0.37)
-- PermissionRequest (v2.0.45)
-- PreCompact (v1.0.48)
-- TeammateIdle (v2.1.33)
-- TaskCompleted (v2.1.33)
-
-For each hook in install/shared/hooks/:
-  Extract which events it handles (from settings.json hook config)
-  If event NOT in known events list:
-    → WARNING: Hook handles unknown event "{event}" - may be deprecated
+Report format:
+COUNTS:
+  manifest_skills: N
+  manifest_agents: N
+  mismatches: [list with file, claimed, actual — or "none"]
+PERMISSIONS:
+  total_permissions: N
+  missing: [list or "none"]
+  extra: [list or "none"]
+RULES_COVERAGE:
+  missing_from_rules: [list or "none"]
 ```
 
 ---
 
-#### 9b.2: Settings Schema Compatibility
+#### Agent 5: Agent Cross-References & Frontmatter
 
-**Check**: Our settings.json uses valid structure and fields
-
+**Prompt:**
 ```
-For install/settings/shipkit.settings.json:
-  Validate known top-level keys:
-  - permissions.allow — array of permission strings
-  - hooks — hook configuration
-  - env — environment variables (if any)
+Validate agent cross-references and frontmatter in Shipkit at P:\Projects2\sg-shipkit.
 
-  Check permission string formats:
-  - Skill({name}) — valid since v2.0.20
-  - Bash({pattern}) — wildcard patterns valid since v2.1.0
-  - mcp__{server}__{tool} — wildcard valid since v2.1.0
+AGENT FILE VALIDATION:
+1. For each .md file in install/agents/shipkit-*:
+   - Check file is non-empty
+   - Check it starts with --- (YAML frontmatter)
+   - Extract name: field
+   - Report any issues
 
-  If any permission uses unrecognized format:
-    → WARNING: Permission "{perm}" uses unrecognized format
+SKILL → AGENT CROSS-REFS:
+1. For each SKILL.md in install/skills/shipkit-*/:
+   - Check if frontmatter contains "agent:" field
+   - If yes, extract the agent name
+   - Check install/agents/{agent-name}.md exists
+   - Report any broken references
+
+AGENT → SKILL CROSS-REFS:
+1. For each agent in install/agents/shipkit-*:
+   - Grep for skill references (patterns like skill: "shipkit-*" or /shipkit-*)
+   - Check referenced skills exist as directories in install/skills/
+   - Report broken references
+
+Report format:
+AGENT_FILES:
+  total: N
+  valid: N
+  issues: [list or "none"]
+SKILL_TO_AGENT:
+  skills_with_agent: N
+  broken: [list with skill name and missing agent — or "none"]
+AGENT_TO_SKILL:
+  broken: [list with agent name and missing skill — or "none"]
 ```
 
 ---
 
-#### 9b.3: Framework-Wide Deprecated Pattern Scan
+### Step 2: Collect & Aggregate Results
 
-**Check**: Scan ALL skills and agents for deprecated patterns
+After all 5 agents return, aggregate their reports into a single integrity report.
 
-```
-Deprecated patterns to scan for across entire install/:
-- ".claude.json" references (allowedTools/ignorePatterns removed v2.0.8)
-- "includeCoAuthoredBy" (deprecated v2.0.62, use attribution)
-- Legacy SDK entrypoint references (removed v1.0.123)
-- Bash commands doing file operations (Read/Edit/Glob/Grep preferred since v2.1.0)
+**Count totals:**
+- Errors: broken refs + orphan/ghost + missing permissions + broken agent refs + missing hooks
+- Warnings: count mismatches + missing from rules + naming issues
 
-For each match found:
-  → WARNING: {file} uses deprecated pattern: {pattern}
-  → Suggestion: {replacement}
-```
+### Step 3: Format & Display Report
 
----
-
-#### 9b.4: New Feature Adoption Summary
-
-**Check**: Which newer Claude Code features the framework could leverage
-
-```
-Feature adoption report (INFO level):
-
-Agent Memory (v2.1.33):
-  Agents using `memory` field: {count}/{total}
-  Agents that could benefit: [list]
-
-Skill Context Fork (v2.1.0):
-  Skills using `context: fork`: {count}/{total}
-
-Frontmatter Hooks (v2.1.0):
-  Skills/agents using inline `hooks`: {count}/{total}
-
-YAML-style allowed-tools (v2.1.0):
-  Skills using YAML lists: {count}/{total}
-
-Plugin System (v2.0.12):
-  Framework packaged as plugin: YES/NO
-```
-
-**Note**: This is informational only — no errors or warnings. Helps track modernization progress.
-
----
-
-#### 9b.5: Changelog Version Drift Alert
-
-**Check**: How far behind our last-verified version is
-
-```
-Read: docs/development/claude-code-changelog.meta.json → latestVersion
-Read: .claude/skills/shipkit-framework-integrity/.integrity-state.json → lastVerifiedVersion (if exists)
-
-If latestVersion != lastVerifiedVersion:
-  Count versions between them
-  Summarize key changes affecting framework:
-    - New frontmatter fields
-    - New hook events
-    - Breaking changes
-    - Deprecations
-
-  → INFO: {N} new Claude Code versions since last integrity check
-  → Key changes: [summary list]
-```
-
-**Store `lastVerifiedVersion` in state file after successful check.**
-
----
-
-### Step 10: Save State & Generate Report
-
-**Update state file**:
-```python
-def save_state(state, new_hashes, results):
-    state["lastFullCheck"] = datetime.utcnow().isoformat() + "Z"
-    state["fileHashes"] = new_hashes
-    state["lastResults"] = results
-    STATE_FILE.parent.mkdir(parents=True, exist_ok=True)
-    STATE_FILE.write_text(json.dumps(state, indent=2))
-```
-
-**Output format**:
 ```
 ============================================
 SHIPKIT FRAMEWORK INTEGRITY REPORT
 ============================================
-Timestamp: 2025-02-05T10:30:00Z
-Mode: Incremental (15 files unchanged, 3 files checked)
+Timestamp: {now}
+Mode: Parallel (5 agents)
 
 MANIFEST ↔ DISK SYNC
 ─────────────────────
-Skills on disk:     27
-Skills in manifest: 27
-Agents on disk:     6
-Agents in manifest: 6
+Skills on disk:     {N}
+Skills in manifest: {N}
+Agents on disk:     {N}
+Agents in manifest: {N}
+{orphan/ghost details or ✓ All synced}
 
-✓ All skills synced
-✓ All agents synced
+NAMING CONVENTIONS
+──────────────────
+{naming errors or ✓ All consistent}
 
 BROKEN REFERENCES
 ─────────────────
-Files checked: 3 (24 skipped - unchanged)
+Skills scanned: {N}
+References found: {N}
+{broken details or ✓ All references valid}
 
-Local References (references/foo.md → skill's own directory):
-  ✗ shipkit-verify → references/quality-checklist.md (NOT FOUND)
-  ✗ shipkit-preflight → templates/audit-template.md (NOT FOUND)
-
-Shared References (shared/references/foo.md → install/shared/):
-  ✓ All shared references valid
-
-Cross-Skill References (shipkit-X/references/foo.md → other skill):
-  ✓ All cross-skill references valid
-
-CROSS-SKILL REFERENCES
-──────────────────────
-✓ All cross-skill references valid
-
-HOOK VALIDATION
-───────────────
-✓ All 4 required hooks present
-✓ Hook syntax valid
-✓ No broken hook references in skills
-
-INSTALLER INTEGRITY
-───────────────────
-✓ npx CLI syntax valid (cli/src/*.js)
-✓ installers/install.py syntax valid
-✓ installers/uninstall.py syntax valid
-✓ All installer paths exist (shared + CLI)
-✓ All manifest files valid JSON
-✓ Hook coverage: 6/6 hooks in npx CLI, 6/6 in Python installer
-✓ npx CLI hooks match canonical settings
-✓ package.json version matches VERSION
-
-7-FILE INTEGRATION
-──────────────────
-✓ File 1: All SKILL.md files exist
-✓ File 2: Overview HTML complete
-⚠ File 3: rules/shipkit.md missing 1 skill
-✓ File 4: Manifest valid
-✓ File 5: Hooks valid
-✓ File 6: Master routing complete
-✓ File 7: Settings permissions complete
+HOOKS & INSTALLER
+─────────────────
+{hook/installer details or ✓ All valid}
 
 DOCUMENTATION COUNTS
 ────────────────────
-README.md:      27 skills ✓
-CLAUDE.md:      27 skills ✓
-Overview HTML:  27 skills ✓
+{mismatch details or ✓ All counts match}
 
-JSON ARTIFACT MIGRATION
-───────────────────────
-Migrated to JSON:     1 skill (goals.json)
-Candidates for JSON:  3 skills
-Correct as markdown:  12 skills
-No output:           11 skills
+SETTINGS PERMISSIONS
+────────────────────
+{missing/extra or ✓ All permissions present}
 
-⚠ Migration candidates:
-  shipkit-project-status → structured health data
-  shipkit-work-memory → session progress log
-
-CLAUDE CODE COMPATIBILITY (v{claude_code_version})
-───────────────────────────────────────────────────
-✓ All hook events recognized
-✓ Settings schema valid
-⚠ 2 deprecated patterns found
-ⓘ Feature adoption: 3/9 agents use memory field
+AGENT CROSS-REFERENCES
+──────────────────────
+{broken refs or ✓ All agent references valid}
 
 ============================================
 SUMMARY
 ============================================
-Errors:   2 (must fix before release)
-Warnings: 1 (should fix)
-Skipped:  24 files (unchanged since last check)
+Errors:   {N}
+Warnings: {N}
 
-ERRORS:
-1. [BROKEN] shipkit-verify references non-existent file
-2. [BROKEN] shipkit-preflight references non-existent file
-
-WARNINGS:
-1. [DOCS] shipkit-new-skill not in shipkit.md
+{error/warning list if any}
 
 ============================================
-RESULT: FAIL (2 errors must be resolved)
+RESULT: {PASS or FAIL}
 ============================================
-
-State saved to: .claude/skills/shipkit-framework-integrity/.integrity-state.json
 ```
 
----
+### Step 4: Handle --fix (If Requested)
 
-## Validation Rules Summary
+If `--fix` was passed, attempt to auto-fix simple issues:
+- Missing Skill() permissions → add to settings.json
+- Count mismatches → update sync markers in README.md
+- Orphan skills → prompt to add to manifest or remove from disk
 
-| Check | Severity | Cached | Description |
-|-------|----------|--------|-------------|
-| VERSION missing | ERROR | No | `VERSION` file doesn't exist |
-| VERSION invalid | ERROR | No | VERSION file empty or not valid semver |
-| VERSION/tag mismatch | WARNING | No | VERSION doesn't match latest git tag |
-| Orphan skill | ERROR | No | Skill directory exists but not in manifest |
-| Ghost skill | ERROR | No | Skill in manifest but no directory |
-| Broken reference | ERROR | Yes | SKILL.md references file that doesn't exist |
-| Cross-skill ref invalid | ERROR | Yes | Skill references another skill that doesn't exist |
-| Missing hook | ERROR | No | Required hook file missing |
-| Hook syntax error | ERROR | Yes | Python file has syntax errors |
-| Installer syntax error | ERROR | Yes | Installer Python files have syntax errors |
-| Installer path missing | ERROR | No | Path referenced by installer doesn't exist |
-| **Hook not in installer** | **ERROR** | No | Hook exists on disk but installer won't copy it |
-| Invalid manifest JSON | ERROR | Yes | Manifest file has JSON syntax errors |
-| Missing permission | ERROR | No | Skill not in settings.json allow list |
-| Count mismatch | WARNING | No | Doc counts don't match manifest |
-| Missing from routing | WARNING | No | Skill not in master routing table |
-| Missing from docs | WARNING | No | Skill not in rules/shipkit.md skill reference table |
-| Stale reference | WARNING | Yes | Reference exists but isn't actively used (triage needed) |
-| Unknown hook event | WARNING | No | Hook handles event not in changelog's known events |
-| Deprecated pattern | WARNING | No | Code uses pattern deprecated in changelog |
-| Stale changelog | WARNING | No | Changelog >7 days old or missing |
-| Version drift | INFO | No | New Claude Code versions since last check |
-| Feature opportunity | INFO | No | Framework could leverage newer features |
-| JSON migration candidate | WARNING | No | Skill outputs structured .md that should be .json |
-| JSON convention missing | WARNING | No | Skill outputs .json but missing artifact convention |
-
----
-
-## Command Line Options
-
-```
-/shipkit-framework-integrity [options]
-
-Options:
-  --full        Force full check, ignore cache
-  --quick       Only check manifest sync and counts (fastest)
-  --fix         Attempt to auto-fix simple issues
-  --json        Output results as JSON
-  --loop N      Run up to N iterations, re-checking after fixes (default: 3 if no N)
-```
+Re-run the check after fixes to verify.
 
 ---
 
@@ -958,19 +354,36 @@ When invoked with `--loop N`, the skill runs iteratively — checking, fixing, a
 **How it works**:
 1. Parse `--loop N` from arguments (default N=3 if omitted)
 2. Create state file with frontmatter (skill, iteration, max_iterations, completion_promise)
-3. Run the normal integrity check
+3. Run the normal integrity check (dispatch 5 agents)
 4. Update the Progress section in the state file with findings and fixes applied
 5. If zero errors and zero warnings → delete state file, report success, stop
 6. If issues remain → end response; the relentless stop hook blocks exit and re-prompts
 
-**Example**:
-```
-/shipkit-framework-integrity --loop 3 --fix
-```
-
-This runs up to 3 iterations of check-fix-recheck. Combines with `--fix` for automated repair across passes (e.g., pass 1 fixes manifest sync, pass 2 fixes references revealed by the sync fix).
-
 **Shared reference**: See `.claude/skills/_shared/loop-mode-reference.md` for state file format and protocol details.
+
+---
+
+## Validation Rules Summary
+
+| Check | Severity | Agent | Description |
+|-------|----------|-------|-------------|
+| VERSION missing | ERROR | inline | VERSION file doesn't exist |
+| VERSION invalid | ERROR | inline | VERSION file empty or not valid semver |
+| VERSION/tag mismatch | WARNING | inline | VERSION doesn't match latest git tag |
+| Orphan skill | ERROR | 1 | Skill directory exists but not in manifest |
+| Ghost skill | ERROR | 1 | Skill in manifest but no directory |
+| Naming violation | ERROR | 1 | Orch/review prefix missing or old names found |
+| Broken reference | ERROR | 2 | SKILL.md references file that doesn't exist |
+| Missing hook | ERROR | 3 | Required hook file missing |
+| Hook not in installer | ERROR | 3 | Hook exists on disk but installer won't copy it |
+| Installer path missing | ERROR | 3 | Path referenced by installer doesn't exist |
+| Version mismatch (pkg) | ERROR | 3 | package.json version doesn't match VERSION |
+| Missing permission | ERROR | 4 | Skill not in settings.json allow list |
+| Count mismatch | WARNING | 4 | Doc counts don't match manifest |
+| Missing from rules | WARNING | 4 | Skill not in rules/shipkit.md |
+| Broken agent ref | ERROR | 5 | Skill references agent that doesn't exist |
+| Invalid agent file | ERROR | 5 | Agent file empty or missing frontmatter |
+| Broken skill ref in agent | WARNING | 5 | Agent references skill that doesn't exist |
 
 ---
 
@@ -982,7 +395,7 @@ This runs up to 3 iterations of check-fix-recheck. Combines with `--fix` for aut
 - Before `git push` to main branch
 
 ### After This Skill
-- Fix identified issues manually
+- Fix identified issues manually or with `--fix`
 - Re-run with `--full` to verify fixes
 - Proceed with release/commit
 
@@ -994,133 +407,17 @@ This runs up to 3 iterations of check-fix-recheck. Combines with `--fix` for aut
 
 ## Context Files This Skill Reads
 
-**Core files**:
-- `install/profiles/shipkit.manifest.json` — Source of truth for skills/agents
-- `install/settings/shipkit.settings.json` — Permissions list
-- `install/claude-md/shipkit.md` — User-facing project instructions template
-- `install/rules/shipkit.md` — Skill reference table (auto-loaded every session)
-- `install/skills/shipkit-master/SKILL.md` — Routing table
-
-**Installer files**:
-- `cli/bin/shipkit.js` — npx CLI entry point
-- `cli/src/hooks.js` — npx CLI canonical hooks config
-- `cli/src/settings.js` — npx CLI settings generator
-- `cli/src/init.js` — npx CLI HOOK_FILES mapping
-- `package.json` — npm package config (version must match VERSION)
-- `installers/install.py` — Python installer (fallback)
-- `installers/uninstall.py` — Uninstaller
-
-**All skill files**:
-- `install/skills/shipkit-*/SKILL.md` — Each skill's definition
-- `install/skills/shipkit-*/references/*` — Reference files
-- `install/skills/shipkit-*/templates/*` — Template files
-
-**All agent files**:
-- `install/agents/shipkit-*.md` — Agent persona files
-
-**Hook files**:
-- `install/shared/hooks/*.py` — All hook files
-
-**Documentation**:
-- `README.md` — Skill count claims
-- `CLAUDE.md` — Skill count claims
-- `docs/generated/shipkit-overview.html` — HTML help
-
-**Claude Code changelog** (auto-fetched if stale):
-- `docs/development/claude-code-changelog.md` - Full changelog from GitHub
-- `docs/development/claude-code-changelog.meta.json` - Freshness metadata
-- `docs/development/fetch-changelog.sh` - Fetch script
-
-**State file**:
-- `.claude/skills/shipkit-framework-integrity/.integrity-state.json`
-
----
+**Agent 1 reads**: manifest, skill dirs, agent files
+**Agent 2 reads**: all SKILL.md files, reference/template files
+**Agent 3 reads**: hook files, CLI source, settings, VERSION, package.json
+**Agent 4 reads**: manifest, README, CLAUDE.md, package.json, HTML overview, settings, rules
+**Agent 5 reads**: all agent files, all SKILL.md frontmatter
 
 ## Context Files This Skill Writes
 
 **Write Strategy: STATE FILE ONLY**
 
 - `.claude/skills/shipkit-framework-integrity/.integrity-state.json` — Caching state
-- `.shipkit/framework-integrity-loop.local.md` — Loop mode state (only when `--loop N` used, deleted on completion)
+- `.shipkit/framework-integrity-loop.local.md` — Loop mode state (only when `--loop N` used)
 
-This skill:
-- Does NOT modify source files (unless `--fix` is used)
-- Reports issues found
-- User must fix issues manually (unless `--fix`)
-
----
-
-## Success Criteria
-
-Validation is complete when:
-- [ ] Changelog freshness verified (fetched if stale >7 days)
-- [ ] Manifest ↔ disk sync verified
-- [ ] All SKILL.md files scanned for broken references (or skipped if unchanged)
-- [ ] Cross-skill references validated
-- [ ] All hooks present and syntax valid
-- [ ] Installer syntax and paths valid
-- [ ] 7-file integration consistency verified
-- [ ] Documentation counts validated
-- [ ] Claude Code compatibility audit complete
-- [ ] State file updated with current hashes and lastVerifiedVersion
-- [ ] Clear PASS/FAIL result with actionable items
-
----
-
-## Example Session
-
-```
-User: "/shipkit-framework-integrity"
-
-Claude:
-Loading state file...
-  Last check: 2025-02-04T15:00:00Z
-  24 files unchanged, 3 files modified since last check
-
-Running integrity check...
-
-1. Checking manifest ↔ disk sync...
-   ✓ 28 skills synced
-   ✓ 6 agents synced
-
-2. Scanning SKILL.md files for broken references...
-
-   LOCAL REFERENCES (references/foo.md → skill's own directory):
-   ✗ shipkit-ux-audit → references/common-patterns.md (NOT FOUND)
-   ✗ shipkit-ux-audit → references/ux-principles.md (NOT FOUND)
-   ✓ shipkit-spec → references/best-practices.md
-   ✓ shipkit-master → references/file-freshness-logic.md
-
-   SHARED REFERENCES (shared/references/foo.md → install/shared/):
-   ✓ VERIFICATION-PROTOCOL.md exists (used by 5 skills)
-
-   CROSS-SKILL REFERENCES (shipkit-X/references/foo.md):
-   ✓ shipkit-plan → shipkit-spec/references/best-practices.md
-
-3. Checking hooks...
-   ✓ All 4 required hooks present
-   ✓ Syntax valid
-   ✓ All hooks covered by installer
-
-4. Checking installer integrity...
-   ✓ Installer syntax valid
-   ✓ All paths exist
-
-5. Validating 7-file integration...
-   ✓ All integration files consistent
-
-6. Checking documentation counts...
-   ✓ All counts match (28 skills)
-
-============================================
-RESULT: FAIL (2 broken local references)
-
-BROKEN LOCAL REFERENCES:
-  shipkit-ux-audit/SKILL.md:
-    ✗ references/common-patterns.md
-    ✗ references/ux-principles.md
-
-To fix: CREATE the missing files OR REMOVE the references from SKILL.md
-(Use sub-agent triage to determine which action is appropriate)
-============================================
-```
+This skill does NOT modify source files unless `--fix` is used.

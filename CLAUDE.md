@@ -84,7 +84,7 @@ A skill is **redundant** if Claude does it well without instruction (debugging, 
 - **Skill format:** Follow Claude Code skill spec exactly — check GitHub repo before assuming syntax
 - **File structure:** All skills in `install/skills/`, agents in `install/agents/`
 - **Naming:** All skills use `shipkit-` prefix
-- **Integration:** 7-file system (manifest, hooks, routing, etc.) — see `docs/development/SHIPKIT-7-FILE-INTEGRATION.md`
+- **Integration:** 7-file system (manifest, hooks, routing, etc.) — see `docs/development/integration/7-file-integration.md`
 
 ### Quality Trade-offs
 - **Correctness over speed:** Verify against Claude Code docs before implementing
@@ -108,7 +108,11 @@ A skill is **redundant** if Claude does it well without instruction (debugging, 
    - Issues — Real-world usage patterns and edge cases
    - Source code — Actual tool definitions and behavior
 2. **Official Claude Code docs** — `https://code.claude.com/docs`
-3. **Local best practices** — `docs/development/`
+3. **CC Primitives Test Report** — `docs/development/cc-reference/DOC-023-pipeline-test-report.md`
+   - Empirically confirmed behaviors (15 confirmed facts + 7 architecture rules)
+   - Test repo: `P:/Projects2/shipkit-testing/`
+   - Don't retest confirmed behaviors unless CC version changes significantly
+4. **Local best practices** — `docs/development/`
 
 **Why GitHub first?** Claude Code evolves rapidly. The CHANGELOG and source code are always current. Third-party articles and even official docs can lag behind. When researching a feature (like Tasks, subagents, hooks), check the repo first.
 
@@ -130,8 +134,8 @@ A skill is **redundant** if Claude does it well without instruction (debugging, 
 ### When Creating or Editing Skills
 
 **Required reading:**
-- `docs/development/SHIPKIT-7-FILE-INTEGRATION.md` — 7-file integration system
-- `docs/development/SKILL-QUALITY-AND-PATTERNS.md` — Quality standards
+- `docs/development/integration/7-file-integration.md` — 7-file integration system
+- `docs/development/quality-standards/skill-quality-and-patterns.md` — Quality standards
 
 Production-ready = Integration (7 files) + Quality. DO NOT skip quality standards.
 
@@ -197,11 +201,9 @@ Bash IS appropriate for git, tests, builds, system operations.
 
 ### Working Documents
 
-**Location:** Always create in `dev/`
+**Location:** `docs/development/` — managed by the documentation manifest (`docs/development/manifest.json`)
 
-**Naming:** UPPERCASE-WITH-HYPHENS.md (e.g., `MIGRATION-STATUS.md`, `SKILL-RESTRUCTURE-PLAN.md`)
-
-**Use for:** Implementation progress, migration plans, architecture decisions, task breakdowns
+**Use `shipkit-documenter`** to create and register new documents in the appropriate category (system-design, cc-reference, quality-standards, integration, dev-progress, inspiration, archive).
 
 **Don't use for:** Scratch notes, single-session todos, user-facing docs, code files, product artifacts (those go in `.shipkit/`)
 
@@ -239,43 +241,47 @@ Before publishing changes to GitHub:
 ### Skills
 Location: `install/skills/`
 
-**Core Workflow:** `shipkit-master`, `shipkit-project-status`, `shipkit-project-context`, `shipkit-codebase-index`, `shipkit-claude-md`
+**Core Workflow:** `shipkit-master`, `shipkit-project-context`, `shipkit-codebase-index`, `shipkit-claude-md`
 
-**Discovery & Planning:** `shipkit-product-discovery`, `shipkit-why-project`, `shipkit-product-definition`, `shipkit-engineering-definition`, `shipkit-goals`, `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-thinking-partner`
+**Orchestration:** `shipkit-orch-direction`, `shipkit-orch-planning`, `shipkit-orch-shipping`
 
-**Implementation:** `shipkit-architecture-memory`, `shipkit-data-contracts`, `shipkit-integration-docs`
+**Discovery & Planning:** `shipkit-vision`, `shipkit-product-discovery`, `shipkit-why-project`, `shipkit-product-definition`, `shipkit-engineering-definition`, `shipkit-stage`, `shipkit-product-goals`, `shipkit-engineering-goals`, `shipkit-spec-roadmap`, `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-thinking-partner`
 
-**Execution:** `shipkit-build-relentlessly`, `shipkit-test-relentlessly`, `shipkit-lint-relentlessly`, `shipkit-test-cases`, `shipkit-implement-independently`, `shipkit-team`, `shipkit-cleanup-worktrees`
+**Execution:** `shipkit-test-cases`, `shipkit-team`
 
-**Quality & Documentation:** `shipkit-verify`, `shipkit-preflight`, `shipkit-scale-ready`, `shipkit-prompt-audit`, `shipkit-semantic-qa`, `shipkit-qa-visual`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
+**Quality & Documentation:** `shipkit-review-direction`, `shipkit-review-planning`, `shipkit-verify`, `shipkit-preflight`, `shipkit-scale-ready`, `shipkit-prompt-audit`, `shipkit-semantic-qa`, `shipkit-qa-visual`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
 
 **System:** `shipkit-update`, `shipkit-get-skills`, `shipkit-get-mcps`
 
-**System infrastructure:** `shipkit-detect` (auto-triggered hook, not user-invocable)
-
-**Total:** 37 user-invocable skills + 1 infrastructure (detect)
+**Total:** 37 skills (27 user-invocable + 10 infrastructure: master, vision, orch-direction, orch-planning, orch-shipping, review-direction, review-planning, update, get-skills, get-mcps)
 
 ### Agents
 Location: `install/agents/`
 
-`shipkit-master-agent` (goal-driven orchestrator), `shipkit-visionary-agent` (strategic visionary), `shipkit-project-manager-agent` (execution lead), `shipkit-product-owner-agent` (product manager), `shipkit-architect-agent` (engineering manager), `shipkit-ux-designer-agent`, `shipkit-implementer-agent`, `shipkit-implement-independently-agent`, `shipkit-reviewer-agent`, `shipkit-researcher-agent`, `shipkit-thinking-partner-agent`
+**Orchestrators:** `shipkit-orch-master-agent` (sequential loop dispatcher), `shipkit-orch-direction-agent` (direction loop), `shipkit-orch-planning-agent` (planning loop), `shipkit-orch-shipping-agent` (shipping loop)
+
+**Producers:** `shipkit-visionary-agent` (strategic visionary), `shipkit-product-owner-agent` (product manager), `shipkit-architect-agent` (engineering manager), `shipkit-implementer-agent` (code implementation), `shipkit-thinking-partner-agent` (cognitive discussion)
+
+**Reviewers:** `shipkit-reviewer-direction-agent` (strategic coherence), `shipkit-reviewer-planning-agent` (planning alignment), `shipkit-reviewer-shipping-agent` (implementation quality + QA)
 
 ### Configuration Files
 - `install/settings/shipkit.settings.json` — Permissions and configuration
 - `install/claude-md/shipkit.md` — Project instructions (installed into user projects)
-- `install/shared/hooks/shipkit-session-start.py` — Session initialization
-- `install/shared/hooks/shipkit-after-skill-router.py` — Auto-detection routing
-- `install/shared/hooks/shipkit-relentless-stop-hook.py` — Relentless execution loop
+- `install/shared/hooks/shipkit-session-start.py` — Context loader (progress resume, available files, version check)
 - `install/shared/hooks/shipkit-track-skill-usage.py` — Skill usage tracking
 - `install/shared/hooks/shipkit-task-completed-hook.py` — Task completion quality gate
 - `install/shared/hooks/shipkit-teammate-idle-hook.py` — Teammate idle quality gate
 
 ### Reference Materials (Local Only - Gitignored)
-- `docs/development/REFERENCES-BEST-PRACTICES.md` — PRIMARY REFERENCE
-- `docs/development/SKILL-QUALITY-AND-PATTERNS.md` — Quality standards
-- `docs/development/SHIPKIT-7-FILE-INTEGRATION.md` — Integration system
-- `docs/development/SHIPKIT-DESIGN-PHILOSOPHY.md` — Design philosophy
-- `docs/development/obra-repo/` — Reference patterns from obra
-- `docs/development/speckit/` — Reference patterns from speckit
+- `docs/development/cc-reference/DOC-023-pipeline-test-report.md` — **CC PRIMITIVES TEST REPORT** (15 confirmed behaviors, 7 architecture rules — read before designing agent/skill interactions)
+- `docs/development/system-design/DOC-024-agent-skill-taxonomy.md` — **AGENT & SKILL TAXONOMY** (orchestrator vs worker agents, skill types, naming conventions, full orchestration hierarchy — read before creating or modifying agents/skills)
+- `docs/development/quality-standards/references-best-practices.md` — PRIMARY REFERENCE
+- `docs/development/quality-standards/skill-quality-and-patterns.md` — Quality standards
+- `docs/development/integration/7-file-integration.md` — Integration system
+- `docs/development/system-design/design-philosophy.md` — Design philosophy
+- `docs/development/cc-reference/agent-teams-best-practices.md` — Agent teams patterns
+- `docs/development/cc-reference/agent-teams-primitives.md` — Agent teams tool reference
+- `docs/development/inspiration/obra-repo/` — Reference patterns from obra
+- `docs/development/inspiration/speckit/` — Reference patterns from speckit
 
 **Note:** These files are gitignored and only available locally for framework development. They are not distributed with the public repo.

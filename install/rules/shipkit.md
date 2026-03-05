@@ -69,19 +69,22 @@ If `.shipkit/codebase-index.json` exists:
 | Define project vision | `/shipkit-why-project` |
 | Create personas & journeys | `/shipkit-product-discovery` |
 | Scan codebase, detect stack | `/shipkit-project-context` |
-| Check project health | `/shipkit-project-status` |
 | Index codebase for navigation | `/shipkit-codebase-index` |
+| Set strategic direction & stage | `/shipkit-vision` |
+| Define project stage & constraints | `/shipkit-stage` |
 
 ### Solution Design
 | When... | Use |
 |---------|-----|
 | Design solution blueprint | `/shipkit-product-definition` |
 | Design technical approach | `/shipkit-engineering-definition` |
-| Define success criteria & stage gates | `/shipkit-goals` |
+| Define user-outcome success criteria | `/shipkit-product-goals` |
+| Define technical performance criteria | `/shipkit-engineering-goals` |
 
 ### Spec & Planning
 | When... | Use |
 |---------|-----|
+| Prioritize which specs to write first | `/shipkit-spec-roadmap` |
 | Create feature specification | `/shipkit-spec` |
 | Process feedback into investigated bug specs | `/shipkit-feedback-bug` |
 | Plan implementation steps | `/shipkit-plan` |
@@ -90,22 +93,14 @@ If `.shipkit/codebase-index.json` exists:
 ### Knowledge & Memory
 | When... | Use |
 |---------|-----|
-| Log architecture decision | `/shipkit-architecture-memory` |
-| Define data shapes & types | `/shipkit-data-contracts` |
-| Fetch external API patterns | `/shipkit-integration-docs` |
 | Update CLAUDE.md with learnings | `/shipkit-claude-md` |
 | End session / checkpoint | `/shipkit-work-memory` |
 
 ### Execution
 | When... | Use |
 |---------|-----|
-| Build/compile until success | `/shipkit-build-relentlessly` |
-| Test until all pass | `/shipkit-test-relentlessly` |
-| Lint until clean | `/shipkit-lint-relentlessly` |
 | Generate test case specs | `/shipkit-test-cases` |
-| Parallel implementation in worktree | `/shipkit-implement-independently` |
 | Create agent team from plan | `/shipkit-team` |
-| Clean up stale worktrees | `/shipkit-cleanup-worktrees` |
 
 ### Quality & Communication
 | When... | Use |
@@ -133,7 +128,7 @@ If `.shipkit/codebase-index.json` exists:
 **Built-in commands:**
 - `/simplify` — Launches 3 parallel agents (reuse, quality, efficiency) to review changed code and auto-fix issues. Good for post-implementation cleanup.
 - `/batch <instruction>` — Decomposes a large mechanical change into 5–30 independent units, spawns parallel worktree agents that each open a PR. For migrations, bulk refactors, mass renames.
-- Use `/simplify` for code cleanup after writing. Use `/shipkit-verify` for comprehensive spec-aligned review (12 quality dimensions, relentless fix loop).
+- Use `/simplify` for code cleanup after writing. Use `/shipkit-verify` for comprehensive spec-aligned review (12 quality dimensions).
 - Use `/shipkit-team --worktree` for spec-aware parallel execution — like `/batch` but with acceptance criteria, architecture context, and spec-based review per PR.
 
 ---

@@ -1,7 +1,10 @@
 ---
 name: shipkit-verify
-description: Verify and fix — review changes across 12 quality dimensions, auto-fix critical issues, loop up to 4 times. Use after a chunk of work or before commit.
+id: SKL-VERIFY
+description: Verify and fix — review changes across 12 quality dimensions, auto-fix critical issues. Use after a chunk of work or before commit.
 argument-hint: "[scope or feature]"
+context: fork
+agent: shipkit-reviewer-shipping-agent
 allowed-tools:
   - Read
   - Write
@@ -9,14 +12,14 @@ allowed-tools:
   - Glob
   - Grep
   - Bash
-  - Task
+  - Skill
 ---
 
 # shipkit-verify
 
 Batch verification with auto-fix — Claude reviews your work across quality dimensions, fixes critical issues, re-verifies, and reports what remains.
 
-**Fix-and-recheck loop.** Runs up to 4 passes: verify → fix → re-verify → fix. The relentless stop hook prevents early exit. User sees the final state after auto-remediation.
+**Fix-and-recheck.** Verifies → fixes critical issues → re-verifies within a single pass. User sees the final state after auto-remediation.
 
 ---
 
@@ -27,13 +30,6 @@ Batch verification with auto-fix — Claude reviews your work across quality dim
 - "Check my work", "Am I ready to commit?"
 
 **For deeper review:** If user asks for "deep check", "thorough review", or "really scrutinize this" → see [Deeper Review Option](#deeper-review-option) below.
-
----
-
-## Session ID
-
-Your session-start context includes `Session ID: {sid8}`.
-Use this 8-character ID in all state file names below. If not found in session context, use `unknown`.
 
 ---
 
@@ -82,7 +78,7 @@ Found findings across these themes:
 | 4 | 🟡 Missing loading states on admin pages | L:Medium · I:Medium · E:Medium |
 | 5 | 🟢 console.logs left in (4 files) | L:Low · I:Low · E:Low |
 
-**Any themes to dismiss?** I'll skip dismissed themes during the fix-and-verify loop.
+**Any themes to dismiss?** I'll skip dismissed themes during fix-and-recheck.
 (Reply "none" to proceed with all, or list numbers to dismiss)
 ```
 
@@ -91,41 +87,7 @@ Found findings across these themes:
 - Dismiss none: "none" or "go" → proceed with everything
 - Add context: "3 is intentional, 4 is low priority" → record the reasoning
 
-### Step 1.2: Activate Relentless Loop
-
-Create the relentless state file to prevent early exit:
-
-```bash
-mkdir -p .shipkit
-```
-
-Write `.shipkit/relentless-verify.{sid8}.local.md` — include dismissed themes in the body so the hook feeds them back on each iteration:
-
-```markdown
----
-skill: verify
-iteration: 1
-max_iterations: 4
-enabled: true
-completion_promise: "Zero 🔴 Critical and zero 🟡 Should Fix findings on re-verification (excluding dismissed themes). 🟢 Minor findings are noted but never fixed."
----
-Verify and fix across 12 quality dimensions.
-Fix all critical findings. Re-verify until clean or max iterations reached.
-
-## Dismissed Themes (do not flag or fix)
-- Magic numbers in config — user: "those are intentional"
-- Missing loading states on admin pages — user: "low priority"
-```
-
-If user dismissed nothing, omit the Dismissed Themes section.
-
-**This file activates the relentless stop hook.** Claude cannot stop until either:
-- Zero critical findings remain, excluding dismissed themes (delete the state file, then stop)
-- Max iterations (4) reached (hook auto-stops)
-
-**During all subsequent verification passes, skip dismissed themes entirely.** Do not report them, do not fix them, do not count them toward the completion promise.
-
-### Step 1.5: Expand Scope via Pattern Ripple
+### Step 1.2: Expand Scope via Pattern Ripple
 
 Changed files may affect other files using the same patterns. Expand verification scope:
 
@@ -258,7 +220,7 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 - Single category focus
 - Quick pre-commit check
 
-**IMPORTANT:** When using subagents, include dismissed themes in the prompt: "Skip these dismissed themes: [list from state file]"
+**IMPORTANT:** When using subagents, include dismissed themes in the prompt: "Skip these dismissed themes: [list]"
 
 ### Step 4: Fix Critical Findings
 
@@ -285,19 +247,14 @@ Keep a running list for the final report:
 - ✅ Fixed broken import in src/pages/Dashboard.tsx:5
 ```
 
-### Step 5: Re-Verify and Loop Exit
+### Step 5: Re-Verify
 
 After fixing, **re-verify the changed files** (including files you just modified):
 
 1. Re-run verification on all files touched in Step 4
 2. Check: are there any remaining 🔴 Critical or 🟡 Should Fix findings (excluding dismissed themes)?
-   - **YES** → Continue fixing. When you try to stop, the hook will block you and send you back.
-   - **NO** → Delete `.shipkit/relentless-verify.{sid8}.local.md` and proceed to final report. Any 🟢 Minor findings are listed in the report but do not block completion.
-
-The relentless hook manages the iteration. You don't need to count loops — just:
-- Fix what you find
-- Try to stop when you think you're done
-- If the hook sends you back, re-verify and fix again
+   - **YES** → Continue fixing within this same pass. Iterate until clean or until remaining issues require user decisions.
+   - **NO** → Proceed to final report. Any 🟢 Minor findings are listed in the report but do not block completion.
 
 ---
 
@@ -664,7 +621,7 @@ Every finding MUST include a compact **L-I-E** rating to help the user prioritiz
 - **Make architectural decisions** — fixes obvious issues, defers ambiguous ones to user
 - **Override dismissals** — dismissed themes stay dismissed for the entire session
 - **Block commits** — informational, not a gate
-- **Persist results** — ephemeral output only (state file is cleaned up)
+- **Persist results** — ephemeral output only
 - **Run linters/tests** — this is Claude reasoning, not tooling
 - **Guarantee completeness** — best effort review
 
@@ -737,7 +694,7 @@ For **thorough multi-agent review**, two plugins are available:
 <!-- SECTION:after-completion -->
 ## After Completion
 
-Relentless loop is complete. State file has been deleted. Final report shows:
+Verification complete. Final report shows:
 - What was auto-fixed (with before/after context)
 - What remains unfixed (should-fix and minor)
 - What was dismissed by user
@@ -748,8 +705,6 @@ User decides next steps:
 - Proceed with commit
 
 **Want deeper scrutiny?** Use `/code-review` (4 agents) or `/pr-review-toolkit:review-pr` (6 agents) — requires plugins.
-
-No follow-up skill automatically triggered.
 <!-- /SECTION:after-completion -->
 
 ---
@@ -759,12 +714,9 @@ No follow-up skill automatically triggered.
 
 - [ ] Scope detected from git diff or session context
 - [ ] Pre-scan presented to user with dismissal option
-- [ ] Dismissed themes recorded in state file
-- [ ] Relentless state file created with correct format
 - [ ] Relevant quality dimensions emphasized (excluding dismissed)
 - [ ] Specs/architecture read for compliance
 - [ ] Critical findings auto-fixed with evidence
-- [ ] Re-verification passes confirm fixes are clean
-- [ ] State file deleted on completion
+- [ ] Re-verification confirms fixes are clean
 - [ ] Final report shows: auto-fixed, remaining, dismissed
 <!-- /SECTION:success-criteria -->

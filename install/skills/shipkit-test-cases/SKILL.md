@@ -1,13 +1,15 @@
 ---
 name: shipkit-test-cases
-description: Generate and maintain code-anchored test case specifications. Use when setting up test coverage, reviewing what to test, or before test-relentlessly.
+id: SKL-TESTCASES
+description: Generate and maintain code-anchored test case specifications. Use when setting up test coverage, reviewing what to test, or before team implementation.
 argument-hint: "[feature or scope]"
 context: fork
+agent: shipkit-implementer-agent
 ---
 
 # shipkit-test-cases - Code-Anchored Test Case Management
 
-**Purpose**: Generate and maintain test case specifications anchored to source files, with automatic staleness detection when code changes. Optimized for AI execution via `test-relentlessly`.
+**Purpose**: Generate and maintain test case specifications anchored to source files, with automatic staleness detection when code changes. Optimized for AI execution during team implementation.
 
 ---
 
@@ -22,7 +24,7 @@ context: fork
 
 **Workflow position**:
 - After specs exist (helpful but not required)
-- Before `test-relentlessly` (provides execution targets)
+- Before team implementation (provides execution targets)
 - Can run standalone against existing codebase
 
 ---
@@ -442,7 +444,7 @@ This flags technical debt while still providing a workable (if fragile) selector
   • 3 files without coverage
   • 3 elements need data-testid attributes
 
-👉 Next: Run `/test-relentlessly` to execute pending cases
+👉 Next: Execute pending test cases via team implementation
 ```
 
 ---
@@ -480,9 +482,9 @@ Each test case tracks which files it validates. Staleness = code modified after 
 
 ---
 
-## Integration with test-relentlessly
+## Integration with Team Execution
 
-When `test-relentlessly` runs, it can:
+During team implementation, implementer teammates can:
 
 1. Check git diff → which files changed?
 2. Look up test cases anchored to those files
@@ -503,7 +505,7 @@ This makes test execution **change-aware**.
 - Coverage gap reporting
 
 **Not included** (vs full test management):
-- Test execution (that's `test-relentlessly`)
+- Test execution (handled by team implementation)
 - CI/CD integration
 - Historical trends/analytics
 - Multi-environment tracking
@@ -527,10 +529,9 @@ This makes test execution **change-aware**.
 
 ### After This Skill
 
-- `/shipkit-test-relentlessly` — Executes test cases
-  - **When:** Test cases defined, ready to verify
-  - **Why:** Test cases define WHAT to test, test-relentlessly executes
-  - **Integration:** Reads cases/*.md, runs tests, updates verified dates
+- `/shipkit-team` — Team implementation uses test cases during execution
+  - **When:** Test cases defined, ready to implement and verify
+  - **Why:** Implementer teammates run tests anchored to their file ownership clusters
 
 - `/shipkit-verify` — Can use test cases for verification
   - **When:** Checking work before commit
@@ -540,7 +541,7 @@ This makes test execution **change-aware**.
 
 - `shipkit-verify` — Quality verification (uses test cases as input)
 - `shipkit-spec` — Feature specs (source for test case derivation)
-- `shipkit-test-relentlessly` — Test execution (consumes test cases)
+- `shipkit-team` — Team execution (implementers run test cases during implementation)
 
 ---
 
@@ -619,7 +620,7 @@ The `coverage.json` file follows the **Shipkit Artifact Convention** -- a standa
 
 **Test cases are ready.** User can:
 - Review generated cases and adjust priorities via conversation
-- Run `/shipkit-test-relentlessly` to execute pending cases
+- Execute pending test cases during team implementation
 - Commit test case specs to version control
 
 **No automatic follow-up.** User decides when to run tests.
@@ -767,4 +768,4 @@ POST /api/auth/login with body:
 
 ---
 
-**Remember**: Test cases define WHAT to verify. Keep them specific, AI-executable, and anchored to code. Execution happens via `test-relentlessly`.
+**Remember**: Test cases define WHAT to verify. Keep them specific, AI-executable, and anchored to code. Execution happens during team implementation.

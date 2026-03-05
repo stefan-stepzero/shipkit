@@ -1,5 +1,6 @@
 ---
 name: shipkit-product-definition
+id: SKL-PRODDEF
 description: "Define what to build — features, UX patterns, and differentiators that solve discovered user needs. Triggers: 'product definition', 'what to build', 'features', 'solution design'."
 argument-hint: "[product name or focus area]"
 context: fork
@@ -18,7 +19,7 @@ allowed-tools:
 
 Defines WHAT we build to solve discovered user needs. Reads product-discovery.json (pain points, personas, opportunities) and produces a product blueprint: features, UX patterns, and differentiators.
 
-This is the product blueprint — it defines the user-facing solution. The technical approach (mechanisms, design decisions, stack) is handled by `/shipkit-engineering-definition`. Feature phasing (what to build now vs. later) is handled by `/shipkit-goals` through stage gates.
+This is the product blueprint — it defines the user-facing solution. The technical approach (mechanisms, design decisions, stack) is handled by `/shipkit-engineering-definition`. Feature phasing (what to build now vs. later) is handled by `/shipkit-product-goals` through stage gates.
 
 ---
 
@@ -32,7 +33,7 @@ This is the product blueprint — it defines the user-facing solution. The techn
 **Workflow position**:
 - After `/shipkit-product-discovery` (needs discovered user needs)
 - Before `/shipkit-engineering-definition` (engineering designs mechanisms for these features)
-- Before `/shipkit-goals` (goals derive criteria from features and mechanisms)
+- Before `/shipkit-product-goals` (goals derive criteria from features and mechanisms)
 
 ---
 
@@ -145,7 +146,7 @@ For each feature:
 - MVP: 3-6 features
 - Growth: 5-10 features
 
-**Note**: Feature phasing (now/next/later) is handled by `/shipkit-goals` through stage gates. This skill defines WHAT exists, not WHEN it ships.
+**Note**: Feature phasing (now/next/later) is handled by `/shipkit-product-goals` through stage gates. This skill defines WHAT exists, not WHEN it ships.
 
 ---
 
@@ -245,7 +246,7 @@ Features: {N} | Patterns: {N} | Differentiators: {N}
 
 Next:
   1. /shipkit-engineering-definition — Design the technical approach for these features
-  2. /shipkit-goals — Define success criteria (after engineering definition)
+  2. /shipkit-product-goals — Define success criteria (after engineering definition)
   3. /shipkit-spec — Create specs for features (after goals)
 
 Ready to design the engineering approach?
@@ -345,7 +346,7 @@ If `$ARGUMENTS` contains text:
 | Skill | How |
 |-------|-----|
 | `shipkit-engineering-definition` | Reads product-definition.json features — designs mechanisms for each feature |
-| `shipkit-goals` | Reads product-definition.json to derive criteria from features and patterns |
+| `shipkit-product-goals` | Reads product-definition.json to derive criteria from features and patterns |
 | `shipkit-spec` | Reads product-definition.json features — one spec per feature |
 | `shipkit-plan` | Indirectly — plans derive from specs which come from product-definition |
 
@@ -385,7 +386,7 @@ If `$ARGUMENTS` contains text:
 
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 
-**Suggest skill when:** User needs to define technical approach (`/shipkit-engineering-definition`), define success criteria (`/shipkit-goals`), or create detailed specs (`/shipkit-spec`).
+**Suggest skill when:** User needs to define technical approach (`/shipkit-engineering-definition`), define success criteria (`/shipkit-product-goals`), or create detailed specs (`/shipkit-spec`).
 <!-- /SECTION:after-completion -->
 
 <!-- SECTION:success-criteria -->
@@ -406,4 +407,4 @@ Product blueprint is complete when:
 
 ---
 
-**Remember**: This skill captures the product design — WHAT you build to solve discovered needs. The technical approach (mechanisms, components, stack) is handled by `/shipkit-engineering-definition`. Feature phasing (now/next/later) is handled by `/shipkit-goals`. Update the blueprint as the product evolves.
+**Remember**: This skill captures the product design — WHAT you build to solve discovered needs. The technical approach (mechanisms, components, stack) is handled by `/shipkit-engineering-definition`. Feature phasing (now/next/later) is handled by `/shipkit-product-goals`. Update the blueprint as the product evolves.

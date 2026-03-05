@@ -5,7 +5,7 @@ These scripts are tracked on the `dev` branch only (private). They don't ship wi
 ## Available Scripts
 
 ### merge-to-main.sh
-Merges dev → main while excluding `dev/` folder.
+Merges dev → main.
 
 ```bash
 ./Scripts/merge-to-main.sh "Release: feature X"
@@ -13,9 +13,8 @@ Merges dev → main while excluding `dev/` folder.
 
 **What it does:**
 1. Merges dev into main (no-commit)
-2. Restores main's version of `dev/` (excludes dev artifacts)
-3. Commits with your message
-4. Reminds you to push
+2. Commits with your message
+3. Reminds you to push
 
 ### update-version.py
 Updates version number across all files.

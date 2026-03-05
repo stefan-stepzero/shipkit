@@ -1,9 +1,6 @@
 # Example .gitignore for projects using Shipkit
 # Add these entries to your project's .gitignore
 
-# Shipkit - Queue files (ephemeral, auto-generated)
-.shipkit/.queues/
-
 # Shipkit - Update archives (local backups during /shipkit-update)
 .shipkit-archive/
 

@@ -174,6 +174,4 @@ This protocol applies to:
 - `shipkit-verify` — Primary verification skill
 - `shipkit-codebase-index` — Index entry verification
 - `shipkit-project-context` — Stack detection verification
-- `shipkit-architecture-memory` — Decision consistency verification
-- `shipkit-data-contracts` — Type/schema alignment verification
-- `shipkit-integration-docs` — Service and freshness verification
+- `shipkit-engineering-definition` — Engineering blueprint and decision verification

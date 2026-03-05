@@ -1,0 +1,104 @@
+{
+  "_comment": "Example: WorksheetForge strategic goals (v5.0) — MVP → Scale",
+
+  "$schema": "shipkit-artifact",
+  "type": "goals-strategic",
+  "version": "5.0",
+  "lastUpdated": "2026-03-03T12:00:00Z",
+  "source": "shipkit-stage",
+
+  "stage": {
+    "current": "mvp",
+    "target": "scale"
+  },
+
+  "constraints": {
+    "quality": "production-ready — CI/CD, monitoring, error handling",
+    "scope": "feature-complete for launch segment",
+    "cost_budget": "moderate — dedicated resources acceptable"
+  },
+
+  "stageImplications": {
+    "skip": ["scale testing", "enterprise features", "multi-region deploy"],
+    "focus": ["launch readiness", "user experience", "reliability"],
+    "qualityBar": "works for customers"
+  },
+
+  "derivedFrom": {
+    "why": ".shipkit/why.json"
+  },
+
+  "criteria": [
+    {
+      "id": "S-001",
+      "name": "User acquisition",
+      "category": "business-metric",
+      "metric": "Daily active users",
+      "threshold": "> 100 DAU within 30 days of launch",
+      "currentValue": null,
+      "verificationMethod": "analytics",
+      "checkability": "observable",
+      "verificationTool": "none",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "notes": "Track from launch day"
+    },
+    {
+      "id": "S-002",
+      "name": "Return usage",
+      "category": "business-metric",
+      "metric": "7-day return rate after first worksheet creation",
+      "threshold": "> 40%",
+      "currentValue": null,
+      "verificationMethod": "analytics",
+      "checkability": "observable",
+      "verificationTool": "none",
+      "gate": "gate-beta-ready",
+      "status": "not-measured",
+      "notes": "Leading indicator of product-market fit"
+    },
+    {
+      "id": "S-003",
+      "name": "User satisfaction",
+      "category": "business-metric",
+      "metric": "Average in-app rating",
+      "threshold": "> 4.0 / 5.0",
+      "currentValue": null,
+      "verificationMethod": "user-feedback",
+      "checkability": "observable",
+      "verificationTool": "none",
+      "gate": "gate-beta-ready",
+      "status": "not-measured",
+      "notes": "Prompt after 3rd worksheet creation"
+    }
+  ],
+
+  "gates": [
+    {
+      "id": "gate-mvp-launch",
+      "name": "MVP Launch Ready",
+      "description": "All core functionality works, performs acceptably, users can complete primary flow",
+      "criteria": ["S-001"],
+      "status": "blocked",
+      "passedAt": null,
+      "verifiableStatus": "passed",
+      "verifiablePassedAt": null
+    },
+    {
+      "id": "gate-beta-ready",
+      "name": "Beta Ready",
+      "description": "MVP criteria met plus user perception validated and retention proven",
+      "criteria": ["S-002", "S-003"],
+      "status": "blocked",
+      "passedAt": null,
+      "verifiableStatus": "passed",
+      "verifiablePassedAt": null
+    }
+  ],
+
+  "summary": {
+    "totalCriteria": 3,
+    "byStatus": { "not-measured": 3, "below-threshold": 0, "at-threshold": 0, "exceeded": 0 },
+    "byCheckability": { "verifiable": 0, "observable": 3 }
+  }
+}

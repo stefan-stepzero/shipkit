@@ -1,5 +1,6 @@
 ---
 name: shipkit-codebase-index
+id: SKL-CBINDEX
 description: "Generate project index for faster codebase navigation. Triggers: 'index codebase', 'create index', 'map project'."
 context: fork
 model: haiku

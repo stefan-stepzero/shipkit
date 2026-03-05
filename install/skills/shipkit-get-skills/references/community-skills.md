@@ -265,4 +265,4 @@ npx skills add trailofbits/skills
 
 ---
 
-*Source: [EXTERNAL-SKILLS-DIRECTORY.md](../../../docs/development/EXTERNAL-SKILLS-DIRECTORY.md) | [skills.sh](https://skills.sh)*
+*Source: [external-skills-directory.md](../../../docs/development/inspiration/external-skills-directory.md) | [skills.sh](https://skills.sh)*

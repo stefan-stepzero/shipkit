@@ -1,5 +1,6 @@
 ---
 name: shipkit-update
+id: SKL-UPDATE
 description: Install or update Shipkit via npx. Detects existing installations, archives them safely, and intelligently merges user content with new version.
 disable-model-invocation: true
 argument-hint: "[repo-url]"
@@ -281,11 +282,11 @@ rm /tmp/shipkit-install.py
 | `skills`, `workspace` sections | → Replace with new |
 | Any other keys | → **Preserve** (user's additions) |
 
-**Hooks merge detail:** Replace the entire `hooks` section with the new template. This ensures new hook types (e.g., `PostToolUse`, `PreToolUse`, `PreCompact`) are added when they didn't exist in the old settings. All Shipkit hook types must be present:
-- `SessionStart` — session initialization
+**Hooks merge detail:** Replace the entire `hooks` section with the new template. This ensures new hook types are added when they didn't exist in the old settings. All Shipkit hook types must be present:
+- `SessionStart` — context loader (session initialization)
 - `PostToolUse` — skill usage tracking
-- `Stop` — auto-detection routing + relentless execution loop
-- `PreCompact` — context preservation before compaction
+- `TaskCompleted` — team quality gate
+- `TeammateIdle` — team quality gate
 
 4. Write valid JSON
 5. Archive has original backup
@@ -398,10 +399,10 @@ After migration, scan for deprecated `.md` files that have been superseded by `.
 
 | Deprecated File | Replacement | Skill That Creates It |
 |-----------------|-------------|----------------------|
-| `architecture.md` | `architecture.json` | `/shipkit-architecture-memory` |
+| `architecture.md` | `architecture.json` | `/shipkit-engineering-definition` |
 | `progress.md` | `progress.json` | `/shipkit-work-memory` |
 | `product-discovery.md` | `product-discovery.json` | `/shipkit-product-discovery` |
-| `contracts.md` | `contracts.json` | `/shipkit-data-contracts` |
+| `contracts.md` | `contracts.json` | `/shipkit-engineering-definition` |
 | `preflight.md` | `preflight.json` | `/shipkit-preflight` |
 | `scale-readiness.md` | `scale-readiness.json` | `/shipkit-scale-ready` |
 | `prompt-audit.md` | `prompt-audit.json` | `/shipkit-prompt-audit` |
@@ -642,7 +643,7 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 
 ### Related Skills
 
-- `/shipkit-project-status` — Check project health after update
+- `/shipkit-work-memory` — Check session progress after update
 - `/shipkit-verify` — Verify the update completed correctly
 
 ---
@@ -654,7 +655,7 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 
 1. **Review merged files** — Check CLAUDE.md and settings.json look correct
 2. **Check archive** — Originals in `.shipkit-archive/{timestamp}/` if needed
-3. **Test a skill** — Try `/shipkit-project-status` to verify installation works
+3. **Test a skill** — Try `/shipkit-work-memory` to verify installation works
 4. **Optional refresh** — Run `/shipkit-project-context` if you want fresh stack detection
 
 **If something looks wrong:**

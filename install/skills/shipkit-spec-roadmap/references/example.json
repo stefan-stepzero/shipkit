@@ -1,0 +1,142 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "spec-roadmap",
+  "version": "1.0",
+  "lastUpdated": "2026-03-02T16:00:00Z",
+  "source": "shipkit-spec-roadmap",
+
+  "product": {
+    "name": "WorksheetForge",
+    "stage": "mvp"
+  },
+
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "MVP Launch Ready",
+      "gateId": "gate-mvp-launch",
+      "items": [
+        {
+          "priority": 1,
+          "featureId": "F-001",
+          "featureName": "Worksheet Creator",
+          "effort": "L",
+          "effortDays": 8,
+          "mechanisms": ["M-001", "M-003"],
+          "dependencies": [],
+          "dependedUponBy": ["F-003", "F-004"],
+          "addressesNeeds": ["pain-time-creating", "pain-generic-content"],
+          "specStatus": "none",
+          "scoring": {
+            "foundationValue": 8,
+            "painCoverage": 3,
+            "dependencyDepth": 0
+          }
+        },
+        {
+          "priority": 2,
+          "featureId": "F-002",
+          "featureName": "Standards Browser",
+          "effort": "M",
+          "effortDays": 4,
+          "mechanisms": ["M-003"],
+          "dependencies": [],
+          "dependedUponBy": [],
+          "addressesNeeds": ["pain-generic-content"],
+          "specStatus": "none",
+          "scoring": {
+            "foundationValue": 2,
+            "painCoverage": 2,
+            "dependencyDepth": 0
+          }
+        },
+        {
+          "priority": 3,
+          "featureId": "F-003",
+          "featureName": "Export & Print",
+          "effort": "M",
+          "effortDays": 4,
+          "mechanisms": ["M-002"],
+          "dependencies": ["F-001"],
+          "dependedUponBy": ["F-005"],
+          "addressesNeeds": ["pain-time-creating"],
+          "specStatus": "none",
+          "scoring": {
+            "foundationValue": 3,
+            "painCoverage": 1,
+            "dependencyDepth": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "name": "Beta Ready",
+      "gateId": "gate-beta-ready",
+      "items": [
+        {
+          "priority": 4,
+          "featureId": "F-004",
+          "featureName": "Differentiated Sets",
+          "effort": "L",
+          "effortDays": 8,
+          "mechanisms": ["M-001", "M-004"],
+          "dependencies": ["F-001"],
+          "dependedUponBy": [],
+          "addressesNeeds": ["pain-generic-content", "pain-differentiation"],
+          "specStatus": "none",
+          "scoring": {
+            "foundationValue": 1,
+            "painCoverage": 2,
+            "dependencyDepth": 1
+          }
+        },
+        {
+          "priority": 5,
+          "featureId": "F-005",
+          "featureName": "Classroom Integration",
+          "effort": "XL",
+          "effortDays": 15,
+          "mechanisms": ["M-005", "M-006", "M-007"],
+          "dependencies": ["F-003"],
+          "dependedUponBy": [],
+          "addressesNeeds": ["pain-distribution"],
+          "specStatus": "none",
+          "scoring": {
+            "foundationValue": 0,
+            "painCoverage": 1,
+            "dependencyDepth": 2
+          }
+        }
+      ]
+    }
+  ],
+
+  "completed": [],
+
+  "dependencyGraph": {
+    "edges": [
+      { "from": "F-003", "to": "F-001" },
+      { "from": "F-004", "to": "F-001" },
+      { "from": "F-005", "to": "F-003" }
+    ],
+    "warnings": [
+      "F-005 depends on F-003 → F-001 (chain of 2)"
+    ]
+  },
+
+  "summary": {
+    "totalFeatures": 5,
+    "specced": 0,
+    "unspecced": 5,
+    "phases": 2,
+    "effortBreakdown": {
+      "XS": 0,
+      "S": 0,
+      "M": 2,
+      "L": 2,
+      "XL": 1
+    },
+    "estimatedTotalDays": 39
+  }
+}

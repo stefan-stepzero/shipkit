@@ -1,5 +1,6 @@
 ---
 name: shipkit-user-instructions
+id: SKL-USERINSTR
 description: "Use when there are manual tasks the user must complete. Triggers: 'create task', 'track TODO', 'user needs to', 'manual step required'."
 ---
 
@@ -16,7 +17,6 @@ description: "Use when there are manual tasks the user must complete. Triggers: 
 ## When to Invoke
 
 **Auto-trigger scenarios** (other skills invoke this):
-- Missing environment variables detected (shipkit-integration-docs)
 - Package installation needed (implement)
 - External service configuration required (Lemon Squeezy webhooks, API keys)
 - Database migrations need running
@@ -109,7 +109,7 @@ description: "Use when there are manual tasks the user must complete. Triggers: 
     "Test purchase triggers webhook (use test mode)"
   ],
   "relatedFeature": "Payment processing",
-  "triggeredBy": "shipkit-integration-docs",
+  "triggeredBy": "implement",
   "createdAt": "2025-01-15",
   "completedAt": null
 }
@@ -257,11 +257,6 @@ Copy and track:
 
 ### Before This Skill
 
-- `/shipkit-integration-docs` - Fetches integration documentation
-  - **When**: Preparing to integrate with external services
-  - **Why**: May identify missing configuration or manual setup tasks
-  - **Trigger**: Integration docs reveal setup steps requiring user action
-
 - `implement (no skill needed)` - Discovers missing dependencies
   - **When**: Implementation needs packages, database setup, external services
   - **Why**: Track installation/setup tasks so they aren't forgotten
@@ -278,11 +273,6 @@ Copy and track:
   - **Trigger**: Deployment readiness check finds missing configuration
 
 ### After This Skill
-
-- `/shipkit-project-status` - Displays active task count
-  - **When**: User asks "what's the project status?"
-  - **Why**: Show pending user tasks as part of overall project health
-  - **Trigger**: Status check reads user-tasks.json summary to count pending tasks
 
 - `/shipkit-work-memory` - Logs task events
   - **When**: Tasks created or completed

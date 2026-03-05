@@ -1,12 +1,12 @@
 #!/bin/bash
-# Merge dev to main, excluding dev/ folder
+# Merge dev to main
 # Usage: ./Scripts/merge-to-main.sh [commit message]
 
 set -e
 
 MESSAGE="${1:-Merge dev to main}"
 
-echo "📦 Merging dev → main (excluding dev/ folder)..."
+echo "Merging dev → main..."
 
 # Ensure we're on dev and up to date
 git checkout dev
@@ -18,21 +18,17 @@ git pull origin main 2>/dev/null || true
 
 # Merge without committing
 git merge dev --no-commit --no-ff || {
-    echo "⚠️  Merge conflicts detected. Resolve them, then:"
-    echo "   git restore --staged --worktree dev/"
+    echo "Merge conflicts detected. Resolve them, then:"
     echo "   git commit -m \"$MESSAGE\""
     exit 1
 }
 
-# Remove dev/ folder changes (keep main's version)
-git restore --staged --worktree dev/ 2>/dev/null || true
-
 # Commit
 git commit -m "$MESSAGE
 
-Co-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>"
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 
-echo "✅ Merged to main (dev/ folder excluded)"
+echo "Merged to main"
 echo ""
 echo "To push: git push origin main"
 echo "To sync dev: git checkout dev && git merge main && git push private dev"

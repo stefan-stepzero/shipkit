@@ -1,10 +1,11 @@
 ---
 name: shipkit-prompt-audit
+id: SKL-PROMPTAUDIT
 description: Audit LLM prompt pipeline architecture — decomposition, parallelization, chain integrity, schema validation, fallback paths. Finds structural issues no linter catches.
 argument-hint: "[scope or directory]"
 model: opus
 context: fork
-agent: shipkit-reviewer-agent
+agent: shipkit-architect-agent
 allowed-tools:
   - Read
   - Glob
@@ -440,7 +441,7 @@ This skill follows the **Shipkit JSON artifact convention**. See `references/out
 
 - User fixes findings (natural capability)
 - Re-run `/shipkit-prompt-audit` to verify fixes
-- `/shipkit-architecture-memory` — log pipeline design decisions
+- `/shipkit-engineering-definition` — update engineering blueprint with pipeline decisions
 
 ### Differs From
 
@@ -461,7 +462,7 @@ This skill follows the **Shipkit JSON artifact convention**. See `references/out
 1. **Fix critical issues** — Ask Claude to help restructure pipelines
 2. **Review should-fix items** — Decide which to address now
 3. **Re-run audit** — Verify fixes resolved the issues
-4. **Log decisions** — Use `/shipkit-architecture-memory` for pipeline design choices
+4. **Log decisions** — Use `/shipkit-engineering-definition` for pipeline design choices
 
 **Natural capabilities** (no skill needed): Implementing fixes, refactoring prompts, adding validation.
 

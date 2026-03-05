@@ -16,9 +16,9 @@ What can be automatically detected vs what requires human input.
 | Component conventions | Partial | Directory structure | Note patterns found |
 | Import aliases | Yes | tsconfig.json paths | Skip section |
 | **Why this exists** | No | Needs human | Prompt for `/shipkit-why-project` |
-| **Data flow rules** | No | Needs human | Prompt for `/shipkit-architecture-memory` |
-| **Cache invalidation** | No | Needs human | Prompt for `/shipkit-architecture-memory` |
-| **Business invariants** | No | Needs human | Prompt for `/shipkit-architecture-memory` |
+| **Data flow rules** | No | Needs human | Prompt for `/shipkit-engineering-definition` |
+| **Cache invalidation** | No | Needs human | Prompt for `/shipkit-engineering-definition` |
+| **Business invariants** | No | Needs human | Prompt for `/shipkit-engineering-definition` |
 
 ---
 

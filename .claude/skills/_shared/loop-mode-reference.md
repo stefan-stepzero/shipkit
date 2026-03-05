@@ -8,7 +8,7 @@ Shared reference for skills that support `--loop N` iterative execution.
 2. Skill creates a state file in `.shipkit/` with YAML frontmatter
 3. Skill runs its normal check, then updates the Progress section
 4. If the completion promise is met (zero errors), skill deletes the state file and stops
-5. If not met, skill ends its response — the relentless stop hook blocks exit and feeds context back
+5. If not met, skill ends its response — the stop hook blocks exit and feeds context back
 6. Claude continues with the next iteration, reading the Progress section for context
 7. Repeats until promise met or N iterations exhausted
 
@@ -101,9 +101,8 @@ After each iteration:
 
 ## Integration with Stop Hook
 
-The `shipkit-relentless-stop-hook.py` discovers loop state files via glob:
+The stop hook discovers loop state files via glob:
 - Pattern: `.shipkit/*-loop.local.md`
-- Priority: relentless > standby > loop (loop files checked last)
 - The hook increments the iteration counter and feeds back the task + progress
 - When max iterations reached, hook deletes the file and allows exit
 

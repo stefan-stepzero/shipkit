@@ -1,9 +1,10 @@
 ---
 name: shipkit-why-project
+id: SKL-WHY
 description: "Use when defining project vision and strategic direction. Triggers: 'why this project', 'define vision', 'project goals', 'what are we building'."
 argument-hint: "[project name]"
 context: fork
-agent: shipkit-product-owner-agent
+agent: shipkit-visionary-agent
 ---
 
 # shipkit-why-project - Project Vision & Strategy
@@ -32,9 +33,10 @@ agent: shipkit-product-owner-agent
 
 **Recommended order:**
 1. `/shipkit-why-project` - Define strategic vision
-2. `/shipkit-product-discovery` - Define personas & user needs
-3. `/shipkit-product-definition` - Design solution blueprint
-4. `/shipkit-goals` - Define success criteria
+2. `/shipkit-stage` - Set project stage, constraints, and business metrics
+3. `/shipkit-product-discovery` - Define personas & user needs
+4. `/shipkit-product-definition` - Design solution blueprint
+5. `/shipkit-product-goals` - Define user-outcome success criteria (P-*)
 
 ---
 
@@ -170,6 +172,7 @@ If .shipkit/why.json does NOT exist:
 - Location of file (`.shipkit/why.json`)
 - Note about auto-loading at session start
 - Counts of success criteria, constraints, non-goals captured
+- Suggest `/shipkit-stage` to set project stage and business metrics
 - Suggest `/shipkit-product-discovery` to define user needs and personas
 
 ---
@@ -190,6 +193,7 @@ Copy and track:
 - [ ] Captured constraints (or explicitly skipped)
 - [ ] Captured non-goals (or explicitly skipped)
 - [ ] Saved to `.shipkit/why.json`
+- [ ] Suggested `/shipkit-stage` for project stage and business metrics
 - [ ] Suggested `/shipkit-product-discovery` for user needs
 
 ---
@@ -210,9 +214,10 @@ Copy and track:
 - None (can be first skill)
 
 ### After This Skill
-- `/shipkit-product-discovery` - **Recommended next step** — Define personas, user needs, and journeys
+- `/shipkit-stage` - **Recommended next step** — Set project stage, constraints, and business metrics
+- `/shipkit-product-discovery` - Define personas, user needs, and journeys
 - `/shipkit-project-context` - Scan technical stack (can run in parallel with discovery)
-- `/shipkit-architecture-memory` - Log architectural decisions
+- `/shipkit-engineering-definition` - Engineering blueprint and architecture decisions
 - `/shipkit-spec` - Create feature specs (can reference vision for alignment)
 
 ---
@@ -255,7 +260,7 @@ Copy and track:
 
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 
-**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+**Suggest skill when:** User needs to set project stage (`/shipkit-stage`), define user needs (`/shipkit-product-discovery`), or check project status.
 <!-- /SECTION:after-completion -->
 
 <!-- SECTION:success-criteria -->

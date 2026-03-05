@@ -1,0 +1,111 @@
+{
+  "_comment": "Example: WorksheetForge product goals (v4.0)",
+
+  "$schema": "shipkit-artifact",
+  "type": "goals-product",
+  "version": "4.0",
+  "lastUpdated": "2026-03-03T12:00:00Z",
+  "source": "shipkit-product-goals",
+
+  "derivedFrom": {
+    "productDefinition": ".shipkit/product-definition.json",
+    "productDiscovery": ".shipkit/product-discovery.json"
+  },
+
+  "criteria": [
+    {
+      "id": "P-001",
+      "name": "Wizard completion time",
+      "category": "user-outcome",
+      "metric": "Time from wizard start to worksheet preview",
+      "threshold": "80% of users complete in < 2 minutes",
+      "currentValue": null,
+      "verificationMethod": "analytics",
+      "checkability": "observable",
+      "verificationTool": "none",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": { "type": "pattern", "id": "P-001" },
+      "painPointAddressed": "pain-time-creating"
+    },
+    {
+      "id": "P-002",
+      "name": "Wizard flow E2E",
+      "category": "user-outcome",
+      "metric": "Playwright E2E test completes the full wizard flow",
+      "threshold": "100% E2E pass rate",
+      "currentValue": null,
+      "verificationMethod": "automated-test",
+      "checkability": "verifiable",
+      "verificationTool": "visual-qa",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": { "type": "pattern", "id": "P-001" }
+    },
+    {
+      "id": "P-003",
+      "name": "Preview responsiveness",
+      "category": "user-outcome",
+      "metric": "Time from parameter change to preview update",
+      "threshold": "< 500ms for non-generation changes",
+      "currentValue": null,
+      "verificationMethod": "automated-test",
+      "checkability": "verifiable",
+      "verificationTool": "visual-qa",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": { "type": "pattern", "id": "P-002" }
+    },
+    {
+      "id": "P-004",
+      "name": "Export produces valid PDFs",
+      "category": "user-outcome",
+      "metric": "Exported PDF renders correctly and is print-ready",
+      "threshold": "100% of exports produce valid, printable PDFs",
+      "currentValue": null,
+      "verificationMethod": "automated-test",
+      "checkability": "verifiable",
+      "verificationTool": "visual-qa",
+      "gate": "gate-mvp-launch",
+      "status": "not-measured",
+      "derivedFrom": { "type": "pattern", "id": "P-003" },
+      "painPointAddressed": "pain-time-creating"
+    },
+    {
+      "id": "P-005",
+      "name": "Teachers perceive speed advantage",
+      "category": "user-outcome",
+      "metric": "User satisfaction with creation speed vs manual methods",
+      "threshold": "> 80% rate as 'significantly faster'",
+      "currentValue": null,
+      "verificationMethod": "user-feedback",
+      "checkability": "observable",
+      "verificationTool": "none",
+      "gate": "gate-beta-ready",
+      "status": "not-measured",
+      "derivedFrom": { "type": "differentiator", "id": "D-003" },
+      "painPointAddressed": "pain-time-creating"
+    },
+    {
+      "id": "P-006",
+      "name": "Teachers trust standards alignment",
+      "category": "user-outcome",
+      "metric": "Teacher confidence in standards alignment",
+      "threshold": "> 75% rate alignment as 'trustworthy'",
+      "currentValue": null,
+      "verificationMethod": "user-feedback",
+      "checkability": "observable",
+      "verificationTool": "none",
+      "gate": "gate-beta-ready",
+      "status": "not-measured",
+      "derivedFrom": { "type": "differentiator", "id": "D-002" },
+      "painPointAddressed": "pain-generic-content"
+    }
+  ],
+
+  "summary": {
+    "totalCriteria": 6,
+    "byStatus": { "not-measured": 6, "below-threshold": 0, "at-threshold": 0, "exceeded": 0 },
+    "byCheckability": { "verifiable": 3, "observable": 3 }
+  }
+}

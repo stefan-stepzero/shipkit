@@ -1,5 +1,6 @@
 ---
 name: shipkit-claude-md
+id: SKL-CLAUDEMD
 description: Update CLAUDE.md with learnings, preferences, or project context. Use when user says "update claude.md", "add to claude.md", or wants to persist something.
 allowed-tools:
   - Read

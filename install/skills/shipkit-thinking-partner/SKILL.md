@@ -1,7 +1,9 @@
 ---
 name: shipkit-thinking-partner
+id: SKL-THINKER
 description: "Use when user needs to think through decisions, explore trade-offs, or challenge assumptions before acting. Triggers: 'think with me', 'help me decide', 'what am I missing?', 'devil's advocate', 'pre-mortem'."
 argument-hint: "<decision or topic to think through>"
+context: fork
 model: opus
 agent: shipkit-thinking-partner-agent
 allowed-tools: Read, Glob, Grep, AskUserQuestion
@@ -30,7 +32,7 @@ allowed-tools: Read, Glob, Grep, AskUserQuestion
 
 **Workflow position**:
 - Before `/shipkit-spec` (clarify what to build)
-- Before `/shipkit-architecture-memory` (think through decisions before logging)
+- Before `/shipkit-engineering-definition` (think through decisions before capturing)
 - Before `/shipkit-plan` (explore approaches before committing)
 - Standalone for any decision that needs structured thinking
 
@@ -180,11 +182,11 @@ Based on what was discussed, recommend the appropriate skill to capture decision
 
 | If the discussion produced... | Suggest |
 |-------------------------------|---------|
-| Architecture or technology decision | `/shipkit-architecture-memory` — to log the decision with rationale |
+| Architecture or technology decision | `/shipkit-engineering-definition` — to log the decision with rationale |
 | Feature requirements or scope | `/shipkit-spec` — to formalize into a specification |
 | Implementation approach | `/shipkit-plan` — to create an actionable plan |
 | Project vision or strategy | `/shipkit-why-project` — to update project vision |
-| Data model or contract decisions | `/shipkit-data-contracts` — to define types |
+| Data model or contract decisions | `/shipkit-engineering-definition` — to define in engineering blueprint |
 | Risk assessment or launch criteria | `/shipkit-preflight` — to track readiness |
 
 **Do NOT write files yourself.** The discussion summary is displayed in conversation only. The user decides whether and how to persist it.
@@ -234,11 +236,11 @@ Discussion output stays in conversation. Persistence is delegated to other skill
 - Any skill can suggest "think this through first" before proceeding
 
 ### Routes TO (After Discussion)
-- `/shipkit-architecture-memory` → Log architecture decisions
+- `/shipkit-engineering-definition` → Update engineering blueprint
 - `/shipkit-spec` → Formalize feature requirements
 - `/shipkit-plan` → Create implementation plans
 - `/shipkit-why-project` → Update project vision
-- `/shipkit-data-contracts` → Define data shapes
+- `/shipkit-engineering-definition` → Define engineering blueprint (includes data contracts)
 
 ### Relationship: Pre-Decision Filter
 This skill sits BEFORE action-oriented skills. It ensures decisions are well-reasoned before they become artifacts. The output is clarity, not files.
@@ -253,7 +255,7 @@ This skill sits BEFORE action-oriented skills. It ensures decisions are well-rea
 If the user doesn't want to persist now, that's fine — the conversation history contains the reasoning. But remind them that conversation context doesn't survive sessions.
 
 **Natural next steps:**
-- `/shipkit-architecture-memory` — if an architecture decision was made
+- `/shipkit-engineering-definition` — if an architecture decision was made
 - `/shipkit-spec` — if a feature scope was clarified
 - `/shipkit-plan` — if an implementation approach was chosen
 <!-- /SECTION:after-completion -->

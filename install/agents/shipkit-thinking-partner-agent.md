@@ -1,5 +1,6 @@
 ---
 name: shipkit-thinking-partner
+id: AGT-THINKER
 description: Cognitive thinking partner for working through decisions, trade-offs, and unknowns. Use when exploring options, challenging assumptions, or thinking through complex problems before acting.
 tools: Read, Glob, Grep
 disallowedTools: Write, Edit, Bash, NotebookEdit

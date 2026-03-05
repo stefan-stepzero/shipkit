@@ -1,5 +1,6 @@
 ---
 name: shipkit-get-skills
+id: SKL-GETSKILLS
 description: Discover and install skills and plugins from the Claude Code ecosystem
 argument-hint: "<search query>"
 disable-model-invocation: true
@@ -307,7 +308,6 @@ The CLI handles all file operations:
 This skill operates independently. It helps users extend their skill set.
 
 **Complements:**
-- `/shipkit-project-status` — Could suggest missing skills
 - `/shipkit-claude-md` — Learnings about which skills work well
 
 **Sibling:**

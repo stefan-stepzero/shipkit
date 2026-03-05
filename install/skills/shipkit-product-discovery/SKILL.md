@@ -1,5 +1,6 @@
 ---
 name: shipkit-product-discovery
+id: SKL-DISCOVERY
 description: "Use when defining users, personas, or user journeys. Triggers: 'who are users', 'create personas', 'user research', 'user stories'."
 argument-hint: "[persona or journey]"
 context: fork
@@ -239,7 +240,6 @@ Copy and track:
 
 ### After shipkit-product-discovery
 - `/shipkit-spec` - Creates detailed specifications from user stories
-- `/shipkit-architecture-memory` - Documents key product decisions (optional)
 - `/shipkit-plan` - Creates implementation plan
 
 ---

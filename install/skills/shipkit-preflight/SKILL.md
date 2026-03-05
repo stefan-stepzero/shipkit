@@ -1,10 +1,11 @@
 ---
 name: shipkit-preflight
+id: SKL-PREFLIGHT
 description: Aggregates project context and audits production readiness against a comprehensive SaaS checklist. Routes to prerequisite skills when context is missing.
 argument-hint: "[area to audit]"
 model: opus
 context: fork
-agent: shipkit-reviewer-agent
+agent: shipkit-reviewer-shipping-agent
 allowed-tools:
   - Read
   - Glob
@@ -53,8 +54,8 @@ This skill aggregates context from other skills. It will route you to create mis
 |----------------|--------------|------|-----------|
 | Tech stack, deployment target | `/shipkit-project-context` | `stack.json` | Yes |
 | Vision, constraints, scale | `/shipkit-why-project` | `why.json` | Yes |
-| Architecture decisions, auth model | `/shipkit-architecture-memory` | `architecture.json` | Recommended |
-| Data shapes, what's stored | `/shipkit-data-contracts` | `contracts.json` | Recommended |
+| Architecture decisions, auth model | `/shipkit-engineering-definition` | `architecture.json` | Recommended |
+| Data shapes, what's stored | `/shipkit-engineering-definition` | `engineering-definition.json` | Recommended |
 | Feature specs | `/shipkit-spec` | `specs/active/*.json` | Helpful |
 
 **If missing required context**: Skill will route you to the appropriate skill first.
@@ -555,8 +556,8 @@ This skill follows the **Shipkit JSON artifact convention**. See `references/out
 |---------|-----------|
 | stack.json | `/shipkit-project-context` |
 | why.json | `/shipkit-why-project` |
-| architecture.json | `/shipkit-architecture-memory` (suggests, doesn't require) |
-| contracts.json | `/shipkit-data-contracts` (suggests, doesn't require) |
+| architecture.json | `/shipkit-engineering-definition` (suggests, doesn't require) |
+| engineering-definition.json | `/shipkit-engineering-definition` (suggests, doesn't require) |
 
 ### After This Skill
 

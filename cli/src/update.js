@@ -11,8 +11,6 @@ const { ensureDir, copyFile, copyDir, makeExecutable } = require('./copy');
 // Hook files: source name -> destination name (same as init)
 const HOOK_FILES = {
   'shipkit-session-start.py': 'session-start.py',
-  'shipkit-after-skill-router.py': 'after-skill-router.py',
-  'shipkit-relentless-stop-hook.py': 'shipkit-relentless-stop-hook.py',
   'shipkit-track-skill-usage.py': 'shipkit-track-skill-usage.py',
   'shipkit-task-completed-hook.py': 'shipkit-task-completed-hook.py',
   'shipkit-teammate-idle-hook.py': 'shipkit-teammate-idle-hook.py',

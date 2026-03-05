@@ -41,7 +41,7 @@
         "Test purchase triggers webhook (use test mode)"
       ],
       "relatedFeature": "Payment processing",
-      "triggeredBy": "shipkit-integration-docs",
+      "triggeredBy": "implement",
       "createdAt": "2025-01-15",
       "completedAt": null
     },
@@ -106,7 +106,7 @@
         "GitHub login works in local development"
       ],
       "relatedFeature": "Authentication",
-      "triggeredBy": "shipkit-integration-docs",
+      "triggeredBy": "implement",
       "createdAt": "2025-01-10",
       "completedAt": "2025-01-13"
     },

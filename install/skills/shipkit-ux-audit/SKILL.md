@@ -1,9 +1,10 @@
 ---
 name: shipkit-ux-audit
+id: SKL-UXAUDIT
 description: "Use when auditing implemented UI for missing UX patterns. Triggers: 'audit UX', 'check UX', 'missing patterns', 'UX gaps'."
 argument-hint: "<component or area>"
 context: fork
-agent: shipkit-ux-designer-agent
+agent: shipkit-reviewer-shipping-agent
 allowed-tools:
   - Read
   - Glob
@@ -50,27 +51,7 @@ allowed-tools:
 
 ## Process
 
-### Step 0: Check for Queue (Auto-Detect Mode)
-
-**First, check if running in queue-driven mode**:
-
-Read file (if exists): `.shipkit/.queues/ux-audit-needed.md`
-
-**If queue file exists and has pending items**:
-1. Parse the `## Pending` section for components needing UX audit
-2. For each pending component:
-   - Audit loading states, error handling, accessibility (Step 2-4 logic)
-   - Document findings in component documentation
-   - Move item from Pending to Completed in queue
-3. Skip Step 1 questions (components already identified)
-4. Continue with Step 2-5 for each component
-
-**If queue file doesn't exist or is empty**:
-- Continue to Step 1 (manual mode - ask user what they're building)
-
----
-
-### Step 1: (Manual Mode) Confirm What User is Building
+### Step 1: Confirm What User is Building
 
 **Before providing guidance**, ask 2-3 questions:
 
@@ -217,7 +198,7 @@ UX Guidance: [Component Name]
 
 **Next Steps**:
 - [Specific action 1]
-- Run `/shipkit-architecture-memory` to log this pattern (if new)
+- Run `/shipkit-engineering-definition` to capture this pattern (if new)
 - Run `implement (no skill needed)` when ready to build
 ```
 
@@ -394,7 +375,7 @@ Copy and track:
 
 ### After This Skill
 
-- `/shipkit-architecture-memory` - Logs architectural decisions
+- `/shipkit-engineering-definition` - Engineering blueprint and architecture
   - **When**: UX pattern becomes project-wide standard
   - **Why**: Document established UX patterns for future consistency
   - **Trigger**: New pattern created that should be reused across components

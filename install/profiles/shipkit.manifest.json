@@ -34,43 +34,44 @@
 
   "skills": {
     "mandatory": [
-      "shipkit-master",
-      "shipkit-detect"
+      "shipkit-master"
     ],
     "optional": {
       "Vision & Discovery": [
         {"name": "shipkit-why-project", "desc": "Define project vision & goals"},
         {"name": "shipkit-product-discovery", "desc": "Create personas & user journeys"},
         {"name": "shipkit-project-context", "desc": "Scan codebase, detect stack"},
-        {"name": "shipkit-project-status", "desc": "Check project health & gaps"},
         {"name": "shipkit-codebase-index", "desc": "Index codebase for navigation"},
         {"name": "shipkit-product-definition", "desc": "Define what to build (features, patterns, differentiators)"},
         {"name": "shipkit-engineering-definition", "desc": "Design technical approach (mechanisms, components, stack)"},
-        {"name": "shipkit-goals", "desc": "Define success criteria & stage gates"}
+        {"name": "shipkit-stage", "desc": "Define project stage, constraints, and graduation criteria"},
+        {"name": "shipkit-product-goals", "desc": "Define user-outcome success criteria (P-*)"},
+        {"name": "shipkit-engineering-goals", "desc": "Define technical performance criteria"},
+        {"name": "shipkit-vision", "desc": "Strategic visionary gateway — sets direction, stage, goals (master-dispatched)"}
       ],
       "Spec & Planning": [
+        {"name": "shipkit-spec-roadmap", "desc": "Prioritize spec backlog from definitions + goals"},
         {"name": "shipkit-spec", "desc": "Create feature specifications"},
         {"name": "shipkit-feedback-bug", "desc": "Process feedback into investigated bug specs"},
         {"name": "shipkit-plan", "desc": "Plan implementation steps"},
         {"name": "shipkit-thinking-partner", "desc": "Think through decisions with cognitive frameworks"}
       ],
       "Knowledge & Memory": [
-        {"name": "shipkit-architecture-memory", "desc": "Log architecture decisions"},
-        {"name": "shipkit-data-contracts", "desc": "Define data shapes & types"},
-        {"name": "shipkit-integration-docs", "desc": "Fetch external API patterns"},
         {"name": "shipkit-claude-md", "desc": "Update CLAUDE.md with learnings"},
         {"name": "shipkit-work-memory", "desc": "Log progress & session state"}
       ],
+      "Orchestration": [
+        {"name": "shipkit-orch-direction", "desc": "Direction loop — strategic artifacts + coherence review"},
+        {"name": "shipkit-orch-planning", "desc": "Planning loop — definitions/specs + alignment review"},
+        {"name": "shipkit-orch-shipping", "desc": "Shipping loop — implementation + verification + release gate"}
+      ],
       "Execution": [
-        {"name": "shipkit-build-relentlessly", "desc": "Build until compiles"},
-        {"name": "shipkit-test-relentlessly", "desc": "Test until green"},
-        {"name": "shipkit-lint-relentlessly", "desc": "Lint until clean"},
         {"name": "shipkit-test-cases", "desc": "Generate code-anchored test cases"},
-        {"name": "shipkit-implement-independently", "desc": "Parallel implementation in worktree"},
-        {"name": "shipkit-team", "desc": "Create agent team from implementation plan"},
-        {"name": "shipkit-cleanup-worktrees", "desc": "Clean up stale worktrees"}
+        {"name": "shipkit-team", "desc": "Create agent team from implementation plan"}
       ],
       "Quality & Communication": [
+        {"name": "shipkit-review-direction", "desc": "Assess strategic artifact coherence"},
+        {"name": "shipkit-review-planning", "desc": "Assess planning artifact alignment"},
         {"name": "shipkit-verify", "desc": "Review work (12 quality dimensions)"},
         {"name": "shipkit-preflight", "desc": "MVP production readiness audit"},
         {"name": "shipkit-scale-ready", "desc": "Scale & enterprise readiness audit"},
@@ -90,17 +91,24 @@
     }
   },
 
-  "agents": [
-    {"name": "shipkit-master-agent", "desc": "Goal-driven orchestrator — checks 3 goal levels, spawns responsible agent"},
-    {"name": "shipkit-visionary-agent", "desc": "Strategic visionary — sets stage, vision, constraints, business goals"},
-    {"name": "shipkit-project-manager-agent", "desc": "Execution lead — team coordination, verification, shipping"},
-    {"name": "shipkit-product-owner-agent", "desc": "Product manager — definitions, specs, feedback, product QA"},
-    {"name": "shipkit-ux-designer-agent", "desc": "UI/UX design"},
-    {"name": "shipkit-architect-agent", "desc": "Engineering manager — architecture, plans, contracts, engineering QA"},
-    {"name": "shipkit-implementer-agent", "desc": "Code implementation"},
-    {"name": "shipkit-implement-independently-agent", "desc": "Isolated parallel implementation"},
-    {"name": "shipkit-reviewer-agent", "desc": "Code review & quality"},
-    {"name": "shipkit-researcher-agent", "desc": "Research & analysis"},
-    {"name": "shipkit-thinking-partner-agent", "desc": "Cognitive discussion & thinking partner"}
-  ]
+  "agents": {
+    "orchestrators": [
+      {"name": "shipkit-orch-master-agent", "desc": "Master loop orchestrator — sequential dispatch of direction/planning/shipping"},
+      {"name": "shipkit-orch-direction-agent", "desc": "Direction loop orchestrator — strategic artifact dispatch + review cycle"},
+      {"name": "shipkit-orch-planning-agent", "desc": "Planning loop orchestrator — definition/spec dispatch + review cycle"},
+      {"name": "shipkit-orch-shipping-agent", "desc": "Shipping loop orchestrator — implementation/verification dispatch + review cycle"}
+    ],
+    "producers": [
+      {"name": "shipkit-visionary-agent", "desc": "Strategic visionary — sets stage, vision, constraints, business goals"},
+      {"name": "shipkit-product-owner-agent", "desc": "Product manager — definitions, specs, feedback, product goals"},
+      {"name": "shipkit-architect-agent", "desc": "Engineering manager — architecture, plans, engineering goals"},
+      {"name": "shipkit-implementer-agent", "desc": "Code implementation, test writing, bug fixing"},
+      {"name": "shipkit-thinking-partner-agent", "desc": "Cognitive discussion & thinking partner"}
+    ],
+    "reviewers": [
+      {"name": "shipkit-reviewer-direction-agent", "desc": "Direction judgment — strategic coherence assessment"},
+      {"name": "shipkit-reviewer-planning-agent", "desc": "Planning judgment — definition/spec alignment assessment"},
+      {"name": "shipkit-reviewer-shipping-agent", "desc": "Shipping judgment — implementation quality + QA dispatch"}
+    ]
+  }
 }

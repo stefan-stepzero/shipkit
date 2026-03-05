@@ -1,10 +1,11 @@
 ---
 name: shipkit-scale-ready
+id: SKL-SCALEREADY
 description: Audits production systems for scale readiness — observability, performance, reliability, and operational maturity. For teams with traction preparing to grow.
 argument-hint: "[area to audit]"
 model: opus
 context: fork
-agent: shipkit-reviewer-agent
+agent: shipkit-reviewer-shipping-agent
 allowed-tools:
   - Read
   - Glob
@@ -431,7 +432,7 @@ This skill follows the **Shipkit JSON artifact convention**. See `references/out
 |-------|--------------|
 | `/preflight` | Prerequisite — MVP readiness must pass first |
 | `/verify` | Complements — verify is per-change, scale-ready is system-wide |
-| `/architecture-memory` | Reads — understands system patterns |
+| `/shipkit-engineering-definition` | Reads — understands system patterns |
 
 ---
 

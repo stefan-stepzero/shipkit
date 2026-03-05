@@ -89,9 +89,9 @@ Before creating a missing reference file, determine if it's actually needed:
 
 ### Required Hooks
 - [ ] `install/shared/hooks/shipkit-session-start.py` exists
-- [ ] `install/shared/hooks/shipkit-after-skill-router.py` exists
 - [ ] `install/shared/hooks/shipkit-track-skill-usage.py` exists
-- [ ] `install/shared/hooks/shipkit-relentless-stop-hook.py` exists
+- [ ] `install/shared/hooks/shipkit-task-completed-hook.py` exists
+- [ ] `install/shared/hooks/shipkit-teammate-idle-hook.py` exists
 
 ### Hook Syntax
 - [ ] All `.py` files in `install/shared/hooks/` pass `python -m py_compile`
@@ -143,9 +143,7 @@ Both installers require these paths to exist:
 ```
 install/shared/hooks/
 ├── shipkit-session-start.py          → session-start.py
-├── shipkit-after-skill-router.py     → after-skill-router.py
 ├── shipkit-track-skill-usage.py      → shipkit-track-skill-usage.py
-├── shipkit-relentless-stop-hook.py   → shipkit-relentless-stop-hook.py
 ├── shipkit-task-completed-hook.py    → shipkit-task-completed-hook.py
 └── shipkit-teammate-idle-hook.py     → shipkit-teammate-idle-hook.py
 ```
@@ -179,7 +177,7 @@ install/shared/hooks/
 
 ### File 3: shipkit.md
 - [ ] `install/claude-md/shipkit.md` exists
-- [ ] Each user-invocable skill listed (except shipkit-detect)
+- [ ] Each user-invocable skill listed
 - [ ] Format: `/{skill-name}` with description
 - [ ] No stale/removed skills still listed
 
@@ -195,7 +193,7 @@ install/shared/hooks/
 
 ### File 6: Master Routing
 - [ ] `install/skills/shipkit-master/SKILL.md` exists
-- [ ] Each skill has routing entry (except detect, master)
+- [ ] Each skill has routing entry (except master)
 - [ ] Routing keywords are relevant to skill purpose
 - [ ] No stale/removed skills still listed
 
@@ -445,9 +443,9 @@ PATHS = {
 ```python
 REQUIRED_HOOKS = [
     "shipkit-session-start.py",
-    "shipkit-after-skill-router.py",
     "shipkit-track-skill-usage.py",
-    "shipkit-relentless-stop-hook.py"
+    "shipkit-task-completed-hook.py",
+    "shipkit-teammate-idle-hook.py"
 ]
 ```
 

@@ -21,7 +21,7 @@ Extended documentation and curated catalogs for shipkit-get-skills.
 - **obra/superpowers** - https://github.com/obra/superpowers - Development workflow (TDD, planning, debugging)
 - **Expo Skills** - https://github.com/expo/skills - React Native, Expo
 - **Skills CLI** - https://github.com/vercel-labs/skills - The npx skills CLI
-- **Full Directory** - See `docs/development/EXTERNAL-SKILLS-DIRECTORY.md` for complete catalog
+- **Full Directory** - See `docs/development/inspiration/external-skills-directory.md` for complete catalog
 
 ## When to Use
 - Load `official-plugins.md` when user asks about available plugins

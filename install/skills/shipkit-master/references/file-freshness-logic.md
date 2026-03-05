@@ -131,7 +131,7 @@ $days = $age.Days
 **Before Skill Execution**: Check skill-specific files
 - `/shipkit-spec` → Check existing specs in `.shipkit/specs/`
 - `/shipkit-plan` → Check existing plans in `.shipkit/plans/`
-- `/shipkit-architecture-memory` → Check `architecture.json`
+- `/shipkit-engineering-definition` → Check `architecture.json`
 
 **After Major Changes**: Prompt for updates
 - After `npm install` / `pip install` → Suggest stack.json update

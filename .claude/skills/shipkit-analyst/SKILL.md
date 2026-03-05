@@ -1,6 +1,6 @@
 ---
 name: shipkit-analyst
-description: Maps Claude Code changes to Shipkit gaps. Reads scout report and audits all skills, agents, hooks, and settings against current CC capabilities. Identifies deprecated patterns, missing features, and update opportunities. Use after running shipkit-scout.
+description: Maps Claude Code changes to Shipkit gaps. Dispatches 5 parallel agents to cross-reference scout findings against skills, agents, hooks, settings, and coverage. Identifies deprecated patterns, missing features, and update opportunities. Use after running shipkit-scout.
 argument-hint: "[--scope skills|agents|hooks|all] [--severity critical|all]"
 ---
 
@@ -8,11 +8,14 @@ argument-hint: "[--scope skills|agents|hooks|all] [--severity critical|all]"
 
 **Purpose**: Map Claude Code evolution against Shipkit's current state to find gaps, risks, and opportunities
 
-**What it does**:
-- Reads the scout report (`docs/development/scout-report.json`)
-- Audits every skill, agent, hook, and settings file against scout findings
-- Produces a structured gap analysis at `docs/development/analyst-report.json`
-- Categorizes findings by severity: critical (breaking), warning (deprecated), info (opportunity)
+**What it does**: Dispatches 5 parallel Sonnet agents for cross-referencing:
+- **Breaking changes agent** — Scans all components for patterns that are now broken
+- **Deprecations agent** — Finds deprecated patterns still in use
+- **Features agent** — Identifies new CC features Shipkit could adopt
+- **Patterns agent** — Checks emerging patterns against Shipkit conventions
+- **Coverage agent** — Produces per-skill coverage scores
+
+Then aggregates, ranks by severity, and writes structured gap analysis.
 
 ---
 
@@ -23,7 +26,6 @@ argument-hint: "[--scope skills|agents|hooks|all] [--severity critical|all]"
 - "Run the analyst"
 - "What needs updating in Shipkit?"
 - "Map CC changes to our skills"
-- "Check for deprecated patterns"
 
 **Automated trigger:**
 - After `/shipkit-scout` produces a new report
@@ -34,170 +36,229 @@ argument-hint: "[--scope skills|agents|hooks|all] [--severity critical|all]"
 ## Prerequisites
 
 **Required**:
-- `docs/development/scout-report.json` exists (run `/shipkit-scout` first)
-
-**Helpful context**:
-- Previous analyst report at `docs/development/analyst-report.json`
-- Framework integrity state at `.claude/skills/shipkit-framework-integrity/.integrity-state.json`
+- `docs/development/dev-progress/DOC-002-scout-report.json` exists (run `/shipkit-scout` first)
 
 ---
 
 ## Process
 
-### Step 1: Load Scout Report
+### Step 0: Load Scout Report (Inline)
 
-Read `docs/development/scout-report.json`. Extract:
+Read `docs/development/dev-progress/DOC-002-scout-report.json`. Extract:
 - `findings.newFeatures` — new CC capabilities
 - `findings.breakingChanges` — things that may break Shipkit
-- `findings.deprecations` — patterns Shipkit should migrate away from
-- `findings.newPatterns` — emerging patterns Shipkit could adopt
-- `docsIndex.keyChanges` — per-page changes in CC docs
+- `findings.deprecations` — patterns to migrate away from
+- `findings.undocumentedFeatures` — experimental capabilities
+- `docsIndex.keyChanges` — per-page changes
 
-### Step 2: Inventory Shipkit Components
+Also read previous analyst report if it exists for diffing.
 
-Scan the framework to build a component inventory:
+### Step 1: Dispatch 5 Parallel Agents
 
-**Skills** — Read all `install/skills/shipkit-*/SKILL.md`:
-- Extract frontmatter fields used
-- Extract tools/features referenced in the skill body
-- Note which CC features each skill relies on
+Launch ALL 5 agents simultaneously using the Agent tool. Each is `subagent_type: "general-purpose"` with `model: "sonnet"`.
 
-**Agents** — Read all `install/agents/shipkit-*.md`:
-- Extract frontmatter fields used (model, permissionMode, memory, tools, etc.)
-- Note which CC agent features each uses
+**IMPORTANT**: Launch all 5 in a single message with 5 parallel Agent tool calls. Pass the relevant scout findings to each agent in its prompt.
 
-**Hooks** — Read all `install/shared/hooks/*.py`:
-- Extract hook events referenced
-- Note stdin schema expectations
-- Check exit code patterns
+---
 
-**Settings** — Read `install/settings/shipkit.settings.json`:
-- Extract all permission patterns
-- Extract hook event registrations
-- Extract env vars
+#### Agent 1: Breaking Changes Scanner
 
-**Manifest** — Read `install/profiles/shipkit.manifest.json`:
-- Extract skill/agent/MCP registrations
+**Prompt:**
+```
+Search the Shipkit framework at P:\Projects2\sg-shipkit for patterns affected by these Claude Code breaking changes:
 
-### Step 3: Cross-Reference — Breaking Changes
+{paste breakingChanges array from scout report}
 
-For each breaking change in scout report:
+For each breaking change:
+1. Search ALL files in install/skills/shipkit-*/SKILL.md for the affected pattern
+2. Search ALL files in install/agents/shipkit-*.md
+3. Search install/shared/hooks/*.py
+4. Search install/settings/shipkit.settings.json
 
-1. Search all Shipkit components for the affected pattern
-2. If found, mark as **CRITICAL**:
-   ```
-   {
-     "severity": "critical",
-     "type": "breaking-change",
-     "ccChange": "Removed X in v2.2.0",
-     "affectedComponents": [
-       {"file": "install/skills/shipkit-spec/SKILL.md", "line": 45, "usage": "Uses X in frontmatter"},
-       {"file": "install/agents/shipkit-implementer-agent.md", "line": 12, "usage": "References X"}
-     ],
-     "migrationAction": "Replace X with Y",
-     "effort": "low|medium|high"
-   }
-   ```
+For each match found, report:
+- severity: "critical"
+- file path and line number
+- what the file uses that's now broken
+- suggested migration action
+- effort estimate (low=1 file, medium=2-5, high=6+)
 
-### Step 4: Cross-Reference — Deprecations
-
-For each deprecation in scout report:
-
-1. Search all Shipkit components for the deprecated pattern
-2. If found, mark as **WARNING**:
-   ```
-   {
-     "severity": "warning",
-     "type": "deprecation",
-     "ccChange": "X deprecated in favor of Y",
-     "affectedComponents": [...],
-     "migrationAction": "Replace X with Y",
-     "deadline": "v3.0 (estimated)",
-     "effort": "low|medium|high"
-   }
-   ```
-
-### Step 5: Cross-Reference — New Features
-
-For each new feature in scout report:
-
-1. Check if any Shipkit component already uses it
-2. If not, assess relevance:
-   - **Which skills could benefit?** — Match feature category to skill purpose
-   - **Which agents could benefit?** — Match to agent role
-   - **Is it a new hook event?** — Could Shipkit register for it?
-   - **Is it a new settings field?** — Should Shipkit configure it?
-
-3. Mark as **INFO** with opportunity details:
-   ```
-   {
-     "severity": "info",
-     "type": "feature-opportunity",
-     "ccFeature": "New memory field on agents",
-     "relevantComponents": [
-       {"file": "install/agents/shipkit-implementer-agent.md", "reason": "Could persist implementation patterns"},
-       {"file": "install/agents/shipkit-researcher-agent.md", "reason": "Could persist research findings"}
-     ],
-     "potentialBenefit": "Agents remember patterns across sessions",
-     "adoptionEffort": "low"
-   }
-   ```
-
-### Step 6: Cross-Reference — Patterns
-
-For each new pattern from scout report:
-
-1. Check if Shipkit already follows this pattern
-2. If not, assess whether Shipkit should adopt it
-3. Mark as **INFO** with pattern details
-
-### Step 7: Skill Coverage Analysis
-
-For each skill, produce a coverage assessment:
-
-```json
-{
-  "skill": "shipkit-spec",
-  "ccFeaturesUsed": ["skills", "frontmatter.name", "frontmatter.description"],
-  "ccFeaturesAvailable": ["context:fork", "memory", "hooks in frontmatter"],
-  "coverageScore": 0.6,
-  "missingOpportunities": [
-    "Could use context:fork for isolated spec generation",
-    "Could use hooks to auto-validate spec format"
-  ]
-}
+Return:
+BREAKING_CHANGES:
+  totalMatches: N
+  findings: [{severity, file, line, usage, ccChange, migrationAction, effort}]
+  noMatchFound: [list of breaking changes with no Shipkit impact]
 ```
 
-### Step 8: Write Analyst Report
+---
 
-Write `docs/development/analyst-report.json`:
+#### Agent 2: Deprecation Scanner
+
+**Prompt:**
+```
+Search the Shipkit framework at P:\Projects2\sg-shipkit for deprecated Claude Code patterns:
+
+{paste deprecations array from scout report}
+
+For each deprecation:
+1. Search install/skills/shipkit-*/SKILL.md for the deprecated pattern
+2. Search install/agents/shipkit-*.md
+3. Search install/shared/hooks/*.py
+4. Search install/settings/shipkit.settings.json
+
+Also scan for these known deprecated patterns regardless of scout report:
+- ".claude.json" references (removed v2.0.8)
+- "includeCoAuthoredBy" (deprecated v2.0.62)
+- Legacy permission formats
+
+For each match, report:
+- severity: "warning"
+- file, line, current usage
+- replacement pattern
+- deadline (if known)
+- effort estimate
+
+Return:
+DEPRECATIONS:
+  totalMatches: N
+  findings: [{severity, file, line, currentUsage, replacement, deadline, effort}]
+```
+
+---
+
+#### Agent 3: New Features Mapper
+
+**Prompt:**
+```
+Check which new Claude Code features the Shipkit framework could adopt.
+
+New features from scout report:
+{paste newFeatures array}
+
+For each feature:
+1. Check if ANY Shipkit component already uses it (grep install/ for the feature name/pattern)
+2. If not used, assess which components could benefit:
+   - Which skills could use this feature?
+   - Which agents could use this feature?
+   - Is it a new hook event Shipkit should register for?
+   - Is it a new settings field Shipkit should configure?
+
+Read install/profiles/shipkit.manifest.json to understand all components.
+Sample 5-10 representative SKILL.md files to understand current feature usage.
+
+For each opportunity, report:
+- severity: "info"
+- feature name and CC version
+- relevant Shipkit components (file paths)
+- potential benefit description
+- adoption effort estimate
+
+Return:
+FEATURE_OPPORTUNITIES:
+  totalOpportunities: N
+  alreadyAdopted: [features Shipkit already uses]
+  opportunities: [{severity, ccFeature, version, relevantComponents[], benefit, effort}]
+```
+
+---
+
+#### Agent 4: Pattern Scanner
+
+**Prompt:**
+```
+Check emerging Claude Code patterns against Shipkit conventions.
+
+Patterns from scout report:
+{paste newPatterns/undocumentedFeatures arrays}
+
+For each pattern:
+1. Check if Shipkit follows this pattern already
+2. If not, assess whether Shipkit should adopt it
+3. Check if any Shipkit skill or agent contradicts this pattern
+
+Also check these cross-cutting concerns:
+- Do any skills reference tools that no longer exist?
+- Do any agents use frontmatter fields that aren't in the CC spec?
+- Are hook event names in settings.json all valid?
+- Are permission string formats all valid?
+
+Return:
+PATTERNS:
+  adopted: [patterns Shipkit already follows]
+  shouldAdopt: [{pattern, reason, affectedComponents[], effort}]
+  conflicts: [{pattern, conflictingFile, issue}]
+  crossCuttingIssues: [{type, file, issue, suggestion}]
+```
+
+---
+
+#### Agent 5: Coverage Scorer
+
+**Prompt:**
+```
+Produce a coverage score for each Shipkit skill against available Claude Code features.
+
+1. Read install/profiles/shipkit.manifest.json to get the full skill list
+2. For each skill, read its SKILL.md and check which CC features it uses:
+   - context: fork (agent isolation)
+   - agent: (agent persona)
+   - memory: (cross-session persistence)
+   - hooks: (lifecycle hooks in frontmatter)
+   - allowed-tools: / disallowedTools: (tool restrictions)
+   - model: (model selection)
+   - disable-model-invocation: (infrastructure skill)
+   - argument-hint: (CLI hint)
+   - user-invocable: (visibility control)
+
+3. Calculate coverage = features_used / features_available
+   Where features_available = features relevant to this skill type
+
+4. Identify the 5 lowest-scoring skills
+
+Return:
+COVERAGE:
+  totalSkills: N
+  averageCoverage: 0.XX
+  skills: [{skill, featuresUsed[], featuresAvailable[], coverage, missingOpportunities[]}]
+  lowest5: [{skill, coverage, topMissing}]
+  highest5: [{skill, coverage}]
+```
+
+---
+
+### Step 2: Aggregate & Rank (Inline)
+
+After all 5 agents return:
+
+1. **Merge all findings** into a single list
+2. **Assign IDs**: GAP-001, GAP-002, etc.
+3. **Sort by severity**: critical → warning → info
+4. **Within severity, sort by effort** (low effort first = quick wins)
+5. **Deduplicate** findings that appear in multiple agent results
+
+### Step 3: Write Analyst Report (Inline)
+
+Write `docs/development/dev-progress/DOC-003-analyst-report.json`:
 
 ```json
 {
   "$schema": "shipkit-artifact",
   "type": "analyst-report",
-  "version": "1.0",
-  "analyzedAt": "2026-02-20T...",
+  "version": "2.0",
+  "analyzedAt": "2026-...",
   "source": "shipkit-analyst",
   "basedOn": {
-    "scoutReport": "docs/development/scout-report.json",
-    "scoutedAt": "2026-02-20T...",
-    "ccVersion": "2.1.34"
+    "scoutReport": "docs/development/dev-progress/DOC-002-scout-report.json",
+    "scoutedAt": "...",
+    "ccVersion": "X.Y.Z"
   },
   "summary": {
-    "critical": 1,
-    "warnings": 3,
-    "opportunities": 12,
+    "critical": N,
+    "warnings": N,
+    "opportunities": N,
     "skillsCoverage": {
-      "average": 0.72,
-      "lowest": {"skill": "shipkit-implement-independently", "score": 0.4},
-      "highest": {"skill": "shipkit-team", "score": 0.95}
-    },
-    "totalComponents": {
-      "skills": 39,
-      "agents": 9,
-      "hooks": 5,
-      "settings": 1
+      "average": 0.XX,
+      "lowest": {"skill": "...", "score": 0.X},
+      "highest": {"skill": "...", "score": 0.X}
     }
   },
   "findings": [
@@ -207,38 +268,49 @@ Write `docs/development/analyst-report.json`:
       "type": "breaking-change|deprecation|feature-opportunity|pattern-adoption",
       "title": "Short description",
       "ccChange": "What changed in CC",
-      "affectedComponents": [...],
+      "affectedComponents": [{file, line, usage}],
       "migrationAction": "What to do",
       "effort": "low|medium|high",
       "priority": 1
     }
   ],
-  "skillCoverage": [
-    {
-      "skill": "shipkit-spec",
-      "ccFeaturesUsed": [...],
-      "ccFeaturesAvailable": [...],
-      "coverageScore": 0.6,
-      "missingOpportunities": [...]
-    }
-  ]
+  "skillCoverage": [...]
 }
+```
+
+### Step 4: Present Summary (Inline)
+
+```
+## Gap Analysis — CC v{version}
+
+**Agents**: 5 parallel (breaking, deprecations, features, patterns, coverage)
+
+### Critical ({N})
+- GAP-001: {title} — {affectedComponents count} files, effort: {effort}
+
+### Warnings ({N})
+- GAP-00X: {title}
+
+### Opportunities ({N})
+- GAP-00X: {title} — {benefit}
+
+### Coverage
+- Average: {X}% | Lowest: {skill} ({X}%) | Highest: {skill} ({X}%)
+
+Ready for ideation? Run `/shipkit-ideator`
 ```
 
 ---
 
 ## Output Quality Checklist
 
-Before writing the report, verify:
-- [ ] Scout report was read and parsed completely
-- [ ] ALL skills in `install/skills/` were audited (not just a sample)
-- [ ] ALL agents in `install/agents/` were audited
-- [ ] ALL hooks in `install/shared/hooks/` were audited
-- [ ] Each finding has a concrete `migrationAction` (not vague)
-- [ ] `effort` estimates are realistic (low = 1 file, medium = 2-5 files, high = 6+ files)
-- [ ] No duplicate findings
-- [ ] Findings are sorted by priority (critical first)
-- [ ] Coverage scores are based on actual feature counts, not guesses
+- [ ] Scout report was fully parsed
+- [ ] ALL skills audited (not just a sample) — coverage agent reads all
+- [ ] ALL agents audited — breaking/deprecation agents grep all
+- [ ] Each finding has concrete `migrationAction`
+- [ ] Effort estimates are realistic
+- [ ] No duplicate findings across agents
+- [ ] Findings sorted by priority
 
 ---
 
@@ -246,39 +318,22 @@ Before writing the report, verify:
 
 ### Before This Skill
 - `/shipkit-scout` — Produces the scout report this skill reads
-  - **Trigger**: Scout report must exist
-  - **Why**: Analyst maps CC changes against Shipkit — needs to know what changed
 
 ### After This Skill
 - `/shipkit-ideator` — Reads analyst report, brainstorms opportunities
-  - **Trigger**: Analyst report written with gaps/opportunities
-  - **Why**: Gaps need to be turned into actionable improvement ideas
-- `/shipkit-framework-integrity` — Can validate fixes after analyst identifies issues
-  - **Trigger**: After implementing fixes from analyst findings
-  - **Why**: Ensures fixes don't break other things
-
-### Team Composition
-In a self-improvement team:
-- **Scout** runs first
-- **Analyst** reads scout output (this skill)
-- **Ideator** reads analyst output
-- Findings can feed into `/shipkit-plan` for implementation
 
 ---
 
 ## Context Files This Skill Reads
 
-- `docs/development/scout-report.json` — Scout findings (required)
-- `docs/development/analyst-report.json` — Previous analyst report (for diffing)
-- `install/skills/shipkit-*/SKILL.md` — All skill definitions
-- `install/agents/shipkit-*.md` — All agent definitions
-- `install/shared/hooks/*.py` — All hook scripts
-- `install/settings/shipkit.settings.json` — Framework settings
-- `install/profiles/shipkit.manifest.json` — Framework manifest
+**Agent 1-2 read**: scout report + all skill/agent/hook/settings files
+**Agent 3 reads**: scout report + manifest + sample SKILL.md files
+**Agent 4 reads**: scout report + all component files
+**Agent 5 reads**: manifest + all SKILL.md files
 
 ## Context Files This Skill Writes
 
-- `docs/development/analyst-report.json` — Structured gap analysis report
+- `docs/development/dev-progress/DOC-003-analyst-report.json` — Structured gap analysis
 
 ---
 
@@ -291,4 +346,3 @@ In a self-improvement team:
 | `--scope hooks` | Only audit hooks |
 | `--scope all` | Full audit (default) |
 | `--severity critical` | Only report critical/breaking issues |
-| `--severity all` | Report all severities (default) |

@@ -570,9 +570,7 @@ def install_shared_core(repo_root, target_dir, language, edition):
 
     # Install shipkit hooks
     shutil.copy2(hooks_src / "shipkit-session-start.py", hooks_dest / "session-start.py")
-    shutil.copy2(hooks_src / "shipkit-after-skill-router.py", hooks_dest / "after-skill-router.py")
     shutil.copy2(hooks_src / "shipkit-track-skill-usage.py", hooks_dest / "shipkit-track-skill-usage.py")
-    shutil.copy2(hooks_src / "shipkit-relentless-stop-hook.py", hooks_dest / "shipkit-relentless-stop-hook.py")
     shutil.copy2(hooks_src / "shipkit-teammate-idle-hook.py", hooks_dest / "shipkit-teammate-idle-hook.py")
     shutil.copy2(hooks_src / "shipkit-task-completed-hook.py", hooks_dest / "shipkit-task-completed-hook.py")
     print_success("Hooks installed")
@@ -852,25 +850,7 @@ def _build_hooks_config():
             }
         ],
         "PreToolUse": [],
-        "Stop": [
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "python -X utf8 .claude/hooks/after-skill-router.py"
-                    }
-                ]
-            },
-            {
-                "hooks": [
-                    {
-                        "type": "command",
-                        "command": "python -X utf8 .claude/hooks/shipkit-relentless-stop-hook.py",
-                        "timeout": 180
-                    }
-                ]
-            }
-        ],
+        "Stop": [],
         "PreCompact": [
             {
                 "hooks": [
@@ -1173,7 +1153,7 @@ def show_completion(target_dir, selected_skills, selected_agents, language):
     print(f"     → {Colors.GREEN}/shipkit-plan{Colors.RESET} → implement")
 
     print()
-    print(f"  {Colors.CYAN}3.{Colors.RESET} Type {Colors.GREEN}/shipkit-project-status{Colors.RESET} to see current state")
+    print(f"  {Colors.CYAN}3.{Colors.RESET} Type {Colors.GREEN}/shipkit-work-memory{Colors.RESET} to see current state")
     print()
     print(f"  {Colors.DIM}Happy shipping! 🚀{Colors.RESET}")
     print()

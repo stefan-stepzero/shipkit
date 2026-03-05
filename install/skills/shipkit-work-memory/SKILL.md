@@ -1,5 +1,6 @@
 ---
 name: shipkit-work-memory
+id: SKL-WORKMEM
 description: "Log session progress and save resume state. Infers from conversation and git. Triggers: 'log progress', 'session summary', 'checkpoint', 'save progress', 'end session'."
 argument-hint: "[checkpoint name]"
 ---
@@ -367,11 +368,6 @@ Any development work:
 - End session with clear state
 - Next session reads `resumePoint` from progress.json
 - Seamless continuation
-
-### Complementary
-
-- `shipkit-architecture-memory` - Decisions in detail
-- `shipkit-project-status` - Overall health check (reads `summary` from progress.json)
 
 ---
 

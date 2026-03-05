@@ -122,9 +122,8 @@ def categorize_skills(skills):
     }
 
     category_keywords = {
-        "Core Workflow": ["master", "project-status", "project-context", "codebase-index", "claude-md"],
+        "Core Workflow": ["master", "project-context", "codebase-index", "claude-md"],
         "Discovery & Planning": ["why-project", "product-discovery", "spec", "plan", "prototyping", "prototype-to-spec"],
-        "Implementation": ["architecture-memory", "data-contracts", "integration-docs"],
         "Quality & Documentation": ["verify", "preflight", "ux-audit", "user-instructions", "communications", "work-memory"],
         "Ecosystem": ["get-skills", "get-mcps"],
         "System": ["detect"]

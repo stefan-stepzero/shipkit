@@ -38,9 +38,6 @@ venv/
 # Project instructions (generated per developer/project)
 CLAUDE.md
 
-# Internal development documents (not for distribution)
-dev/
-
 # Internal development materials (not for public distribution)
 docs/development/
 
@@ -56,3 +53,7 @@ tests/archive/
 # Deprecated folders (superseded by docs/generated/ and scripts/)
 exported/
 help/
+
+# Downloaded assets (not source)
+docs/generated/mermaid.min.js.download
+docs/generated/Shipkit - Quick Reference.html

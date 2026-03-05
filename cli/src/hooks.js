@@ -29,25 +29,7 @@ function buildHooksConfig() {
       },
     ],
     PreToolUse: [],
-    Stop: [
-      {
-        hooks: [
-          {
-            type: 'command',
-            command: 'python -X utf8 .claude/hooks/after-skill-router.py',
-          },
-        ],
-      },
-      {
-        hooks: [
-          {
-            type: 'command',
-            command: 'python -X utf8 .claude/hooks/shipkit-relentless-stop-hook.py',
-            timeout: 180,
-          },
-        ],
-      },
-    ],
+    Stop: [],
     PreCompact: [
       {
         hooks: [
