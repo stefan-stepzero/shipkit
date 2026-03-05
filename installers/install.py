@@ -155,7 +155,7 @@ def prompt_for_profile():
     print()
     print(f"  {Colors.BOLD}Select Profile:{Colors.RESET}")
     print()
-    print(f"  {Colors.CYAN}[1]{Colors.RESET} Full        - All 29 skills + 7 agents (recommended)")
+    print(f"  {Colors.CYAN}[1]{Colors.RESET} Full        - All 37 skills + 12 agents (recommended)")
     print(f"  {Colors.CYAN}[2]{Colors.RESET} Discovery   - Vision & planning skills (11 skills)")
     print(f"  {Colors.CYAN}[3]{Colors.RESET} Minimal     - Core workflow only (5 skills)")
     print()
@@ -307,9 +307,21 @@ def prompt_for_skills(manifest):
 # AGENT SELECTION
 # ═══════════════════════════════════════════════════════════════════════════════
 
+def flatten_agents(manifest):
+    """Flatten agents from {orchestrators: [...], producers: [...], reviewers: [...]} to flat list"""
+    agents = manifest.get("agents", {})
+    if isinstance(agents, list):
+        return agents
+    # Object with sub-arrays
+    flat = []
+    for group in agents.values():
+        if isinstance(group, list):
+            flat.extend(group)
+    return flat
+
 def prompt_for_agents(manifest):
     """Prompt user to select which agents to install"""
-    agents = manifest.get("agents", [])
+    agents = flatten_agents(manifest)
 
     if not agents:
         return []
@@ -1250,7 +1262,7 @@ def main():
     if args.no_agents:
         selected_agents = []
     elif args.all_agents:
-        selected_agents = [a["name"] for a in manifest.get("agents", [])]
+        selected_agents = [a["name"] for a in flatten_agents(manifest)]
     else:
         selected_agents = prompt_for_agents(manifest)
 

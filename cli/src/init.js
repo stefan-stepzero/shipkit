@@ -125,7 +125,7 @@ async function init(packageRoot, flags) {
         makeExecutable(destPath);
       }
     }
-    ui.success('Hooks installed (6 files)');
+    ui.success(`Hooks installed (${Object.keys(HOOK_FILES).length} files)`);
 
     // 8. Install rules
     const rulesDir = path.join(installDir, 'rules');

@@ -3,12 +3,12 @@
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
 **<!-- sync:skill_count -->37<!-- /sync:skill_count --> skills** organized for streamlined workflow:
-<!-- sync:readme_summary -->- **Vision & Discovery** (11) - master, why-project, product-discovery, project-context, stage, ...
-- **Orchestration** (3) - direction, planning, shipping
-- **Spec & Planning** (5) - spec-roadmap, spec, feedback-bug, plan, ...
+<!-- sync:readme_summary -->- **Vision & Discovery** (10) - why-project, product-discovery, project-context, ...
+- **Spec & Planning** (5) - spec-roadmap, spec, feedback-bug, ...
 - **Knowledge & Memory** (2) - claude-md, work-memory
+- **Orchestration** (3) - orch-direction, orch-planning, orch-shipping
 - **Execution** (2) - test-cases, team
-- **Quality & Communication** (11) - review-direction, review-planning, verify, preflight, ...
+- **Quality & Communication** (11) - review-direction, review-planning, verify, ...
 - **System** (3) - update, get-skills, get-mcps<!-- /sync:readme_summary -->
 
 Plus **<!-- sync:agent_count -->12<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
@@ -74,31 +74,28 @@ All skills use the `shipkit-` prefix for clarity.
 ### Agent Personas (<!-- sync:agent_count -->12<!-- /sync:agent_count -->)
 
 <!-- sync:readme_agent_table -->**Orchestrators:**
+| Agent | Used For |
+|-------|----------|
+| `shipkit-orch-master-agent` | Master loop orchestrator — sequential dispatch of direction/planning/shipping |
+| `shipkit-orch-direction-agent` | Direction loop orchestrator — strategic artifact dispatch + review cycle |
+| `shipkit-orch-planning-agent` | Planning loop orchestrator — definition/spec dispatch + review cycle |
+| `shipkit-orch-shipping-agent` | Shipping loop orchestrator — implementation/verification dispatch + review cycle |
 
-| Agent | ID | Scope |
-|-------|-----|-------|
-| `shipkit-orch-master-agent` | AGT-ORCH-MASTER | Sequential dispatch: direction → planning → shipping |
-| `shipkit-orch-direction-agent` | AGT-ORCH-DIRECTION | Strategic artifacts + coherence review cycle |
-| `shipkit-orch-planning-agent` | AGT-ORCH-PLANNING | Definitions/specs + alignment review cycle |
-| `shipkit-orch-shipping-agent` | AGT-ORCH-SHIPPING | Implementation + verification + release gate |
+**Producers:**
+| Agent | Used For |
+|-------|----------|
+| `shipkit-visionary-agent` | Strategic visionary — sets stage, vision, constraints, business goals |
+| `shipkit-product-owner-agent` | Product manager — definitions, specs, feedback, product goals |
+| `shipkit-architect-agent` | Engineering manager — architecture, plans, engineering goals |
+| `shipkit-implementer-agent` | Code implementation, test writing, bug fixing |
+| `shipkit-thinking-partner-agent` | Cognitive discussion & thinking partner |
 
-**Producer Workers:**
-
-| Agent | ID | Domain |
-|-------|-----|--------|
-| `shipkit-visionary-agent` | AGT-VISIONARY | Strategic vision, stage, business goals |
-| `shipkit-product-owner-agent` | AGT-PO | Product definitions, specs, product goals |
-| `shipkit-architect-agent` | AGT-ARCHITECT | Architecture, plans, engineering goals |
-| `shipkit-implementer-agent` | AGT-IMPLEMENTER | Code implementation, test writing |
-| `shipkit-thinking-partner-agent` | AGT-THINKER | Cognitive discussion & thinking partner |
-
-**Judgment Workers (Reviewers):**
-
-| Agent | ID | Loop | Assessment |
-|-------|-----|------|-----------|
-| `shipkit-reviewer-direction-agent` | AGT-REVIEWER-DIRECTION | Direction | Strategic coherence |
-| `shipkit-reviewer-planning-agent` | AGT-REVIEWER-PLANNING | Planning | Definition/spec alignment |
-| `shipkit-reviewer-shipping-agent` | AGT-REVIEWER-SHIPPING | Shipping | Implementation quality + QA |<!-- /sync:readme_agent_table -->
+**Reviewers:**
+| Agent | Used For |
+|-------|----------|
+| `shipkit-reviewer-direction-agent` | Direction judgment — strategic coherence assessment |
+| `shipkit-reviewer-planning-agent` | Planning judgment — definition/spec alignment assessment |
+| `shipkit-reviewer-shipping-agent` | Shipping judgment — implementation quality + QA dispatch |<!-- /sync:readme_agent_table -->
 
 ---
 

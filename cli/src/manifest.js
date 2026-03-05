@@ -22,8 +22,15 @@ function getAllSkillNames(manifest) {
   return [...mandatory, ...optional];
 }
 
-function getAllAgentNames(manifest) {
-  return (manifest.agents || []).map(a => a.name);
+function flattenAgents(manifest) {
+  const agents = manifest.agents || {};
+  if (Array.isArray(agents)) return agents;
+  // agents is { orchestrators: [...], producers: [...], reviewers: [...] }
+  return Object.values(agents).flat();
 }
 
-module.exports = { loadManifest, getAllSkillNames, getAllAgentNames };
+function getAllAgentNames(manifest) {
+  return flattenAgents(manifest).map(a => a.name);
+}
+
+module.exports = { loadManifest, getAllSkillNames, getAllAgentNames, flattenAgents };

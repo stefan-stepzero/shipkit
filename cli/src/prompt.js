@@ -25,7 +25,7 @@ async function confirm(rl, prompt, defaultYes = true) {
 
 async function promptForProfile(rl) {
   console.log(`\n  Available profiles:\n`);
-  console.log(`    ${colors.brightCyan}1${colors.reset}  shipkit    ${colors.dim}Full framework (36 skills, 9 agents)${colors.reset}`);
+  console.log(`    ${colors.brightCyan}1${colors.reset}  shipkit    ${colors.dim}Full framework (37 skills, 12 agents)${colors.reset}`);
   console.log(`    ${colors.brightCyan}2${colors.reset}  discovery  ${colors.dim}Vision & planning focused${colors.reset}`);
   console.log(`    ${colors.brightCyan}3${colors.reset}  minimal    ${colors.dim}Core workflow only${colors.reset}`);
   console.log();
@@ -106,7 +106,8 @@ async function promptForSkills(rl, manifest) {
 }
 
 async function promptForAgents(rl, manifest) {
-  const agents = manifest.agents.map(a => ({ ...a, selected: true }));
+  const { flattenAgents } = require('./manifest');
+  const agents = flattenAgents(manifest).map(a => ({ ...a, selected: true }));
 
   let done = false;
   while (!done) {

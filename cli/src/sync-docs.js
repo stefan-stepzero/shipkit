@@ -40,12 +40,18 @@ function countSkills(manifest) {
   return count;
 }
 
+function flattenAgents(manifest) {
+  const agents = manifest.agents || {};
+  if (Array.isArray(agents)) return agents;
+  return Object.values(agents).flat();
+}
+
 function countAgents(manifest) {
-  return (manifest.agents || []).length;
+  return flattenAgents(manifest).length;
 }
 
 function getAgents(manifest) {
-  return manifest.agents || [];
+  return flattenAgents(manifest);
 }
 
 function getSkillsByCategory(manifest) {
@@ -97,15 +103,28 @@ function generateReadmeSummary(manifest) {
 }
 
 function generateReadmeAgentTable(manifest) {
-  const agents = getAgents(manifest);
-  const lines = [
-    '| Agent | Used For |',
-    '|-------|----------|',
-  ];
-  for (const agent of agents) {
-    lines.push(`| \`${agent.name}\` | ${agent.desc} |`);
+  const raw = manifest.agents || {};
+  if (Array.isArray(raw)) {
+    // Legacy flat array
+    const lines = ['| Agent | Used For |', '|-------|----------|'];
+    for (const agent of raw) {
+      lines.push(`| \`${agent.name}\` | ${agent.desc} |`);
+    }
+    return lines.join('\n');
   }
-  return lines.join('\n');
+  // Grouped object: { orchestrators: [...], producers: [...], reviewers: [...] }
+  const lines = [];
+  for (const [group, agents] of Object.entries(raw)) {
+    const label = group.charAt(0).toUpperCase() + group.slice(1);
+    lines.push(`**${label}:**`);
+    lines.push('| Agent | Used For |');
+    lines.push('|-------|----------|');
+    for (const agent of agents) {
+      lines.push(`| \`${agent.name}\` | ${agent.desc} |`);
+    }
+    lines.push('');
+  }
+  return lines.join('\n').trimEnd();
 }
 
 // ---------------------------------------------------------------------------

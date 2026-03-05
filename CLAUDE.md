@@ -238,31 +238,19 @@ Before publishing changes to GitHub:
 
 ## Appendix: Active Components
 
-### Skills
-Location: `install/skills/`
+**Read DOC-015 (`docs/development/system-design/DOC-015-orchestration-pipeline.json`) before modifying agents, skills, or the orchestration pipeline.** It is the single source of truth for the 3-loop architecture, agent taxonomy, skill types, naming conventions, and artifact flow.
 
-**Core Workflow:** `shipkit-master`, `shipkit-project-context`, `shipkit-codebase-index`, `shipkit-claude-md`
+### Quick Reference
+- **37 skills** (27 user-invocable + 10 infrastructure) — see `install/profiles/shipkit.manifest.json`
+- **12 agents** (4 orchestrators, 5 producers, 3 reviewers) — see `install/agents/`
+- **DOC-025 Wiring Graph** — machine-readable dispatch chains, artifact flow, tool restrictions
 
-**Orchestration:** `shipkit-orch-direction`, `shipkit-orch-planning`, `shipkit-orch-shipping`
-
-**Discovery & Planning:** `shipkit-vision`, `shipkit-product-discovery`, `shipkit-why-project`, `shipkit-product-definition`, `shipkit-engineering-definition`, `shipkit-stage`, `shipkit-product-goals`, `shipkit-engineering-goals`, `shipkit-spec-roadmap`, `shipkit-spec`, `shipkit-feedback-bug`, `shipkit-plan`, `shipkit-thinking-partner`
-
-**Execution:** `shipkit-test-cases`, `shipkit-team`
-
-**Quality & Documentation:** `shipkit-review-direction`, `shipkit-review-planning`, `shipkit-verify`, `shipkit-preflight`, `shipkit-scale-ready`, `shipkit-prompt-audit`, `shipkit-semantic-qa`, `shipkit-qa-visual`, `shipkit-ux-audit`, `shipkit-user-instructions`, `shipkit-communications`, `shipkit-work-memory`
-
-**System:** `shipkit-update`, `shipkit-get-skills`, `shipkit-get-mcps`
-
-**Total:** 37 skills (27 user-invocable + 10 infrastructure: master, vision, orch-direction, orch-planning, orch-shipping, review-direction, review-planning, update, get-skills, get-mcps)
-
-### Agents
-Location: `install/agents/`
-
-**Orchestrators:** `shipkit-orch-master-agent` (sequential loop dispatcher), `shipkit-orch-direction-agent` (direction loop), `shipkit-orch-planning-agent` (planning loop), `shipkit-orch-shipping-agent` (shipping loop)
-
-**Producers:** `shipkit-visionary-agent` (strategic visionary), `shipkit-product-owner-agent` (product manager), `shipkit-architect-agent` (engineering manager), `shipkit-implementer-agent` (code implementation), `shipkit-thinking-partner-agent` (cognitive discussion)
-
-**Reviewers:** `shipkit-reviewer-direction-agent` (strategic coherence), `shipkit-reviewer-planning-agent` (planning alignment), `shipkit-reviewer-shipping-agent` (implementation quality + QA)
+### Dev Skills (local only, not distributed)
+Location: `.claude/skills/`
+- Framework integrity, scout, analyst, ideator (intelligence & QA)
+- Dev-spec, dev-plan, dev-review, dev-team, dev-release (development workflow)
+- Wiring-graph, validate-wiring (contract validation)
+- Documenter, smoketest (administration & testing)
 
 ### Configuration Files
 - `install/settings/shipkit.settings.json` — Permissions and configuration
@@ -273,8 +261,8 @@ Location: `install/agents/`
 - `install/shared/hooks/shipkit-teammate-idle-hook.py` — Teammate idle quality gate
 
 ### Reference Materials (Local Only - Gitignored)
+- `docs/development/system-design/DOC-015-orchestration-pipeline.json` — **ORCHESTRATION PIPELINE** (3-loop architecture, 12-agent taxonomy, skill types, naming conventions, artifact flow, verification checklist — the single source of truth. Absorbs former DOC-024.)
 - `docs/development/cc-reference/DOC-023-pipeline-test-report.md` — **CC PRIMITIVES TEST REPORT** (15 confirmed behaviors, 7 architecture rules — read before designing agent/skill interactions)
-- `docs/development/system-design/DOC-024-agent-skill-taxonomy.md` — **AGENT & SKILL TAXONOMY** (orchestrator vs worker agents, skill types, naming conventions, full orchestration hierarchy — read before creating or modifying agents/skills)
 - `docs/development/quality-standards/references-best-practices.md` — PRIMARY REFERENCE
 - `docs/development/quality-standards/skill-quality-and-patterns.md` — Quality standards
 - `docs/development/integration/7-file-integration.md` — Integration system
