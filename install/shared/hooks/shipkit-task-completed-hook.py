@@ -9,7 +9,7 @@ Hook events:
   - Exit 0: Allow task completion
   - Exit 2: Block completion, stderr message sent as feedback
 
-Requires: .shipkit/team-state.local.json to be present (written by /shipkit-team).
+Requires: .shipkit/team-state.local.json to be present (written by the shipping orchestrator).
 If no team state file exists, this hook exits 0 (no-op outside team mode).
 
 Input: JSON on stdin with hook event data (session_id, task info, etc.)

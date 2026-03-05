@@ -516,6 +516,10 @@ Ready to fix the remaining blockers?
 - `.shipkit/contracts.json` — Data shapes, sensitive fields
 - `.shipkit/specs/active/*.json` — Feature requirements
 
+**Optional** (consult if available):
+- `.shipkit/prompt-audit.json` — LLM security findings from `/shipkit-prompt-audit`
+- `.shipkit/scale-readiness.json` — Scalability concerns from `/shipkit-scale-ready`
+
 **Scans**:
 - Source code files based on stack (or just changed files for incremental)
 - `package.json` / `requirements.txt` — Dependencies

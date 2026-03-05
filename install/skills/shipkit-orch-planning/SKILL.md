@@ -13,24 +13,22 @@ agent: shipkit-orch-planning-agent
 
 ## Scope
 
-Planning artifacts that define WHAT and HOW at design level:
-- `.shipkit/product-discovery.json` — Personas and user journeys
-- `.shipkit/product-definition.json` — Features, patterns, differentiators
-- `.shipkit/engineering-definition.json` — Mechanisms, components, stack
-- `.shipkit/specs/*.json` — Feature specifications
+Planning artifacts that translate definitions into actionable plans:
 - `.shipkit/spec-roadmap.json` — Spec priority order
-- `.shipkit/user-instructions.json` — User task tracking
+- `.shipkit/specs/*.json` — Feature specifications
+- `.shipkit/plans/*.json` — Implementation plans
+- `.shipkit/test-cases/` — Test specifications
+- `.shipkit/user-tasks.json` — Manual user tasks
 
 ## Roster
 
 | Skill | What It Produces |
 |-------|-----------------|
-| `/shipkit-product-discovery` | product-discovery.json |
-| `/shipkit-product-definition` | product-definition.json |
-| `/shipkit-engineering-definition` | engineering-definition.json |
-| `/shipkit-spec` | specs/*.json |
 | `/shipkit-spec-roadmap` | spec-roadmap.json |
-| `/shipkit-user-instructions` | user-instructions.json |
+| `/shipkit-spec` | specs/*.json |
+| `/shipkit-plan` | plans/*.json |
+| `/shipkit-test-cases` | test-cases/ |
+| `/shipkit-user-instructions` | user-tasks.json |
 | `/shipkit-review-planning` | reviews/planning-assessment.json |
 
 ## Done Condition
@@ -39,11 +37,10 @@ All planning artifacts exist AND `.shipkit/reviews/planning-assessment.json` has
 
 ## Dispatch Order
 
-1. `/shipkit-product-discovery` — informs product definition
-2. `/shipkit-product-definition` — informs engineering definition
-3. `/shipkit-engineering-definition` — informs specs
-4. `/shipkit-spec-roadmap` — prioritizes what to spec
-5. `/shipkit-spec` — specs for each prioritized feature
-6. `/shipkit-user-instructions` — manual tasks for user
-7. `/shipkit-review-planning` — assesses alignment
-8. If gaps found → re-dispatch specific producers → re-review
+1. `/shipkit-spec-roadmap` — prioritizes what to spec
+2. `/shipkit-spec` — specs for each prioritized feature
+3. `/shipkit-plan` — architect produces implementation plans from specs
+4. `/shipkit-test-cases` — PO produces test specifications from specs and plans
+5. `/shipkit-user-instructions` — manual tasks for user
+6. `/shipkit-review-planning` — assesses alignment
+7. If gaps found → re-dispatch specific producers → re-review

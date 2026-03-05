@@ -100,7 +100,6 @@ If `.shipkit/codebase-index.json` exists:
 | When... | Use |
 |---------|-----|
 | Generate test case specs | `/shipkit-test-cases` |
-| Create agent team from plan | `/shipkit-team` |
 
 ### Quality & Communication
 | When... | Use |
@@ -129,7 +128,7 @@ If `.shipkit/codebase-index.json` exists:
 - `/simplify` — Launches 3 parallel agents (reuse, quality, efficiency) to review changed code and auto-fix issues. Good for post-implementation cleanup.
 - `/batch <instruction>` — Decomposes a large mechanical change into 5–30 independent units, spawns parallel worktree agents that each open a PR. For migrations, bulk refactors, mass renames.
 - Use `/simplify` for code cleanup after writing. Use `/shipkit-verify` for comprehensive spec-aligned review (12 quality dimensions).
-- Use `/shipkit-team --worktree` for spec-aware parallel execution — like `/batch` but with acceptance criteria, architecture context, and spec-based review per PR.
+- The shipping orchestrator manages Agent Teams directly for parallel implementation.
 
 ---
 

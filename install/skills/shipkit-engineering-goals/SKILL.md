@@ -275,7 +275,7 @@ ENGINEERING GOAL EVALUATION — {date}
 
 RECOMMENDATION:
   Priority: E-002 (build) → E-001 (generation speed)
-  Run: /shipkit-team to implement fixes, then /shipkit-semantic-qa
+  Run: implement fixes, then /shipkit-semantic-qa
 ```
 
 ---

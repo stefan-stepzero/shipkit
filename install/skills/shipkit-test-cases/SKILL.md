@@ -4,7 +4,7 @@ id: SKL-TESTCASES
 description: Generate and maintain code-anchored test case specifications. Use when setting up test coverage, reviewing what to test, or before team implementation.
 argument-hint: "[feature or scope]"
 context: fork
-agent: shipkit-implementer-agent
+agent: shipkit-product-owner-agent
 ---
 
 # shipkit-test-cases - Code-Anchored Test Case Management
@@ -484,7 +484,7 @@ Each test case tracks which files it validates. Staleness = code modified after 
 
 ## Integration with Team Execution
 
-During team implementation, implementer teammates can:
+During team implementation, teammates can:
 
 1. Check git diff → which files changed?
 2. Look up test cases anchored to those files
@@ -529,10 +529,6 @@ This makes test execution **change-aware**.
 
 ### After This Skill
 
-- `/shipkit-team` — Team implementation uses test cases during execution
-  - **When:** Test cases defined, ready to implement and verify
-  - **Why:** Implementer teammates run tests anchored to their file ownership clusters
-
 - `/shipkit-verify` — Can use test cases for verification
   - **When:** Checking work before commit
   - **Why:** Test cases inform what to verify
@@ -541,7 +537,6 @@ This makes test execution **change-aware**.
 
 - `shipkit-verify` — Quality verification (uses test cases as input)
 - `shipkit-spec` — Feature specs (source for test case derivation)
-- `shipkit-team` — Team execution (implementers run test cases during implementation)
 
 ---
 

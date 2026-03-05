@@ -66,8 +66,7 @@
         {"name": "shipkit-orch-shipping", "desc": "Shipping loop — implementation + verification + release gate"}
       ],
       "Execution": [
-        {"name": "shipkit-test-cases", "desc": "Generate code-anchored test cases"},
-        {"name": "shipkit-team", "desc": "Create agent team from implementation plan"}
+        {"name": "shipkit-test-cases", "desc": "Generate code-anchored test cases"}
       ],
       "Quality & Communication": [
         {"name": "shipkit-review-direction", "desc": "Assess strategic artifact coherence"},
@@ -102,7 +101,7 @@
       {"name": "shipkit-visionary-agent", "desc": "Strategic visionary — sets stage, vision, constraints, business goals"},
       {"name": "shipkit-product-owner-agent", "desc": "Product manager — definitions, specs, feedback, product goals"},
       {"name": "shipkit-architect-agent", "desc": "Engineering manager — architecture, plans, engineering goals"},
-      {"name": "shipkit-implementer-agent", "desc": "Code implementation, test writing, bug fixing"},
+
       {"name": "shipkit-thinking-partner-agent", "desc": "Cognitive discussion & thinking partner"}
     ],
     "reviewers": [

@@ -9,7 +9,7 @@ Hook events:
   - Exit 0: Allow idle
   - Exit 2: Send feedback, keep teammate working
 
-Requires: .shipkit/team-state.local.json to be present (written by /shipkit-team).
+Requires: .shipkit/team-state.local.json to be present (written by the shipping orchestrator).
 If no team state file exists, this hook exits 0 (no-op outside team mode).
 
 Input: JSON on stdin with hook event data (session_id, teammate info, etc.)

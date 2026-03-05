@@ -13,10 +13,13 @@ agent: shipkit-orch-direction-agent
 
 ## Scope
 
-Strategic artifacts that define WHY and WHERE:
+Strategic artifacts that define WHY, WHAT, and HOW at definition level:
 - `.shipkit/why.json` — Project vision and purpose
 - `.shipkit/vision.json` — Strategic vision
 - Stage assessment in why.json
+- `.shipkit/product-discovery.json` — Personas and user journeys
+- `.shipkit/product-definition.json` — Features, patterns, differentiators
+- `.shipkit/engineering-definition.json` — Mechanisms, components, stack
 - `.shipkit/goals/product.json` — Product success criteria
 - `.shipkit/goals/engineering.json` — Engineering success criteria
 
@@ -27,6 +30,9 @@ Strategic artifacts that define WHY and WHERE:
 | `/shipkit-why-project` | why.json |
 | `/shipkit-vision` | vision.json |
 | `/shipkit-stage` | stage in why.json |
+| `/shipkit-product-discovery` | product-discovery.json |
+| `/shipkit-product-definition` | product-definition.json |
+| `/shipkit-engineering-definition` | engineering-definition.json |
 | `/shipkit-product-goals` | goals/product.json |
 | `/shipkit-engineering-goals` | goals/engineering.json |
 | `/shipkit-review-direction` | reviews/direction-assessment.json |
@@ -40,7 +46,10 @@ All direction artifacts exist AND `.shipkit/reviews/direction-assessment.json` h
 1. `/shipkit-why-project` — establishes foundation
 2. `/shipkit-vision` — builds on why
 3. `/shipkit-stage` — sets constraints
-4. `/shipkit-product-goals` — defines product success
-5. `/shipkit-engineering-goals` — defines technical success
-6. `/shipkit-review-direction` — assesses coherence
-7. If gaps found → re-dispatch specific producers → re-review
+4. `/shipkit-product-discovery` — informs product definition
+5. `/shipkit-product-definition` — informs engineering definition
+6. `/shipkit-engineering-definition` — informs goals
+7. `/shipkit-product-goals` — defines product success
+8. `/shipkit-engineering-goals` — defines technical success
+9. `/shipkit-review-direction` — assesses coherence
+10. If gaps found → re-dispatch specific producers → re-review

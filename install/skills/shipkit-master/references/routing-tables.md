@@ -62,8 +62,6 @@ These tables serve as **fallback** for explicit keyword-matched requests. The lo
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
 | "Test cases", "Generate tests", "What to test", "Test coverage", "Test specification" | `/shipkit-test-cases` | Source files, specs, existing test cases |
-| "Create a team", "Team implement", "Build with a team", "Parallel team" | `/shipkit-team` | Plan, spec, stack.json, architecture.json |
-| "Build this product", "Full pipeline", "End to end", "YOLO build" | `/shipkit-team --template pipeline` | All .shipkit/ |
 
 ## What Doesn't Need a Skill
 

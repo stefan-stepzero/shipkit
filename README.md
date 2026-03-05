@@ -2,16 +2,16 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**<!-- sync:skill_count -->37<!-- /sync:skill_count --> skills** organized for streamlined workflow:
+**<!-- sync:skill_count -->36<!-- /sync:skill_count --> skills** organized for streamlined workflow:
 <!-- sync:readme_summary -->- **Vision & Discovery** (10) - why-project, product-discovery, project-context, ...
 - **Spec & Planning** (5) - spec-roadmap, spec, feedback-bug, ...
 - **Knowledge & Memory** (2) - claude-md, work-memory
 - **Orchestration** (3) - orch-direction, orch-planning, orch-shipping
-- **Execution** (2) - test-cases, team
+- **Execution** (1) - test-cases
 - **Quality & Communication** (11) - review-direction, review-planning, verify, ...
 - **System** (3) - update, get-skills, get-mcps<!-- /sync:readme_summary -->
 
-Plus **<!-- sync:agent_count -->12<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
+Plus **<!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
 
 ---
 
@@ -47,9 +47,8 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-plan` - Implementation planning
 - `shipkit-thinking-partner` - Think through decisions with cognitive frameworks
 
-**Execution (2 skills):**
+**Execution (1 skill):**
 - `shipkit-test-cases` - Generate code-anchored test case specs
-- `shipkit-team` - Create agent team from implementation plan for parallel execution
 
 **Quality & Documentation (12 skills):**
 - `shipkit-review-direction` - Assess strategic artifact coherence
@@ -87,7 +86,6 @@ All skills use the `shipkit-` prefix for clarity.
 | `shipkit-visionary-agent` | Strategic visionary — sets stage, vision, constraints, business goals |
 | `shipkit-product-owner-agent` | Product manager — definitions, specs, feedback, product goals |
 | `shipkit-architect-agent` | Engineering manager — architecture, plans, engineering goals |
-| `shipkit-implementer-agent` | Code implementation, test writing, bug fixing |
 | `shipkit-thinking-partner-agent` | Cognitive discussion & thinking partner |
 
 **Reviewers:**

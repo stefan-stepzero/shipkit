@@ -68,6 +68,17 @@ When verification identifies specific quality gaps, use the **Skill tool** to di
 
 Only dispatch QA sub-skills when your initial review identifies a concern in that dimension. Don't dispatch all three by default.
 
+## Optional Context (Consult If Available)
+
+Before reviewing, check for these optional artifacts that provide additional audit context:
+
+| Artifact | Source | What It Tells You |
+|----------|--------|--------------------|
+| `.shipkit/prompt-audit.json` | `/shipkit-prompt-audit` | LLM prompt injection risks, AI security findings |
+| `.shipkit/scale-readiness.json` | `/shipkit-scale-ready` | Scalability concerns, growth bottlenecks |
+
+These are **not required** — they only exist if a user has run the corresponding skill. When present, cross-reference their findings against code changes during verification.
+
 ## Verification Output
 
 Write `.shipkit/verification-report.json`:

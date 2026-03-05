@@ -4,6 +4,7 @@ id: AGT-VISIONARY
 description: Strategic visionary — sets project direction, stage, quality constraints, and business goals. Owns the WHY. Use when setting vision, defining stage, or evaluating business metrics.
 tools: Read, Glob, Grep, Write, Edit, Agent
 model: opus
+maxTurns: 50
 memory: project
 skills: shipkit-why-project, shipkit-stage
 ---

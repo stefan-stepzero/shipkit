@@ -1,7 +1,7 @@
 ---
 name: shipkit-orch-shipping
 id: SKL-ORCH-SHIPPING
-description: Shipping loop — dispatches plan, implementation, testing, and verification skills. Builds, verifies, and gates release.
+description: Shipping loop — spawns an implementation team, then dispatches verification and preflight. Builds, verifies, and gates release.
 disable-model-invocation: true
 context: fork
 agent: shipkit-orch-shipping-agent
@@ -9,26 +9,22 @@ agent: shipkit-orch-shipping-agent
 
 # shipkit-orch-shipping - Shipping Loop
 
-**Purpose**: Orchestrate implementation, testing, verification, and release gating until code passes all quality checks.
+**Purpose**: Orchestrate implementation via an Agent Team, then verify quality and gate release.
 
 ## Scope
 
-Execution artifacts that deliver working software:
-- `.shipkit/plan.json` — Implementation plan
-- Test files — Test specifications and code
-- Code changes — Implementation
+Execution that delivers working software:
+- Code changes — Implementation by Agent Team
 - `.shipkit/verification-report.json` — Quality verification
-- Preflight checklist — Release gate
+- `.shipkit/preflight.json` — Release gate
 
 ## Roster
 
-| Skill | What It Produces |
-|-------|-----------------|
-| `/shipkit-plan` | plan.json |
-| `/shipkit-test-cases` | test files |
-| `/shipkit-team` | code changes |
-| `/shipkit-verify` | verification-report.json |
-| `/shipkit-preflight` | preflight checklist |
+| Step | Method | What It Produces |
+|------|--------|-----------------|
+| Implement | Direct team (Agent/Task tools) | code changes |
+| `/shipkit-verify` | Skill dispatch → reviewer-shipping | verification-report.json |
+| `/shipkit-preflight` | Skill dispatch → reviewer-shipping | preflight.json |
 
 ## Done Condition
 
@@ -36,9 +32,9 @@ Execution artifacts that deliver working software:
 
 ## Dispatch Order
 
-1. `/shipkit-plan` — architect produces implementation plan
-2. `/shipkit-test-cases` — implementer writes test specifications
-3. `/shipkit-team` — implementer builds the code
+1. Read `.shipkit/plans/` and `.shipkit/test-cases/` produced by planning loop
+2. Create Agent Team — spawn teammates with plan assignments
+3. Monitor team progress via TaskList until implementation complete
 4. `/shipkit-verify` — reviewer-shipping assesses quality
-5. If issues found → re-dispatch `/shipkit-team` → re-dispatch `/shipkit-verify`
+5. If issues found → assign fixes to teammates → re-dispatch `/shipkit-verify`
 6. When verification passes → `/shipkit-preflight` — final release gate

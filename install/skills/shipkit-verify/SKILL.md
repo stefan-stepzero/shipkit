@@ -1,14 +1,13 @@
 ---
 name: shipkit-verify
 id: SKL-VERIFY
-description: Verify and fix — review changes across 12 quality dimensions, auto-fix critical issues. Use after a chunk of work or before commit.
+description: Review changes across 12 quality dimensions and report findings. Use after a chunk of work or before commit.
 argument-hint: "[scope or feature]"
 context: fork
 agent: shipkit-reviewer-shipping-agent
 allowed-tools:
   - Read
   - Write
-  - Edit
   - Glob
   - Grep
   - Bash
@@ -17,9 +16,9 @@ allowed-tools:
 
 # shipkit-verify
 
-Batch verification with auto-fix — Claude reviews your work across quality dimensions, fixes critical issues, re-verifies, and reports what remains.
+Review-only verification — Claude reviews your work across 12 quality dimensions and reports findings with evidence. You decide what to fix.
 
-**Fix-and-recheck.** Verifies → fixes critical issues → re-verifies within a single pass. User sees the final state after auto-remediation.
+**Report, don't fix.** Scans changes, classifies findings by severity, and presents a structured report. The reviewer never modifies code.
 
 ---
 
@@ -78,7 +77,7 @@ Found findings across these themes:
 | 4 | 🟡 Missing loading states on admin pages | L:Medium · I:Medium · E:Medium |
 | 5 | 🟢 console.logs left in (4 files) | L:Low · I:Low · E:Low |
 
-**Any themes to dismiss?** I'll skip dismissed themes during fix-and-recheck.
+**Any themes to dismiss?** I'll skip dismissed themes during the detailed review.
 (Reply "none" to proceed with all, or list numbers to dismiss)
 ```
 
@@ -222,39 +221,15 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 **IMPORTANT:** When using subagents, include dismissed themes in the prompt: "Skip these dismissed themes: [list]"
 
-### Step 4: Fix Critical Findings
+### Step 4: Classify and Report
 
-After verification, **fix issues automatically** in priority order:
+After scanning all dimensions, classify each finding:
 
-1. **🔴 Critical findings first** — fix all of them
-2. **🟡 Should Fix** — fix straightforward ones (broken imports, missing try/catch, orphan code removal)
-3. **🟢 Minor** — **never fix, only note.** Minors are too subjective to auto-fix confidently. List them in the final report for the user to decide.
+1. **🔴 Critical** — Will cause bugs, security issues, or crashes. Must fix before commit.
+2. **🟡 Should Fix** — Quality issues, tech debt, incomplete work. Fix soon.
+3. **🟢 Minor** — Suggestions, nice-to-haves, style. Consider.
 
-**Do NOT fix:**
-- 🟢 Minor findings (report only)
-- Dismissed themes (from state file)
-- Anything requiring architectural decisions
-- Anything where the "right fix" is ambiguous
-- Security issues that need user input (e.g., which auth strategy)
-
-**Track what was fixed:**
-
-Keep a running list for the final report:
-```
-## Auto-Fixed
-- ✅ Added try/catch to src/api/auth/login.ts:34
-- ✅ Removed orphan file src/utils/oldAuth.ts
-- ✅ Fixed broken import in src/pages/Dashboard.tsx:5
-```
-
-### Step 5: Re-Verify
-
-After fixing, **re-verify the changed files** (including files you just modified):
-
-1. Re-run verification on all files touched in Step 4
-2. Check: are there any remaining 🔴 Critical or 🟡 Should Fix findings (excluding dismissed themes)?
-   - **YES** → Continue fixing within this same pass. Iterate until clean or until remaining issues require user decisions.
-   - **NO** → Proceed to final report. Any 🟢 Minor findings are listed in the report but do not block completion.
+Write the verification report to `.shipkit/verification-report.json` (see agent output schema). Present findings to the user with evidence and L-I-E ratings.
 
 ---
 
@@ -545,22 +520,24 @@ Not all dimensions every time. Emphasize based on what changed:
 
 ## Output Format
 
-Final report after all fix-and-recheck passes:
+Final report after scanning all dimensions:
 
 ```
 ## Verification Report
 
 Reviewed: 5 files (src/api/auth/*, src/middleware/*)
 Context: Auth feature implementation
-Passes: 3 (2 critical fixed, 1 clean re-verify)
 
-### ✅ Auto-Fixed (this session)
+### 🔴 Critical — Fix Before Commit
 
-- ✅ Added try/catch to `src/api/auth/login.ts:34` (was: unhandled rejection)
-- ✅ Removed orphan file `src/utils/oldAuth.ts` (was: exported but never imported)
-- ✅ Fixed broken import in `src/pages/Dashboard.tsx:5`
+| Finding | L · I · E |
+|---------|-----------|
+| **Security: Missing auth check** | L:High · I:High · E:Low |
 
-### 🟡 Remaining — Should Fix
+- `src/api/trips/route.ts:12` — no getSession() call on protected route
+- Evidence: Grep for `getSession` returned 0 matches in file
+
+### 🟡 Should Fix
 
 | Finding | L · I · E |
 |---------|-----------|
@@ -568,7 +545,7 @@ Passes: 3 (2 critical fixed, 1 clean re-verify)
 
 - `src/components/LoginForm.tsx` — no loading indicator during submit
 
-### 🟢 Remaining — Minor / Consider
+### 🟢 Minor / Consider
 
 | Finding | L · I · E |
 |---------|-----------|
@@ -584,7 +561,7 @@ Passes: 3 (2 critical fixed, 1 clean re-verify)
 
 ---
 
-3 auto-fixed | 0 critical remaining | 1 should fix | 1 minor | 2 dismissed
+1 critical | 1 should fix | 1 minor | 2 dismissed
 ```
 
 ---
@@ -611,17 +588,17 @@ Every finding MUST include a compact **L-I-E** rating to help the user prioritiz
 
 **Priority should follow from L-I-E:**
 - 🔴 Critical = High likelihood OR high impact (regardless of effort)
-- 🟡 Should Fix = Medium likelihood + medium impact, or high effort prevents auto-fix
+- 🟡 Should Fix = Medium likelihood + medium impact
 - 🟢 Minor = Low likelihood AND low impact
 
 ---
 
 ## What This Skill Does NOT Do
 
-- **Make architectural decisions** — fixes obvious issues, defers ambiguous ones to user
+- **Make architectural decisions** — reports findings, defers all fixes to user
 - **Override dismissals** — dismissed themes stay dismissed for the entire session
 - **Block commits** — informational, not a gate
-- **Persist results** — ephemeral output only
+- **Fix code** — read-only reviewer, never modifies source code
 - **Run linters/tests** — this is Claude reasoning, not tooling
 - **Guarantee completeness** — best effort review
 
@@ -633,7 +610,7 @@ When running as part of an Agent Team:
 - Check `.shipkit/team-state.local.json` — if present, you're in team mode
 - **Read the spec** from the team state's `specPath` for acceptance criteria
 - **Message the lead** with the verification verdict (PASS/FAIL + details)
-- **Message implementers directly** when issues found in their files
+- **Message teammates directly** when issues found in their files
 - **Broadcast summary** to the whole team when verification completes
 - The lead typically runs this after all implementation tasks complete
 
@@ -695,12 +672,14 @@ For **thorough multi-agent review**, two plugins are available:
 ## After Completion
 
 Verification complete. Final report shows:
-- What was auto-fixed (with before/after context)
-- What remains unfixed (should-fix and minor)
-- What was dismissed by user
+- Critical findings that must be fixed before commit
+- Should-fix items for quality improvement
+- Minor suggestions to consider
+- Dismissed themes
 
 User decides next steps:
-- Address remaining should-fix items
+- Fix critical issues (ask Claude to help implement fixes)
+- Address should-fix items
 - Ignore minor suggestions
 - Proceed with commit
 
@@ -716,7 +695,7 @@ User decides next steps:
 - [ ] Pre-scan presented to user with dismissal option
 - [ ] Relevant quality dimensions emphasized (excluding dismissed)
 - [ ] Specs/architecture read for compliance
-- [ ] Critical findings auto-fixed with evidence
-- [ ] Re-verification confirms fixes are clean
-- [ ] Final report shows: auto-fixed, remaining, dismissed
+- [ ] All findings backed by tool evidence (Glob/Grep/Read)
+- [ ] Findings classified with L-I-E ratings
+- [ ] Final report shows: critical, should-fix, minor, dismissed
 <!-- /SECTION:success-criteria -->

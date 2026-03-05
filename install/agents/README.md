@@ -29,20 +29,19 @@ Loop dispatchers that check artifacts, invoke skills, and manage feedback cycles
 | Agent | Scope | maxTurns |
 |-------|-------|----------|
 | **shipkit-orch-master** | Sequential dispatch: direction → planning → shipping | 200 |
-| **shipkit-orch-direction** | Strategic artifacts + coherence review cycle | 80 |
+| **shipkit-orch-direction** | Strategic artifacts + coherence review cycle | 120 |
 | **shipkit-orch-planning** | Definitions/specs + alignment review cycle | 100 |
 | **shipkit-orch-shipping** | Implementation + verification + release gate | 150 |
 
-### Producer Workers (5)
+### Producer Workers (4)
 
 Domain experts that create artifacts. They never dispatch to other skills or manage other agents.
 
 | Agent | Domain | maxTurns |
 |-------|--------|----------|
 | **shipkit-visionary** | Strategic vision, project purpose, stage assessment | 50 |
-| **shipkit-product-owner** | User needs, product definition, feature specs | 50 |
+| **shipkit-product-owner** | User needs, product definition, feature specs, test cases | 50 |
 | **shipkit-architect** | System design, engineering decisions, implementation plans | 50 |
-| **shipkit-implementer** | Code writing, test writing, bug fixing | 80 |
 | **shipkit-thinking-partner** | Socratic questioning, decision exploration | 30 |
 
 ### Judgment Workers / Reviewers (3)
@@ -91,7 +90,6 @@ Agents are installed to `.claude/agents/` when you run `/shipkit-update`:
     ├── shipkit-visionary-agent.md
     ├── shipkit-product-owner-agent.md
     ├── shipkit-architect-agent.md
-    ├── shipkit-implementer-agent.md
     ├── shipkit-reviewer-direction-agent.md
     ├── shipkit-reviewer-planning-agent.md
     ├── shipkit-reviewer-shipping-agent.md
@@ -100,4 +98,4 @@ Agents are installed to `.claude/agents/` when you run `/shipkit-update`:
 
 ## Model Selection
 
-All agents use `model: sonnet` — orchestrators need judgment for routing, workers need depth for domain work.
+Orchestrators use `model: sonnet` for efficient routing. Producers use `model: opus` for deep domain work. Reviewers use `model: sonnet` for judgment. Implementation is handled by general-purpose teammates spawned by the shipping orchestrator.
