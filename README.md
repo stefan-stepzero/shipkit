@@ -17,7 +17,7 @@ Plus **<!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas** th
 
 ## What's Inside
 
-### Skills (<!-- sync:skill_count -->37<!-- /sync:skill_count --> total)
+### Skills (<!-- sync:skill_count -->36<!-- /sync:skill_count --> total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -70,7 +70,7 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-get-mcps` - Discover and install MCP servers
 
 
-### Agent Personas (<!-- sync:agent_count -->12<!-- /sync:agent_count -->)
+### Agent Personas (<!-- sync:agent_count -->11<!-- /sync:agent_count -->)
 
 <!-- sync:readme_agent_table -->**Orchestrators:**
 | Agent | Used For |
@@ -126,8 +126,8 @@ python install.py --from-github
 </details>
 
 The installer will:
-- Install all <!-- sync:skill_count -->37<!-- /sync:skill_count --> skills
-- Set up <!-- sync:agent_count -->12<!-- /sync:agent_count --> agent personas
+- Install all <!-- sync:skill_count -->36<!-- /sync:skill_count --> skills
+- Set up <!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
 
@@ -219,8 +219,8 @@ shipkit/
 │   └── src/                         # Commands, prompts, utilities
 │
 ├── install/                         # Everything that gets installed
-│   ├── skills/                      # <!-- sync:skill_count -->37<!-- /sync:skill_count --> shipkit-* skill definitions
-│   ├── agents/                      # <!-- sync:agent_count -->12<!-- /sync:agent_count --> shipkit-*-agent personas
+│   ├── skills/                      # <!-- sync:skill_count -->36<!-- /sync:skill_count --> shipkit-* skill definitions
+│   ├── agents/                      # <!-- sync:agent_count -->11<!-- /sync:agent_count --> shipkit-*-agent personas
 │   ├── rules/
 │   │   └── shipkit.md               # Framework rules (auto-loaded)
 │   ├── profiles/
@@ -253,7 +253,7 @@ shipkit/
 ## Key Features
 
 ### Streamlined Workflow
-- <!-- sync:skill_count -->37<!-- /sync:skill_count --> focused skills
+- <!-- sync:skill_count -->36<!-- /sync:skill_count --> focused skills
 - All skills use `shipkit-` prefix for clarity
 - Context stored in single `.shipkit/` folder
 - No complex workspace structure

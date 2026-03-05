@@ -621,11 +621,11 @@
             <h1>&#x1F680; Shipkit <span style="font-size: 0.5em; opacity: 0.8;">{{SHIPKIT_VERSION}}</span></h1>
             <div class="stats">
                 <div class="stat">
-                    <!-- sync:html_skill_count --><span class="stat-number">37</span><!-- /sync:html_skill_count -->
+                    <!-- sync:html_skill_count --><span class="stat-number">36</span><!-- /sync:html_skill_count -->
                     <span class="stat-label">Skills</span>
                 </div>
                 <div class="stat">
-                    <!-- sync:html_agent_count --><span class="stat-number">12</span><!-- /sync:html_agent_count -->
+                    <!-- sync:html_agent_count --><span class="stat-number">11</span><!-- /sync:html_agent_count -->
                     <span class="stat-label">Agents</span>
                 </div>
                 <div class="stat">
@@ -789,11 +789,6 @@
                             <td class="trigger">Plan implementation tasks</td>
                             <td><span class="skill">/shipkit-plan</span></td>
                             <td class="creates">plans/active/*.json</td>
-                        </tr>
-                        <tr>
-                            <td class="trigger">Create agent team from plan</td>
-                            <td><span class="skill">/shipkit-team</span></td>
-                            <td class="creates">Team + tasks</td>
                         </tr>
                         <tr>
                             <td class="trigger">Think through a decision</td>
@@ -1143,16 +1138,7 @@
                         <td><span class="timing-pill trigger-agent">agent</span></td>
                         <td><span class="timing-pill mode-context">context-capture</span></td>
                         <td><span class="timing-pill necessity-conditional">conditional</span></td>
-                        <td class="desc-cell">Generate code-anchored test case specs before implementation. Architect-owned.</td>
-                    </tr>
-                    <tr>
-                        <td class="skill-cell">shipkit-team</td>
-                        <td class="phase-cell">9</td>
-                        <td><span class="timing-pill timing-feature">per-feature</span></td>
-                        <td><span class="timing-pill trigger-agent">agent</span></td>
-                        <td><span class="timing-pill mode-execute">execution</span></td>
-                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
-                        <td class="desc-cell">Create agent team from plan. Parallel implementers + reviewer with quality gate hooks.</td>
+                        <td class="desc-cell">Generate code-anchored test case specs before implementation. Product-owner-owned.</td>
                     </tr>
                     <tr>
                         <td class="skill-cell">shipkit-verify</td>
@@ -1161,7 +1147,7 @@
                         <td><span class="timing-pill trigger-gate">gate</span></td>
                         <td><span class="timing-pill mode-verify">verification</span></td>
                         <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
-                        <td class="desc-cell">Check implementation against specs and goals. Writes criterion statuses back to goal files.</td>
+                        <td class="desc-cell">Review changes across 12 quality dimensions and report findings. Read-only reviewer.</td>
                     </tr>
                     <tr>
                         <td class="skill-cell">shipkit-preflight</td>
@@ -1494,13 +1480,6 @@
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
-                            <th>shipkit-team</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td><td class="mark-has">&#x25CF;</td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
                             <th>shipkit-verify</th>
                             <td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td><td></td><td></td>
@@ -1804,11 +1783,6 @@
                     <div class="workflow-step">
                         <div class="step-skill">/shipkit-test-cases</div>
                         <div class="step-desc">Define tests</div>
-                    </div>
-                    <span class="workflow-arrow">&rarr;</span>
-                    <div class="workflow-step">
-                        <div class="step-skill">/shipkit-team</div>
-                        <div class="step-desc">Build in parallel</div>
                     </div>
                     <span class="workflow-arrow">&rarr;</span>
                     <div class="workflow-step">
