@@ -1,7 +1,7 @@
 {
   "name": "shipkit-dev",
   "version": "2.0.0",
-  "description": "Streamlined product development framework for Claude Code — 37 skills, 11 agents, structured workflows",
+  "description": "Streamlined product development framework for Claude Code — 37 skills, 12 agents, structured workflows",
   "bin": {
     "shipkit-dev": "./cli/bin/shipkit.js"
   },
@@ -32,7 +32,7 @@
   "bugs": {
     "url": "https://github.com/stefan-stepzero/shipkit/issues"
   },
-  "license": "MIT",
+  "license": "CC-BY-NC-4.0",
   "author": "Stefan / StepZero",
   "scripts": {
     "prepublishOnly": "node -e \"const v=require('fs').readFileSync('VERSION','utf8').trim();const p=require('./package.json');if(p.version!==v){console.error('VERSION mismatch: VERSION='+v+' package.json='+p.version);process.exit(1)}\""

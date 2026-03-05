@@ -3,14 +3,15 @@
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
 **<!-- sync:skill_count -->37<!-- /sync:skill_count --> skills** organized for streamlined workflow:
-<!-- sync:readme_summary -->- **Vision & Discovery** (8) - why-project, product-discovery, project-context, ...
-- **Spec & Planning** (4) - spec, feedback-bug, plan, ...
-- **Knowledge & Memory** (5) - architecture-memory, data-contracts, integration-docs, ...
-- **Execution** (7) - build-relentlessly, test-relentlessly, lint-relentlessly, ...
-- **Quality & Communication** (9) - verify, preflight, scale-ready, ...
+<!-- sync:readme_summary -->- **Vision & Discovery** (11) - master, why-project, product-discovery, project-context, stage, ...
+- **Orchestration** (3) - direction, planning, shipping
+- **Spec & Planning** (5) - spec-roadmap, spec, feedback-bug, plan, ...
+- **Knowledge & Memory** (2) - claude-md, work-memory
+- **Execution** (2) - test-cases, team
+- **Quality & Communication** (11) - review-direction, review-planning, verify, preflight, ...
 - **System** (3) - update, get-skills, get-mcps<!-- /sync:readme_summary -->
 
-Plus **<!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
+Plus **<!-- sync:agent_count -->12<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
 
 ---
 
@@ -20,39 +21,39 @@ Plus **<!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas** th
 
 All skills use the `shipkit-` prefix for clarity.
 
-**Core Workflow (5 skills):**
+**Core Workflow (4 skills):**
 - `shipkit-master` - Meta skill for workflow orchestration
-- `shipkit-project-status` - Health check and gap analysis
 - `shipkit-project-context` - Codebase scanning, stack detection
 - `shipkit-codebase-index` - Semantic codebase indexing
 - `shipkit-claude-md` - CLAUDE.md management
 
-**Discovery & Planning (9 skills):**
+**Orchestration (3 skills):**
+- `shipkit-orch-direction` - Direction loop — strategic artifacts + coherence review
+- `shipkit-orch-planning` - Planning loop — definitions/specs + alignment review
+- `shipkit-orch-shipping` - Shipping loop — implementation + verification + release gate
+
+**Discovery & Planning (13 skills):**
+- `shipkit-vision` - Strategic visionary gateway (master-dispatched)
 - `shipkit-why-project` - Strategic vision definition
 - `shipkit-product-discovery` - Personas, journeys, user needs
 - `shipkit-product-definition` - Product blueprint (features, patterns, differentiators)
 - `shipkit-engineering-definition` - Engineering blueprint (mechanisms, components, stack)
-- `shipkit-goals` - Success criteria & stage gates
+- `shipkit-stage` - Project stage, constraints, and graduation criteria
+- `shipkit-product-goals` - User-outcome success criteria (P-*)
+- `shipkit-engineering-goals` - Technical performance criteria
+- `shipkit-spec-roadmap` - Prioritize spec backlog from definitions + goals
 - `shipkit-spec` - Feature specification
 - `shipkit-feedback-bug` - Process feedback into investigated bug specs (5 Whys root cause)
 - `shipkit-plan` - Implementation planning
 - `shipkit-thinking-partner` - Think through decisions with cognitive frameworks
 
-**Implementation (3 skills):**
-- `shipkit-architecture-memory` - Decision logging
-- `shipkit-data-contracts` - Type definitions (Zod patterns)
-- `shipkit-integration-docs` - Integration patterns
-
-**Execution (7 skills):**
+**Execution (2 skills):**
 - `shipkit-test-cases` - Generate code-anchored test case specs
-- `shipkit-build-relentlessly` - Build until compiles
-- `shipkit-test-relentlessly` - Test until green
-- `shipkit-lint-relentlessly` - Lint until clean
-- `shipkit-implement-independently` - Parallel implementation in isolated worktree
 - `shipkit-team` - Create agent team from implementation plan for parallel execution
-- `shipkit-cleanup-worktrees` - Clean up stale implementation worktrees
 
-**Quality & Documentation (10 skills):**
+**Quality & Documentation (12 skills):**
+- `shipkit-review-direction` - Assess strategic artifact coherence
+- `shipkit-review-planning` - Assess planning artifact alignment
 - `shipkit-verify` - QA and acceptance criteria
 - `shipkit-preflight` - MVP production readiness audit
 - `shipkit-scale-ready` - Scale & enterprise readiness audit
@@ -69,24 +70,35 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-get-skills` - Discover and install Claude Code skills
 - `shipkit-get-mcps` - Discover and install MCP servers
 
-*System infrastructure (not counted — auto-triggered, not user-invocable):*
-- `shipkit-detect` - Pattern detection and queue creation (hook infrastructure)
 
-### Agent Personas (<!-- sync:agent_count -->11<!-- /sync:agent_count -->)
+### Agent Personas (<!-- sync:agent_count -->12<!-- /sync:agent_count -->)
 
-<!-- sync:readme_agent_table -->| Agent | Role | Used For |
-|-------|------|----------|
-| `shipkit-master-agent` | Orchestrator | Goal-driven orchestration — checks 3 goal levels, spawns responsible agent |
-| `shipkit-visionary-agent` | Visionary | Strategic direction — sets stage, vision, constraints, business goals |
-| `shipkit-product-owner-agent` | Product Manager | Product definitions, specs, feedback, product QA |
-| `shipkit-architect-agent` | Engineering Manager | Architecture, plans, contracts, engineering QA |
-| `shipkit-project-manager-agent` | Execution Lead | Team coordination, verification, shipping |
-| `shipkit-ux-designer-agent` | | UI/UX design |
-| `shipkit-implementer-agent` | | Code implementation |
-| `shipkit-implement-independently-agent` | | Isolated parallel implementation |
-| `shipkit-reviewer-agent` | | Code review & quality |
-| `shipkit-researcher-agent` | | Research & analysis |
-| `shipkit-thinking-partner-agent` | | Cognitive discussion & thinking partner |<!-- /sync:readme_agent_table -->
+<!-- sync:readme_agent_table -->**Orchestrators:**
+
+| Agent | ID | Scope |
+|-------|-----|-------|
+| `shipkit-orch-master-agent` | AGT-ORCH-MASTER | Sequential dispatch: direction → planning → shipping |
+| `shipkit-orch-direction-agent` | AGT-ORCH-DIRECTION | Strategic artifacts + coherence review cycle |
+| `shipkit-orch-planning-agent` | AGT-ORCH-PLANNING | Definitions/specs + alignment review cycle |
+| `shipkit-orch-shipping-agent` | AGT-ORCH-SHIPPING | Implementation + verification + release gate |
+
+**Producer Workers:**
+
+| Agent | ID | Domain |
+|-------|-----|--------|
+| `shipkit-visionary-agent` | AGT-VISIONARY | Strategic vision, stage, business goals |
+| `shipkit-product-owner-agent` | AGT-PO | Product definitions, specs, product goals |
+| `shipkit-architect-agent` | AGT-ARCHITECT | Architecture, plans, engineering goals |
+| `shipkit-implementer-agent` | AGT-IMPLEMENTER | Code implementation, test writing |
+| `shipkit-thinking-partner-agent` | AGT-THINKER | Cognitive discussion & thinking partner |
+
+**Judgment Workers (Reviewers):**
+
+| Agent | ID | Loop | Assessment |
+|-------|-----|------|-----------|
+| `shipkit-reviewer-direction-agent` | AGT-REVIEWER-DIRECTION | Direction | Strategic coherence |
+| `shipkit-reviewer-planning-agent` | AGT-REVIEWER-PLANNING | Planning | Definition/spec alignment |
+| `shipkit-reviewer-shipping-agent` | AGT-REVIEWER-SHIPPING | Shipping | Implementation quality + QA |<!-- /sync:readme_agent_table -->
 
 ---
 
@@ -120,7 +132,7 @@ python install.py --from-github
 
 The installer will:
 - Install all <!-- sync:skill_count -->37<!-- /sync:skill_count --> skills
-- Set up <!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas
+- Set up <!-- sync:agent_count -->12<!-- /sync:agent_count --> agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
 
@@ -135,7 +147,7 @@ your-project/
 │   ├── rules/
 │   │   └── shipkit.md           # Framework rules (managed by /shipkit-update)
 │   ├── skills/                  # 37 skill definitions
-│   ├── agents/                  # 11 agent personas
+│   ├── agents/                  # 12 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
     ├── specs/                   # Feature specifications
@@ -145,26 +157,18 @@ your-project/
 
 ### Basic Workflow
 
-```
-/shipkit-why-project         → Define vision & purpose (new projects)
-    ↓
-/shipkit-product-discovery   → Personas, pain points, journeys
-    ↓
-/shipkit-product-definition  → Product blueprint (features, patterns, differentiators)
-    ↓
-/shipkit-engineering-definition → Engineering blueprint (mechanisms, components)
-    ↓
-/shipkit-goals               → Success criteria & stage gates (feature phasing)
-    ↓
-/shipkit-spec                → Create feature specification
-    ↓
-/shipkit-plan                → Generate implementation plan
-    ↓
-(implement)                  → Build the feature (natural capability)
-    ↓
-/shipkit-verify              → Verify quality before commit
-    ↓
-/shipkit-work-memory         → Checkpoint progress for next session
+```mermaid
+flowchart LR
+    SKL_WHY["/why-project"] --> SKL_DISCOVERY["/product-discovery"]
+    SKL_DISCOVERY --> SKL_PRODDEF["/product-definition"]
+    SKL_PRODDEF --> SKL_ENGDEF["/engineering-definition"]
+    SKL_ENGDEF --> SKL_GOALS["/goals"]
+    SKL_GOALS --> SKL_ROADMAP["/spec-roadmap"]
+    SKL_ROADMAP --> SKL_SPEC["/spec"]
+    SKL_SPEC --> SKL_PLAN["/plan"]
+    SKL_PLAN --> IMPL["implement"]
+    IMPL --> SKL_VERIFY["/verify"]
+    SKL_VERIFY --> SKL_WORKMEM["/work-memory"]
 ```
 
 > **Shortcut:** If you already know what to build, skip straight to `/shipkit-spec`. The discovery chain (why → discovery → product-definition → engineering-definition → goals) is most valuable for new products or when exploring problem space.
@@ -190,23 +194,23 @@ Your project context is stored in:
 ├── architecture.json    # Architecture decisions
 ├── stack.json           # Technology stack
 ├── implementations.json   # What's been built
-└── contracts.json       # Data contracts
+└── engineering-definition.json  # Technical mechanisms & data contracts
 ```
 
 ### 3. Skills Chain Together
 
-Skills naturally flow from one to another:
+Skills naturally flow from one to another. Each produces an artifact the next step reads:
 
-```
-/shipkit-why-project → Defines vision
-    → /shipkit-product-discovery → Understands users
-    → /shipkit-product-definition → Defines what to build
-    → /shipkit-engineering-definition → Designs how to build it
-    → /shipkit-goals → Defines success criteria & phasing
-    → /shipkit-spec → Creates feature spec
-    → /shipkit-plan → Generates implementation plan
-    → (implement) → Builds the feature
-    → /shipkit-verify → Checks quality
+```mermaid
+flowchart LR
+    SKL_WHY["why-project"] --> SKL_DISCOVERY["product-discovery"]
+    SKL_DISCOVERY --> SKL_PRODDEF["product-definition"]
+    SKL_PRODDEF --> SKL_ENGDEF["engineering-definition"]
+    SKL_ENGDEF --> SKL_GOALS["goals"]
+    SKL_GOALS --> SKL_ROADMAP["spec-roadmap"]
+    SKL_ROADMAP --> SKL_SPECPLAN["spec / plan"]
+    SKL_SPECPLAN --> IMPL["implement"]
+    IMPL --> SKL_VERIFY["verify"]
 ```
 
 ---
@@ -221,7 +225,7 @@ shipkit/
 │
 ├── install/                         # Everything that gets installed
 │   ├── skills/                      # <!-- sync:skill_count -->37<!-- /sync:skill_count --> shipkit-* skill definitions
-│   ├── agents/                      # <!-- sync:agent_count -->11<!-- /sync:agent_count --> shipkit-*-agent personas
+│   ├── agents/                      # <!-- sync:agent_count -->12<!-- /sync:agent_count --> shipkit-*-agent personas
 │   ├── rules/
 │   │   └── shipkit.md               # Framework rules (auto-loaded)
 │   ├── profiles/
@@ -240,10 +244,10 @@ shipkit/
 │   └── uninstall.py                 # Uninstaller
 │
 ├── docs/                            # Documentation
-│   ├── getting-started.md
-│   ├── architecture.md
-│   ├── skill-reference.md
-│   └── creating-skills.md
+│   ├── creating-skills.md           # Contributor guide
+│   └── generated/                   # Interactive HTML docs
+│       ├── shipkit-overview.html
+│       └── orchestration-pipeline.html
 │
 ├── package.json                     # npm package config
 └── README.md                        # This file
@@ -290,12 +294,6 @@ Implementation, debugging, testing, refactoring, and code documentation are **na
 ### Explore Codebase
 ```bash
 /shipkit-project-context
-/shipkit-project-status
-```
-
-### Document Architecture
-```bash
-/shipkit-architecture-memory
 ```
 
 ### Get External Resources
@@ -323,7 +321,7 @@ This preserves your `.shipkit/` context files and custom settings while updating
 
 ## License
 
-MIT License
+CC-BY-NC-4.0 — See [LICENSE](LICENSE) for details.
 
 ---
 
