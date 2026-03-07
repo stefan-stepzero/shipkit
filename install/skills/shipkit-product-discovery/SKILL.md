@@ -1,6 +1,5 @@
 ---
 name: shipkit-product-discovery
-id: SKL-DISCOVERY
 description: "Use when defining users, personas, or user journeys. Triggers: 'who are users', 'create personas', 'user research', 'user stories'."
 argument-hint: "[persona or journey]"
 context: fork
@@ -210,25 +209,6 @@ Copy and track:
 - [ ] Summary fields populated with correct counts
 - [ ] All cross-references use valid IDs
 - [ ] Saved to `.shipkit/product-discovery.json`
-
----
-
-## What Makes This "Lite"
-
-**Included**:
-- 1-3 personas (not 5-7 like full prod-personas)
-- Combined workflow (personas -> pain points -> journeys -> opportunities in one skill)
-- Quick exit check (avoid regenerating recent files)
-- Graph-ready JSON with stable IDs for cross-referencing
-- Summary block for dashboard integration
-
-**Not included** (vs full prod-personas + prod-jobs-to-be-done + prod-user-stories):
-- Separate skills for each phase
-- Deep competitive persona analysis
-- Extensive journey mapping workshops
-- Comprehensive edge case scenarios
-
-**Philosophy**: Capture enough to start building, not exhaustive research. The JSON format ensures data is machine-readable and graph-traversable from day one.
 
 ---
 

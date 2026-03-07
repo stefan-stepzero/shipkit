@@ -183,7 +183,7 @@ Bug specs are stored as JSON files following the Shipkit artifact convention. Th
   "nextSteps": [
     "Fix the useSave hook with debouncing and AbortController",
     "Apply same pattern to useDelete and useUpdate (blast radius)",
-    "/shipkit-verify after implementation",
+    "/shipkit-review-shipping after implementation",
     "/shipkit-engineering-definition to document async hook pattern"
   ]
 }

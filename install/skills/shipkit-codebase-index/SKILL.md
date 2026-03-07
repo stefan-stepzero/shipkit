@@ -1,15 +1,9 @@
 ---
 name: shipkit-codebase-index
-id: SKL-CBINDEX
 description: "Generate project index for faster codebase navigation. Triggers: 'index codebase', 'create index', 'map project'."
 context: fork
 model: haiku
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
-  - Write
+allowed-tools: Read, Glob, Grep, Bash, Write
 ---
 
 # shipkit-codebase-index - Codebase Navigation Index
@@ -239,22 +233,6 @@ I'll use this index to navigate faster.
 | `coreFiles` | "What's important?" | High-dependency files |
 | `skip` | "Should I read this?" | Avoid wasted context |
 | `configFiles` | "What tools are used?" | Stack understanding |
-
----
-
-## What Makes This "Lite"
-
-**Included**:
-- ✅ Git-based activity tracking
-- ✅ Concept → file mapping
-- ✅ Simple JSON format
-
-**Not included**:
-- ❌ Full dependency graphs
-- ❌ Export analysis
-- ❌ Complex scoring algorithms
-
-**Philosophy**: Script does reliable work, Claude does intelligent work.
 
 ---
 

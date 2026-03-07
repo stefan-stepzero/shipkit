@@ -1,6 +1,5 @@
 ---
 name: shipkit-spec
-id: SKL-SPEC
 description: "Use when user describes a feature to build. Triggers: 'spec this', 'create specification', 'define requirements', 'I want to build'."
 argument-hint: "<feature name or description>"
 context: fork
@@ -466,28 +465,6 @@ Copy and track:
 - Service degradation (what happens when the external service is slow or down?)
 
 **See `references/best-practices.md` for frontend and backend quality standards.**
-
----
-
-## What Makes This "Lite"
-
-**Included**:
-- Structured JSON output for dashboard rendering
-- Given/When/Then scenarios (clear, actionable)
-- Comprehensive edge case checklist (6 core + 1 conditional category)
-- Acceptance criteria with prioritization
-- Technical notes for context
-- Test strategy (call flows, coverage, key test cases)
-- Moves through todo/ → active/ → shipped/ lifecycle
-
-**Not included** (vs full /dev-specify):
-- Formal Cucumber/Gherkin syntax
-- Automated test generation
-- BDD framework integration
-- Extensive examples library
-- Multi-stakeholder review workflow
-
-**Philosophy**: Clear enough to implement correctly, concise enough to read quickly. JSON format enables dashboard visualization and programmatic access.
 
 ---
 

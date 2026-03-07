@@ -137,7 +137,7 @@ This document defines the JSON schema for `.shipkit/ux-decisions.json`.
 
 This file follows the **Shipkit Artifact Convention** -- a standard envelope for structured data files produced by Shipkit skills. The convention enables:
 
-- **Programmatic consumption** by other skills (e.g., `shipkit-verify`, `shipkit-preflight`)
+- **Programmatic consumption** by other skills (e.g., `shipkit-review-shipping`, `shipkit-preflight`)
 - **Pattern consistency checking** across components
 - **Dashboard rendering**
 - **Historical tracking** of UX decisions

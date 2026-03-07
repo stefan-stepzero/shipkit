@@ -1,6 +1,5 @@
 ---
 name: shipkit-feedback-bug
-id: SKL-BUG
 description: "Process user feedback into investigated bug specs with root cause analysis. Triggers: 'triage feedback', 'process bug reports', 'user testing feedback'."
 argument-hint: "<paste feedback or describe source>"
 context: fork
@@ -394,7 +393,7 @@ The original fix "debounce the save button" was a point-fix. After robustness ch
 
   "nextSteps": [
     "[Suggested next actions]",
-    "/shipkit-verify after implementation"
+    "/shipkit-review-shipping after implementation"
   ]
 }
 ```
@@ -429,7 +428,7 @@ Blast Radius Notes:
 Next Steps:
 1. Fix bugs in severity order (start with High)
 2. Run /shipkit-spec for feature requests worth pursuing
-3. Run /shipkit-verify after fixes
+3. Run /shipkit-review-shipping after fixes
 4. Consider /shipkit-engineering-definition for significant learnings
 ```
 
@@ -530,7 +529,7 @@ For obvious bugs that don't need deep investigation, use the same JSON schema bu
     "relatedBugs": []
   },
 
-  "nextSteps": ["/shipkit-verify after fix"]
+  "nextSteps": ["/shipkit-review-shipping after fix"]
 }
 ```
 
@@ -545,7 +544,7 @@ For obvious bugs that don't need deep investigation, use the same JSON schema bu
 ### After This Skill
 - **Implementation (no skill)** - Fix bugs using the investigated specs
 - `/shipkit-spec` - Spec out feature requests found in feedback
-- `/shipkit-verify` - Verify fixes meet acceptance criteria
+- `/shipkit-review-shipping` - Verify fixes meet acceptance criteria
 - `/shipkit-engineering-definition` - Update engineering blueprint with learnings
 
 ---
@@ -586,7 +585,7 @@ For obvious bugs that don't need deep investigation, use the same JSON schema bu
 
 **Suggest skill when:**
 - Significant learnings → `/shipkit-engineering-definition`
-- Fix needs verification → `/shipkit-verify`
+- Fix needs verification → `/shipkit-review-shipping`
 - Feature requests worth pursuing → `/shipkit-spec`
 <!-- /SECTION:after-completion -->
 

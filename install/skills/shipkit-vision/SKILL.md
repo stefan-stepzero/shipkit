@@ -1,6 +1,5 @@
 ---
 name: shipkit-vision
-id: SKL-VISION
 description: "Strategic visionary gateway — sets project direction, stage, and business goals. Use when bootstrapping a project, setting stage, or when strategic goals are unmet."
 argument-hint: "<gap description or strategic question>"
 context: fork

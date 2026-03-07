@@ -1,6 +1,5 @@
 ---
 name: shipkit-orch-planning
-id: SKL-ORCH-PLANNING
 description: Planning loop — dispatches product/engineering definition and spec skills, assesses alignment. Produces definitions, specs, and roadmap.
 disable-model-invocation: true
 context: fork

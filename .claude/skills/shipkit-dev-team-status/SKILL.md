@@ -78,7 +78,7 @@ Remaining tasks: 2.3, 2.4
 ### Step 4: Suggest Actions
 
 Based on status:
-- **All tasks done**: "Ready for `/shipkit-verify` + `/shipkit-preflight`"
+- **All tasks done**: "Ready for `/shipkit-review-shipping` + `/shipkit-preflight`"
 - **Blockers exist**: "Message {teammate} about {blocker}"
 - **Phase gate ready**: "Verify gate: {condition}"
 - **Stalled**: "Check if teammates need help — message them directly"

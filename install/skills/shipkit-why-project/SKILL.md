@@ -1,6 +1,5 @@
 ---
 name: shipkit-why-project
-id: SKL-WHY
 description: "Use when defining project vision and strategic direction. Triggers: 'why this project', 'define vision', 'project goals', 'what are we building'."
 argument-hint: "[project name]"
 context: fork
@@ -195,16 +194,6 @@ Copy and track:
 - [ ] Saved to `.shipkit/why.json`
 - [ ] Suggested `/shipkit-stage` for project stage and business metrics
 - [ ] Suggested `/shipkit-product-discovery` for user needs
-
----
-
-## What Makes This "Lite"
-
-**Lite approach**: 5-8 questions, 1 JSON file, 3-7 minutes. Auto-loads at session start.
-
-**Full ShipKit approach**: 10 skills, 10+ files, 2-4 hours (personas, JTBD, market analysis, etc.).
-
-**Philosophy**: Answer "why" in 5-10 minutes, not 5 hours. Enough strategic context without full product discovery.
 
 ---
 

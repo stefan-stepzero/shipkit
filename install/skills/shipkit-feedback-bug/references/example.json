@@ -151,6 +151,6 @@
     "Fix CartSummary useMemo dependencies",
     "Audit WishlistSummary for same issue",
     "Enable exhaustive-deps lint rule",
-    "/shipkit-verify after implementation"
+    "/shipkit-review-shipping after implementation"
   ]
 }

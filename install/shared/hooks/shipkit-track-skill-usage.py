@@ -57,7 +57,7 @@ def main():
     if not shipkit_dir.exists():
         shipkit_dir.mkdir(parents=True, exist_ok=True)
 
-    tracking_file = shipkit_dir / 'skill-usage.json'
+    tracking_file = shipkit_dir / 'skill-usage.local.json'
 
     # Load existing data or create new
     if tracking_file.exists():
@@ -115,4 +115,8 @@ def create_empty_tracking():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except Exception:
+        # Silent failure — never block on hook errors
+        sys.exit(0)

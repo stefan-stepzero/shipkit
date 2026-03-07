@@ -72,7 +72,7 @@
       "Quality & Communication": [
         {"name": "shipkit-review-direction", "desc": "Assess strategic artifact coherence"},
         {"name": "shipkit-review-planning", "desc": "Assess planning artifact alignment"},
-        {"name": "shipkit-verify", "desc": "Review work (12 quality dimensions)"},
+        {"name": "shipkit-review-shipping", "desc": "Review work (12 quality dimensions)"},
         {"name": "shipkit-preflight", "desc": "MVP production readiness audit"},
         {"name": "shipkit-scale-ready", "desc": "Scale & enterprise readiness audit"},
         {"name": "shipkit-ux-audit", "desc": "Audit UX patterns"},

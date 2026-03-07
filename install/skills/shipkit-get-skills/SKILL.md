@@ -1,12 +1,9 @@
 ---
 name: shipkit-get-skills
-id: SKL-GETSKILLS
 description: Discover and install skills and plugins from the Claude Code ecosystem
 argument-hint: "<search query>"
 disable-model-invocation: true
-allowed-tools:
-  - Bash
-  - Read
+allowed-tools: Bash, Read
 ---
 
 # shipkit-get-skills - Skill & Plugin Discovery

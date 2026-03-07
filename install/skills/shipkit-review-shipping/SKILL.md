@@ -1,20 +1,13 @@
 ---
-name: shipkit-verify
-id: SKL-VERIFY
+name: shipkit-review-shipping
 description: Review changes across 12 quality dimensions and report findings. Use after a chunk of work or before commit.
 argument-hint: "[scope or feature]"
 context: fork
 agent: shipkit-reviewer-shipping-agent
-allowed-tools:
-  - Read
-  - Write
-  - Glob
-  - Grep
-  - Bash
-  - Skill
+allowed-tools: Read, Write, Glob, Grep, Bash, Skill
 ---
 
-# shipkit-verify
+# shipkit-review-shipping
 
 Review-only verification — Claude reviews your work across 12 quality dimensions and reports findings with evidence. You decide what to fix.
 
@@ -34,7 +27,7 @@ Review-only verification — Claude reviews your work across 12 quality dimensio
 
 ## Arguments
 
-If `$ARGUMENTS` is provided (e.g. `/shipkit-verify auth module`), use it as the explicit verification scope. Skip scope detection and treat it as the answer to "What should I verify?".
+If `$ARGUMENTS` is provided (e.g. `/shipkit-review-shipping auth module`), use it as the explicit verification scope. Skip scope detection and treat it as the answer to "What should I verify?".
 
 If `$ARGUMENTS` is empty, proceed normally with automatic scope detection (git diff, session context).
 

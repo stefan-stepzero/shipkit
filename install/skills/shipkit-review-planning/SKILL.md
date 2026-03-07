@@ -1,6 +1,5 @@
 ---
 name: shipkit-review-planning
-id: SKL-REVIEW-PLANNING
 description: Assess planning artifact alignment — checks that definitions agree, specs cover the roadmap, and there are no gaps. Writes planning-assessment.json.
 disable-model-invocation: true
 context: fork

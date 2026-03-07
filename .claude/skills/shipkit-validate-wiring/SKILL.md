@@ -208,12 +208,12 @@ Walk through the Shipping loop's dispatch order:
 1. /shipkit-plan
 2. /shipkit-test-cases
 3. /shipkit-team (creates Agent Team for parallel implementation)
-4. /shipkit-verify (reviewer-shipping runs QA, may dispatch sub-skills)
+4. /shipkit-review-shipping (reviewer-shipping runs QA, may dispatch sub-skills)
 5. /shipkit-preflight
 
 At each step:
 - List reads, check availability, list writes, update cumulative state
-- For /shipkit-verify: trace which QA sub-skills it can dispatch (ux-audit, semantic-qa, qa-visual, prompt-audit) and what they need
+- For /shipkit-review-shipping: trace which QA sub-skills it can dispatch (ux-audit, semantic-qa, qa-visual, prompt-audit) and what they need
 
 Then simulate re-dispatch:
 - Assume verify finds failing tests + UX gap

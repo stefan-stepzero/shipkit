@@ -1,16 +1,11 @@
 ---
 name: shipkit-scale-ready
-id: SKL-SCALEREADY
 description: Audits production systems for scale readiness — observability, performance, reliability, and operational maturity. For teams with traction preparing to grow.
 argument-hint: "[area to audit]"
 model: opus
 context: fork
 agent: shipkit-reviewer-shipping-agent
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
+allowed-tools: Read, Glob, Grep, Bash
 ---
 
 # shipkit-scale-ready - Scale Readiness Audit

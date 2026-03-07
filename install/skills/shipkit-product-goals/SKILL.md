@@ -1,6 +1,5 @@
 ---
 name: shipkit-product-goals
-id: SKL-PRODGOALS
 description: "Derive measurable user-outcome criteria from the product blueprint. Writes goals/product.json (completion rates, UX quality, satisfaction). Evaluate mode compares actuals to targets."
 argument-hint: "[goal topic | --evaluate]"
 context: fork
@@ -42,7 +41,7 @@ agent: shipkit-product-owner-agent
 - After `/shipkit-stage` (reads stage and constraints from strategic.json)
 - Before `/shipkit-engineering-goals` (engineering reads product goals for alignment)
 - Before `/shipkit-spec` — criteria inform feature specifications
-- Before `/shipkit-verify` — criteria become verification checks
+- Before `/shipkit-review-shipping` — criteria become verification checks
 
 ---
 
@@ -374,7 +373,7 @@ When `.shipkit/goals.json` (single file) exists or files have `"source": "shipki
 - `/shipkit-engineering-goals` — Reads product goals for alignment, adds E-* to gates
 - `/shipkit-spec` — Criteria inform acceptance tests
 - `/shipkit-plan` — Plans can reference criteria for verification steps
-- `/shipkit-verify` — Can reference criteria when checking quality
+- `/shipkit-review-shipping` — Can reference criteria when checking quality
 
 ---
 
@@ -413,7 +412,7 @@ When `.shipkit/goals.json` (single file) exists or files have `"source": "shipki
 
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 
-**Suggest skill when:** User needs engineering goals (`/shipkit-engineering-goals`), specs (`/shipkit-spec`), or verification (`/shipkit-verify`).
+**Suggest skill when:** User needs engineering goals (`/shipkit-engineering-goals`), specs (`/shipkit-spec`), or verification (`/shipkit-review-shipping`).
 <!-- /SECTION:after-completion -->
 
 <!-- SECTION:success-criteria -->

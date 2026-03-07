@@ -1,6 +1,5 @@
 ---
 name: shipkit-update
-id: SKL-UPDATE
 description: Install or update Shipkit via npx. Detects existing installations, archives them safely, and intelligently merges user content with new version.
 disable-model-invocation: true
 argument-hint: "[repo-url]"
@@ -644,7 +643,7 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 ### Related Skills
 
 - `/shipkit-work-memory` — Check session progress after update
-- `/shipkit-verify` — Verify the update completed correctly
+- `/shipkit-review-shipping` — Verify the update completed correctly
 
 ---
 

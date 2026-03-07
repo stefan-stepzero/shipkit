@@ -1,6 +1,5 @@
 ---
 name: shipkit-orch-planning
-id: AGT-ORCH-PLANNING
 description: Planning loop orchestrator — dispatches product/engineering definition skills and review-planning for alignment assessment. Runs dispatch-assess-redispatch cycle until planning is stable.
 tools: Read, Write, Glob, Skill
 model: sonnet

@@ -1,8 +1,7 @@
 ---
 name: shipkit-orch-shipping
-id: AGT-ORCH-SHIPPING
 description: Shipping loop orchestrator — spawns an implementation Agent Team, then dispatches verification and preflight. Runs implement-verify-fix cycle until code passes all quality checks.
-tools: Read, Write, Glob, Skill, Agent
+tools: Read, Write, Glob, Skill
 model: sonnet
 maxTurns: 150
 ---
@@ -13,8 +12,8 @@ You are the **Shipping Loop Orchestrator**. You read plans and test specs from t
 
 | Step | Method | Artifact |
 |------|--------|----------|
-| Implement | Direct — Agent Team (Agent/Task tools) | code changes |
-| `/shipkit-verify` | Skill dispatch → reviewer-shipping | `.shipkit/verification-report.json` |
+| Implement | Direct — Agent Team (TeamCreate/TaskCreate) | code changes |
+| `/shipkit-review-shipping` | Skill dispatch → reviewer-shipping | `.shipkit/verification-report.json` |
 | `/shipkit-preflight` | Skill dispatch → reviewer-shipping | `.shipkit/preflight.json` |
 
 ## Dispatch Cycle
@@ -28,19 +27,16 @@ You are the **Shipping Loop Orchestrator**. You read plans and test specs from t
 2. Create Agent Team for implementation:
    a. Use TeamCreate to create a team
    b. Read plans to identify file clusters and task decomposition
-   c. Use Agent tool to spawn teammates:
-      - Each teammate gets a subset of plan tasks (file cluster)
-      - Include in spawn prompt: relevant plan, test cases, and specs
-      - Teammates have access to Read, Write, Edit, Glob, Grep, Bash
-      - Instruct teammates to use Bash for building and running tests
-   d. Use TaskCreate to create tasks for each file cluster
-   e. Assign tasks to teammates via TaskUpdate
+   c. Use TaskCreate to create tasks for each file cluster
+      - Each task description includes: relevant plan, test cases, and specs
+      - Teammates auto-claim tasks and have access to Read, Write, Edit, Glob, Grep, Bash
+      - Instruct via task descriptions to use Bash for building and running tests
 
 3. Monitor implementation:
    a. Check TaskList for progress
    b. When all tasks complete, proceed to verification
 
-4. Dispatch /shipkit-verify → reviewer-shipping assesses quality
+4. Dispatch /shipkit-review-shipping → reviewer-shipping assesses quality
 
 5. Read .shipkit/verification-report.json:
    a. If status == "pass":
@@ -49,7 +45,7 @@ You are the **Shipping Loop Orchestrator**. You read plans and test specs from t
    b. If status == "issues_found":
       - Read issues for specific failures
       - Assign fix tasks to teammates (or spawn new ones if team was shut down)
-      - After fixes, re-dispatch /shipkit-verify
+      - After fixes, re-dispatch /shipkit-review-shipping
       - Repeat until pass or maxTurns exhausted
 ```
 

@@ -171,7 +171,7 @@ Reference this protocol in your skill's verification section:
 ```
 
 This protocol applies to:
-- `shipkit-verify` — Primary verification skill
+- `shipkit-review-shipping` — Primary verification skill
 - `shipkit-codebase-index` — Index entry verification
 - `shipkit-project-context` — Stack detection verification
 - `shipkit-engineering-definition` — Engineering blueprint and decision verification

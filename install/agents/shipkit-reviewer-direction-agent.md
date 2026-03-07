@@ -1,6 +1,5 @@
 ---
 name: shipkit-reviewer-direction
-id: AGT-REVIEWER-DIRECTION
 description: Direction judgment worker — assesses strategic artifact coherence. Reads why, vision, stage, and goals to verify internal consistency. Writes structured assessment for the direction orchestrator.
 tools: Read, Write, Grep, Glob
 disallowedTools: Edit, Bash, NotebookEdit

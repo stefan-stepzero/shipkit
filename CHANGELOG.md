@@ -198,14 +198,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - `argument-hint` frontmatter for 13 user-invocable skills (shows in slash command menu)
 - `allowed-tools` restrictions for 8 read-only/focused skills
-- `context: fork` for `shipkit-verify` and `shipkit-codebase-index` (context isolation)
+- `context: fork` for `shipkit-review-shipping` and `shipkit-codebase-index` (context isolation)
 - AskUserQuestion structured guidance in `shipkit-spec`, `shipkit-plan`, `shipkit-product-discovery`
 - `scripts/update-version.py` — Automate version updates across all files
 
 ### Changed
 - Model optimization: `haiku` only for bulk scanning (`shipkit-detect`, `shipkit-codebase-index`)
 - Removed `haiku` from `shipkit-claude-md`, `shipkit-get-skills`, `shipkit-get-mcps` (inherit best model)
-- Removed `sonnet` from `shipkit-verify`, `shipkit-preflight` (inherit best model)
+- Removed `sonnet` from `shipkit-review-shipping`, `shipkit-preflight` (inherit best model)
 - Skills now leverage Claude Code frontmatter features for better UX and performance
 
 ### Technical
@@ -222,7 +222,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `shipkit-get-skills` — Discover and install community Claude Code skills
 - `shipkit-get-mcps` — Discover and install MCP servers
 - `shipkit-claude-md` — Manage and update CLAUDE.md with learnings
-- `shipkit-verify` — Quality verification across 12 dimensions
+- `shipkit-review-shipping` — Quality verification across 12 dimensions
 - `shipkit-preflight` — Production readiness audit
 - `shipkit-codebase-index` — Semantic codebase indexing for navigation
 - Version watermarking on all installed files (`<!-- Shipkit v1.1.0 -->`)
@@ -233,7 +233,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - `shipkit-component-knowledge` — Replaced by natural capability (documentation)
 - `shipkit-route-knowledge` — Replaced by natural capability (documentation)
 - `shipkit-implement` — Replaced by natural capability (implementation)
-- `shipkit-quality-confidence` — Replaced by `shipkit-verify`
+- `shipkit-quality-confidence` — Replaced by `shipkit-review-shipping`
 - `shipkit-teach` — Renamed to `shipkit-claude-md`
 
 ### Changed

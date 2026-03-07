@@ -1,6 +1,5 @@
 ---
 name: shipkit-reviewer-planning
-id: AGT-REVIEWER-PLANNING
 description: Planning judgment worker — assesses alignment between product definitions, engineering definitions, and specs. Writes structured assessment for the planning orchestrator.
 tools: Read, Write, Grep, Glob
 disallowedTools: Edit, Bash, NotebookEdit

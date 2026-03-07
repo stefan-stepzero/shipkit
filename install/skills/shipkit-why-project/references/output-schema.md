@@ -64,7 +64,7 @@ This document defines the JSON schema for `.shipkit/why.json`.
 
 This file follows the **Shipkit Artifact Convention** -- a standard envelope for structured data files produced by Shipkit skills. The convention enables:
 
-- **Programmatic consumption** by other skills (e.g., `shipkit-spec`, `shipkit-verify`)
+- **Programmatic consumption** by other skills (e.g., `shipkit-spec`, `shipkit-review-shipping`)
 - **Session auto-loading** for strategic context
 - **Dashboard rendering**
 - **Consistency checks** across project artifacts

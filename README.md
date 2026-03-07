@@ -54,7 +54,7 @@ All skills use the `shipkit-` prefix for clarity.
 **Quality & Documentation (12 skills):**
 - `shipkit-review-direction` - Assess strategic artifact coherence
 - `shipkit-review-planning` - Assess planning artifact alignment
-- `shipkit-verify` - QA and acceptance criteria
+- `shipkit-review-shipping` - QA and acceptance criteria
 - `shipkit-preflight` - MVP production readiness audit
 - `shipkit-scale-ready` - Scale & enterprise readiness audit
 - `shipkit-prompt-audit` - LLM prompt architecture audit
@@ -284,7 +284,7 @@ Implementation, debugging, testing, refactoring, and code documentation are **na
 /shipkit-spec "Add user authentication"
 /shipkit-plan
 # implement the feature
-/shipkit-verify
+/shipkit-review-shipping
 ```
 
 ### Explore Codebase

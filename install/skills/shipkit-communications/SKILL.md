@@ -1,6 +1,5 @@
 ---
 name: shipkit-communications
-id: SKL-COMMS
 description: "Use when user wants to visualize or present shipkit content as HTML. Triggers: 'create presentation', 'visualize this', 'HTML report'."
 context: fork
 ---
@@ -279,30 +278,6 @@ Copy and track:
 - [ ] Identified source content to visualize
 - [ ] Generated HTML with appropriate styling
 - [ ] Saved to appropriate location
-
----
-
-## What Makes This "Lite"
-
-**Included**:
-- ✅ Beautiful purple gradient theme
-- ✅ Responsive design (mobile-friendly)
-- ✅ Mermaid diagram support (via CDN)
-- ✅ Inline CSS (no external dependencies)
-- ✅ Archive mechanism (timestamp-based)
-- ✅ Markdown to HTML conversion
-- ✅ Multiple report types
-- ✅ One-command generation
-
-**Not included** (vs hypothetical full version):
-- ❌ Multiple themes/customization
-- ❌ PDF export
-- ❌ Email integration
-- ❌ Scheduled generation
-- ❌ Diff/comparison views
-- ❌ Interactive charts
-
-**Philosophy**: Create beautiful, shareable HTML quickly. One command, immediate results.
 
 ---
 

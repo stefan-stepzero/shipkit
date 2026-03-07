@@ -1,8 +1,7 @@
 ---
 name: shipkit-architect
-id: AGT-ARCHITECT
 description: Engineering Manager — designs HOW to build through engineering definitions, architecture, plans, and technical contracts. Owns engineering-level goals, prompt architecture, and QA. Use when defining mechanisms, designing architecture, creating plans, defining data contracts, auditing prompts, or evaluating technical quality.
-tools: Read, Glob, Grep, Write, Edit, Bash, Agent
+tools: Read, Glob, Grep, Write, Edit, Bash, Skill
 disallowedTools: NotebookEdit
 model: opus
 maxTurns: 50

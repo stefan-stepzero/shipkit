@@ -1,6 +1,5 @@
 ---
 name: shipkit-orch-direction
-id: SKL-ORCH-DIRECTION
 description: Direction loop — dispatches strategic skills and assesses coherence. Produces why, vision, stage, and goals artifacts.
 disable-model-invocation: true
 context: fork

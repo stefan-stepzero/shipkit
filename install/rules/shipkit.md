@@ -104,12 +104,13 @@ If `.shipkit/codebase-index.json` exists:
 ### Quality & Communication
 | When... | Use |
 |---------|-----|
-| Verify work before commit | `/shipkit-verify` |
+| Verify work before commit | `/shipkit-review-shipping` |
 | Production readiness audit | `/shipkit-preflight` |
 | Scale & enterprise readiness | `/shipkit-scale-ready` |
 | Audit LLM prompt architecture | `/shipkit-prompt-audit` |
 | Audit UX patterns | `/shipkit-ux-audit` |
 | Semantic QA for API/LLM outputs | `/shipkit-semantic-qa` |
+| Track & visualize metrics | `/shipkit-metrics` |
 | Visual QA with Playwright | `/shipkit-qa-visual` |
 | Track manual tasks for user | `/shipkit-user-instructions` |
 | Create visual HTML report | `/shipkit-communications` |
@@ -127,7 +128,7 @@ If `.shipkit/codebase-index.json` exists:
 **Built-in commands:**
 - `/simplify` — Launches 3 parallel agents (reuse, quality, efficiency) to review changed code and auto-fix issues. Good for post-implementation cleanup.
 - `/batch <instruction>` — Decomposes a large mechanical change into 5–30 independent units, spawns parallel worktree agents that each open a PR. For migrations, bulk refactors, mass renames.
-- Use `/simplify` for code cleanup after writing. Use `/shipkit-verify` for comprehensive spec-aligned review (12 quality dimensions).
+- Use `/simplify` for code cleanup after writing. Use `/shipkit-review-shipping` for comprehensive spec-aligned review (12 quality dimensions).
 - The shipping orchestrator manages Agent Teams directly for parallel implementation.
 
 ---

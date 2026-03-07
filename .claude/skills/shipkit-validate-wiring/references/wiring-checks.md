@@ -96,7 +96,7 @@ This prevents known, intentional design choices from being flagged on every run.
 **Data source**: `artifactFlow[*].expectedReaders` vs `artifactFlow[*].readers`
 **Failure**: A skill that should logically consume an artifact doesn't list it in its reads — the skill operates with incomplete context. This means the skill's SKILL.md needs a reads reference added.
 **Rules source**: Consumption rules are defined in the wiring-graph skill's `references/consumption-rules.md`. They derive expected readers from skill classification (reviewer, producer, goals, QA) and artifact type.
-**Report format**: Group by skill, not by artifact — e.g., "shipkit-verify missing reads: product-definition.json, engineering-definition.json, goals/product.json"
+**Report format**: Group by skill, not by artifact — e.g., "shipkit-review-shipping missing reads: product-definition.json, engineering-definition.json, goals/product.json"
 
 ---
 

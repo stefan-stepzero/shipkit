@@ -1,15 +1,9 @@
 ---
 name: shipkit-get-mcps
-id: SKL-GETMCPS
 description: Discover and install MCP servers for enhanced Claude capabilities
 argument-hint: "<search query>"
 disable-model-invocation: true
-allowed-tools:
-  - Bash
-  - Read
-  - Write
-  - WebFetch
-  - WebSearch
+allowed-tools: Bash, Read, Write, WebFetch, WebSearch
 ---
 
 # shipkit-get-mcps - MCP Discovery & Installation

@@ -1,6 +1,5 @@
 ---
 name: shipkit-orch-master
-id: AGT-ORCH-MASTER
 description: Master loop orchestrator — dispatches direction, planning, and shipping loops sequentially. Reads orchestration.json for crash recovery. Never produces artifacts directly.
 tools: Read, Write, Glob, Skill
 model: sonnet

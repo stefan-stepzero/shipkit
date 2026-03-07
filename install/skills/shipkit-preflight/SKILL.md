@@ -1,16 +1,11 @@
 ---
 name: shipkit-preflight
-id: SKL-PREFLIGHT
 description: Aggregates project context and audits production readiness against a comprehensive SaaS checklist. Routes to prerequisite skills when context is missing.
 argument-hint: "[area to audit]"
 model: opus
 context: fork
 agent: shipkit-reviewer-shipping-agent
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
+allowed-tools: Read, Glob, Grep, Bash
 ---
 
 # shipkit-preflight - MVP Production Readiness Audit
@@ -571,7 +566,7 @@ This skill follows the **Shipkit JSON artifact convention**. See `references/out
 
 ### Differs From
 
-- `/shipkit-verify` — Code quality on recent changes (pre-commit)
+- `/shipkit-review-shipping` — Code quality on recent changes (pre-commit)
 - `/shipkit-preflight` — MVP production readiness (pre-launch)
 - `/shipkit-scale-ready` — Growth & enterprise readiness (post-traction)
 

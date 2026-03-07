@@ -1,6 +1,5 @@
 ---
 name: shipkit-spec-roadmap
-id: SKL-ROADMAP
 description: "Prioritize which specs to write first from product + engineering definitions. Triggers: 'spec roadmap', 'what to spec first', 'prioritize features', 'spec backlog'."
 argument-hint: "[--update | --regenerate]"
 context: fork

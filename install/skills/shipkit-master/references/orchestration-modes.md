@@ -47,6 +47,6 @@ Master runs through all three loops without pausing at gates. Each loop's intern
 | "Build X autonomously" / "yolo" / "auto" / "just do it" / "run with it" | Full goal — self-verifying | Autonomous |
 | "Step by step" / "Walk me through" | Full goal — explicit user steering | Gated |
 | "What's next?" / "Continue" | Check goals, dispatch for largest gap | Current mode |
-| "Check quality" / "Review" | Run `/shipkit-verify` | N/A |
+| "Check quality" / "Review" | Run `/shipkit-review-shipping` | N/A |
 | "What's the status?" | Status report from goal files | N/A |
 | Explicit skill name | Direct routing (bypass loop dispatch) | N/A |

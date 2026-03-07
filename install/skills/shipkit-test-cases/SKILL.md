@@ -1,6 +1,5 @@
 ---
 name: shipkit-test-cases
-id: SKL-TESTCASES
 description: Generate and maintain code-anchored test case specifications. Use when setting up test coverage, reviewing what to test, or before team implementation.
 argument-hint: "[feature or scope]"
 context: fork
@@ -495,26 +494,6 @@ This makes test execution **change-aware**.
 
 ---
 
-## What Makes This "Lite"
-
-**Included**:
-- Auto-generation from code/specs (zero input)
-- AI-optimized test case format
-- Code-anchored staleness detection
-- Smart merge (preserve user decisions)
-- Coverage gap reporting
-
-**Not included** (vs full test management):
-- Test execution (handled by team implementation)
-- CI/CD integration
-- Historical trends/analytics
-- Multi-environment tracking
-- Test flakiness detection
-
-**Philosophy**: Generate what to test, track coverage, detect staleness. Execution is separate.
-
----
-
 ## When This Skill Integrates with Others
 
 ### Before This Skill
@@ -529,13 +508,13 @@ This makes test execution **change-aware**.
 
 ### After This Skill
 
-- `/shipkit-verify` — Can use test cases for verification
+- `/shipkit-review-shipping` — Can use test cases for verification
   - **When:** Checking work before commit
   - **Why:** Test cases inform what to verify
 
 ### Related Skills
 
-- `shipkit-verify` — Quality verification (uses test cases as input)
+- `shipkit-review-shipping` — Quality verification (uses test cases as input)
 - `shipkit-spec` — Feature specs (source for test case derivation)
 
 ---
@@ -586,7 +565,7 @@ The `coverage.json` file follows the **Shipkit Artifact Convention** -- a standa
 **Full schema reference:** See `references/output-schema.md`
 
 **Why JSON for coverage data:**
-- Other skills (e.g., `shipkit-verify`, `shipkit-preflight`) can parse coverage programmatically
+- Other skills (e.g., `shipkit-review-shipping`, `shipkit-preflight`) can parse coverage programmatically
 - Structured data enables threshold checks (e.g., "coverageScore >= 80")
 - Arrays and counts are naturally represented in JSON, not markdown tables
 

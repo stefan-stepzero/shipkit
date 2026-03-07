@@ -1,6 +1,5 @@
 ---
 name: shipkit-plan
-id: SKL-PLAN
 description: "Use when a spec exists and user wants implementation steps. Triggers: 'how to implement', 'create plan', 'plan this', 'what are the steps'."
 argument-hint: "[spec name]"
 context: fork
@@ -597,7 +596,7 @@ Copy and track:
 
 ### After This Skill
 - `implement (no skill needed)` - Executes the plan
-- `/shipkit-verify` - Validates implementation matches plan
+- `/shipkit-review-shipping` - Validates implementation matches plan
 
 ---
 

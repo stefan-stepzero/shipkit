@@ -1,6 +1,5 @@
 ---
 name: shipkit-stage
-id: SKL-STAGE
 description: "Define project stage, scope constraints, and graduation criteria. Set mode configures the stage; evaluate mode assesses readiness for human approval."
 argument-hint: "[set | --evaluate]"
 context: fork

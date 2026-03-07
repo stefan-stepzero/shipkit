@@ -1,8 +1,7 @@
 ---
 name: shipkit-product-owner
-id: AGT-PO
 description: Product Manager — defines WHAT to build through product definitions, specs, and user research. Owns product-level goals. Use when defining features, writing specs, or processing feedback.
-tools: Read, Glob, Grep, Write, Edit, Agent
+tools: Read, Glob, Grep, Write, Edit, Skill
 disallowedTools: NotebookEdit
 model: opus
 maxTurns: 50

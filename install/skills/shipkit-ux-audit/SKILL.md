@@ -1,14 +1,10 @@
 ---
 name: shipkit-ux-audit
-id: SKL-UXAUDIT
 description: "Use when auditing implemented UI for missing UX patterns. Triggers: 'audit UX', 'check UX', 'missing patterns', 'UX gaps'."
 argument-hint: "<component or area>"
 context: fork
 agent: shipkit-reviewer-shipping-agent
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
+allowed-tools: Read, Glob, Grep
 ---
 
 # shipkit-ux-audit - Lightweight UX Guidance
@@ -329,28 +325,6 @@ Copy and track:
 - [ ] Checked against UX pattern checklist
 - [ ] Documented decisions in ux-decisions.json
 - [ ] Logged gaps with priorities
-
----
-
-## What Makes This "Lite"
-
-**Included**:
-- General UX best practices (inline in SKILL.md)
-- Common pattern guidance (forms, modals, toggles, lists, buttons)
-- WCAG 2.1 AA accessibility basics
-- Progressive disclosure (only relevant principles)
-- Reads existing patterns from codebase-index.json
-- Adapts to user personas (ADHD, elderly, etc. if specified)
-- JSON output for programmatic consumption
-
-**Not included** (vs full ux-coherence):
-- No comprehensive UX library
-- No design system templates
-- No detailed research methodologies
-- No usability testing frameworks
-- No analytics integration
-
-**Philosophy**: Provide good-enough UX guidance for POC/MVP, not comprehensive design system.
 
 ---
 

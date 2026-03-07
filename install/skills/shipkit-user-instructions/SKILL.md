@@ -1,6 +1,5 @@
 ---
 name: shipkit-user-instructions
-id: SKL-USERINSTR
 description: "Use when there are manual tasks the user must complete. Triggers: 'create task', 'track TODO', 'user needs to', 'manual step required'."
 ---
 
@@ -229,27 +228,6 @@ Copy and track:
 - [ ] Added to `.shipkit/user-tasks.json`
 - [ ] Summary counts recomputed
 - [ ] User confirmed task is clear
-
----
-
-## What Makes This "Lite"
-
-**Included**:
-- Task tracking with statuses (active/in-progress/completed/deferred)
-- Priority levels (high/medium/low)
-- Structured task entries with verification steps
-- Single consolidated JSON file with summary counts
-- List tasks on demand
-
-**Not included** (vs full user-instructions):
-- Recurring tasks or reminders
-- Task dependencies graph
-- Time tracking or estimates
-- Task assignment to team members
-- Integration with external task managers
-- Automated task completion detection
-
-**Philosophy**: Simple todo tracking for manual actions. Not a full task management system.
 
 ---
 

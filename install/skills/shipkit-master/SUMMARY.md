@@ -13,7 +13,7 @@ Structured product development framework. Use `/shipkit-*` skills or describe wh
 | `/shipkit-product-definition` | Product blueprint |
 | `/shipkit-spec` | Feature specification |
 | `/shipkit-plan` | Implementation plan from spec |
-| `/shipkit-verify` | Review changes before commit |
+| `/shipkit-review-shipping` | Review changes before commit |
 | `/shipkit-preflight` | Production readiness check |
 | `/shipkit-work-memory` | Save session progress |
 

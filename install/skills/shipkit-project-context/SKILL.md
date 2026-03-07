@@ -1,6 +1,5 @@
 ---
 name: shipkit-project-context
-id: SKL-PROJCTX
 description: "Use when starting a new project or refreshing tech stack context. Triggers: 'scan project', 'what's my stack', 'refresh context', 'generate stack'."
 model: haiku
 context: fork
@@ -417,26 +416,6 @@ This skill follows the **Shipkit JSON artifact convention** -- a standard struct
 - `summary` -- Aggregated data for dashboard cards. Structure varies by type.
 
 Skills that haven't migrated to JSON yet continue writing markdown. The reporter hook ships both: JSON artifacts get structured dashboard rendering, markdown files fall back to metadata-only (exists, date, size).
-
----
-
-## What Makes This "Lite"
-
-**Included**:
-- Smart caching via file modification time checks
-- Auto-detection of framework, database, styling
-- Environment variable scanning
-- Basic schema extraction from migrations
-- Dependency counting
-
-**Not included** (vs full project-context):
-- Deep dependency analysis (vulnerability scanning)
-- Architecture diagram generation
-- API endpoint discovery
-- Component tree mapping
-- Test coverage analysis
-
-**Philosophy**: Just enough context to understand the stack and start building.
 
 ---
 

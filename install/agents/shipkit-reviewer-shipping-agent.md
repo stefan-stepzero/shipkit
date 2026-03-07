@@ -1,6 +1,5 @@
 ---
 name: shipkit-reviewer-shipping
-id: AGT-REVIEWER-SHIPPING
 description: Shipping judgment worker — verifies implementation quality across security, functionality, and code quality dimensions. Can dispatch QA sub-skills (ux-audit, semantic-qa, qa-visual). Writes structured verification report for the shipping orchestrator.
 tools: Read, Write, Grep, Glob, Skill
 disallowedTools: Edit, Bash, NotebookEdit

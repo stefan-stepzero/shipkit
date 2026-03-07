@@ -1,6 +1,5 @@
 ---
 name: shipkit-engineering-goals
-id: SKL-ENGGOALS
 description: "Derive technical performance criteria from the engineering blueprint. Writes goals/engineering.json with response times, reliability, test coverage thresholds. Evaluate mode checks actuals against targets."
 argument-hint: "[goal topic | --evaluate]"
 context: fork
@@ -43,7 +42,7 @@ agent: shipkit-architect-agent
 - After `/shipkit-stage` (reads stage and constraints from strategic.json)
 - After `/shipkit-product-goals` (reads product goals for alignment, adds E-* criteria to existing gates)
 - Before `/shipkit-plan` — criteria inform implementation priorities
-- Before `/shipkit-verify` — criteria become verification checks
+- Before `/shipkit-review-shipping` — criteria become verification checks
 
 ---
 
@@ -338,7 +337,7 @@ RECOMMENDATION:
 
 ### After This Skill
 - `/shipkit-plan` — Criteria inform implementation priorities
-- `/shipkit-verify` — Can reference criteria when checking quality
+- `/shipkit-review-shipping` — Can reference criteria when checking quality
 - `/shipkit-work-memory` — Session continuity and progress tracking
 
 ---
@@ -377,7 +376,7 @@ RECOMMENDATION:
 2. **Prerequisites** - Does the next action need a spec or plan first?
 3. **Session length** - Long session? Consider `/shipkit-work-memory` for continuity.
 
-**Suggest skill when:** User needs plans (`/shipkit-plan`), specs (`/shipkit-spec`), or verification (`/shipkit-verify`).
+**Suggest skill when:** User needs plans (`/shipkit-plan`), specs (`/shipkit-spec`), or verification (`/shipkit-review-shipping`).
 <!-- /SECTION:after-completion -->
 
 <!-- SECTION:success-criteria -->

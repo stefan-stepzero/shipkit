@@ -1,18 +1,10 @@
 ---
 name: shipkit-product-definition
-id: SKL-PRODDEF
 description: "Define what to build — features, UX patterns, and differentiators that solve discovered user needs. Triggers: 'product definition', 'what to build', 'features', 'solution design'."
 argument-hint: "[product name or focus area]"
 context: fork
 agent: shipkit-product-owner-agent
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
-  - Task
-  - AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Grep, Task, AskUserQuestion
 ---
 
 # shipkit-product-definition — Product Blueprint

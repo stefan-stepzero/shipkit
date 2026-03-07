@@ -1,16 +1,8 @@
 ---
 name: shipkit-semantic-qa
-id: SKL-SEMQA
 description: "Semantic QA — define inputs/criteria, generate test scripts, Claude judges API outputs or UI screenshots against quality criteria. Triggers: 'semantic qa', 'quality check', 'visual qa', 'judge outputs', 'QA suite'."
 argument-hint: "[suite-name] [--setup|--run|--judge|--full]"
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
-  - Bash
-  - Task
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task
 ---
 
 # shipkit-semantic-qa - Semantic Quality Assurance
@@ -349,7 +341,7 @@ Run Setup (if needed) → Run → Judge sequentially.
   - **When:** Need to determine API framework or test runner
 
 ### After This Skill
-- `/shipkit-verify` — Can reference judgment findings during review
+- `/shipkit-review-shipping` — Can reference judgment findings during review
   - **When:** Judgment reveals quality issues before commit
 - No automatic follow-up. User decides next action.
 

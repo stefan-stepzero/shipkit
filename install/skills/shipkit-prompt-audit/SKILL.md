@@ -1,16 +1,11 @@
 ---
 name: shipkit-prompt-audit
-id: SKL-PROMPTAUDIT
 description: Audit LLM prompt pipeline architecture — decomposition, parallelization, chain integrity, schema validation, fallback paths. Finds structural issues no linter catches.
 argument-hint: "[scope or directory]"
 model: opus
 context: fork
 agent: shipkit-architect-agent
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
-  - Bash
+allowed-tools: Read, Glob, Grep, Bash
 ---
 
 # shipkit-prompt-audit - LLM Prompt Architecture Audit
@@ -278,7 +273,7 @@ Launch these Task agents IN PARALLEL (single message, multiple tool calls):
 
 **Critical: Execute tools before classifying findings.**
 
-Every finding MUST be backed by actual tool output. Follow the same verification protocol as `/shipkit-verify`:
+Every finding MUST be backed by actual tool output. Follow the same verification protocol as `/shipkit-review-shipping`:
 
 | Step | Action |
 |------|--------|
@@ -434,7 +429,7 @@ This skill follows the **Shipkit JSON artifact convention**. See `references/out
 | Source | When |
 |--------|------|
 | `/shipkit-master` | User asks "audit prompts", "check AI pipeline" |
-| `/shipkit-verify` | Flags AI-related code for deeper review |
+| `/shipkit-review-shipping` | Flags AI-related code for deeper review |
 | `/shipkit-preflight` | Pre-launch check of AI features |
 
 ### After This Skill
@@ -447,7 +442,7 @@ This skill follows the **Shipkit JSON artifact convention**. See `references/out
 
 | Skill | Focus |
 |-------|-------|
-| `/shipkit-verify` | Code quality across 12 dimensions (breadth) |
+| `/shipkit-review-shipping` | Code quality across 12 dimensions (breadth) |
 | `/shipkit-prompt-audit` | LLM pipeline architecture (depth on AI code) |
 | `/shipkit-preflight` | Production readiness (broader than AI) |
 | `/shipkit-scale-ready` | Scale & operations (infrastructure focus) |

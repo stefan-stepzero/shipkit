@@ -58,7 +58,7 @@ def parse_version(version_str: str) -> tuple:
 
 def check_for_updates(project_root: Path) -> str | None:
     """Check if newer Shipkit version is available (once per day, 3s timeout)."""
-    check_file = project_root / '.shipkit' / '.update-check'
+    check_file = project_root / '.shipkit' / '.update-check.local'
     installed_version = get_installed_version(project_root)
 
     if installed_version == "unknown":
@@ -194,7 +194,7 @@ def main():
         ('codebase-index.json', 'Semantic file map'),
         ('progress.json', 'Session continuity'),
         ('spec-roadmap.json', 'Spec priority order'),
-        ('skill-usage.json', 'Skill usage tracking'),
+        ('skill-usage.local.json', 'Skill usage tracking'),
     ]
 
     found_count = 0
@@ -237,4 +237,8 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except Exception:
+        # Silent failure — never block on hook errors
+        sys.exit(0)

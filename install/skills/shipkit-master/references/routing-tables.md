@@ -47,7 +47,7 @@ These tables serve as **fallback** for explicit keyword-matched requests. The lo
 
 | User Says | Route To | Load Context |
 |-----------|----------|--------------|
-| "Verify", "Check my work", "Ready to commit?", "Review changes" | `/shipkit-verify` | Git diff, specs, architecture |
+| "Verify", "Check my work", "Ready to commit?", "Review changes" | `/shipkit-review-shipping` | Git diff, specs, architecture |
 | "Preflight", "Production ready", "Ready to ship?", "Go live", "Launch check" | `/shipkit-preflight` | stack.json, why.json, architecture.json |
 | "Scale ready", "Enterprise ready", "Scale audit", "Observability", "Reliability" | `/shipkit-scale-ready` | stack.json, architecture.json |
 | "Audit UX", "Check UX patterns", "UX gaps" | `/shipkit-ux-audit` | implementations/ |

@@ -1,6 +1,5 @@
 ---
 name: shipkit-orch-direction
-id: AGT-ORCH-DIRECTION
 description: Direction loop orchestrator — dispatches strategic skills (vision, why, stage, goals) and review-direction for coherence assessment. Runs dispatch-assess-redispatch cycle until direction is stable.
 tools: Read, Write, Glob, Skill
 model: sonnet
