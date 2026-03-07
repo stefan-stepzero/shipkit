@@ -1,10 +1,9 @@
 ---
 name: shipkit-vision
-description: "Strategic visionary gateway — sets project direction, stage, and business goals. Use when bootstrapping a project, setting stage, or when strategic goals are unmet."
+description: Internal producer — strategic visionary gateway. Sets project direction, stage, and business goals. Dispatched by orch-direction.
 argument-hint: "<gap description or strategic question>"
 context: fork
 agent: shipkit-visionary-agent
-disable-model-invocation: true
 ---
 
 # shipkit-vision - Strategic Vision Gateway

@@ -111,11 +111,9 @@ Check if sufficient context exists to propose a spec without interactive questio
 
    [Full spec JSON preview]
 
-   Confirm, adjust, or switch to interactive mode?
    ```
-4. If confirmed → still run Step 3 (Explore) to validate against actual code, then write
-5. If adjusted → incorporate adjustments, run Step 3, then write
-6. If interactive → fall through to Step 1
+4. Run Step 3 (Explore) to validate against actual code, then write the spec
+5. Present a summary — the orchestrator's review cycle will catch issues
 
 **If insufficient context**: Fall through to Step 1.
 

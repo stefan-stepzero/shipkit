@@ -1,7 +1,6 @@
 ---
 name: shipkit-orch-shipping
-description: Shipping loop — spawns an implementation team, then dispatches verification and preflight. Builds, verifies, and gates release.
-disable-model-invocation: true
+description: Internal orchestrator — shipping loop. Spawns implementation team, dispatches verification and preflight. Dispatched by shipkit-master, not for direct use.
 context: fork
 agent: shipkit-orch-shipping-agent
 ---

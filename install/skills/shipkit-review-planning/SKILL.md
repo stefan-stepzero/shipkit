@@ -1,7 +1,6 @@
 ---
 name: shipkit-review-planning
-description: Assess planning artifact alignment — checks that definitions agree, specs cover the roadmap, and there are no gaps. Writes planning-assessment.json.
-disable-model-invocation: true
+description: Internal reviewer — assesses planning artifact alignment. Checks definitions agree, specs cover roadmap, no gaps. Dispatched by orch-planning, not for direct use.
 context: fork
 agent: shipkit-reviewer-planning-agent
 ---

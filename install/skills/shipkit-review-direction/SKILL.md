@@ -1,7 +1,6 @@
 ---
 name: shipkit-review-direction
-description: Assess strategic artifact coherence — checks that vision aligns with why, goals are complete, and stage is realistic. Writes direction-assessment.json.
-disable-model-invocation: true
+description: Internal reviewer — assesses strategic artifact coherence. Checks vision/why alignment, goal completeness, stage realism. Dispatched by orch-direction, not for direct use.
 context: fork
 agent: shipkit-reviewer-direction-agent
 ---

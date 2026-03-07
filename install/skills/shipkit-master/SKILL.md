@@ -1,7 +1,6 @@
 ---
 name: shipkit-master
 description: Master orchestrator — dispatches direction, planning, and shipping loops sequentially. Auto-loaded via session-start hook.
-disable-model-invocation: true
 context: fork
 agent: shipkit-orch-master-agent
 ---

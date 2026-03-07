@@ -86,12 +86,10 @@ Pain: [another pain point]
 
 Differentiators: [what makes this unique]
 
-Confirm, adjust, or switch to interactive mode?
 ```
 
-6. If confirmed → proceed to Step 4 (differentiators) with the proposed data
-7. If adjusted → incorporate changes, proceed to Step 4
-8. If interactive requested → fall through to Step 1
+6. Write `product-definition.json` directly and present a summary
+7. The orchestrator's review cycle will catch issues — no confirmation needed
 
 If `.shipkit/product-discovery.json` does NOT exist → fail with message to run discovery first.
 

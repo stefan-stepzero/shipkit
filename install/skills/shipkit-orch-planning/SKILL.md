@@ -1,7 +1,6 @@
 ---
 name: shipkit-orch-planning
-description: Planning loop — dispatches product/engineering definition and spec skills, assesses alignment. Produces definitions, specs, and roadmap.
-disable-model-invocation: true
+description: Internal orchestrator — planning loop. Dispatches definition and spec skills, assesses alignment. Dispatched by shipkit-master, not for direct use.
 context: fork
 agent: shipkit-orch-planning-agent
 ---

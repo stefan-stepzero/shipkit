@@ -58,11 +58,9 @@ Before asking questions, check if the project already has enough context to prop
      Vision: [inferred from project scope]
      Approach: [inferred from tech stack and patterns]
 
-     Confirm, adjust, or switch to interactive mode?
      ```
-   - If user confirms → write `why.json` and skip to Step 7 (suggest next steps)
-   - If user adjusts → incorporate adjustments, write, and skip to Step 7
-   - If user wants interactive → fall through to Step 1
+   - Write `why.json` directly and skip to Step 7 (suggest next steps)
+   - Present a summary of what was written so the user can review
 3. **If insufficient context** (empty project, no README, no package.json): Fall through to Step 1
 
 ---

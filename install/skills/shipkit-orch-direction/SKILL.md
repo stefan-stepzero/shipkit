@@ -1,7 +1,6 @@
 ---
 name: shipkit-orch-direction
-description: Direction loop — dispatches strategic skills and assesses coherence. Produces why, vision, stage, and goals artifacts.
-disable-model-invocation: true
+description: Internal orchestrator — direction loop. Dispatches strategic skills and assesses coherence. Dispatched by shipkit-master, not for direct use.
 context: fork
 agent: shipkit-orch-direction-agent
 ---

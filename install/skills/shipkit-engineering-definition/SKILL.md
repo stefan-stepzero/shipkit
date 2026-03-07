@@ -87,12 +87,10 @@ Feature: [another feature]
 
 Key Design Decisions: [cross-cutting technical choices]
 
-Confirm, adjust, or switch to interactive mode?
 ```
 
-7. If confirmed → proceed to Step 5 (stack direction) with the proposed data
-8. If adjusted → incorporate changes, proceed to Step 5
-9. If interactive requested → fall through to Step 1
+7. Write `engineering-definition.json` directly and present a summary
+8. The orchestrator's review cycle will catch issues — no confirmation needed
 
 ---
 

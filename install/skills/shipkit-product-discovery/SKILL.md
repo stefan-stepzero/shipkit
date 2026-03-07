@@ -75,11 +75,9 @@ If `.shipkit/why.json` exists, attempt to propose personas and journeys without 
 
    2. [Persona Name] — ...
 
-   Confirm, adjust, or switch to interactive mode?
    ```
-6. If confirmed → proceed to Step 3 (read context files) with the proposed data, skip Step 1
-7. If adjusted → incorporate changes, proceed to Step 3
-8. If interactive requested → fall through to Step 1
+6. Write `product-discovery.json` directly and present a summary
+7. The orchestrator's review cycle will catch issues — no confirmation needed
 
 If `.shipkit/why.json` does NOT exist → fall through to Step 1.
 
