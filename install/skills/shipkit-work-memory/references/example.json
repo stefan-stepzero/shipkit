@@ -208,7 +208,7 @@
     ],
     "relatedArtifacts": [
       "architecture.json",
-      "contracts.json"
+      "engineering-definition.json"
     ]
   },
   "timeline": [

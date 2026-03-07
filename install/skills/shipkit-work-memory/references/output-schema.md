@@ -68,7 +68,7 @@ This document defines the JSON schema for `.shipkit/progress.json` produced by t
     "immediateNextStep": "Add rate limiting to auth endpoints",
     "context": "JWT auth is working, need to harden before deployment",
     "openFiles": ["src/middleware/auth.ts", "src/routes/api/auth.ts"],
-    "relatedArtifacts": ["architecture.json", "contracts.json"]
+    "relatedArtifacts": ["architecture.json", "engineering-definition.json"]
   },
   "timeline": [
     {

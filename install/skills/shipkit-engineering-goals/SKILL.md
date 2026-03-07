@@ -350,6 +350,7 @@ RECOMMENDATION:
 | `.shipkit/engineering-definition.json` | Engineering blueprint | Route to `/shipkit-engineering-definition` |
 | `.shipkit/goals/strategic.json` | Stage + existing gates | Ask user for stage |
 | `.shipkit/goals/product.json` | User-outcome targets for alignment | Proceed without alignment |
+| `.shipkit/stack.json` | Tech stack for calibrating criteria | Proceed with generic criteria |
 | `.shipkit/metrics/latest.json` | Current actuals (Evaluate mode) | Report "no metrics" |
 
 ---

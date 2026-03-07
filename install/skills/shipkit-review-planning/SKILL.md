@@ -23,8 +23,10 @@ Read these artifacts:
 
 Also read direction artifacts for context:
 - `.shipkit/why.json` (stage constraints)
+- `.shipkit/goals/strategic.json`
 - `.shipkit/goals/product.json`
 - `.shipkit/goals/engineering.json`
+- `.shipkit/plans/*.json` (implementation plans under review)
 
 ## Alignment Checks
 

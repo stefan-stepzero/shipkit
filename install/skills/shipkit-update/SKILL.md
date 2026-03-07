@@ -370,8 +370,8 @@ This includes (but is not limited to):
 - `archives/**` - Progress archives
 - `codebase-index.json` - Navigation index
 - `product-discovery.json` - User personas and journeys
-- `contracts.json` - Data contracts
-- `implementations.json` - Component/route documentation
+- `engineering-definition.json` - Technical approach and data contracts
+- `codebase-index.json` - Component/route index (replaces deprecated implementations.json)
 - `user-tasks/**` - User task lists
 - `preflight.json` - Audit reports
 - `audits/**` - Audit history
@@ -402,12 +402,12 @@ After migration, scan for deprecated `.md` files that have been superseded by `.
 | `architecture.md` | `architecture.json` | `/shipkit-engineering-definition` |
 | `progress.md` | `progress.json` | `/shipkit-work-memory` |
 | `product-discovery.md` | `product-discovery.json` | `/shipkit-product-discovery` |
-| `contracts.md` | `contracts.json` | `/shipkit-engineering-definition` |
+| `contracts.md` | — (folded into `engineering-definition.json`) | `/shipkit-engineering-definition` |
 | `preflight.md` | `preflight.json` | `/shipkit-preflight` |
 | `scale-readiness.md` | `scale-readiness.json` | `/shipkit-scale-ready` |
 | `prompt-audit.md` | `prompt-audit.json` | `/shipkit-prompt-audit` |
 | `schema.md` | `schema.json` | `/shipkit-project-context` |
-| `implementations.md` | `implementations.json` | (manual documentation) |
+| `implementations.md` | — (removed, use `codebase-index.json`) | `/shipkit-codebase-index` |
 | `specs/active/*.md` | `specs/active/*.json` | `/shipkit-spec` |
 | `plans/active/*.md` | `plans/active/*.json` | `/shipkit-plan` |
 | `why.md` | `why.json` | `/shipkit-why-project` |
@@ -496,7 +496,7 @@ Migrated user content:
 - specs/active/ (3 .json files) ✓
 - plans/active/ (2 .json files) ✓
 - product-discovery.json ✓
-- contracts.json ✓
+- engineering-definition.json ✓
 - ux-decisions.json ✓
 - [... all other user files ...]
 

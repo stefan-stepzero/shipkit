@@ -36,7 +36,7 @@ context: fork
 
 **Optional** (depends on what user wants to visualize):
 - `.shipkit/architecture.json` - For architecture decisions
-- `.shipkit/implementations.json` - For component/route docs
+- `.shipkit/codebase-index.json` - For component/route docs
 - `.shipkit/stack.json` - For tech stack overview
 - `.shipkit/specs/{todo,active}/*.json` - For specs
 - `.shipkit/plans/{todo,active}/*.json` - For implementation plans
@@ -79,8 +79,8 @@ Choose a number or describe what you need:
 |--------|---------------|------------------|
 | 1. Architecture Decisions | `.shipkit/architecture.json` | `architecture-decisions` |
 | 2. Project Status | Glob `.shipkit/**/*.json` | `project-health` |
-| 3. Quality Checklist | `.shipkit/implementations.json`, `.shipkit/specs/{todo,active}/*.json` | `quality-checklist` |
-| 4. Component Documentation | `.shipkit/implementations.json` | `component-docs` |
+| 3. Quality Checklist | `.shipkit/codebase-index.json`, `.shipkit/specs/{todo,active}/*.json` | `quality-checklist` |
+| 4. Component Documentation | `.shipkit/codebase-index.json` | `component-docs` |
 | 5. Feature Specs | `.shipkit/specs/{todo,active}/*.json` | `feature-specs` |
 | 6. Implementation Plans | `.shipkit/plans/{todo,active}/*.json` | `implementation-plans` |
 | 7. Tech Stack | `.shipkit/stack.json` | `tech-stack` |
@@ -101,7 +101,7 @@ Launch these Read operations IN PARALLEL (single message, multiple tool calls):
 
 1. Read: .shipkit/architecture.json
 2. Read: .shipkit/stack.json
-3. Read: .shipkit/implementations.json
+3. Read: .shipkit/codebase-index.json
 4. Read: .shipkit/schema.json
 5. Glob + Read: .shipkit/specs/{todo,active}/*.json
 6. Glob + Read: .shipkit/plans/{todo,active}/*.json
@@ -118,7 +118,7 @@ Read: .shipkit/architecture.json
 
 For quality checklist:
 ```
-Read: .shipkit/implementations.json
+Read: .shipkit/codebase-index.json
 Glob: .shipkit/specs/{todo,active}/*.json
 ```
 
@@ -339,7 +339,7 @@ Copy and track:
 
 ### 3. Quality Checklist
 
-**Source**: `.shipkit/implementations.json` + specs
+**Source**: `.shipkit/codebase-index.json` + specs
 
 **Converts to**: Interactive checklist with:
 - All components listed
@@ -353,7 +353,7 @@ Copy and track:
 
 ### 4. Component Documentation
 
-**Source**: `.shipkit/implementations.json`
+**Source**: `.shipkit/codebase-index.json`
 
 **Converts to**: Component catalog with:
 - Each component in a card
@@ -391,7 +391,7 @@ Copy and track:
 
 **Depends on visualization type** (see Step 2):
 - `.shipkit/architecture.json` - Architecture decisions
-- `.shipkit/implementations.json` - Components/routes
+- `.shipkit/codebase-index.json` - Components/routes
 - `.shipkit/stack.json` - Tech stack
 - `.shipkit/specs/{todo,active,parked,shipped}/*.json` - Specifications
 - `.shipkit/plans/{todo,active,parked,shipped}/*.json` - Implementation plans
@@ -493,7 +493,7 @@ User: "Show me quality checklist as HTML"
 
 Claude:
 1. Ask confirmation
-2. Read: implementations.json + specs/{todo,active}/*.json
+2. Read: codebase-index.json + specs/{todo,active}/*.json
 3. Check latest.html (exists)
 4. Archive: archive/20251228-1620-quality-checklist.html
 5. Generate checklist HTML with:

@@ -343,6 +343,8 @@ When `.shipkit/goals/strategic.json` exists with `"source": "shipkit-product-goa
 | `.shipkit/goals/strategic.json` | Existing stage + criteria (Evaluate mode) | Route to Set mode |
 | `.shipkit/goals/product.json` | P-* criteria for gate evaluation | Report "not yet defined" |
 | `.shipkit/goals/engineering.json` | E-* criteria for gate evaluation | Report "not yet defined" |
+| `.shipkit/metrics/latest.json` | Measured progress data (Evaluate mode) | Report "no metrics" |
+| `.shipkit/spec-roadmap.json` | Roadmap completion evidence (Evaluate mode) | Report "no roadmap" |
 | `.shipkit/specs/active/*.json` | Spec coverage evidence (Evaluate mode) | Report "no specs" |
 | `.shipkit/plans/active/*.json` | Plan coverage evidence (Evaluate mode) | Report "no plans" |
 | `.shipkit/progress.json` | Implementation status (Evaluate mode) | Report "no progress data" |

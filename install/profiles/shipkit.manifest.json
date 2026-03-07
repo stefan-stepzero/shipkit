@@ -47,7 +47,8 @@
         {"name": "shipkit-stage", "desc": "Define project stage, constraints, and graduation criteria"},
         {"name": "shipkit-product-goals", "desc": "Define user-outcome success criteria (P-*)"},
         {"name": "shipkit-engineering-goals", "desc": "Define technical performance criteria"},
-        {"name": "shipkit-vision", "desc": "Strategic visionary gateway — sets direction, stage, goals (master-dispatched)"}
+        {"name": "shipkit-vision", "desc": "Strategic visionary gateway — sets direction, stage, goals (master-dispatched)"},
+        {"name": "shipkit-metrics", "desc": "Capture metric values for goal evaluation"}
       ],
       "Spec & Planning": [
         {"name": "shipkit-spec-roadmap", "desc": "Prioritize spec backlog from definitions + goals"},

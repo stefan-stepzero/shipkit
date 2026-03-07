@@ -60,7 +60,7 @@ agent: shipkit-product-owner-agent
 If `.shipkit/why.json` exists, attempt to propose personas and journeys without asking:
 
 1. Read `.shipkit/why.json` (target audience, problem space, vision)
-2. Read `.shipkit/goals.json` if exists (what outcomes we need)
+2. Read `.shipkit/goals/strategic.json` if exists (stage, constraints, what outcomes we need)
 3. Read `.shipkit/stack.json` if exists (platform constraints: web, mobile, API)
 4. Based on the target audience and problem space from why.json, propose:
    - 2-4 personas with key attributes, needs, and pain points

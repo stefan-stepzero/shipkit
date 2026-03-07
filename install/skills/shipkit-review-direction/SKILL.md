@@ -16,8 +16,13 @@ agent: shipkit-reviewer-direction-agent
 Read these artifacts:
 - `.shipkit/why.json`
 - `.shipkit/vision.json`
+- `.shipkit/goals/strategic.json`
 - `.shipkit/goals/product.json`
 - `.shipkit/goals/engineering.json`
+- `.shipkit/product-discovery.json`
+- `.shipkit/product-definition.json`
+- `.shipkit/engineering-definition.json`
+- `.shipkit/metrics/latest.json`
 
 ## Coherence Checks
 

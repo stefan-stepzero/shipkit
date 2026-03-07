@@ -128,9 +128,9 @@ Since last preflight (a1b2c3d, 3 days ago):
    - Missing? → Note: "No architecture decisions documented — will use generic checks"
    - Exists → Extract: auth model, database choices, key patterns
 
-4. Check .shipkit/contracts.json
+4. Check .shipkit/engineering-definition.json `components[].dataContracts`
    - Missing? → Note: "No data contracts — will infer from code"
-   - Exists → Extract: what sensitive data is stored
+   - Exists → Extract: what sensitive data flows through component boundaries
 ```
 
 **If required files missing**: Stop and route to prerequisite skill.
@@ -149,7 +149,7 @@ Possible questions (only if not already documented):
 2. **Expected scale** (if not in why.json):
    - "Expected concurrent users at launch? (just me, <100, 100-1000, 1000+)"
 
-3. **Data sensitivity** (if not in contracts.json):
+3. **Data sensitivity** (if not in engineering-definition.json):
    - "What's the most sensitive data you store? (none, emails, PII, payments, healthcare)"
 
 4. **Current state**:
@@ -513,7 +513,7 @@ Ready to fix the remaining blockers?
 
 **Recommended**:
 - `.shipkit/architecture.json` — Auth model, key decisions
-- `.shipkit/contracts.json` — Data shapes, sensitive fields
+- `.shipkit/engineering-definition.json` — Data contracts via `components[].dataContracts`
 - `.shipkit/specs/active/*.json` — Feature requirements
 
 **Optional** (consult if available):

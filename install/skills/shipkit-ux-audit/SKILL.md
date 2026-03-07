@@ -41,7 +41,7 @@ allowed-tools:
 ## Prerequisites
 
 **Optional but helpful**:
-- Existing patterns documented: `.shipkit/implementations.json`
+- Existing patterns documented: `.shipkit/codebase-index.json`
 - Architecture decisions: `.shipkit/architecture.json`
 - Stack info: `.shipkit/stack.json`
 
@@ -66,7 +66,7 @@ allowed-tools:
 
 3. **Is this a new pattern or matching existing?**
    - "Have you built similar UI before in this project?"
-   - Will check implementations.json to verify
+   - Will check codebase-index.json and ux-decisions.json to verify
 
 **Why ask**: Tailor guidance to actual needs, not generic advice.
 
@@ -77,8 +77,8 @@ allowed-tools:
 **Check for established patterns**:
 
 ```bash
-# Existing UI patterns (if file exists)
-.shipkit/implementations.json
+# Codebase structure and component index (if file exists)
+.shipkit/codebase-index.json
 
 # Architecture decisions about UX (if file exists)
 .shipkit/architecture.json
@@ -94,14 +94,14 @@ allowed-tools:
 
 | Claim | Required Verification |
 |-------|----------------------|
-| "Similar pattern exists" | `Grep: pattern="[component type]" path="implementations.json"` returns matches |
-| "No existing pattern" | Grep returns 0 matches for component type AND related keywords |
+| "Similar pattern exists" | Check `codebase-index.json` components/directories for matching entries |
+| "No existing pattern" | codebase-index.json has no matching components AND Grep confirms |
 | "Established UX decision" | Check `ux-decisions.json` decisions array for similar component |
 
-**Never claim** "no similar component" without actually grepping implementations.json.
+**Never claim** "no similar component" without checking codebase-index.json and ux-decisions.json.
 
 **Auto-detect**:
-- Similar components in implementations.json
+- Similar components in codebase-index.json
 - Previous UX decisions in ux-decisions.json
 - UI framework from stack.json (React, Vue, Svelte, etc.)
 
@@ -188,7 +188,7 @@ UX Guidance: [Component Name]
 - [Keyboard interaction]
 - [Screen reader consideration]
 
-**[IF pattern exists in implementations.json or ux-decisions.json]**
+**[IF pattern exists in codebase-index.json or ux-decisions.json]**
 **Existing Pattern Match**: [ComponentName]
 - Reuse: [specific pattern to follow]
 - Location: [file path or decision ID]
@@ -339,7 +339,7 @@ Copy and track:
 - Common pattern guidance (forms, modals, toggles, lists, buttons)
 - WCAG 2.1 AA accessibility basics
 - Progressive disclosure (only relevant principles)
-- Reads existing patterns from implementations.json
+- Reads existing patterns from codebase-index.json
 - Adapts to user personas (ADHD, elderly, etc. if specified)
 - JSON output for programmatic consumption
 
@@ -385,20 +385,22 @@ Copy and track:
   - **Why**: Implementation follows UX patterns and accessibility requirements
   - **Trigger**: User confirms "ready to implement"
 
-- `document components manually` - Documents components
-  - **When**: Component built and needs documentation
-  - **Why**: Document UX decisions made for component
-  - **Trigger**: Component complete, add to implementations.json
+- `/shipkit-codebase-index` - Updates codebase index
+  - **When**: Component built and needs indexing
+  - **Why**: Keeps component registry current for future UX audits
+  - **Trigger**: Component complete, re-index to capture new patterns
 
 ---
 
 ## Context Files This Skill Reads
 
 **Optionally reads**:
-- `.shipkit/implementations.json` - Existing UI components/patterns
+- `.shipkit/codebase-index.json` - Existing UI components/patterns
 - `.shipkit/architecture.json` - Past architectural decisions
 - `.shipkit/stack.json` - UI framework info
 - `.shipkit/ux-decisions.json` - Previous UX decisions
+- `.shipkit/product-discovery.json` - Personas, pain points
+- `.shipkit/product-definition.json` - UX patterns, features
 
 **Never reads**:
 - Specs, plans, tasks (not relevant for UX guidance)
@@ -433,7 +435,7 @@ Copy and track:
 1. User invokes `/shipkit-ux-audit`
 2. Claude asks what component user is building
 3. Claude reads ux-decisions.json (if exists) for existing decisions
-4. Claude optionally reads implementations.json for similar patterns
+4. Claude optionally reads codebase-index.json for similar patterns
 5. Claude provides terminal guidance
 6. Claude updates `.shipkit/ux-decisions.json`
 7. Total context: ~500-1500 tokens (focused)
@@ -476,7 +478,7 @@ Guidance is complete when:
 
 ## Common Scenarios
 
-- **Reusing existing patterns** - Check ux-decisions.json and implementations.json first, reference by ID
+- **Reusing existing patterns** - Check ux-decisions.json and codebase-index.json first, reference by ID
 - **Creating new patterns** - Provide guidance, log decision with new ID
 - **Accessibility-focused requests** - Apply persona adaptations (see below)
 - **Reviewing existing UI** - Audit against pattern checklists, log gaps

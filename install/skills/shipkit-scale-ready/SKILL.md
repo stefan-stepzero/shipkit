@@ -393,6 +393,7 @@ The output MUST conform to the schema below. This is a strict contract — other
 **Recommended**:
 - `.shipkit/why.json` — Scale expectations
 - `.shipkit/architecture.json` — Patterns and decisions
+- `.shipkit/engineering-definition.json` — Mechanisms, components, design decisions
 - `.shipkit/scale-readiness.json` — Previous audit (for incremental)
 
 **Scans**:

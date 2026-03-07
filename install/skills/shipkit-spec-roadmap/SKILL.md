@@ -90,7 +90,9 @@ If `$ARGUMENTS` is empty: Check for existing file and offer choices.
 1. Read: .shipkit/product-definition.json    # Features, patterns, differentiators
 2. Read: .shipkit/engineering-definition.json # Mechanisms, components, design choices
 3. Read: .shipkit/goals/*.json               # Gates and criteria (glob for all goal files)
-4. Glob + Read: .shipkit/specs/**/*.json     # Existing specs (todo, active, shipped)
+4. Read: .shipkit/why.json                   # Vision and purpose context
+5. Read: .shipkit/codebase-index.json        # Existing code patterns and structure
+6. Glob + Read: .shipkit/specs/**/*.json     # Existing specs (todo, active, shipped)
 ```
 
 **Extract from context**:
@@ -258,6 +260,8 @@ Roadmap is complete when:
 
 **Recommended** (read if exist):
 - `.shipkit/goals/*.json` — Gate definitions for phase mapping
+- `.shipkit/why.json` — Vision and purpose context
+- `.shipkit/codebase-index.json` — Existing code patterns and structure
 
 **Optional** (read if relevant):
 - `.shipkit/specs/**/*.json` — Detect already-specced features

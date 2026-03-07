@@ -169,6 +169,7 @@ After all 3 agents return, build the wiring graph:
    - `standalone` — user-invocable but not in any dispatch chain
    - `infrastructure` — system skills (update, get-skills, get-mcps)
    - `sub-dispatched` — dispatched by a non-orchestrator (e.g., QA skills dispatched by reviewer-shipping)
+7. **Expected readers** (artifact consumption completeness): For each artifact, derive `expectedReaders` using the consumption rules in `references/consumption-rules.md`. Compare against actual `readers` to produce `missingReaders`
 
 ### Step 3: Write DOC-025
 
@@ -214,7 +215,9 @@ After all 3 agents return, build the wiring graph:
   "artifactFlow": {
     ".shipkit/why.json": {
       "writers": ["shipkit-why-project"],
-      "readers": ["shipkit-vision", "shipkit-product-discovery", ...]
+      "readers": ["shipkit-vision", "shipkit-product-discovery", ...],
+      "expectedReaders": ["shipkit-vision", "shipkit-product-discovery", "shipkit-spec", ...],
+      "missingReaders": ["shipkit-spec"]
     }
   },
   "toolRestrictions": {
@@ -240,6 +243,7 @@ Display:
 - Missing inputs (read but never written)
 - Tool conflicts found
 - Unreachable skills (no path from any entry point)
+- Consumption gaps (artifacts with missing expected readers)
 
 ---
 

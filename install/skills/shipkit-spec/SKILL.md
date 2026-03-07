@@ -93,7 +93,8 @@ Check if sufficient context exists to propose a spec without interactive questio
 1. Read available context in parallel:
    - `.shipkit/product-definition.json` — product blueprint: features, patterns, differentiators
    - `.shipkit/engineering-definition.json` — engineering blueprint: mechanisms, components
-   - `.shipkit/goals.json` — success criteria and stage gates (if exists)
+   - `.shipkit/goals/product.json` — product success criteria (if exists)
+   - `.shipkit/goals/engineering.json` — engineering success criteria (if exists)
    - `.shipkit/product-discovery.json` — persona details and user needs
    - `.shipkit/stack.json` — tech constraints
    - `.shipkit/architecture.json` — existing architecture decisions
@@ -524,6 +525,9 @@ Copy and track:
 - `.shipkit/stack.json` - Tech stack constraints
 - `.shipkit/schema.json` - Data model
 - `.shipkit/architecture.json` - Past decisions
+- `.shipkit/goals/product.json` - Product success criteria
+- `.shipkit/goals/engineering.json` - Engineering success criteria
+- `.shipkit/reviews/planning-assessment.json` - Reviewer feedback (on re-dispatch)
 
 **Optional** (read if relevant):
 - `.shipkit/specs/active/*.json` - Check for similar specs

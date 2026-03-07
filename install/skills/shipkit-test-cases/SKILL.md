@@ -545,7 +545,8 @@ This makes test execution **change-aware**.
 **Auto-collected (no user input):**
 - `src/**/*.{ts,tsx,js,jsx}` — Source files to analyze
 - `.shipkit/specs/` — Feature requirements
-- `.shipkit/product/` — User personas, priorities
+- `.shipkit/product-discovery.json` — User personas, scenarios
+- `.shipkit/engineering-definition.json` — Component structure and mechanisms
 - `.shipkit/test-cases/` — Existing test cases (for merge)
 - `tests/` or `__tests__/` — Existing automated tests
 - Git history — Recent changes, file modification dates

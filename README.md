@@ -2,8 +2,8 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**<!-- sync:skill_count -->36<!-- /sync:skill_count --> skills** organized for streamlined workflow:
-<!-- sync:readme_summary -->- **Vision & Discovery** (10) - why-project, product-discovery, project-context, ...
+**<!-- sync:skill_count -->37<!-- /sync:skill_count --> skills** organized for streamlined workflow:
+<!-- sync:readme_summary -->- **Vision & Discovery** (11) - why-project, product-discovery, project-context, metrics, ...
 - **Spec & Planning** (5) - spec-roadmap, spec, feedback-bug, ...
 - **Knowledge & Memory** (2) - claude-md, work-memory
 - **Orchestration** (3) - orch-direction, orch-planning, orch-shipping
@@ -17,7 +17,7 @@ Plus **<!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas** th
 
 ## What's Inside
 
-### Skills (<!-- sync:skill_count -->36<!-- /sync:skill_count --> total)
+### Skills (<!-- sync:skill_count -->37<!-- /sync:skill_count --> total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -32,7 +32,7 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-orch-planning` - Planning loop — definitions/specs + alignment review
 - `shipkit-orch-shipping` - Shipping loop — implementation + verification + release gate
 
-**Discovery & Planning (13 skills):**
+**Discovery & Planning (14 skills):**
 - `shipkit-vision` - Strategic visionary gateway (master-dispatched)
 - `shipkit-why-project` - Strategic vision definition
 - `shipkit-product-discovery` - Personas, journeys, user needs
@@ -45,6 +45,7 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-spec` - Feature specification
 - `shipkit-feedback-bug` - Process feedback into investigated bug specs (5 Whys root cause)
 - `shipkit-plan` - Implementation planning
+- `shipkit-metrics` - Capture metric values for goal evaluation
 - `shipkit-thinking-partner` - Think through decisions with cognitive frameworks
 
 **Execution (1 skill):**
@@ -126,7 +127,7 @@ python install.py --from-github
 </details>
 
 The installer will:
-- Install all <!-- sync:skill_count -->36<!-- /sync:skill_count --> skills
+- Install all <!-- sync:skill_count -->37<!-- /sync:skill_count --> skills
 - Set up <!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
@@ -219,7 +220,7 @@ shipkit/
 │   └── src/                         # Commands, prompts, utilities
 │
 ├── install/                         # Everything that gets installed
-│   ├── skills/                      # <!-- sync:skill_count -->36<!-- /sync:skill_count --> shipkit-* skill definitions
+│   ├── skills/                      # <!-- sync:skill_count -->37<!-- /sync:skill_count --> shipkit-* skill definitions
 │   ├── agents/                      # <!-- sync:agent_count -->11<!-- /sync:agent_count --> shipkit-*-agent personas
 │   ├── rules/
 │   │   └── shipkit.md               # Framework rules (auto-loaded)
@@ -253,7 +254,7 @@ shipkit/
 ## Key Features
 
 ### Streamlined Workflow
-- <!-- sync:skill_count -->36<!-- /sync:skill_count --> focused skills
+- <!-- sync:skill_count -->37<!-- /sync:skill_count --> focused skills
 - All skills use `shipkit-` prefix for clarity
 - Context stored in single `.shipkit/` folder
 - No complex workspace structure

@@ -227,7 +227,7 @@
   "_notes": {
     "edition": "Shipkit - Streamlined for POCs and side projects",
     "permissionsPhilosophy": "Allow by default, deny only critical infrastructure and context files.",
-    "deniedFiles": "Critical infrastructure: settings.json, hooks. Protected context: specs, plans, implementations.json, architecture.json, stack.json, contracts.json. Secrets: actual .env files (not .example), *.pem, *.key, production configs.",
+    "deniedFiles": "Critical infrastructure: settings.json, hooks. Protected context: specs, plans, engineering-definition.json, architecture.json, stack.json, codebase-index.json. Secrets: actual .env files (not .example), *.pem, *.key, production configs.",
     "allowedFiles": "Can read .env.example files. Full access to project source code and skill outputs via Read tool.",
     "sessionHooks": "SessionStart loads master routing + context summary. PostToolUse tracks skill usage. TeammateIdle and TaskCompleted are team quality gates.",
     "contextFiles": "All context stored in .shipkit/ folder",

@@ -41,7 +41,7 @@ agent: shipkit-architect-agent
 
 **Optional but helpful**:
 - Architecture decisions: `.shipkit/architecture.json`
-- Type definitions: `.shipkit/contracts.json`
+- Data contracts: `.shipkit/engineering-definition.json` (see `components[].dataContracts`)
 
 ---
 
@@ -116,7 +116,7 @@ options:
 - `.shipkit/stack.json` (Stack info)
 - `.shipkit/architecture.json` (Past decisions)
 
-**Optional context** (load if relevant): contracts.json, schema.json
+**Optional context** (load if relevant): engineering-definition.json (for data contracts), schema.json
 
 **Extract from spec:**
 - All requirements (for coverage mapping later)
@@ -612,8 +612,10 @@ Copy and track:
 
 **Conditionally reads**:
 - `.shipkit/architecture.json` - Past decisions
-- `.shipkit/contracts.json` - Type definitions
+- `.shipkit/engineering-definition.json` - Data contracts (via `components[].dataContracts`)
 - `.shipkit/schema.json` - Database schema
+- `.shipkit/goals/engineering.json` - Engineering criteria for implementation priorities
+- `.shipkit/reviews/planning-assessment.json` - Reviewer feedback (on re-dispatch)
 
 ---
 

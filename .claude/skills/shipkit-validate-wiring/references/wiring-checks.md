@@ -2,6 +2,16 @@
 
 Reference checklist for `/shipkit-validate-wiring --static` mode. Each check runs against DOC-025 JSON data.
 
+## Suppression via knownIssues
+
+Before reporting a finding, check if it matches a `knownIssues` entry in DOC-025:
+- If `severity: "by-design"` → suppress entirely (do not report)
+- If `severity: "info"` → downgrade to NOTE
+- If `severity: "resolved"` → skip (issue was fixed)
+- Match by comparing `affectedSkills`, `affectedArtifacts`, or `id` fields
+
+This prevents known, intentional design choices from being flagged on every run.
+
 ---
 
 ## BLOCK Severity (must fix before release)
@@ -80,6 +90,13 @@ Reference checklist for `/shipkit-validate-wiring --static` mode. Each check run
 **Check**: A skill with `context: fork` + `agent:` should have `maxTurns` set (either on the skill or the agent).
 **Data source**: `skills[*].frontmatter` where context=fork → agent's `frontmatter.maxTurns`
 **Failure**: Forked agent without maxTurns has no budget limit — could run indefinitely.
+
+### W-108: Artifact Consumption Completeness
+**Check**: For each artifact in `artifactFlow` that has `expectedReaders` (derived from consumption rules), every expected reader must appear in `readers`.
+**Data source**: `artifactFlow[*].expectedReaders` vs `artifactFlow[*].readers`
+**Failure**: A skill that should logically consume an artifact doesn't list it in its reads — the skill operates with incomplete context. This means the skill's SKILL.md needs a reads reference added.
+**Rules source**: Consumption rules are defined in the wiring-graph skill's `references/consumption-rules.md`. They derive expected readers from skill classification (reviewer, producer, goals, QA) and artifact type.
+**Report format**: Group by skill, not by artifact — e.g., "shipkit-verify missing reads: product-definition.json, engineering-definition.json, goals/product.json"
 
 ---
 
