@@ -223,6 +223,7 @@ Present findings inline (not a JSON file — reviews are transient):
 - `.claude/specs/{feature}.json` — Spec being implemented (if available)
 - `CLAUDE.md` — Skill Value Test, framework rules
 - `docs/development/quality-standards/skill-quality-and-patterns.md` — Quality standards
+- `docs/development/cc-reference/synthesized/*.md` — CC primitive references (validate frontmatter fields, hook schemas, settings against current CC spec)
 - All changed files in scope
 
 ## Context Files This Skill Writes

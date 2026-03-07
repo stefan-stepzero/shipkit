@@ -143,7 +143,7 @@ def main():
         skills_dir = claude_dir / 'skills'
         project_root = claude_dir.parent
 
-    # Load master skill (routing tables)
+    # Load master skill (orchestration context for every session)
     master_skill = skills_dir / 'shipkit-master' / 'SKILL.md'
     if not master_skill.exists():
         print("Shipkit not properly installed. Run the installer again.")

@@ -1,6 +1,5 @@
 ---
 name: shipkit-master
-id: SKL-MASTER
 description: Master orchestrator — dispatches direction, planning, and shipping loops sequentially. Auto-loaded via session-start hook.
 disable-model-invocation: true
 context: fork
@@ -64,5 +63,5 @@ Reads/writes `.shipkit/orchestration.json` for crash recovery and session contin
 ## Special Behaviors
 
 - **Protected files**: Prevent manual editing of `.shipkit/` context files — route to appropriate skill
-- **Progressive disclosure**: Load context on demand, not upfront (~400 tokens at session start)
+- **Progressive disclosure**: Orchestration context loaded at session start (~1500 tokens), reference docs on demand
 - **Natural capabilities**: Implementation, debugging, testing, refactoring don't need skills — just do them

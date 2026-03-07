@@ -226,6 +226,9 @@ Ready to plan implementation? Run `/shipkit-dev-plan {feature-name}`
 - `docs/development/quality-standards/skill-quality-and-patterns.md` — Quality standards
 - `docs/development/integration/7-file-integration.md` — Integration checklist
 - `.claude/specs/*.json` — Previous specs (avoid duplicates)
+- `docs/development/cc-reference/synthesized/skills-reference.md` — CC skill frontmatter fields, invocation patterns, gotchas (read when speccing new skills)
+- `docs/development/cc-reference/synthesized/agents-reference.md` — CC agent frontmatter fields, fork behavior, nesting (read when speccing new agents)
+- `docs/development/cc-reference/synthesized/hooks-reference.md` — CC hook events, schemas, propagation (read when speccing hooks)
 
 ## Context Files This Skill Writes
 

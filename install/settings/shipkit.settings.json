@@ -133,7 +133,8 @@
       "Skill(shipkit-orch-planning)",
       "Skill(shipkit-orch-shipping)",
       "Skill(shipkit-review-direction)",
-      "Skill(shipkit-review-planning)"
+      "Skill(shipkit-review-planning)",
+      "Skill(shipkit-metrics)"
     ],
 
     "deny": [

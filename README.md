@@ -143,7 +143,7 @@ your-project/
 │   ├── rules/
 │   │   └── shipkit.md           # Framework rules (managed by /shipkit-update)
 │   ├── skills/                  # 37 skill definitions
-│   ├── agents/                  # 12 agent personas
+│   ├── agents/                  # 11 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
     ├── specs/                   # Feature specifications

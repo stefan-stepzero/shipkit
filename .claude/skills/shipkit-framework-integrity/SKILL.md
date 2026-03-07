@@ -234,12 +234,23 @@ RULES_COVERAGE:
 ```
 Validate agent cross-references and frontmatter in Shipkit at P:\Projects2\sg-shipkit.
 
+First, read the CC agents reference for valid fields:
+- Read docs/development/cc-reference/synthesized/agents-reference.md (the "Agent Frontmatter Field Reference" table)
+- Read docs/development/cc-reference/synthesized/skills-reference.md (the "Frontmatter Field Reference" table)
+
 AGENT FILE VALIDATION:
 1. For each .md file in install/agents/shipkit-*:
    - Check file is non-empty
    - Check it starts with --- (YAML frontmatter)
    - Extract name: field
+   - Check all frontmatter fields are valid per agents-reference.md (flag unknown fields)
    - Report any issues
+
+SKILL FRONTMATTER VALIDATION:
+1. For each SKILL.md in install/skills/shipkit-*/:
+   - Extract frontmatter fields
+   - Check all fields are valid per skills-reference.md (flag unknown fields like "triggers")
+   - Report any invalid/unknown fields
 
 SKILL → AGENT CROSS-REFS:
 1. For each SKILL.md in install/skills/shipkit-*/:
@@ -259,6 +270,10 @@ AGENT_FILES:
   total: N
   valid: N
   issues: [list or "none"]
+  unknown_fields: [list with agent name and field — or "none"]
+SKILL_FRONTMATTER:
+  total_scanned: N
+  unknown_fields: [list with skill name and field — or "none"]
 SKILL_TO_AGENT:
   skills_with_agent: N
   broken: [list with skill name and missing agent — or "none"]
@@ -383,6 +398,8 @@ When invoked with `--loop N`, the skill runs iteratively — checking, fixing, a
 | Missing from rules | WARNING | 4 | Skill not in rules/shipkit.md |
 | Broken agent ref | ERROR | 5 | Skill references agent that doesn't exist |
 | Invalid agent file | ERROR | 5 | Agent file empty or missing frontmatter |
+| Unknown agent field | WARNING | 5 | Agent frontmatter field not in CC spec |
+| Unknown skill field | WARNING | 5 | Skill frontmatter field not in CC spec |
 | Broken skill ref in agent | WARNING | 5 | Agent references skill that doesn't exist |
 
 ---
@@ -411,7 +428,7 @@ When invoked with `--loop N`, the skill runs iteratively — checking, fixing, a
 **Agent 2 reads**: all SKILL.md files, reference/template files
 **Agent 3 reads**: hook files, CLI source, settings, VERSION, package.json
 **Agent 4 reads**: manifest, README, CLAUDE.md, package.json, HTML overview, settings, rules
-**Agent 5 reads**: all agent files, all SKILL.md frontmatter
+**Agent 5 reads**: all agent files, all SKILL.md frontmatter, `docs/development/cc-reference/synthesized/agents-reference.md`, `docs/development/cc-reference/synthesized/skills-reference.md`
 
 ## Context Files This Skill Writes
 

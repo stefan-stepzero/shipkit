@@ -103,16 +103,21 @@ A skill is **redundant** if Claude does it well without instruction (debugging, 
 
 **Primary sources of truth (in order):**
 
-1. **Claude Code GitHub repo** — `https://github.com/anthropics/claude-code`
+1. **Synthesized CC References** — `docs/development/cc-reference/synthesized/`
+   - `skills-reference.md`, `agents-reference.md`, `hooks-reference.md`, `settings-reference.md`
+   - Merges official docs + DOC-023 empirical tests into practical coding guides
+   - **Read the relevant reference file before creating or modifying any skill, agent, or hook**
+   - Refresh with `/shipkit-cc-reference` when stale or after CC upgrades
+2. **Claude Code GitHub repo** — `https://github.com/anthropics/claude-code`
    - `CHANGELOG.md` — Latest features, tools, and breaking changes
    - Issues — Real-world usage patterns and edge cases
    - Source code — Actual tool definitions and behavior
-2. **Official Claude Code docs** — `https://code.claude.com/docs`
-3. **CC Primitives Test Report** — `docs/development/cc-reference/DOC-023-pipeline-test-report.md`
+3. **Official Claude Code docs** — `https://code.claude.com/docs`
+4. **CC Primitives Test Report** — `docs/development/cc-reference/DOC-023-pipeline-test-report.md`
    - Empirically confirmed behaviors (15 confirmed facts + 7 architecture rules)
    - Test repo: `P:/Projects2/shipkit-testing/`
    - Don't retest confirmed behaviors unless CC version changes significantly
-4. **Local best practices** — `docs/development/`
+5. **Local best practices** — `docs/development/`
 
 **Why GitHub first?** Claude Code evolves rapidly. The CHANGELOG and source code are always current. Third-party articles and even official docs can lag behind. When researching a feature (like Tasks, subagents, hooks), check the repo first.
 
@@ -251,6 +256,18 @@ Location: `.claude/skills/`
 - Dev-spec, dev-plan, dev-review, dev-team, dev-release (development workflow)
 - Wiring-graph, validate-wiring (contract validation)
 - Documenter, smoketest (administration & testing)
+
+### Specs (local only, not distributed)
+Location: `.claude/specs/`
+- Design specs for new or proposed skills/agents before implementation
+- Created by `shipkit-dev-spec` or manually
+- Read these before implementing any specced feature
+
+### Testing & Feedback (external repos)
+- **Crypto test harness**: `P:/Projects2/shipkit-testing/` — 23 skills, 10 agents, SHA-256 hash chain tests
+- **Lite test project**: `P:/Projects2/sg-shipkit-testing/` — Shipkit Lite installation for integration testing
+- **Feedback channel**: `P:/Projects2/sg-shipkit-testing/feedback/` — test-results.md, issues.md, suggestions.md
+  - Read feedback after test runs to identify skill/agent bugs and prioritize fixes
 
 ### Configuration Files
 - `install/settings/shipkit.settings.json` — Permissions and configuration
