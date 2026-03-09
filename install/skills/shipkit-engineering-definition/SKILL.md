@@ -246,9 +246,39 @@ Incorporate adjustments and re-present if changed significantly.
 
 ---
 
-### Step 7: Write Engineering Definition
+### Step 7: Write Engineering Definition + Architecture Decisions
 
-After confirmation, write `.shipkit/engineering-definition.json`.
+After confirmation, write two files:
+
+1. **`.shipkit/engineering-definition.json`** — Full engineering blueprint (mechanisms, components, design decisions, stack direction)
+
+2. **`.shipkit/architecture.json`** — Architecture decisions log, derived from the engineering definition. This is the append-only decisions record that downstream skills (plan, spec, preflight, review-shipping) read for pattern context.
+
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "architecture-decisions",
+  "version": "1.0",
+  "lastUpdated": "ISO timestamp",
+  "source": "shipkit-engineering-definition",
+  "decisions": [
+    {
+      "id": "ADR-001",
+      "decision": "Decision from designDecisions or mechanism designChoices",
+      "rationale": "Why",
+      "alternatives": ["What was considered"],
+      "scope": "cross-cutting | mechanism:M-001",
+      "date": "ISO date"
+    }
+  ],
+  "patterns": ["Key architectural patterns in use (e.g., MVC, event-driven, serverless)"],
+  "constraints": ["Technical constraints driving decisions"]
+}
+```
+
+**Derivation**: Merge top-level `designDecisions` (scope: `"cross-cutting"`) with per-mechanism `designChoices` (scope: `"mechanism:M-001"`) into a flat decisions list. Add any patterns and constraints inferred from the stack and mechanisms.
+
+**On update**: When engineering-definition.json is updated, regenerate architecture.json. New decisions are appended; existing decisions are preserved with their original dates. This maintains the append-only log property.
 
 See [Engineering Definition JSON Schema](#engineering-definition-json-schema) below.
 
@@ -384,6 +414,7 @@ If `$ARGUMENTS` contains text:
 | File | When |
 |------|------|
 | `.shipkit/engineering-definition.json` | Created on first run, updated on subsequent runs |
+| `.shipkit/architecture.json` | Derived from engineering-definition.json decisions on every write |
 
 **Archive location** (if replacing):
 - `.shipkit/archive/engineering-definition/engineering-definition.[timestamp].json`
@@ -418,6 +449,7 @@ Engineering blueprint is complete when:
 - [ ] Summary counts match actual array lengths
 - [ ] User confirmed the blueprint before writing
 - [ ] File saved to `.shipkit/engineering-definition.json`
+- [ ] Architecture decisions derived and saved to `.shipkit/architecture.json`
 <!-- /SECTION:success-criteria -->
 
 ---

@@ -11,30 +11,31 @@ agent: shipkit-reviewer-planning-agent
 
 ## Input
 
-Read these artifacts:
-- `.shipkit/product-discovery.json`
-- `.shipkit/product-definition.json`
-- `.shipkit/engineering-definition.json`
-- `.shipkit/specs/*.json`
+**Required artifacts** (the planning loop must produce all of these):
+- `.shipkit/stack.json`
+- `.shipkit/codebase-index.json`
 - `.shipkit/spec-roadmap.json`
-- `.shipkit/user-instructions.json`
+- `.shipkit/specs/*.json` — at least one spec per roadmap item
+- `.shipkit/plans/*.json` — at least one plan per spec
+- `.shipkit/test-cases/` — test specifications
+- `.shipkit/user-tasks.json` — manual user tasks
 
-Also read direction artifacts for context:
-- `.shipkit/why.json` (vision, constraints)
-- `.shipkit/goals/strategic.json` (stage)
-- `.shipkit/goals/strategic.json`
-- `.shipkit/goals/product.json`
-- `.shipkit/goals/engineering.json`
-- `.shipkit/plans/*.json` (implementation plans under review)
+**Direction context** (produced by prior loop, read for cross-reference):
+- `.shipkit/why.json`, `.shipkit/vision.json`
+- `.shipkit/product-definition.json`, `.shipkit/engineering-definition.json`
+- `.shipkit/architecture.json`
+- `.shipkit/goals/strategic.json`, `.shipkit/goals/product.json`, `.shipkit/goals/engineering.json`
 
 ## Alignment Checks
 
-1. **Product ↔ Engineering**: Every product feature has a corresponding mechanism?
-2. **Definition ↔ Specs**: Every defined feature has a spec?
-3. **Specs ↔ Roadmap**: Roadmap includes all specs with sensible priority?
-4. **Stage alignment**: Specs scoped for current stage?
-5. **Completeness**: All artifacts present with non-placeholder content?
-6. **Goal coverage**: Specs, if implemented, satisfy product and engineering goals?
+1. **Completeness**: Are ALL required planning artifacts present? Missing artifacts are gaps.
+2. **Product ↔ Engineering**: Every product feature has a corresponding mechanism?
+3. **Definition ↔ Specs**: Every defined feature has a spec?
+4. **Specs ↔ Roadmap**: Roadmap includes all specs with sensible priority?
+5. **Plans ↔ Specs**: Every spec has a plan? Plans reference the correct spec?
+6. **Stage alignment**: Specs and plans scoped for current stage?
+7. **Goal coverage**: Specs, if implemented, satisfy product and engineering goals?
+8. **Architecture consistency**: Do plans align with architecture.json decisions?
 
 ## Output
 

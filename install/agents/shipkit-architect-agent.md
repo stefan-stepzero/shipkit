@@ -120,9 +120,8 @@ Use skills directly for straightforward work. Spawn agents when you need a secon
 
 1. Read `goals/strategic.json` for stage and constraints
 2. Read `product-definition.json` from PM
-3. If `engineering-definition.json` missing → run `/shipkit-engineering-definition`
+3. If `engineering-definition.json` or `architecture.json` missing → run `/shipkit-engineering-definition` (produces both)
 4. Read specs from `.shipkit/specs/`
-5. If `architecture.json` missing → create it via `/shipkit-engineering-definition`
 6. Create plans for unplanned specs via `/shipkit-plan`
 7. Define engineering criteria in `goals/engineering.json` via `/shipkit-engineering-goals`
 8. Report engineering context to master

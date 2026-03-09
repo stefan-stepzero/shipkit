@@ -12,6 +12,8 @@ agent: shipkit-orch-planning-agent
 ## Scope
 
 Planning artifacts that translate definitions into actionable plans:
+- `.shipkit/stack.json` — Tech stack context (prerequisite for specs/plans)
+- `.shipkit/codebase-index.json` — Codebase structure index (prerequisite for plans)
 - `.shipkit/spec-roadmap.json` — Spec priority order
 - `.shipkit/specs/*.json` — Feature specifications
 - `.shipkit/plans/*.json` — Implementation plans
@@ -22,6 +24,8 @@ Planning artifacts that translate definitions into actionable plans:
 
 | Skill | What It Produces |
 |-------|-----------------|
+| `/shipkit-project-context` | stack.json |
+| `/shipkit-codebase-index` | codebase-index.json |
 | `/shipkit-spec-roadmap` | spec-roadmap.json |
 | `/shipkit-spec` | specs/*.json |
 | `/shipkit-plan` | plans/*.json |
@@ -56,10 +60,12 @@ Set `activeLoop` to `"planning"` on entry. Set `status` to `"pass"` or `"partial
 
 ## Dispatch Order
 
-1. `/shipkit-spec-roadmap` — prioritizes what to spec
-2. `/shipkit-spec` — specs for each prioritized feature
-3. `/shipkit-plan` — architect produces implementation plans from specs
-4. `/shipkit-test-cases` — PO produces test specifications from specs and plans
-5. `/shipkit-user-instructions` — manual tasks for user
-6. `/shipkit-review-planning` — assesses alignment
-7. If gaps found → re-dispatch specific producers → re-review
+1. `/shipkit-project-context` — scans codebase, produces stack.json (skip if fresh)
+2. `/shipkit-codebase-index` — indexes codebase structure (skip if fresh)
+3. `/shipkit-spec-roadmap` — prioritizes what to spec
+4. `/shipkit-spec` — specs for each prioritized feature
+5. `/shipkit-plan` — architect produces implementation plans from specs (reads stack.json + codebase-index.json)
+6. `/shipkit-test-cases` — PO produces test specifications from specs and plans
+7. `/shipkit-user-instructions` — manual tasks for user
+8. `/shipkit-review-planning` — assesses alignment
+9. If gaps found → re-dispatch specific producers → re-review

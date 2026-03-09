@@ -231,15 +231,23 @@ def render_pipeline_status(orch: dict) -> str:
 
 def render_current_activity(orch: dict) -> str:
     """Render what's currently happening."""
+    overall_status = orch.get('status', '')
+    if overall_status in ('completed', 'pass', 'partial'):
+        return f'<div class="section"><h2>Current Activity</h2><p class="status-done">Pipeline {overall_status}</p></div>'
+
     loops = orch.get('loops', {})
     active_loop = orch.get('activeLoop', '')
-    if not active_loop or active_loop not in loops:
-        status = orch.get('status', '')
-        if status == 'completed':
-            return '<div class="section"><h2>Current Activity</h2><p class="status-done">Pipeline completed</p></div>'
+    if not active_loop or active_loop not in loops or active_loop == 'none':
+        if not orch:
+            return '<div class="section"><h2>Current Activity</h2><p class="muted">No orchestration data</p></div>'
         return '<div class="section"><h2>Current Activity</h2><p class="muted">No active loop</p></div>'
 
     loop = loops[active_loop]
+    loop_status = loop.get('status', '')
+    if loop_status in ('pass', 'partial'):
+        return f'''<div class="section"><h2>Current Activity</h2>
+        <p class="status-done">{active_loop.title()} loop {loop_status} — awaiting next loop</p></div>'''
+
     current = loop.get('currentSkill', '')
     if current:
         return f'''<div class="section"><h2>Current Activity</h2>
@@ -268,66 +276,102 @@ def render_skill_invocations(usage_summary: list[dict]) -> str:
     </table></div>'''
 
 
-def render_artifact_chain(artifacts: dict) -> str:
-    """Render artifact existence/status grid."""
-    chain_order = [
+ARTIFACT_GROUPS = [
+    ('Direction', [
         'why.json', 'vision.json', 'product-discovery.json',
         'product-definition.json', 'engineering-definition.json',
-        'stack.json', 'architecture.json', 'codebase-index.json',
-        'progress.json', 'spec-roadmap.json', 'orchestration.json',
-    ]
+        'architecture.json',
+    ]),
+    ('Planning', [
+        'stack.json', 'codebase-index.json', 'spec-roadmap.json',
+    ]),
+    ('Shipping', [
+        'progress.json',
+    ]),
+    ('System', [
+        'orchestration.json',
+    ]),
+]
 
-    cells = []
-    for name in chain_order:
-        info = artifacts.get(name, {})
-        if info.get('exists'):
-            size = info.get('size', 0)
-            if size > 1024:
-                size_str = f'{size / 1024:.1f}KB'
+
+def render_artifact_chain(artifacts: dict, orch: dict) -> str:
+    """Render artifact existence/status grid, grouped by loop."""
+    loops = orch.get('loops', {})
+
+    def loop_status(name: str) -> str:
+        return loops.get(name.lower(), {}).get('status', 'pending')
+
+    html_parts = []
+    for group_name, files in ARTIFACT_GROUPS:
+        status = loop_status(group_name)
+        cells = []
+        for name in files:
+            info = artifacts.get(name, {})
+            if info.get('exists'):
+                size = info.get('size', 0)
+                size_str = f'{size / 1024:.1f}KB' if size > 1024 else f'{size}B'
+                age = info.get('age', '')
+                cells.append(f'<div class="artifact ok"><div class="art-name">{name}</div>'
+                             f'<div class="art-meta">OK {size_str}</div>'
+                             f'<div class="art-age">{escape(age)}</div></div>')
+            elif status == 'pending':
+                cells.append(f'<div class="artifact pending"><div class="art-name">{name}</div>'
+                             f'<div class="art-meta">PENDING</div></div>')
             else:
-                size_str = f'{size}B'
-            age = info.get('age', '')
-            cells.append(f'<div class="artifact ok"><div class="art-name">{name}</div>'
-                         f'<div class="art-meta">OK {size_str}</div>'
-                         f'<div class="art-age">{escape(age)}</div></div>')
-        else:
-            cells.append(f'<div class="artifact missing"><div class="art-name">{name}</div>'
-                         f'<div class="art-meta">MISSING</div></div>')
+                cells.append(f'<div class="artifact missing"><div class="art-name">{name}</div>'
+                             f'<div class="art-meta">MISSING</div></div>')
+        html_parts.append(f'<div class="artifact-group"><div class="group-label">{group_name}</div>'
+                          f'<div class="artifact-grid">{"".join(cells)}</div></div>')
 
-    return f'<div class="section"><h2>Artifact Chain</h2><div class="artifact-grid">{"".join(cells)}</div></div>'
+    return f'<div class="section"><h2>Artifact Chain</h2>{"".join(html_parts)}</div>'
 
 
-def render_review_status(reviews: dict) -> str:
-    """Render review assessment summaries."""
+def render_review_status(reviews: dict, orch: dict) -> str:
+    """Render review status. Uses orchestration.json loop verdict as primary source,
+    with assessment file details as supplementary info."""
+    loops = orch.get('loops', {})
     review_map = {
-        'Direction': 'direction-assessment.json',
-        'Planning': 'planning-assessment.json',
-        'Shipping': 'shipping-assessment.json',
+        'Direction': ('direction-assessment.json', 'direction'),
+        'Planning': ('planning-assessment.json', 'planning'),
+        'Shipping': ('shipping-assessment.json', 'shipping'),
     }
 
     rows = []
-    for label, filename in review_map.items():
+    for label, (filename, loop_key) in review_map.items():
+        loop = loops.get(loop_key, {})
+        loop_status = loop.get('status', '')
         review = reviews.get(filename)
-        if not review:
+
+        # Primary: orchestration.json loop verdict
+        if loop_status in ('pass', 'partial'):
+            css = 'pass' if loop_status == 'pass' else 'partial'
+            status_label = loop_status.upper()
+            cycles = loop.get('reviewCycles', 0)
+            detail = f'{cycles} review cycle{"s" if cycles != 1 else ""}'
+            # Supplement with assessment details if available
+            if review:
+                checks_total = review.get('checksTotal', 0)
+                checks_passed = review.get('checksPassed', 0)
+                detail += f', {checks_passed}/{checks_total} checks'
             rows.append(f'<div class="review-row"><span class="review-name">{label}</span>'
-                        f'<span class="review-status not-run">NOT RUN</span></div>')
-        else:
+                        f'<span class="review-status {css}">{status_label}</span>'
+                        f'<span class="review-detail">({detail})</span></div>')
+        elif review:
+            # Fallback: assessment file only (orchestration.json missing or loop in progress)
             status = review.get('status', 'unknown').upper()
             checks_total = review.get('checksTotal', 0)
             checks_passed = review.get('checksPassed', 0)
             gaps = review.get('gaps', 0)
-            resolved = review.get('previousGapsResolved', 0)
-
             css = 'pass' if status == 'PASS' else 'fail'
             detail = f'{checks_passed}/{checks_total} checks'
             if gaps:
                 detail += f', {gaps} gaps'
-            if resolved:
-                detail += f', {resolved} resolved'
-
             rows.append(f'<div class="review-row"><span class="review-name">{label}</span>'
                         f'<span class="review-status {css}">{status}</span>'
                         f'<span class="review-detail">({detail})</span></div>')
+        else:
+            rows.append(f'<div class="review-row"><span class="review-name">{label}</span>'
+                        f'<span class="review-status not-run">NOT RUN</span></div>')
 
     return f'<div class="section"><h2>Review Status</h2>{"".join(rows)}</div>'
 
@@ -400,6 +444,9 @@ td { padding: 4px 8px; border-bottom: 1px solid #161b22; }
 .artifact { padding: 8px; border-radius: 4px; font-size: 12px; }
 .artifact.ok { background: #0d2818; border: 1px solid #238636; }
 .artifact.missing { background: #2d1b1b; border: 1px solid #da3633; }
+.artifact.pending { background: #161b22; border: 1px solid #30363d; opacity: 0.5; }
+.artifact-group { margin-bottom: 12px; }
+.group-label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
 .art-name { font-weight: bold; margin-bottom: 2px; word-break: break-all; }
 .art-meta { color: #8b949e; font-size: 11px; }
 .art-age { color: #8b949e; font-size: 10px; }
@@ -409,6 +456,7 @@ td { padding: 4px 8px; border-bottom: 1px solid #161b22; }
 .review-name { width: 80px; font-weight: bold; }
 .review-status { font-size: 12px; font-weight: bold; padding: 1px 6px; border-radius: 3px; }
 .review-status.pass { background: #238636; color: #fff; }
+.review-status.partial { background: #d29922; color: #fff; }
 .review-status.fail { background: #da3633; color: #fff; }
 .review-status.not-run { background: #30363d; color: #8b949e; }
 .review-detail { font-size: 12px; color: #8b949e; }
@@ -438,8 +486,8 @@ def render_dashboard(orch: dict, scan_state: dict, usage: list[dict]) -> str:
         render_pipeline_status(orch),
         render_current_activity(orch),
         render_skill_invocations(usage_summary),
-        render_artifact_chain(scan_state.get('artifacts', {})),
-        render_review_status(scan_state.get('reviews', {})),
+        render_artifact_chain(scan_state.get('artifacts', {}), orch),
+        render_review_status(scan_state.get('reviews', {}), orch),
         render_specs_plans(scan_state),
         render_cost_estimate(costs),
     ]

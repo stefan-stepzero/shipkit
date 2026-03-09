@@ -20,6 +20,7 @@ Execution that delivers working software:
 
 | Step | Method | What It Produces |
 |------|--------|-----------------|
+| `/shipkit-work-memory` | Skill dispatch | progress.json (checkpoint) |
 | Implement | Direct team (Agent/Task tools) | code changes |
 | `/shipkit-review-shipping` | Skill dispatch → reviewer-shipping | verification-report.json |
 | `/shipkit-preflight` | Skill dispatch → reviewer-shipping | preflight.json |
@@ -51,9 +52,10 @@ Set `activeLoop` to `"shipping"` on entry. Set `status` to `"pass"` or `"partial
 
 ## Dispatch Order
 
-1. Read `.shipkit/plans/` and `.shipkit/test-cases/` produced by planning loop
-2. Create Agent Team — spawn teammates with plan assignments
-3. Monitor team progress via TaskList until implementation complete
-4. `/shipkit-review-shipping` — reviewer-shipping assesses quality
-5. If issues found → assign fixes to teammates → re-dispatch `/shipkit-review-shipping`
-6. When verification passes → `/shipkit-preflight` — final release gate
+1. `/shipkit-work-memory` — checkpoint progress before implementation begins
+2. Read `.shipkit/plans/` and `.shipkit/test-cases/` produced by planning loop
+3. Create Agent Team — spawn teammates with plan assignments
+4. Monitor team progress via TaskList until implementation complete
+5. `/shipkit-review-shipping` — reviewer-shipping assesses quality
+6. If issues found → assign fixes to teammates → re-dispatch `/shipkit-review-shipping`
+7. When verification passes → `/shipkit-preflight` — final release gate
