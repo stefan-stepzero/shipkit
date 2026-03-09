@@ -91,6 +91,12 @@ References only `why.json` (no longer includes `productDiscovery`).
   "category": "business-metric",
   "metric": "What to measure",
   "threshold": "Target value (e.g., '> 100 DAU', '> 40% retention')",
+  "rubric": [
+    { "range": "< 10", "meaning": "What this level means in practice" },
+    { "range": "10-50", "meaning": "What this level means in practice" },
+    { "range": "50-100", "meaning": "What this level means in practice" },
+    { "range": "100+", "meaning": "What this level means in practice" }
+  ],
   "currentValue": null,
   "verificationMethod": "analytics|user-feedback",
   "checkability": "observable",

@@ -35,6 +35,13 @@
       "category": "business-metric",
       "metric": "Daily active users",
       "threshold": "> 100 DAU within 30 days of launch",
+      "rubric": [
+        { "range": "< 10 DAU", "meaning": "No traction — revisit distribution or value prop" },
+        { "range": "10-50 DAU", "meaning": "Early signal — some interest but not enough to validate" },
+        { "range": "50-100 DAU", "meaning": "Growing — close to validation threshold" },
+        { "range": "100-500 DAU", "meaning": "Validated — enough users to measure retention" },
+        { "range": "500+ DAU", "meaning": "Strong traction — ready for growth investment" }
+      ],
       "currentValue": null,
       "verificationMethod": "analytics",
       "checkability": "observable",
@@ -49,6 +56,13 @@
       "category": "business-metric",
       "metric": "7-day return rate after first worksheet creation",
       "threshold": "> 40%",
+      "rubric": [
+        { "range": "< 10%", "meaning": "No retention — users try once and leave" },
+        { "range": "10-25%", "meaning": "Weak — product doesn't compel return visits" },
+        { "range": "25-40%", "meaning": "Moderate — some value but not habit-forming" },
+        { "range": "40-60%", "meaning": "Good — users find ongoing value" },
+        { "range": "60%+", "meaning": "Excellent — strong product-market fit signal" }
+      ],
       "currentValue": null,
       "verificationMethod": "analytics",
       "checkability": "observable",
@@ -63,6 +77,13 @@
       "category": "business-metric",
       "metric": "Average in-app rating",
       "threshold": "> 4.0 / 5.0",
+      "rubric": [
+        { "range": "< 2.0", "meaning": "Users actively dislike the product" },
+        { "range": "2.0-3.0", "meaning": "Below expectations — significant gaps" },
+        { "range": "3.0-4.0", "meaning": "Acceptable — meets basic needs but uninspiring" },
+        { "range": "4.0-4.5", "meaning": "Good — users are satisfied and would recommend" },
+        { "range": "4.5-5.0", "meaning": "Exceptional — strong advocacy potential" }
+      ],
       "currentValue": null,
       "verificationMethod": "user-feedback",
       "checkability": "observable",

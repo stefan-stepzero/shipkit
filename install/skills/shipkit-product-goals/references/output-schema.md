@@ -38,6 +38,9 @@ This document defines the JSON schema for `.shipkit/goals/product.json` (v4.0).
   "category": "user-outcome",
   "metric": "What to measure",
   "threshold": "Target value (e.g., '> 80%', '< 3 seconds')",
+  "rubric": [
+    { "range": "Level range", "meaning": "What this level looks like in practice" }
+  ],
   "currentValue": null,
   "verificationMethod": "manual-check|analytics|automated-test|user-feedback",
   "checkability": "verifiable|observable",

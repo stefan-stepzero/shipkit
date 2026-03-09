@@ -153,7 +153,9 @@ Based on vision + stage, derive business-metric criteria:
 | MVP | DAU/MAU, retention (7-day return), user satisfaction |
 | Scale | Revenue, conversion, NPS, churn, CAC, LTV |
 
-Present proposed criteria for validation:
+**Every threshold MUST include a rubric.** A bare number like "> 100 DAU" is meaningless without defining what each level indicates. For each criterion, generate a rubric with 3-5 level descriptors explaining what the number means in practice.
+
+Present proposed criteria with rubrics for validation:
 
 ```
 Based on your vision and stage (MVP):
@@ -161,16 +163,34 @@ Based on your vision and stage (MVP):
 STRATEGIC CRITERIA (Visionary — goals/strategic.json):
   S-001: User acquisition
     Threshold: > 100 DAU within 30 days of launch
+    Rubric:
+      < 10 DAU: No traction — revisit distribution or value prop
+      10-50 DAU: Early signal — some interest but not enough to validate
+      50-100 DAU: Growing — close to validation threshold
+      100-500 DAU: Validated — enough users to measure retention
+      500+ DAU: Strong traction — ready for growth investment
     Verify: analytics
     Checkability: observable — needs real user data
 
   S-002: Return usage
     Threshold: > 40% 7-day return rate
+    Rubric:
+      < 10%: No retention — users try once and leave
+      10-25%: Weak — product doesn't compel return visits
+      25-40%: Moderate — some value but not habit-forming
+      40-60%: Good — users find ongoing value
+      60%+: Excellent — strong product-market fit signal
     Verify: analytics
     Checkability: observable — needs cohort data
 
   S-003: User satisfaction
     Threshold: > 4.0/5.0 average rating
+    Rubric:
+      < 2.0: Users actively dislike the product
+      2.0-3.0: Below expectations — significant gaps
+      3.0-4.0: Acceptable — meets basic needs but uninspiring
+      4.0-4.5: Good — users are satisfied and would recommend
+      4.5-5.0: Exceptional — strong advocacy potential
     Verify: user-feedback
     Checkability: observable — needs survey data
 

@@ -130,6 +130,20 @@ For each mechanism in `engineering-definition.json`, derive three types of crite
 - Test suite passes (`verifiable` → `test`)
 - Lint runs clean (`verifiable` → `lint`, if applicable)
 
+**Every threshold MUST include a rubric.** A bare number like "< 500ms" is meaningless without defining what each level looks like. For each criterion, generate a rubric with 3-5 level descriptors:
+
+```
+Example rubric for "API response time (p95)":
+  > 5s: Unusable — users perceive system as broken
+  2-5s: Poor — noticeable delay, users may retry or abandon
+  500ms-2s: Acceptable — slight lag but functional
+  200-500ms: Good — feels responsive
+  < 200ms: Excellent — feels instant
+  Target: < 500ms (good — responsive)
+```
+
+The rubric anchors the threshold to observable reality and makes review assessments consistent.
+
 See `references/derivation-patterns.md` for detailed derivation examples.
 
 ---
@@ -161,16 +175,34 @@ Based on your engineering blueprint:
 
 ENGINEERING (EM — goals/engineering.json):
   E-001: Generation speed — < 5 seconds for first content
+    Rubric:
+      > 30s: Broken — users assume it failed
+      10-30s: Poor — users wait but lose confidence
+      5-10s: Marginal — noticeable delay
+      2-5s: Good — acceptable wait
+      < 2s: Excellent — feels responsive
     Verify: automated-test → semantic-qa
     Derived from: M-001 (LLM Generation Chain)
 
   E-002: Build passes — 0 errors
+    Rubric:
+      > 0 errors: Broken — cannot deploy
+      0 errors: Pass — deployable
     Verify: automated-test → build
 
   E-003: Test suite passes — 0 failures
+    Rubric:
+      > 5 failures: Significant regression
+      1-5 failures: Minor issues — investigate before deploy
+      0 failures: Clean — ready to ship
     Verify: automated-test → test
 
   E-004: Generation reliability — > 99% success rate
+    Rubric:
+      < 90%: Unreliable — users encounter frequent errors
+      90-95%: Flaky — occasional failures erode trust
+      95-99%: Stable — rare failures, acceptable
+      > 99%: Production-ready — reliable under sustained load
     Verify: analytics (needs production traffic)
     Checkability: observable
 
@@ -308,6 +340,13 @@ RECOMMENDATION:
       "category": "technical-performance",
       "metric": "p95 response time",
       "threshold": "< 500ms",
+      "rubric": [
+        { "range": "> 5s", "meaning": "Unusable — users perceive system as broken" },
+        { "range": "2-5s", "meaning": "Poor — noticeable delay, users may retry" },
+        { "range": "500ms-2s", "meaning": "Acceptable — slight lag but functional" },
+        { "range": "200-500ms", "meaning": "Good — feels responsive" },
+        { "range": "< 200ms", "meaning": "Excellent — feels instant" }
+      ],
       "currentValue": null,
       "verificationMethod": "automated-test",
       "checkability": "verifiable",
@@ -393,6 +432,7 @@ Engineering goals artifact is complete when:
 - [ ] Criteria derived from each mechanism (performance + quality + reliability)
 - [ ] Infrastructure criteria included (build, test, lint as applicable)
 - [ ] Each criterion has measurable threshold
+- [ ] Each threshold has a rubric with 3-5 level descriptors explaining what each range looks like
 - [ ] Each criterion has verification method
 - [ ] Each criterion has checkability classification
 - [ ] Each verifiable criterion has a verificationTool assigned

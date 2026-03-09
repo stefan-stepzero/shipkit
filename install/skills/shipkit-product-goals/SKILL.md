@@ -135,6 +135,20 @@ For each section of product-definition.json, derive user-outcome criteria (P-*):
 
 > **Business metrics** (S-* criteria) are defined by `/shipkit-stage`, not this skill.
 
+**Every threshold MUST include a rubric.** A bare number like "> 80%" is meaningless without defining what each level looks like. For each criterion, generate a rubric with 3-5 level descriptors:
+
+```
+Example rubric for "Wizard completion rate":
+  0-20%: Users abandon immediately — flow is broken or confusing
+  20-50%: Users attempt but hit blockers — missing guidance or errors
+  50-80%: Users complete with effort — friction points remain
+  80-95%: Users complete smoothly — minor polish needed
+  95-100%: Users complete effortlessly — flow is intuitive
+  Target: > 80% (smooth completion)
+```
+
+The rubric makes the threshold defensible — reviewers can assess where the product actually falls and what gap to close.
+
 See `references/derivation-patterns.md` for detailed derivation examples.
 
 ---
@@ -168,12 +182,22 @@ Based on your product blueprint (stage: {stage}):
 PRODUCT CRITERIA (PM — goals/product.json):
   P-001: Wizard completion time
     Threshold: 80% of users complete in < 2 min
+    Rubric:
+      < 30%: Flow is broken — users can't find or start the wizard
+      30-60%: Major friction — users start but abandon mid-flow
+      60-80%: Workable — most complete but some struggle
+      80-95%: Smooth — users complete without confusion
+      95%+: Effortless — intuitive flow, no hesitation
     Verify: analytics (time-to-complete)
     Checkability: observable — needs real user funnel
     Derived from: P-001 (Wizard Flow)
 
   P-002: Wizard flow E2E
     Threshold: 100% E2E pass rate
+    Rubric:
+      0%: Flow is completely broken
+      50-99%: Some paths work, others fail — partial implementation
+      100%: All paths pass end-to-end
     Verify: automated-test (Playwright)
     Checkability: verifiable → visual-qa
     Derived from: P-001 (Wizard Flow)
@@ -339,6 +363,13 @@ When `.shipkit/goals.json` (single file) exists or files have `"source": "shipki
       "category": "user-outcome",
       "metric": "% of users completing core flow",
       "threshold": "> 80%",
+      "rubric": [
+        { "range": "0-20%", "meaning": "Flow broken — users abandon immediately" },
+        { "range": "20-50%", "meaning": "Major friction — users attempt but hit blockers" },
+        { "range": "50-80%", "meaning": "Workable — most complete with effort" },
+        { "range": "80-95%", "meaning": "Smooth — users complete without confusion" },
+        { "range": "95-100%", "meaning": "Effortless — intuitive, no hesitation" }
+      ],
       "currentValue": null,
       "verificationMethod": "analytics",
       "checkability": "observable",
@@ -430,6 +461,7 @@ Product goals artifact is complete when:
 - [ ] P-* criteria derived from each UX pattern (usability + completion rate)
 - [ ] P-* criteria derived from differentiators (validation)
 - [ ] Each criterion has measurable threshold (not vague)
+- [ ] Each threshold has a rubric with 3-5 level descriptors explaining what each range looks like
 - [ ] Each criterion has verification method (how to measure)
 - [ ] Each criterion has checkability classification (verifiable or observable)
 - [ ] Each verifiable criterion has a verificationTool assigned

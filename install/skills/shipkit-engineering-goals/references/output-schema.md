@@ -35,6 +35,9 @@ This document defines the JSON schema for `.shipkit/goals/engineering.json` (v4.
   "category": "technical-performance",
   "metric": "What to measure",
   "threshold": "Target value (e.g., '< 500ms', '> 99%')",
+  "rubric": [
+    { "range": "Level range", "meaning": "What this level looks like in practice" }
+  ],
   "currentValue": null,
   "verificationMethod": "automated-test|analytics",
   "checkability": "verifiable|observable",
