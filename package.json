@@ -1,6 +1,6 @@
 {
   "name": "shipkit-dev",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Streamlined product development framework for Claude Code — 37 skills, 11 agents, structured workflows",
   "bin": {
     "shipkit-dev": "./cli/bin/shipkit.js"

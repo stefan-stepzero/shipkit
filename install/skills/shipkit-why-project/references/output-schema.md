@@ -44,21 +44,27 @@ This document defines the JSON schema for `.shipkit/why.json`.
 
 ### Core Fields
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `vision` | string | yes | Where we need to be - the success state, what "done" looks like |
-| `problem` | string | yes | Why this exists - the problem we're solving, value provided |
-| `targetUsers` | string | yes | Who this is for - target users, audience, stakeholders |
-| `currentState` | string | yes | Where we are now - POC/MVP/Beta/Production/Starting |
-| `approach` | string | yes | How we're getting there - methodology, strategy |
+| Field | Type | Required | Scope | Description |
+|-------|------|----------|-------|-------------|
+| `vision` | string | yes | **Enduring** | The full-scale success state — what "done" looks like when the product is mature. Do NOT narrow this to current stage (e.g., "AI maths tutor for all primary students" not "AI tutor for AU Year 1-2 only"). |
+| `problem` | string | yes | **Enduring** | The complete problem worth solving — the customer pain at full scale. Not the subset tackled in the current stage. |
+| `targetUsers` | string | yes | **Enduring** | The broad audience the product ultimately serves. Stage-specific market narrowing (e.g., "AU only for POC") belongs in `stage.json` constraints. |
+| `currentState` | string | yes | **Snapshot** | Where we are now — POC/MVP/Beta/Production/Starting. Brief maturity assessment only. |
+| `approach` | string | yes | **Enduring** | High-level methodology and strategy. Not stage-specific tactics or current sprint focus. |
 
 ### Strategic Boundaries
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `successCriteria` | array | yes | Measurable outcomes that define success (can be empty) |
-| `constraints` | array | yes | Limitations, must-haves, non-negotiables (can be empty) |
-| `nonGoals` | array | yes | What we're explicitly NOT building (can be empty) |
+| Field | Type | Required | Scope | Description |
+|-------|------|----------|-------|-------------|
+| `successCriteria` | array | yes | **Enduring** | Measurable outcomes at the vision level (can be empty). Stage-specific metrics belong in `stage.json` criteria. |
+| `constraints` | array | yes | **Enduring** | Permanent project-level limitations (e.g., "must run on mobile", "no paid APIs"). Stage-specific constraints (e.g., "AU curriculum only", "Year 1-2 for POC") belong in `stage.json` `constraints.scope`. |
+| `nonGoals` | array | yes | **Enduring** | What we're explicitly NOT building — ever, not just "not yet". Things deferred to later stages belong in `stage.json` `stageImplications.skip`. |
+
+### Scope Boundary Rule
+
+**why.json = enduring vision. stage.json = current scope.**
+
+If a detail would change when the project moves from POC → MVP → Scale, it belongs in `stage.json`, not here. The why.json should read the same whether the project is in POC or at scale — only `currentState` changes.
 
 ## Shipkit Artifact Convention
 

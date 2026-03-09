@@ -8,7 +8,7 @@ A focused collection of **Claude Code skills** for efficient product development
 - **Knowledge & Memory** (2) - claude-md, work-memory
 - **Orchestration** (3) - orch-direction, orch-planning, orch-shipping
 - **Execution** (1) - test-cases
-- **Quality & Communication** (11) - review-direction, review-planning, verify, ...
+- **Quality & Communication** (11) - review-direction, review-planning, review-shipping, ...
 - **System** (3) - update, get-skills, get-mcps<!-- /sync:readme_summary -->
 
 Plus **<!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
@@ -163,7 +163,7 @@ flowchart LR
     SKL_ROADMAP --> SKL_SPEC["/spec"]
     SKL_SPEC --> SKL_PLAN["/plan"]
     SKL_PLAN --> IMPL["implement"]
-    IMPL --> SKL_VERIFY["/verify"]
+    IMPL --> SKL_VERIFY["/review-shipping"]
     SKL_VERIFY --> SKL_WORKMEM["/work-memory"]
 ```
 

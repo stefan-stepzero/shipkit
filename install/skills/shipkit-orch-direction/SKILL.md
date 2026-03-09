@@ -39,6 +39,29 @@ Strategic artifacts that define WHY, WHAT, and HOW at definition level:
 
 All direction artifacts exist AND `.shipkit/reviews/direction-assessment.json` has `status: "pass"`.
 
+## Orchestration Tracking
+
+After each skill dispatch and after each review cycle, update `.shipkit/orchestration.json`:
+
+```json
+{
+  "activeLoop": "direction",
+  "status": "in_progress",
+  "loops": {
+    "direction": {
+      "status": "in_progress",
+      "currentSkill": "shipkit-vision",
+      "completedDispatches": [
+        { "skill": "shipkit-why-project", "timestamp": "ISO" }
+      ],
+      "reviewCycles": 0
+    }
+  }
+}
+```
+
+Set `status` to `"pass"` or `"partial"` when the loop finishes. Increment `reviewCycles` each time `/shipkit-review-direction` runs.
+
 ## Dispatch Order
 
 1. `/shipkit-why-project` — establishes foundation

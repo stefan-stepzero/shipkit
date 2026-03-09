@@ -53,8 +53,6 @@ Run these quick checks inline before dispatching agents:
 ```
 1. Read VERSION — if missing → ERROR
 2. Read package.json version — if mismatch → ERROR
-3. Check git tag: git describe --tags --abbrev=0 2>/dev/null
-   If tag exists and doesn't match VERSION → WARNING
 ```
 
 **Changelog freshness (optional — skip if docs/development/ doesn't exist):**
@@ -384,7 +382,6 @@ When invoked with `--loop N`, the skill runs iteratively — checking, fixing, a
 |-------|----------|-------|-------------|
 | VERSION missing | ERROR | inline | VERSION file doesn't exist |
 | VERSION invalid | ERROR | inline | VERSION file empty or not valid semver |
-| VERSION/tag mismatch | WARNING | inline | VERSION doesn't match latest git tag |
 | Orphan skill | ERROR | 1 | Skill directory exists but not in manifest |
 | Ghost skill | ERROR | 1 | Skill in manifest but no directory |
 | Naming violation | ERROR | 1 | Orch/review prefix missing or old names found |

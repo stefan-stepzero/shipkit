@@ -48,15 +48,16 @@ Before asking questions, check if the project already has enough context to prop
 1. Read available context: `README.md`, `package.json` (name, description, keywords), existing source files, any `.shipkit/*.json` files
 2. **If sufficient context exists** (README or package.json with description, or >5 source files):
    - Generate a complete `why.json` proposal based on what you found
+   - **IMPORTANT: Keep it vision-level.** The why.json captures the enduring vision and customer problem — NOT stage-specific details like target markets, curriculum scope, timeline constraints, or POC boundaries. Those belong in `stage.json` (via `/shipkit-stage`).
    - Present the proposal as a formatted summary:
      ```
      Based on your project files, here's a proposed vision:
 
-     Who: [inferred target audience]
-     Problem: [inferred from README/description]
-     Current State: [inferred from code maturity]
-     Vision: [inferred from project scope]
-     Approach: [inferred from tech stack and patterns]
+     Who: [broad target audience — not narrowed by current stage]
+     Problem: [the full problem worth solving]
+     Current State: [brief maturity assessment]
+     Vision: [the big picture — what success looks like at scale]
+     Approach: [high-level methodology, not stage-specific tactics]
 
      ```
    - Write `why.json` directly and skip to Step 7 (suggest next steps)
@@ -119,6 +120,8 @@ If .shipkit/why.json does NOT exist:
 ### Step 4: Ask About Constraints (Optional)
 
 **Ask**: "Any constraints or must-haves? (budget, timeline, tech requirements - or Enter to skip)"
+
+**Note**: Capture only enduring project-level constraints here (e.g., "must run on mobile", "no paid APIs"). Stage-specific constraints like "AU curriculum only for POC" or "Year 1-2 only" belong in `stage.json`.
 
 **If user provides content**: Parse into array for `constraints`
 **If user skips**: Set `constraints` to empty array `[]`

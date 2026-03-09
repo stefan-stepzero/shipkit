@@ -33,6 +33,27 @@ Planning artifacts that translate definitions into actionable plans:
 
 All planning artifacts exist AND `.shipkit/reviews/planning-assessment.json` has `status: "pass"`.
 
+## Orchestration Tracking
+
+After each skill dispatch and after each review cycle, update `.shipkit/orchestration.json` (read existing content first, merge your loop state):
+
+```json
+{
+  "loops": {
+    "planning": {
+      "status": "in_progress",
+      "currentSkill": "shipkit-spec",
+      "completedDispatches": [
+        { "skill": "shipkit-spec-roadmap", "timestamp": "ISO" }
+      ],
+      "reviewCycles": 0
+    }
+  }
+}
+```
+
+Set `activeLoop` to `"planning"` on entry. Set `status` to `"pass"` or `"partial"` when done. Increment `reviewCycles` each time `/shipkit-review-planning` runs.
+
 ## Dispatch Order
 
 1. `/shipkit-spec-roadmap` — prioritizes what to spec

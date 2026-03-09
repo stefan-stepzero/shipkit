@@ -62,7 +62,7 @@ def summarize_skill_usage(entries: list[dict]) -> list[dict]:
             skills[name] = {'skill': name, 'count': 0, 'agents': set(), 'first': None, 'last': None}
         rec = skills[name]
         rec['count'] += 1
-        agent = e.get('agentType', '')
+        agent = SKILL_AGENT_MAP.get(name, e.get('agentType', ''))
         if agent:
             rec['agents'].add(agent)
         ts = e.get('timestamp', '')
@@ -99,6 +99,37 @@ AGENT_MODEL_MAP = {
     'shipkit-reviewer-direction-agent': 'sonnet',
     'shipkit-reviewer-planning-agent': 'sonnet',
     'shipkit-reviewer-shipping-agent': 'sonnet',
+}
+
+# Skills to their declared agent (from SKILL.md frontmatter `agent:` field)
+SKILL_AGENT_MAP = {
+    'shipkit-why-project': 'visionary',
+    'shipkit-vision': 'visionary',
+    'shipkit-stage': 'visionary',
+    'shipkit-product-discovery': 'product-owner',
+    'shipkit-product-definition': 'product-owner',
+    'shipkit-product-goals': 'product-owner',
+    'shipkit-spec-roadmap': 'product-owner',
+    'shipkit-spec': 'product-owner',
+    'shipkit-test-cases': 'product-owner',
+    'shipkit-feedback-bug': 'product-owner',
+    'shipkit-engineering-definition': 'architect',
+    'shipkit-engineering-goals': 'architect',
+    'shipkit-project-context': 'architect',
+    'shipkit-codebase-index': 'architect',
+    'shipkit-plan': 'architect',
+    'shipkit-prompt-audit': 'architect',
+    'shipkit-review-shipping': 'reviewer-shipping',
+    'shipkit-preflight': 'reviewer-shipping',
+    'shipkit-scale-ready': 'reviewer-shipping',
+    'shipkit-ux-audit': 'reviewer-shipping',
+    'shipkit-review-direction': 'reviewer-direction',
+    'shipkit-review-planning': 'reviewer-planning',
+    'shipkit-master': 'orch-master',
+    'shipkit-orch-direction': 'orch-direction',
+    'shipkit-orch-planning': 'orch-planning',
+    'shipkit-orch-shipping': 'orch-shipping',
+    'shipkit-thinking-partner': 'thinking-partner',
 }
 
 # Skills that dispatch to known agents
@@ -390,9 +421,9 @@ td { padding: 4px 8px; border-bottom: 1px solid #161b22; }
 def render_dashboard(orch: dict, scan_state: dict, usage: list[dict]) -> str:
     """Render the full dashboard HTML."""
     now = datetime.now().isoformat(timespec='seconds')
-    status = orch.get('status', 'unknown')
-    mode = orch.get('mode', 'unknown')
-    active_loop = orch.get('activeLoop', 'none')
+    status = orch.get('status') or 'unknown'
+    mode = orch.get('mode') or 'unknown'
+    active_loop = orch.get('activeLoop') or 'none'
     started = orch.get('startedAt', '')
 
     # Derive stage from goals if available

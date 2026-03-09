@@ -14,7 +14,7 @@ argument-hint: "[patch|minor|major] [--dry-run]"
 - Updates counts in README and overview HTML
 - Generates changelog entry
 - Runs pre-push checklist
-- Optionally tags and pushes
+- Optionally pushes
 
 ---
 
@@ -130,9 +130,9 @@ Verify the output shows correct counts and no unexpected changes.
 
 ### Step 5: Generate Changelog Entry
 
-Read git log since last tag:
+Read git log for recent commits:
 ```bash
-git log $(git describe --tags --abbrev=0 2>/dev/null || echo "HEAD~20")..HEAD --oneline
+git log HEAD~20..HEAD --oneline
 ```
 
 Group commits by category:
@@ -181,29 +181,25 @@ Present the checklist for user confirmation:
 ### Ready to Release?
 ```
 
-### Step 7: Commit and Tag
+### Step 7: Commit
 
 If user confirms:
 
 ```bash
 git add VERSION package.json README.md docs/generated/shipkit-overview.html
 git commit -m "v{version}: {summary}"
-git tag v{version}
 ```
 
 ### Step 8: Push (with confirmation)
 
 Ask before pushing:
 ```
-Push v{version} to origin? This will:
-- Push commits to {branch}
-- Push tag v{version}
+Push v{version} to origin? This will push commits to {branch}.
 ```
 
 If confirmed:
 ```bash
 git push origin {branch}
-git push origin v{version}
 ```
 
 If `--dry-run`: Skip steps 7-8, just report what would happen.
@@ -215,7 +211,7 @@ If `--dry-run`: Skip steps 7-8, just report what would happen.
 - [ ] Version bump is semantically correct
 - [ ] All validation passed before version bump
 - [ ] Counts are accurate across all files
-- [ ] Changelog covers all commits since last tag
+- [ ] Changelog covers all recent commits
 - [ ] No secrets in the release
 - [ ] User confirmed the release
 

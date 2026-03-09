@@ -28,6 +28,27 @@ Execution that delivers working software:
 
 `.shipkit/verification-report.json` has `status: "pass"` AND preflight passes.
 
+## Orchestration Tracking
+
+After each major step and after each review cycle, update `.shipkit/orchestration.json` (read existing content first, merge your loop state):
+
+```json
+{
+  "loops": {
+    "shipping": {
+      "status": "in_progress",
+      "currentSkill": "shipkit-review-shipping",
+      "completedDispatches": [
+        { "skill": "implementation-team", "timestamp": "ISO" }
+      ],
+      "reviewCycles": 0
+    }
+  }
+}
+```
+
+Set `activeLoop` to `"shipping"` on entry. Set `status` to `"pass"` or `"partial"` when done. Increment `reviewCycles` each time `/shipkit-review-shipping` runs.
+
 ## Dispatch Order
 
 1. Read `.shipkit/plans/` and `.shipkit/test-cases/` produced by planning loop
