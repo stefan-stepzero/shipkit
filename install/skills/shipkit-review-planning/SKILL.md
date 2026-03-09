@@ -36,9 +36,28 @@ agent: shipkit-reviewer-planning-agent
 6. **Stage alignment**: Specs and plans scoped for current stage?
 7. **Goal coverage**: Specs, if implemented, satisfy product and engineering goals?
 8. **Architecture consistency**: Do plans align with architecture.json decisions?
+9. **Prerequisites by phase**: Group blocking user tasks by their `blocksPhase` value. Report separately:
+   - Current-phase blockers (tasks where `blocksPhase` matches `why.json` current stage AND `blocking: true`)
+   - Future-phase blockers (tasks where `blocksPhase` is a later stage)
+   - General tasks (tasks where `blocksPhase` is `null`)
+
+   **Only current-phase blockers count as blocking prerequisites.** Future-phase tasks are informational — do NOT count them in the blocker total. If a task has no `blocksPhase` field (legacy format), infer from context or treat as current-phase.
 
 ## Output
 
 Write `.shipkit/reviews/planning-assessment.json` with structured findings.
 
 `status: "pass"` when all checks pass. `status: "gaps_found"` with specific `gaps[]` entries when issues exist. Each gap must include `artifact`, `issue`, `relatedArtifact`, `evidence`, and `fix` fields.
+
+**For prerequisite reporting**, the assessment must include a `prerequisites` summary object:
+```json
+{
+  "prerequisites": {
+    "currentPhase": "phase-0",
+    "blocking": [{ "id": "...", "title": "...", "blocksPhase": "phase-0" }],
+    "futurePhase": [{ "id": "...", "title": "...", "blocksPhase": "phase-1" }],
+    "general": [{ "id": "...", "title": "...", "blocksPhase": null }]
+  }
+}
+```
+The `blocking` array drives the blocker count. `futurePhase` and `general` are informational only.

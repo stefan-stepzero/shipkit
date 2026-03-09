@@ -38,6 +38,8 @@ This document defines the JSON schema for `.shipkit/user-tasks.json`.
       "verification": ["How to verify task is complete"],
       "relatedFeature": "Feature name or null",
       "triggeredBy": "skill-name or manual",
+      "blocksPhase": "phase-0 | phase-1 | ... | null",
+      "blocking": true,
       "createdAt": "YYYY-MM-DD",
       "completedAt": "YYYY-MM-DD or null"
     }
@@ -85,6 +87,8 @@ The `summary` field MUST be kept in sync with the `tasks` array. It exists so th
 | `verification` | string[] | yes | How to confirm the task is done |
 | `relatedFeature` | string | no | Feature name or `null` |
 | `triggeredBy` | string | no | Skill that created this task or `"manual"` |
+| `blocksPhase` | string | no | Which phase this task blocks (e.g., `"phase-0"`, `"phase-1"`). `null` = general task, not phase-gated. |
+| `blocking` | boolean | no | Whether this task is a hard prerequisite. Default `true` for `blocksPhase` matching current stage, `false` for future phases. |
 | `createdAt` | string | yes | ISO date when task was created |
 | `completedAt` | string | no | ISO date when task was completed, or `null` |
 

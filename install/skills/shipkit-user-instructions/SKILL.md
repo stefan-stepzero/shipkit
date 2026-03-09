@@ -57,11 +57,17 @@ description: "Use when there are manual tasks the user must complete. Triggers: 
    - "To connect to production database"
 
 3. **How urgent is this?**
-   - "Blocking me right now?" → 🔴 High priority
-   - "Needed before deploy?" → 🟡 Medium priority
-   - "Nice to have later?" → 🟢 Low priority
+   - "Blocking me right now?" → High priority
+   - "Needed before deploy?" → Medium priority
+   - "Nice to have later?" → Low priority
 
-**Why ask**: Ensure task is clear and actionable before tracking it.
+4. **Which phase does this block?** (infer from context when possible)
+   - Read `.shipkit/why.json` to determine current stage (poc, mvp, growth, scale)
+   - If the task is needed for the **current** stage → `blocksPhase` = current phase, `blocking` = `true`
+   - If the task is needed for a **future** stage → `blocksPhase` = that future phase, `blocking` = `false`
+   - If unclear or not phase-specific → `blocksPhase` = `null`, `blocking` based on priority
+
+**Why ask**: Ensure task is clear and actionable before tracking it. Phase-gating prevents future-phase tasks from being reported as current blockers.
 
 ---
 
@@ -83,6 +89,8 @@ description: "Use when there are manual tasks the user must complete. Triggers: 
 - `verification` — Array of criteria to confirm task is done
 - `relatedFeature` — Feature name or `null`
 - `triggeredBy` — Skill name that triggered this or `"manual"`
+- `blocksPhase` — Which phase this task blocks (e.g., `"phase-0"`, `"phase-1"`), or `null` for general tasks
+- `blocking` — `true` if this is a hard prerequisite for its phase. Default: `true` when `blocksPhase` matches the current stage in `why.json`, `false` for future phases.
 - `createdAt` — ISO date (YYYY-MM-DD)
 - `completedAt` — `null` for new tasks
 
@@ -109,6 +117,8 @@ description: "Use when there are manual tasks the user must complete. Triggers: 
   ],
   "relatedFeature": "Payment processing",
   "triggeredBy": "implement",
+  "blocksPhase": "phase-0",
+  "blocking": true,
   "createdAt": "2025-01-15",
   "completedAt": null
 }
@@ -342,7 +352,7 @@ Task tracking is complete when:
 {
   "$schema": "shipkit-artifact",
   "type": "user-tasks",
-  "version": "1.0",
+  "version": "1.1",
   "lastUpdated": "YYYY-MM-DD",
   "source": "shipkit-user-instructions",
   "summary": { "total": 0, "byStatus": {...}, "byPriority": {...} },
@@ -363,6 +373,8 @@ Task tracking is complete when:
 | `tasks[].priority` | enum | `"high"`, `"medium"`, `"low"` |
 | `tasks[].steps` | string[] | Specific actions the user must take |
 | `tasks[].verification` | string[] | How to confirm the task is done |
+| `tasks[].blocksPhase` | string/null | Phase this task blocks (`"phase-0"`, `"phase-1"`, etc.) |
+| `tasks[].blocking` | boolean | Hard prerequisite for its phase? |
 
 ### Summary Object
 
