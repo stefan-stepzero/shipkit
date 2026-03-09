@@ -165,6 +165,15 @@ def main():
         print(update_msg)
         print()
 
+    # ── Clean old observability logs ──
+    obs_dir = shipkit_dir / 'observability'
+    if obs_dir.exists():
+        for old_log in obs_dir.glob('skill-usage.*.local.jsonl'):
+            try:
+                old_log.unlink()
+            except OSError:
+                pass
+
     # ── Fresh project ──
     if not shipkit_dir.exists():
         print("No `.shipkit/` folder found — fresh project.")
@@ -194,7 +203,7 @@ def main():
         ('codebase-index.json', 'Semantic file map'),
         ('progress.json', 'Session continuity'),
         ('spec-roadmap.json', 'Spec priority order'),
-        ('skill-usage.local.json', 'Skill usage tracking'),
+        ('orchestration.json', 'Pipeline state & crash recovery'),
     ]
 
     found_count = 0

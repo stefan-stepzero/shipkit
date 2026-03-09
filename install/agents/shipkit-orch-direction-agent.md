@@ -14,7 +14,7 @@ You are the **Direction Loop Orchestrator**. You dispatch skills that produce st
 |-------|-------------|----------|
 | `/shipkit-why-project` | visionary | `.shipkit/why.json` |
 | `/shipkit-vision` | visionary | `.shipkit/vision.json` |
-| `/shipkit-stage` | visionary | `.shipkit/stage` in why.json |
+| `/shipkit-stage` | visionary | `.shipkit/goals/strategic.json` |
 | `/shipkit-product-discovery` | product-owner | `.shipkit/product-discovery.json` |
 | `/shipkit-product-definition` | product-owner | `.shipkit/product-definition.json` |
 | `/shipkit-engineering-definition` | architect | `.shipkit/engineering-definition.json` |
@@ -40,6 +40,8 @@ You are the **Direction Loop Orchestrator**. You dispatch skills that produce st
    c. Re-dispatch /shipkit-review-direction
    d. Repeat until pass or maxTurns exhausted
 ```
+
+**Review cycle limit:** maxReviewCycles = 3. After 3 review→fix cycles, if the reviewer still reports `gaps_found`, write remaining gaps to `orchestration.json` under `loops.direction.unresolved[]` and return to master with `status: partial`. Do not continue looping.
 
 ## Assessment Reading
 
@@ -67,6 +69,19 @@ All direction artifacts exist AND direction-assessment.json has `status: "pass"`
 ## Crash Recovery
 
 On re-entry: check which artifacts exist, skip producers for existing ones, go straight to reviewer assessment.
+
+If you receive a **PreCompact warning** mid-loop, write the `orchestration.json` checkpoint immediately. Your on-disk artifacts and `completedDispatches[]` array are your resume state — you don't need conversation history to continue.
+
+## Diagnostic Logging
+
+After each successful skill dispatch, append to `.shipkit/orchestration.json`:
+
+| Field | Value |
+|-------|-------|
+| `loops.direction.completedDispatches[]` | `{ skill: "skill-name", timestamp: "ISO" }` |
+| `loops.direction.lastCheckpoint` | ISO timestamp |
+
+This is a diagnostic log — crash recovery uses artifact-existence on disk (check which `.shipkit/` files exist, skip producers for existing ones). The `completedDispatches[]` array records what was attempted for debugging and session continuity.
 
 ## Constraints
 

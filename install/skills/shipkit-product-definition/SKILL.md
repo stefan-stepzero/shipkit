@@ -35,7 +35,8 @@ This is the product blueprint — it defines the user-facing solution. The techn
 - `.shipkit/product-discovery.json` — who the users are and what they need
 
 **Recommended** (enrich the proposal):
-- `.shipkit/why.json` — project purpose and stage
+- `.shipkit/why.json` — project purpose and vision
+- `.shipkit/goals/strategic.json` — project stage and constraints
 
 **Optional** (for existing projects):
 - `.shipkit/stack.json` — technology constraints (informs feasibility)
@@ -68,7 +69,8 @@ If product-discovery.json is missing, tell the user: "Run `/shipkit-product-disc
 If `.shipkit/product-discovery.json` exists, attempt to propose a solution without asking:
 
 1. Read `.shipkit/product-discovery.json` (pain points, personas, opportunities)
-2. Read `.shipkit/why.json` if exists (vision, stage, constraints)
+2. Read `.shipkit/why.json` if exists (vision, constraints)
+2b. Read `.shipkit/goals/strategic.json` if exists (stage)
 3. For each major pain point, propose features that address it
 4. For each feature, identify UX patterns that support it
 5. Present the proposal as a Problem → Feature → UX flow:
@@ -353,6 +355,8 @@ If `$ARGUMENTS` contains text:
 | `.shipkit/product-definition.json` | Previous definition (for update mode) | Generate new |
 
 ## Context Files This Skill Writes
+
+**Artifact strategy: replace** — Overwrites the existing artifact file. Previous content is not preserved.
 
 **Write Strategy: OVERWRITE**
 

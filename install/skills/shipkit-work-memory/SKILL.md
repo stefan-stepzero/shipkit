@@ -139,6 +139,8 @@ Save to progress.json? [y/n]
 
 ### Step 4: Update progress.json
 
+**Artifact strategy: append** — Adds new entries to the existing file, preserving previous content. When the file exceeds approximately 500 lines or 50 entries, archive the oldest entries to `.shipkit/archive/progress.{ISO-date}.json` and continue appending to the trimmed file.
+
 **Write strategy:**
 
 1. Read existing `.shipkit/progress.json` (if exists)

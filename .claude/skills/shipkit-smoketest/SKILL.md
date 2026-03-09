@@ -101,6 +101,37 @@ Subcommands:
 - `pipeline read` — Run validation script and report results
 - `pipeline clean` — Remove pipeline artifacts for re-run
 
+### `integration` — Full integration test against a real project
+
+Tests Shipkit installation and skill workflow end-to-end using two test projects inside `P:/Projects2/sg-shipkit-testing/`:
+
+| Subfolder | Purpose |
+|-----------|---------|
+| `greenfield/` | Empty project — tests Shipkit from scratch |
+| `existing/` | TypeScript CLI project — tests Shipkit on existing code |
+| `bespoke/` | Targeted single-skill or feature tests — no full pipeline |
+
+Each subfolder is an independent git repo. Shipkit gets installed into each separately.
+
+**Steps performed:**
+1. **Clean** — Remove all Shipkit files from the target subfolder (`.claude/`, `.shipkit/`, `CLAUDE.md`) while preserving the project's own source code
+2. **Reinstall** — Run `node P:/Projects2/sg-shipkit/cli/bin/shipkit.js init -y --target P:/Projects2/sg-shipkit-testing/<subfolder>` to install fresh
+3. **Show prompt** — Display the appropriate test prompt for the user to execute in a new CC session
+
+Subcommands:
+- `integration greenfield` — Clean + reinstall `greenfield/`, show greenfield test prompt
+- `integration existing` — Clean + reinstall `existing/`, show existing project test prompt
+- `integration bespoke` — Clean + reinstall `bespoke/`, show bespoke test prompt template
+- `integration clean` — Clean all subfolders, don't reinstall
+- `integration prompts` — Just display all test prompts without cleaning/reinstalling
+
+**Test prompts** are stored in `references/`:
+- `references/greenfield-prompt.md` — Vision → Product → Engineering → Spec → Plan with a simple temp-converter
+- `references/existing-project-prompt.md` — Same pipeline but scans existing TypeScript source code first
+- `references/bespoke-prompt.md` — Template for targeted single-skill or feature tests
+
+**After running:** The user opens a new CC session in the target subfolder (`cd greenfield && claude` or `cd existing && claude`), pastes the prompt, and observes results. Findings go to `P:/Projects2/sg-shipkit-testing/feedback/test-results.md`.
+
 ### `add` — Add a new test
 
 When given a new hypothesis to test, create the necessary agent/skill files in the test repo and update this skill's documentation.
@@ -108,12 +139,17 @@ When given a new hypothesis to test, create the necessary agent/skill files in t
 ## Usage
 
 ```
-/shipkit-smoketest              → read results (full report)
-/shipkit-smoketest read         → read results (full report)
-/shipkit-smoketest setup        → write/reset test harness files
-/shipkit-smoketest clean        → clear all results
-/shipkit-smoketest pipeline     → pipeline validation
-/shipkit-smoketest pipeline read  → pipeline validation
-/shipkit-smoketest pipeline clean → clean pipeline artifacts
-/shipkit-smoketest add          → add a new test (describe the hypothesis)
+/shipkit-smoketest                      → read results (full report)
+/shipkit-smoketest read                 → read results (full report)
+/shipkit-smoketest setup                → write/reset test harness files
+/shipkit-smoketest clean                → clear all results
+/shipkit-smoketest pipeline             → pipeline validation
+/shipkit-smoketest pipeline read        → pipeline validation
+/shipkit-smoketest pipeline clean       → clean pipeline artifacts
+/shipkit-smoketest integration greenfield → clean + reinstall + greenfield prompt
+/shipkit-smoketest integration existing  → clean + reinstall + existing project prompt
+/shipkit-smoketest integration bespoke   → clean + reinstall + bespoke prompt template
+/shipkit-smoketest integration clean     → clean all subfolders
+/shipkit-smoketest integration prompts   → show all test prompts
+/shipkit-smoketest add                  → add a new test (describe the hypothesis)
 ```

@@ -101,7 +101,7 @@ This document defines the JSON schema for `.shipkit/spec-roadmap.json` (v1.0 —
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `name` | string | yes | Product name from product-definition.json |
-| `stage` | string | yes | Current stage: `"poc"` \| `"mvp"` \| `"production"` \| `"scale"` |
+| `stage` | string | yes | Current stage from `goals/strategic.json`: `"poc"` \| `"mvp"` \| `"production"` \| `"scale"` |
 
 ### Phase Object
 

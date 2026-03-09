@@ -139,6 +139,14 @@ async function init(packageRoot, flags) {
     if (fs.existsSync(pythonScriptsDir)) {
       copyDir(pythonScriptsDir, path.join(targetDir, '.shipkit', 'scripts'));
     }
+
+    // 9b. Install observability scripts
+    const obsScriptsDir = path.join(installDir, 'shared', 'scripts', 'observability');
+    if (fs.existsSync(obsScriptsDir)) {
+      const obsDestDir = path.join(targetDir, '.shipkit', 'observability');
+      ensureDir(obsDestDir);
+      copyDir(obsScriptsDir, obsDestDir);
+    }
     ui.success('Scripts installed');
 
     // 10. Copy VERSION

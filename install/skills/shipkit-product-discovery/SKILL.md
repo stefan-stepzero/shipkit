@@ -232,6 +232,8 @@ Copy and track:
 
 ## Context Files This Skill Writes
 
+**Artifact strategy: replace** — Overwrites the existing artifact file. Previous content is not preserved.
+
 **Write Strategy: OVERWRITE**
 
 **Creates/Updates**:

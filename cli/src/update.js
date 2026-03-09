@@ -151,6 +151,14 @@ async function update(packageRoot, flags) {
       ensureDir(path.join(targetDir, '.shipkit', 'scripts'));
       copyDir(pythonScriptsDir, path.join(targetDir, '.shipkit', 'scripts'));
     }
+
+    // 3b. Update observability scripts (overwrite)
+    const obsScriptsDir = path.join(installDir, 'shared', 'scripts', 'observability');
+    if (fs.existsSync(obsScriptsDir)) {
+      const obsDestDir = path.join(targetDir, '.shipkit', 'observability');
+      ensureDir(obsDestDir);
+      copyDir(obsScriptsDir, obsDestDir);
+    }
     ui.success('Scripts updated');
 
     // 4. Update VERSION

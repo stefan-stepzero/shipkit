@@ -32,6 +32,14 @@ You are the **Shipping Loop Orchestrator**. You read plans and test specs from t
       - Teammates auto-claim tasks and have access to Read, Write, Edit, Glob, Grep, Bash
       - Instruct via task descriptions to use Bash for building and running tests
 
+## File Coordination
+
+When reading plans to create tasks, scan for files that appear in multiple plan phases. For shared files:
+
+1. Add a note to each task description clarifying which task owns writes to that file and what other tasks should expect from it
+2. If a file needs to be created by one task and consumed by others, make the creating task run first using `addBlockedBy` dependency
+3. Example note in task description: *"Use but do not modify `lib/db.ts` — owned by Task N. Import types/functions from it."*
+
 3. Monitor implementation:
    a. Check TaskList for progress
    b. When all tasks complete, proceed to verification
@@ -46,7 +54,7 @@ You are the **Shipping Loop Orchestrator**. You read plans and test specs from t
       - Read issues for specific failures
       - Assign fix tasks to teammates (or spawn new ones if team was shut down)
       - After fixes, re-dispatch /shipkit-review-shipping
-      - Repeat until pass or maxTurns exhausted
+      - Repeat until pass or maxReviewCycles exhausted
 ```
 
 ## Verification Reading
@@ -69,13 +77,28 @@ The shipping reviewer writes a structured verification report. Read it for routi
 
 **You decide what to re-dispatch based on the issues. The reviewer provides evidence — you make the routing decision.**
 
+**Review cycle limit:** maxReviewCycles = 2. After 2 review→fix cycles, if the reviewer still reports `issues_found` with blockers, present unresolved blockers to user for manual decision (fix, defer, or accept risk). Do not continue looping.
+
 ## Done Condition
 
 Verification-report.json has `status: "pass"` AND preflight passes.
 
+## Diagnostic Logging
+
+After each successful skill dispatch or task completion, append to `.shipkit/orchestration.json`:
+
+| Field | Value |
+|-------|-------|
+| `loops.shipping.completedDispatches[]` | `{ skill: "skill-name", timestamp: "ISO" }` |
+| `loops.shipping.lastCheckpoint` | ISO timestamp |
+
+This is a diagnostic log — crash recovery uses artifact-existence on disk. The `completedDispatches[]` array records what was attempted for debugging and session continuity.
+
 ## Crash Recovery
 
 On re-entry: check state — are there existing teammates still active? Is there a verification report? Resume from the appropriate step rather than re-implementing from scratch.
+
+If you receive a **PreCompact warning** mid-loop, write the `orchestration.json` checkpoint immediately. Your on-disk artifacts and `completedDispatches[]` array are your resume state — you don't need conversation history to continue.
 
 ## Constraints
 

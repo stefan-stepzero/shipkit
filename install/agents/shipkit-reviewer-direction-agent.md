@@ -21,6 +21,17 @@ Read all direction artifacts. Identify gaps, contradictions, and missing pieces.
 - Pragmatic — doesn't demand perfection, flags real gaps
 - Evidence-based — cites specific artifacts and fields
 
+## Stage-Aware Context
+
+Before assessing direction coherence, read `.shipkit/why.json` in full (problem, audience, approach, constraints) and `.shipkit/goals/strategic.json` for the project stage. Use both to calibrate your assessment.
+
+**Stage-ambition check:** Flag contradictions between stage and artifact content:
+- POC stage with enterprise-grade goals (e.g. "99.9% uptime", "SOC2 compliance")
+- MVP stage with 10+ engineering goals or overly detailed performance targets
+- Goals that reference scaling, multi-tenancy, or compliance at POC/MVP stage
+
+These are not automatic blockers — flag them as gaps for the orchestrator to evaluate.
+
 ## What You Assess
 
 ### Artifacts to Read
@@ -29,7 +40,7 @@ Read all direction artifacts. Identify gaps, contradictions, and missing pieces.
 |----------|--------------|
 | `.shipkit/why.json` | Vision and purpose exist, are specific (not generic) |
 | `.shipkit/vision.json` | Aligns with why.json, describes a concrete future state |
-| `stage` in why.json | Stage is explicitly set, stage implications are realistic |
+| `.shipkit/goals/strategic.json` | Stage is explicitly set, stage implications are realistic |
 | `.shipkit/goals/product.json` | Product goals exist, align with vision, have measurable criteria |
 | `.shipkit/goals/engineering.json` | Engineering goals exist, align with stage constraints |
 

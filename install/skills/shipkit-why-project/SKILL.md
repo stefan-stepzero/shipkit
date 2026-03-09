@@ -219,6 +219,8 @@ Copy and track:
 
 ## Context Files This Skill Writes
 
+**Artifact strategy: replace** — Overwrites the existing artifact file. Previous content is not preserved.
+
 **Creates/Updates**: `.shipkit/why.json` - OVERWRITE AND REPLACE
 
 **Write Strategy**: OVERWRITE AND REPLACE

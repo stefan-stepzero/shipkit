@@ -214,6 +214,12 @@ Ask user to confirm gate assignment.
 
 ---
 
+### Step 5.5: Archive Existing Artifact
+
+**Artifact strategy: archive** — Before writing, if the target file already exists, move it to `.shipkit/archive/{filename}.{ISO-date}.json` (create the `archive/` directory if needed). Then write the new artifact fresh.
+
+---
+
 ### Step 6: Generate Product Goal File
 
 After confirmation:

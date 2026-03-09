@@ -2,8 +2,9 @@
 """
 Shipkit - Skill Usage Tracker
 
-Tracks how many times each skill is invoked to identify usage patterns
-and help discover stale or underutilized skills.
+Appends one JSONL line per Skill() invocation to .shipkit/observability/.
+Each session gets its own file (keyed by session_id). Session-start hook
+cleans old files.
 
 Hook type: PostToolUse (matcher: Skill)
 """
@@ -41,8 +42,7 @@ def main():
     if not skill_name:
         return 0  # No skill to track
 
-    # Find project root — walk up from cwd to find .shipkit/ or .claude/
-    # This handles cases where Claude cd'd into a subdirectory (e.g. frontend/)
+    # Find project root
     cwd = hook_input.get('cwd', '')
     if not cwd:
         return 0
@@ -51,67 +51,34 @@ def main():
     if not project_root:
         return 0  # Not in a Shipkit project
 
-    shipkit_dir = project_root / '.shipkit'
+    obs_dir = project_root / '.shipkit' / 'observability'
+    obs_dir.mkdir(parents=True, exist_ok=True)
 
-    # Create .shipkit if it doesn't exist
-    if not shipkit_dir.exists():
-        shipkit_dir.mkdir(parents=True, exist_ok=True)
-
-    tracking_file = shipkit_dir / 'skill-usage.local.json'
-
-    # Load existing data or create new
-    if tracking_file.exists():
-        try:
-            data = json.loads(tracking_file.read_text(encoding='utf-8'))
-        except (json.JSONDecodeError, IOError):
-            data = create_empty_tracking()
-    else:
-        data = create_empty_tracking()
-
-    # Update tracking
+    # Build JSONL entry
+    session_id = hook_input.get('session_id', 'unknown')
+    agent_id = hook_input.get('agent_id', '')
+    agent_type = hook_input.get('agent_type', '')
     now = datetime.now().isoformat(timespec='seconds')
 
-    data['lastUpdated'] = now
-    data['totalInvocations'] = data.get('totalInvocations', 0) + 1
+    entry = {
+        'skill': skill_name,
+        'timestamp': now,
+        'session': session_id,
+    }
+    if agent_id:
+        entry['agentId'] = agent_id
+    if agent_type:
+        entry['agentType'] = agent_type
 
-    if 'skills' not in data:
-        data['skills'] = {}
-
-    if skill_name not in data['skills']:
-        data['skills'][skill_name] = {
-            'count': 0,
-            'firstUsed': now,
-            'lastUsed': now
-        }
-
-    data['skills'][skill_name]['count'] += 1
-    data['skills'][skill_name]['lastUsed'] = now
-
-    # Preserve firstUsed if it exists
-    if 'firstUsed' not in data['skills'][skill_name]:
-        data['skills'][skill_name]['firstUsed'] = now
-
-    # Save updated data
+    # Append to session-specific JSONL file (atomic append, no read-modify-write)
+    tracking_file = obs_dir / f'skill-usage.{session_id}.local.jsonl'
     try:
-        tracking_file.write_text(
-            json.dumps(data, indent=2, ensure_ascii=False),
-            encoding='utf-8'
-        )
+        with open(tracking_file, 'a', encoding='utf-8') as f:
+            f.write(json.dumps(entry, ensure_ascii=False) + '\n')
     except IOError:
         pass  # Silent fail on write error
 
     return 0
-
-
-def create_empty_tracking():
-    """Create empty tracking structure."""
-    return {
-        'version': '1.0',
-        'created': datetime.now().isoformat(timespec='seconds'),
-        'lastUpdated': datetime.now().isoformat(timespec='seconds'),
-        'totalInvocations': 0,
-        'skills': {}
-    }
 
 
 if __name__ == '__main__':

@@ -218,6 +218,12 @@ grep -r "ErrorBoundary\|onError\|handleError" --include="*.ts" --include="*.tsx"
 
 ---
 
+### Step 2.8: Archive Existing Artifact
+
+**Artifact strategy: archive** — Before writing, if the target file already exists, move it to `.shipkit/archive/{filename}.{ISO-date}.json` (create the `archive/` directory if needed). Then write the new artifact fresh.
+
+---
+
 ### Step 3: Generate Implementation Plan
 
 **Create plan file using Write tool**:

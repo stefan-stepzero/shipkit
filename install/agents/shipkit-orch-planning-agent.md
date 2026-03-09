@@ -39,6 +39,8 @@ You are the **Planning Loop Orchestrator**. You dispatch skills that produce spe
    d. Repeat until pass or maxTurns exhausted
 ```
 
+**Review cycle limit:** maxReviewCycles = 3. After 3 review→fix cycles, if the reviewer still reports `gaps_found`, write remaining gaps to `orchestration.json` under `loops.planning.unresolved[]` and return to master with `status: partial`. Do not continue looping.
+
 ## Assessment Reading
 
 The planning reviewer writes structured JSON. Read it for routing decisions:
@@ -65,6 +67,19 @@ All planning artifacts exist AND planning-assessment.json has `status: "pass"`.
 ## Crash Recovery
 
 On re-entry: check which artifacts exist, skip producers for existing ones, go straight to reviewer assessment.
+
+If you receive a **PreCompact warning** mid-loop, write the `orchestration.json` checkpoint immediately. Your on-disk artifacts and `completedDispatches[]` array are your resume state — you don't need conversation history to continue.
+
+## Diagnostic Logging
+
+After each successful skill dispatch, append to `.shipkit/orchestration.json`:
+
+| Field | Value |
+|-------|-------|
+| `loops.planning.completedDispatches[]` | `{ skill: "skill-name", timestamp: "ISO" }` |
+| `loops.planning.lastCheckpoint` | ISO timestamp |
+
+This is a diagnostic log — crash recovery uses artifact-existence on disk (check which `.shipkit/` files exist, skip producers for existing ones). The `completedDispatches[]` array records what was attempted for debugging and session continuity.
 
 ## Constraints
 

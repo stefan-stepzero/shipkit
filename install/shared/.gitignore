@@ -12,6 +12,11 @@ CLAUDE.md
 # Shipkit per-session state files (temporary, never commit)
 .shipkit/*.local.md
 
+# Shipkit observability outputs (generated, never commit)
+.shipkit/observability/dashboard.html
+.shipkit/observability/artifact-state.json
+.shipkit/observability/*.local.jsonl
+
 # IMPORTANT: DO NOT IGNORE YOUR WORK PRODUCTS!
 # ✅ .shipkit/ contains YOUR context files (commit these!)
 #

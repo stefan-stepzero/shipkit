@@ -102,7 +102,7 @@ What stage is this project at?
   3. MVP   — Production-ready for launch segment
   4. Scale — Enterprise-ready, optimized for growth
 
-Current stage: [detected from why.json or "not set"]
+Current stage: [detected from goals/strategic.json or "not set"]
 Target stage: [ask user]
 ```
 

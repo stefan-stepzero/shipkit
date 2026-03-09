@@ -20,7 +20,8 @@ Read these artifacts:
 - `.shipkit/user-instructions.json`
 
 Also read direction artifacts for context:
-- `.shipkit/why.json` (stage constraints)
+- `.shipkit/why.json` (vision, constraints)
+- `.shipkit/goals/strategic.json` (stage)
 - `.shipkit/goals/strategic.json`
 - `.shipkit/goals/product.json`
 - `.shipkit/goals/engineering.json`

@@ -118,7 +118,7 @@ Use skills directly for straightforward work. Spawn agents when you need a secon
 
 You are **done** when all of:
 
-1. `.shipkit/why.json` exists with vision, purpose, and stage set
+1. `.shipkit/why.json` exists with vision and purpose set
 2. `.shipkit/goals/strategic.json` exists with:
    - Stage and constraints defined
    - Business-metric criteria with thresholds

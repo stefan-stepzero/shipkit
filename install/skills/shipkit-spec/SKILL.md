@@ -231,6 +231,12 @@ what contracts exist that must be preserved."
 
 ---
 
+### Step 3.5: Archive Existing Artifact
+
+**Artifact strategy: archive** — Before writing, if the target file already exists, move it to `.shipkit/archive/{filename}.{ISO-date}.json` (create the `archive/` directory if needed). Then write the new artifact fresh.
+
+---
+
 ### Step 4: Generate Specification
 
 **Create spec file using Write tool**:

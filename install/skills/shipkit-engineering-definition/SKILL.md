@@ -34,7 +34,8 @@ This is the engineering blueprint — it takes the product's features and UX pat
 - `.shipkit/product-definition.json` — features, UX patterns, differentiators
 
 **Recommended** (enrich the proposal):
-- `.shipkit/why.json` — project purpose and stage
+- `.shipkit/why.json` — project purpose and vision
+- `.shipkit/goals/strategic.json` — project stage and constraints
 - `.shipkit/stack.json` — existing technology constraints
 - `.shipkit/product-discovery.json` — pain points for traceability
 
@@ -68,7 +69,8 @@ If product-definition.json is missing, tell the user: "Run `/shipkit-product-def
 If `.shipkit/product-definition.json` exists, attempt to propose a technical approach without asking:
 
 1. Read `.shipkit/product-definition.json` (features, UX patterns, differentiators)
-2. Read `.shipkit/why.json` if exists (vision, stage, constraints)
+2. Read `.shipkit/why.json` if exists (vision, constraints)
+2b. Read `.shipkit/goals/strategic.json` if exists (stage)
 3. Read `.shipkit/stack.json` if exists (technology capabilities)
 4. Read `.shipkit/product-discovery.json` if exists (pain points)
 5. For each feature, propose the technical mechanism to implement it
@@ -374,6 +376,8 @@ If `$ARGUMENTS` contains text:
 | `.shipkit/engineering-definition.json` | Previous definition (for update mode) | Generate new |
 
 ## Context Files This Skill Writes
+
+**Artifact strategy: replace** — Overwrites the existing artifact file. Previous content is not preserved.
 
 **Write Strategy: OVERWRITE**
 

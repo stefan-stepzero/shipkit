@@ -33,6 +33,14 @@ Skill tool: skill: "shipkit-orch-shipping"
 
 Each loop skill has `context: fork` + `agent:` — it spawns the loop's orchestrator agent automatically.
 
+## Partial Loop Handling
+
+If a loop returns `status: partial` (review cycle limit exceeded with unresolved gaps):
+
+1. Write unresolved gaps to `orchestration.json` under `loops.{loop}.unresolved[]`
+2. In **gated mode**: present unresolved gaps to user. Options: re-enter loop with guidance, skip to next loop with known gaps, or stop
+3. In **autonomous mode**: stop and write `orchestration.json` with final state. Do not skip to next loop — partial direction means unstable foundation
+
 ## Orchestration State
 
 Write `.shipkit/orchestration.json` after each loop completes:
@@ -64,6 +72,16 @@ Consult `references/input-classification.md` for loop classification rules.
 
 Consult `references/orchestration-modes.md` for full mode details.
 
+## Autonomous Mode Gating
+
+When autonomous mode is triggered ("yolo", "auto", "just do it"):
+
+1. Check if `.shipkit/why.json` exists
+2. **If why.json exists**: write `mode: "autonomous"` to `orchestration.json`. Run all three loops without pausing
+3. **If why.json does NOT exist**: downgrade direction loop to **gated mode** — human must define the WHY. After direction loop completes (why.json now exists), switch to autonomous for planning and shipping loops
+
+The constraint: human defines the WHY, machine handles the rest.
+
 ## Termination Protocol
 
 Exit when shipping loop reports complete (all verifiable criteria passing).
@@ -73,6 +91,10 @@ Exit when shipping loop reports complete (all verifiable criteria passing).
 3. Stop — do not re-dispatch after termination
 
 Consult `references/termination-protocol.md` for full protocol.
+
+## Context Pressure
+
+Each loop dispatch uses `context: fork` — loop orchestrators get fresh context windows. Your own context is only consumed by reading orchestration.json and dispatching 3 skills. If you receive a **PreCompact warning**, write `orchestration.json` with current state before compaction occurs.
 
 ## Constraints
 

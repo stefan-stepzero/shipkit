@@ -34,6 +34,8 @@ You have been dispatched by the master orchestrator to close a strategic gap.
 
 **Reads**: `.shipkit/why.json`, `.shipkit/goals/strategic.json`, `README.md`, `package.json`
 
+**Artifact strategy: replace** — Overwrites the existing artifact file. Previous content is not preserved.
+
 **Writes**: `.shipkit/why.json`, `.shipkit/goals/strategic.json`
 
 ## Exit Conditions

@@ -334,6 +334,12 @@ This flags technical debt while still providing a workable (if fragile) selector
 
 ---
 
+### Step 4.6: Archive Existing Artifact
+
+**Artifact strategy: archive** — Before writing, if the target file already exists, move it to `.shipkit/archive/{filename}.{ISO-date}.json` (create the `archive/` directory if needed). Then write the new artifact fresh.
+
+---
+
 ### Step 5: Write Files
 
 **File structure:**

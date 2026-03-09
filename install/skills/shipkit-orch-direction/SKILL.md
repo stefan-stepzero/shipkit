@@ -27,7 +27,7 @@ Strategic artifacts that define WHY, WHAT, and HOW at definition level:
 |-------|-----------------|
 | `/shipkit-why-project` | why.json |
 | `/shipkit-vision` | vision.json |
-| `/shipkit-stage` | stage in why.json |
+| `/shipkit-stage` | goals/strategic.json |
 | `/shipkit-product-discovery` | product-discovery.json |
 | `/shipkit-product-definition` | product-definition.json |
 | `/shipkit-engineering-definition` | engineering-definition.json |
