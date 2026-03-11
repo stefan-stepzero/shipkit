@@ -66,6 +66,21 @@ Step 4: Finalize Bug Specs with Findings
 Step 5: Output Summary
 ```
 
+### Completion Tracking (MANDATORY)
+
+After parsing feedback (Step 1) and categorizing items (Step 2), create tasks:
+
+1. For EACH confirmed bug: `TaskCreate`: "Investigate: {bug description}"
+   - Each investigation task is NOT complete until: reproduced, root cause found, robustness checked, blast radius assessed
+2. For EACH confirmed bug: `TaskCreate`: "Write spec: bug-{name}.json"
+3. `TaskCreate`: "Output triage summary with next steps"
+
+**Rules:**
+- Do NOT investigate one bug deeply then produce shallow specs for the rest — each bug gets the full 3a→3b→3c→3d→3e treatment
+- `TaskUpdate` investigation tasks to `completed` only after ALL sub-steps (reproduce, isolate, root cause, robustness, learnings) are done
+- Do NOT present the summary until all bug specs are written to disk
+- If parallel subagents report findings, verify they actually investigated (not fabricated)
+
 ---
 
 ## Step 1: Receive & Parse Feedback

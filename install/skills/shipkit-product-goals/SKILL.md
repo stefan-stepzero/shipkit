@@ -67,6 +67,26 @@ agent: shipkit-product-owner-agent
 
 ## Process — Define Mode
 
+### Completion Tracking (MANDATORY)
+
+After loading context (Step 1), create tasks:
+
+1. `TaskCreate`: "Load context (product-definition + strategic.json)"
+2. `TaskCreate`: "Derive P-* criteria with rubrics from product blueprint"
+3. `TaskCreate`: "Classify checkability + verificationTool for each criterion"
+4. `TaskCreate`: "Present criteria for user validation"
+5. `TaskCreate`: "Map P-* criteria to existing gates in strategic.json"
+6. `TaskCreate`: "Archive existing artifact (if replacing)"
+7. `TaskCreate`: "Write goals/product.json"
+8. `TaskCreate`: "Update strategic.json gates with P-* IDs"
+9. `TaskCreate`: "Verify summary counts match actual array length"
+
+**Rules:**
+- Writing product.json (task 7) is NOT done — strategic.json gates must also be updated (task 8)
+- `TaskUpdate` the gates task to `completed` only after reading strategic.json back and confirming P-* IDs appear in gate criteria arrays
+- Every criterion must have a rubric (3-5 levels) — bare thresholds fail the criteria derivation task
+- Do NOT present the final summary until ALL tasks show completed
+
 ### Step 0: Check for Existing Files
 
 1. Check if `.shipkit/goals/product.json` exists

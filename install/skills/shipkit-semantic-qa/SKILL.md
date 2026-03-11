@@ -41,6 +41,17 @@ allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task
 
 ## Process
 
+### Completion Tracking
+
+In `--full` mode (all 3 phases sequential), create tasks at the start:
+- `TaskCreate`: "Setup: Define criteria + generate test script"
+- `TaskCreate`: "Run: Execute tests + verify output count"
+- `TaskCreate`: "Judge: Evaluate ALL outputs against ALL criteria"
+- `TaskCreate`: "Write judgment.md + judgment.json"
+
+In Judge mode with 5+ outputs, create one task per output to prevent partial evaluation.
+Do NOT present judgment summary until all output evaluations are complete and files are written.
+
 ### Step 0: Mode Detection
 
 Determine mode from arguments and state:

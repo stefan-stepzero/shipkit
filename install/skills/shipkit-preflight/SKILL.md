@@ -59,6 +59,15 @@ This skill aggregates context from other skills. It will route you to create mis
 
 ## Process
 
+### Completion Tracking
+
+After determining audit scope, create tasks for each checklist category being audited:
+- `TaskCreate` for each applicable category (e.g., "Audit: Auth", "Audit: Data", "Audit: Error Handling", etc.)
+- `TaskCreate`: "Write preflight.json"
+- `TaskCreate`: "Archive previous audit (if exists)"
+
+Do NOT present results until all applicable category tasks AND the file-write task show completed.
+
 ### Step 0: Determine Audit Scope (Full vs Incremental)
 
 **Check for previous audit:**

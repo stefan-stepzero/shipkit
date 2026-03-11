@@ -27,6 +27,24 @@ allowed-tools: Read, Glob, Grep, Bash, Write
 
 ## Process
 
+### Completion Tracking (MANDATORY)
+
+Before starting analysis, create tasks for each index section:
+
+1. `TaskCreate`: "Run generator script (base index)"
+2. `TaskCreate`: "Detect framework"
+3. `TaskCreate`: "Identify entry points"
+4. `TaskCreate`: "Map concepts to files (with verification)"
+5. `TaskCreate`: "Identify core files (with import counts)"
+6. `TaskCreate`: "Determine skip list"
+7. `TaskCreate`: "Write completed codebase-index.json"
+8. `TaskCreate`: "Verify all 5 Claude-filled fields are populated"
+
+**Rules:**
+- `TaskUpdate` each task to `completed` only after the section has verified data (not guesses)
+- The final verification task requires reading the written file and confirming: framework, entryPoints, concepts, coreFiles, and skip are all non-empty
+- Do NOT declare done if any field is empty or contains placeholder values
+
 ### Step 1: Run Generator Script
 
 ```bash

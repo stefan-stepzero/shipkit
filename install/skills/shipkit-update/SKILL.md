@@ -51,6 +51,26 @@ This skill provides:
 
 ## Process
 
+### Completion Tracking (MANDATORY)
+
+After getting user permission (Step 0), create tasks for every remaining step:
+
+1. `TaskCreate`: "Detect existing installation"
+2. `TaskCreate`: "Archive existing installation + write MANIFEST.md"
+3. `TaskCreate`: "Run npx installer"
+4. `TaskCreate`: "Merge CLAUDE.md (+ subfolder CLAUDE.md files)"
+5. `TaskCreate`: "Merge settings.json"
+6. `TaskCreate`: "Scan settings.local.json for stale refs"
+7. `TaskCreate`: "Migrate user content from archive"
+8. `TaskCreate`: "Cleanup deprecated .md files"
+9. `TaskCreate`: "Output comprehensive summary"
+
+**Rules:**
+- `TaskUpdate` each task to `completed` only after the step is fully done
+- The installer completing (Step 3) is NOT the finish line — 5 more steps remain
+- Do NOT present the final summary until ALL tasks show completed
+- The CLAUDE.md merge task includes subfolder CLAUDE.md files, not just root
+
 ### Step 0: Request Permissions Upfront
 
 **Get user approval once at the start, then run without interruptions.**

@@ -40,6 +40,24 @@ agent: shipkit-product-owner-agent
 
 ## Process
 
+### Completion Tracking (MANDATORY)
+
+After determining scope (Step 1) and identifying feature areas, create tasks:
+
+1. For EACH feature area identified: `TaskCreate`: "Generate cases: {feature-name}"
+2. `TaskCreate`: "Write STRATEGY.md"
+3. For EACH feature: `TaskCreate`: "Write cases/{feature}.md"
+4. `TaskCreate`: "Write coverage.json"
+5. `TaskCreate`: "Enrich UI test cases with selectors (if applicable)"
+6. `TaskCreate`: "Archive existing artifact (if exists)"
+7. `TaskCreate`: "Output summary with metrics"
+
+**Rules:**
+- Do NOT dispatch test case generation once for all features — generate per feature area
+- `TaskUpdate` each task to `completed` only after the file is written to disk
+- STRATEGY.md, cases/*.md, AND coverage.json must ALL be written — any one alone is not "done"
+- Do NOT present the summary until all 3 output types are confirmed written
+
 ### Step 1: Determine Scope
 
 **If user specifies feature/scope:**

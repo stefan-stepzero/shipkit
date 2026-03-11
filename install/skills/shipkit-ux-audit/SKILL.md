@@ -47,6 +47,23 @@ allowed-tools: Read, Glob, Grep
 
 ## Process
 
+### Completion Tracking (MANDATORY)
+
+After confirming what the user is building (Step 1), create tasks:
+
+1. `TaskCreate`: "Read existing context (codebase-index, ux-decisions, stack)"
+2. `TaskCreate`: "Explore actual UI components (2 parallel agents)"
+3. `TaskCreate`: "Generate UX guidance (terminal output)"
+4. `TaskCreate`: "Log decision to ux-decisions.json + update summary counts"
+5. `TaskCreate`: "Identify and log gaps + update totalGaps count"
+6. `TaskCreate`: "Suggest next steps"
+
+**Rules:**
+- Terminal output (Step 4) is NOT the finish line — JSON persistence (Steps 5-6) must follow
+- `TaskUpdate` the JSON logging task to `completed` only after verifying ux-decisions.json was written with updated summary counts
+- If auditing existing UI, the gaps task is required, not optional
+- Do NOT present "done" until both the terminal guidance AND the JSON file writes are confirmed
+
 ### Step 1: Confirm What User is Building
 
 **Before providing guidance**, ask 2-3 questions:

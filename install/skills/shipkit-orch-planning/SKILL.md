@@ -60,6 +60,32 @@ Set `activeLoop` to `"planning"` on entry. Set `status` to `"pass"` or `"partial
 
 ## Dispatch Order
 
+### Completion Tracking (MANDATORY)
+
+Before dispatching any skills, create tasks. **Critical**: Steps 4 and 5 have an O(N) multiplier — one spec and one plan per roadmap feature.
+
+1. `TaskCreate` for prerequisite dispatches:
+   - "Dispatch: /shipkit-project-context"
+   - "Dispatch: /shipkit-codebase-index"
+   - "Dispatch: /shipkit-spec-roadmap"
+
+2. After spec-roadmap completes, read `spec-roadmap.json` to get the feature list. Create per-feature tasks:
+   - For EACH feature: `TaskCreate`: "Spec: {feature-name}"
+   - For EACH feature: `TaskCreate`: "Plan: {feature-name}"
+
+3. `TaskCreate` for remaining dispatches:
+   - "Dispatch: /shipkit-test-cases"
+   - "Dispatch: /shipkit-user-instructions"
+   - "Review: /shipkit-review-planning"
+   - "Re-dispatch for gaps (if needed)"
+   - "Re-review after fixes (if needed)"
+
+**Rules:**
+- Do NOT dispatch `/shipkit-spec` once for all features — dispatch once PER feature in the roadmap
+- Do NOT dispatch `/shipkit-plan` once for all specs — dispatch once PER spec
+- `TaskUpdate` each task only after the dispatch completes AND orchestration.json is updated
+- Before declaring done, verify: spec count matches roadmap features, plan count matches specs
+
 1. `/shipkit-project-context` — scans codebase, produces stack.json (skip if fresh)
 2. `/shipkit-codebase-index` — indexes codebase structure (skip if fresh)
 3. `/shipkit-spec-roadmap` — prioritizes what to spec

@@ -49,6 +49,16 @@ Default audit covers Growth tier. Enterprise tier on request or if context indic
 
 ## Process
 
+### Completion Tracking
+
+After determining scope, create tasks per audit category:
+- `TaskCreate` for each applicable category (Security/DB, Observability/Perf, Reliability/Ops, Code Maturity, Compliance)
+- `TaskCreate`: "Merge all subagent results"
+- `TaskCreate`: "Write scale-readiness.json"
+- `TaskCreate`: "Archive previous audit (if full audit)"
+
+Subagent results returning is NOT done — results must be merged, classified, and written to the JSON artifact. Do NOT skip the archive step.
+
 ### Step 0: Verify Prerequisites
 
 ```

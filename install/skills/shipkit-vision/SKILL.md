@@ -20,6 +20,21 @@ You have been dispatched by the master orchestrator to close a strategic gap.
 
 ## Process
 
+### Completion Tracking (MANDATORY)
+
+Before starting work, create tasks for all outputs:
+
+1. `TaskCreate`: "Assess current state (read strategic.json + why.json)"
+2. `TaskCreate`: "Dispatch required skill(s) based on gap"
+3. `TaskCreate`: "Write why.json (verified on disk)"
+4. `TaskCreate`: "Write goals/strategic.json (verified on disk)"
+5. `TaskCreate`: "Report: what was produced and what changed"
+
+**Rules:**
+- `TaskUpdate` write tasks to `completed` only after verifying the file exists on disk with expected content
+- Both why.json AND strategic.json must exist before declaring done (see Exit Conditions)
+- Do NOT declare done after dispatching a skill — wait for it to complete and verify its output files
+
 1. Read `.shipkit/goals/strategic.json` (if exists) to understand current strategic state
 2. Read `.shipkit/why.json` (if exists) to understand current vision
 3. Based on the gap described above:

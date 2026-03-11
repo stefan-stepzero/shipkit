@@ -35,6 +35,16 @@ If `$ARGUMENTS` is empty, proceed normally with automatic scope detection (git d
 
 ## Process
 
+### Completion Tracking
+
+After detecting scope, create tasks:
+- `TaskCreate`: "Pre-scan: Quick pass across 12 dimensions"
+- `TaskCreate`: "Pattern ripple: Expand scope to affected files"
+- `TaskCreate`: "Deep review: All 12 dimensions with evidence"
+- `TaskCreate`: "Write verification-report.json"
+
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done. Track dimension progress: "Reviewing dimension {N}/12: {name}". The pre-scan is NOT the final report — the deep review (Step 3) must follow. Do NOT present findings until verification-report.json is written to disk.
+
 ### Step 1: Detect Scope
 
 Determine what to verify:

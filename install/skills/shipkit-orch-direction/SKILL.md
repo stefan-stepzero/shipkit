@@ -65,6 +65,29 @@ Set `status` to `"pass"` or `"partial"` when the loop finishes. Increment `revie
 
 ## Dispatch Order
 
+### Completion Tracking (MANDATORY)
+
+Before dispatching any skills, create tasks for every dispatch in the roster:
+
+1. `TaskCreate` for each of the 8 producer dispatches:
+   - "Dispatch: /shipkit-why-project"
+   - "Dispatch: /shipkit-vision"
+   - "Dispatch: /shipkit-stage"
+   - "Dispatch: /shipkit-product-discovery"
+   - "Dispatch: /shipkit-product-definition"
+   - "Dispatch: /shipkit-engineering-definition"
+   - "Dispatch: /shipkit-product-goals"
+   - "Dispatch: /shipkit-engineering-goals"
+2. `TaskCreate`: "Review: /shipkit-review-direction"
+3. `TaskCreate`: "Re-dispatch for gaps (if needed)"
+4. `TaskCreate`: "Re-review after fixes (if needed)"
+
+**Rules:**
+- `TaskUpdate` each task to `completed` only after the dispatched skill finishes AND you update orchestration.json
+- Do NOT declare the loop done until: (a) the review task is marked `completed`, AND (b) `direction-assessment.json` reports `status: "pass"`
+- If review returns gaps: update re-dispatch and re-review tasks to `in_progress`, dispatch fixes, then re-review
+- Before declaring done, read orchestration.json and verify completedDispatches count >= 8 producers + 1 passing review
+
 1. `/shipkit-why-project` — establishes foundation
 2. `/shipkit-vision` — builds on why
 3. `/shipkit-stage` — sets constraints

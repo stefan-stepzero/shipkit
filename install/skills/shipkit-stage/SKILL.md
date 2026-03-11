@@ -60,6 +60,21 @@ agent: shipkit-visionary-agent
 
 ## Process — Set Mode
 
+### Completion Tracking
+
+Create tasks for each major output:
+- `TaskCreate`: "Confirm stage with user"
+- `TaskCreate`: "Derive constraints + stageImplications"
+- `TaskCreate`: "Derive S-* criteria with rubrics"
+- `TaskCreate`: "Define stage gates"
+- `TaskCreate`: "Write goals/strategic.json"
+
+In Evaluate mode, create tasks:
+- `TaskCreate`: "Build evidence table across all goal files"
+- `TaskCreate`: "Produce graduation recommendation"
+
+Each S-* criterion must include a rubric — bare thresholds are incomplete.
+
 ### Step 0: Check for Existing File
 
 1. Check if `.shipkit/goals/strategic.json` exists

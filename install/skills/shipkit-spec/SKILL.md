@@ -59,6 +59,18 @@ If `$ARGUMENTS` is empty, proceed normally from Step -1.
 
 ## Process
 
+### Completion Tracking
+
+After clarifying the feature (Step 1), create tasks:
+- `TaskCreate`: "Read context + explore affected code (2 agents)"
+- `TaskCreate`: "Archive existing spec (if overwriting)"
+- `TaskCreate`: "Generate spec JSON (all 20+ fields)"
+- `TaskCreate`: "Validate completeness (11-point checklist)"
+- `TaskCreate`: "Write spec to disk"
+- In batch mode, for EACH remaining roadmap feature: `TaskCreate`: "Spec: {feature-name}"
+
+Do NOT skip the validation step (Step 5) after generating the spec. In batch mode, do NOT stop after the first feature — ask to continue.
+
 ### Step -1: Batch Detection
 
 Check if a spec roadmap or product definition exists with features to spec:

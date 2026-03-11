@@ -48,6 +48,18 @@ If product-definition.json is missing, tell the user: "Run `/shipkit-product-def
 
 ## Process
 
+### Completion Tracking
+
+After reading prerequisites, create tasks:
+- `TaskCreate`: "Design 2-5 mechanisms mapped to features"
+- `TaskCreate`: "Define 2-6 components mapped to mechanisms"
+- `TaskCreate`: "Capture cross-cutting design decisions"
+- `TaskCreate`: "Get user confirmation"
+- `TaskCreate`: "Write engineering-definition.json"
+- `TaskCreate`: "Derive and write architecture.json"
+
+engineering-definition.json alone is NOT done — architecture.json must also be derived and written. This applies to propose mode (Step 0c) as well.
+
 ### Step 0: Check for Existing File
 
 1. Check if `.shipkit/engineering-definition.json` exists

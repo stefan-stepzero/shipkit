@@ -47,6 +47,16 @@ allowed-tools: Read, Glob, Grep, Bash
 
 ## Process
 
+### Completion Tracking
+
+After discovering integration points (Step 1), create tasks:
+- `TaskCreate`: "Map pipeline topology"
+- `TaskCreate`: "Audit all 10 dimensions (PA-DEC through PA-REF)"
+- `TaskCreate`: "Write prompt-audit.json (schema-validated)"
+- `TaskCreate`: "Present summary to user"
+
+If using parallel subagents for dimension auditing, verify ALL agent results are collected before synthesizing. Do NOT write the report until all 10 dimensions have findings (even if finding is "N/A").
+
 ### Step 1: Discover LLM Integration Points
 
 Scan the codebase for all LLM-related code using detection patterns.

@@ -51,6 +51,28 @@ Multiple flags can be combined: `/shipkit-qa-visual http://localhost:3000 --scre
 
 ## Process
 
+### Completion Tracking (MANDATORY)
+
+Before starting work, create tasks to track progress. Do NOT present the final report until all tasks show completed.
+
+**At the start of the skill:**
+1. After loading ui-goals.json (Step 1), count the pages. Create one task per major phase:
+   - `TaskCreate`: "Setup: Playwright + config"
+   - `TaskCreate`: "Goals: Load/create ui-goals.json"
+   - `TaskCreate`: "URL: Detect app URL"
+   - For EACH page in ui-goals.json: `TaskCreate`: "Generate tests: {page.name}"
+   - `TaskCreate`: "Run tests"
+   - `TaskCreate`: "Report: Map results to goals with screenshots"
+
+2. As you complete each phase, `TaskUpdate` its task to `completed`.
+
+3. **Critical**: The "Report" task is NOT complete until you have:
+   - Produced the results table mapping outcomes to goals
+   - Reviewed screenshots against qualitative goals (sizing, hierarchy, content quality)
+   - Updated `lastTestedAt` in ui-goals.json
+
+**If a subagent reports test results, verify the server is actually running before accepting them.**
+
 ### Step 0: Setup
 
 Check whether Playwright is available and create the config if needed.

@@ -60,6 +60,18 @@ agent: shipkit-architect-agent
 
 ## Process — Define Mode
 
+### Completion Tracking
+
+After loading context, create tasks:
+- `TaskCreate`: "Derive E-* criteria with rubrics from engineering blueprint"
+- `TaskCreate`: "Classify checkability + verificationTool per criterion"
+- `TaskCreate`: "Get user validation on criteria"
+- `TaskCreate`: "Map E-* to existing gates"
+- `TaskCreate`: "Write goals/engineering.json"
+- `TaskCreate`: "Update strategic.json gates with E-* IDs"
+
+Writing engineering.json is NOT done — strategic.json gates must also be updated with E-* IDs. Every criterion must include a rubric (3-5 levels).
+
 ### Step 0: Check for Existing File
 
 1. Check if `.shipkit/goals/engineering.json` exists

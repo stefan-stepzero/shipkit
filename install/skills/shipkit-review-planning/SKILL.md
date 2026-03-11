@@ -43,6 +43,22 @@ agent: shipkit-reviewer-planning-agent
 
    **Only current-phase blockers count as blocking prerequisites.** Future-phase tasks are informational — do NOT count them in the blocker total. If a task has no `blocksPhase` field (legacy format), infer from context or treat as current-phase.
 
+### Completion Tracking
+
+Create tasks for each alignment check:
+- `TaskCreate`: "Check 1: Completeness (all artifacts present)"
+- `TaskCreate`: "Check 2: Product ↔ Engineering alignment"
+- `TaskCreate`: "Check 3: Definition ↔ Specs"
+- `TaskCreate`: "Check 4: Specs ↔ Roadmap"
+- `TaskCreate`: "Check 5: Plans ↔ Specs"
+- `TaskCreate`: "Check 6: Stage alignment"
+- `TaskCreate`: "Check 7: Goal coverage"
+- `TaskCreate`: "Check 8: Architecture consistency"
+- `TaskCreate`: "Check 9: Prerequisites by phase"
+- `TaskCreate`: "Write planning-assessment.json"
+
+Each check task requires evidence — do NOT mark complete without citing specific artifacts. Do NOT write the assessment until all 9 checks are completed.
+
 ## Output
 
 Write `.shipkit/reviews/planning-assessment.json` with structured findings.

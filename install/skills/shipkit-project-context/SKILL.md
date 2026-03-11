@@ -47,6 +47,16 @@ context: fork
 
 ## Process
 
+### Completion Tracking
+
+This skill produces 3 files, not 1. Create tasks:
+- `TaskCreate`: "Write stack.json"
+- `TaskCreate`: "Write env-requirements.md"
+- `TaskCreate`: "Write schema.json"
+- `TaskCreate`: "Detect working patterns (Step 3.5)"
+
+stack.json alone is NOT done — env-requirements.md and schema.json must also be written. Do NOT present the completion summary until all 3 files exist.
+
 ### Step 1: Check Freshness (Smart Caching)
 
 **Before doing any work**, check if rescan is needed.

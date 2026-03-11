@@ -64,6 +64,16 @@ argument-hint: "[checkpoint name]"
 
 **Realistic example**: See `references/example.json`
 
+### Completion Tracking
+
+Create tasks:
+- `TaskCreate`: "Analyze session (scan conversation + git status)"
+- `TaskCreate`: "Present summary for user confirmation"
+- `TaskCreate`: "Write progress.json (all 10 sub-fields)"
+- `TaskCreate`: "Auto-archive sessions older than 48 hours"
+
+The progress.json write is NOT done until summary fields are recalculated and workstreams updated. The auto-archive step runs AFTER the main write — do not skip it.
+
 ---
 
 ## Process

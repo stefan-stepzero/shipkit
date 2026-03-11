@@ -48,6 +48,17 @@ If product-discovery.json is missing, tell the user: "Run `/shipkit-product-disc
 
 ## Process
 
+### Completion Tracking
+
+After reading context, create tasks:
+- `TaskCreate`: "Define features mapped to pain points"
+- `TaskCreate`: "Define 2-4 UX patterns with rationale"
+- `TaskCreate`: "Identify 1-3 differentiators"
+- `TaskCreate`: "Get user confirmation on blueprint"
+- `TaskCreate`: "Write product-definition.json"
+
+In propose mode (Step 0c), still verify all sections are populated — features, patterns, AND differentiators. A file with only features is incomplete.
+
 ### Step 0: Check for Existing File
 
 1. Check if `.shipkit/product-definition.json` exists

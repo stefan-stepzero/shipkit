@@ -52,6 +52,18 @@ Set `activeLoop` to `"shipping"` on entry. Set `status` to `"pass"` or `"partial
 
 ## Dispatch Order
 
+### Completion Tracking
+
+Create tasks for each dispatch:
+- `TaskCreate`: "Dispatch: /shipkit-work-memory (checkpoint)"
+- `TaskCreate`: "Create Agent Team with plan assignments"
+- `TaskCreate`: "Monitor team until implementation complete"
+- `TaskCreate`: "Dispatch: /shipkit-review-shipping"
+- `TaskCreate`: "Fix issues + re-review (if needed)"
+- `TaskCreate`: "Dispatch: /shipkit-preflight (release gate)"
+
+Verification passing is NOT the finish line — preflight must also pass. Do NOT skip preflight after a clean verification report.
+
 1. `/shipkit-work-memory` — checkpoint progress before implementation begins
 2. Read `.shipkit/plans/` and `.shipkit/test-cases/` produced by planning loop
 3. Create Agent Team — spawn teammates with plan assignments

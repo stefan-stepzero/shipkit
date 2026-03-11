@@ -56,6 +56,17 @@ allowed-tools: Bash, Read, Write, WebFetch, WebSearch
 - No manifest or registry account needed
 - Claude searches on behalf of user
 
+### Completion Tracking
+
+When installing an MCP, create tasks:
+- `TaskCreate`: "Search/discover MCP options"
+- `TaskCreate`: "Read existing .mcp.json (merge, don't overwrite)"
+- `TaskCreate`: "Detect platform (Windows/Mac/Linux) for correct config"
+- `TaskCreate`: "Write updated .mcp.json"
+- `TaskCreate`: "Post-install: restart reminder + prerequisite warnings"
+
+Writing .mcp.json must MERGE with existing MCPs, not overwrite. Platform detection determines whether to use npx directly or cmd wrapper.
+
 ---
 
 ## Process
