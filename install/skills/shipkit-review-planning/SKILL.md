@@ -1,8 +1,10 @@
 ---
 name: shipkit-review-planning
 description: Internal reviewer — assesses planning artifact alignment. Checks definitions agree, specs cover roadmap, no gaps. Dispatched by orch-planning, not for direct use.
+user-invocable: false
 context: fork
 agent: shipkit-reviewer-planning-agent
+effort: medium
 ---
 
 # shipkit-review-planning - Planning Assessment

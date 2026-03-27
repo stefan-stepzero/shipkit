@@ -4,6 +4,7 @@ description: "Generate project index for faster codebase navigation. Triggers: '
 context: fork
 model: haiku
 allowed-tools: Read, Glob, Grep, Bash, Write
+effort: medium
 ---
 
 # shipkit-codebase-index - Codebase Navigation Index
@@ -48,7 +49,7 @@ Before starting analysis, create tasks for each index section:
 ### Step 1: Run Generator Script
 
 ```bash
-python .claude/skills/shipkit-codebase-index/scripts/generate_index.py
+python ${CLAUDE_SKILL_DIR}/scripts/generate_index.py
 ```
 
 **Script provides (100% reliable data):**
@@ -71,7 +72,7 @@ python .claude/skills/shipkit-codebase-index/scripts/generate_index.py
 **USE SUBAGENT FOR CONCEPT MAPPING** - Launch Explore subagent for efficient parallel scanning:
 
 ```
-Task tool with subagent_type: "Explore"
+Agent tool with subagent_type: "Explore"
 Prompt: "Scan codebase to build navigation index. Find and report:
 
 1. FRAMEWORK: Check for next.config.*, vite.config.*, nuxt.config.*, etc.

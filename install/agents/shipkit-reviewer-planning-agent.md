@@ -4,6 +4,7 @@ description: Planning judgment worker — assesses alignment between product def
 tools: Read, Write, Grep, Glob
 disallowedTools: Edit, Bash, NotebookEdit
 model: sonnet
+effort: medium
 maxTurns: 50
 ---
 

@@ -4,7 +4,8 @@ description: "Define what to build — features, UX patterns, and differentiator
 argument-hint: "[product name or focus area]"
 context: fork
 agent: shipkit-product-owner-agent
-allowed-tools: Read, Write, Edit, Glob, Grep, Task, AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Grep, Agent, AskUserQuestion
+effort: medium
 ---
 
 # shipkit-product-definition — Product Blueprint

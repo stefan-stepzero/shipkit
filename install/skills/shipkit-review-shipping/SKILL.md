@@ -5,6 +5,7 @@ argument-hint: "[scope or feature]"
 context: fork
 agent: shipkit-reviewer-shipping-agent
 allowed-tools: Read, Write, Glob, Grep, Bash, Skill
+effort: high
 ---
 
 # shipkit-review-shipping
@@ -98,7 +99,7 @@ Changed files may affect other files using the same patterns. Expand verificatio
 **USE SUBAGENT FOR PATTERN RIPPLE** - Launch Explore subagent for efficient parallel scanning:
 
 ```
-Task tool with subagent_type: "Explore"
+Agent tool with subagent_type: "Explore"
 Prompt: "Detect pattern ripple from these changed files: [list files]
 [If index exists, include: 'The codebase index maps these concept areas: [list concepts with their files]. Use this to immediately identify same-concept files. Focus your scanning on cross-concept ripple effects the index doesn't capture.']
 
@@ -184,7 +185,7 @@ Review changes against these 12 dimensions, emphasizing based on what changed.
 **FOR LARGE CHANGE SETS (10+ files), USE PARALLEL SUBAGENTS:**
 
 ```
-Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+Launch these Agent subagents IN PARALLEL (single message, multiple tool calls):
 
 1. STRUCTURAL & SPEC AGENT (subagent_type: "Explore")
    Prompt: "Verify structural integrity and spec alignment for these files: [list files]

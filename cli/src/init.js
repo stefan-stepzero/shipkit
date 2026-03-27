@@ -16,6 +16,12 @@ const HOOK_FILES = {
   'shipkit-track-skill-usage.py': 'shipkit-track-skill-usage.py',
   'shipkit-task-completed-hook.py': 'shipkit-task-completed-hook.py',
   'shipkit-teammate-idle-hook.py': 'shipkit-teammate-idle-hook.py',
+  'shipkit-post-compact.py': 'shipkit-post-compact.py',
+  'shipkit-session-end.py': 'shipkit-session-end.py',
+  'shipkit-subagent-context.py': 'shipkit-subagent-context.py',
+  'shipkit-context-check.py': 'shipkit-context-check.py',
+  'shipkit-diagnostics.py': 'shipkit-diagnostics.py',
+  'shipkit-prereq-check.py': 'shipkit-prereq-check.py',
 };
 
 async function init(packageRoot, flags) {

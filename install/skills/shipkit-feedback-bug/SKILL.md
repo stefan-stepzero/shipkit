@@ -4,6 +4,7 @@ description: "Process user feedback into investigated bug specs with root cause 
 argument-hint: "<paste feedback or describe source>"
 context: fork
 agent: shipkit-product-owner-agent
+effort: high
 ---
 
 # shipkit-feedback-bug - Feedback to Investigated Bug Specs
@@ -168,7 +169,7 @@ Severity (for bugs):
 **FOR MULTIPLE BUGS, USE PARALLEL SUBAGENTS:**
 
 ```
-Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+Launch these Agent subagents IN PARALLEL (single message, multiple tool calls):
 
 1. CODE ISOLATION AGENT (subagent_type: "Explore")
    Prompt: "Find code related to [feature/component from bug].

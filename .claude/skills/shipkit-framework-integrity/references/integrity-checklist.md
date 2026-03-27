@@ -145,7 +145,13 @@ install/shared/hooks/
 ├── shipkit-session-start.py          → session-start.py
 ├── shipkit-track-skill-usage.py      → shipkit-track-skill-usage.py
 ├── shipkit-task-completed-hook.py    → shipkit-task-completed-hook.py
-└── shipkit-teammate-idle-hook.py     → shipkit-teammate-idle-hook.py
+├── shipkit-teammate-idle-hook.py     → shipkit-teammate-idle-hook.py
+├── shipkit-post-compact.py           → shipkit-post-compact.py
+├── shipkit-session-end.py            → shipkit-session-end.py
+├── shipkit-subagent-context.py       → shipkit-subagent-context.py
+├── shipkit-context-check.py          → shipkit-context-check.py
+├── shipkit-diagnostics.py            → shipkit-diagnostics.py
+└── shipkit-prereq-check.py           → shipkit-prereq-check.py
 ```
 
 ### npx CLI ↔ Canonical Settings Consistency
@@ -261,19 +267,33 @@ Required fields for `.shipkit/*.json` files:
 - [ ] `fetchedAt` is within 7 days
 - [ ] If stale or missing: run `bash docs/development/fetch-changelog.sh`
 
-### Hook Event Coverage
+### Hook Event Coverage (25 events)
 Known hook events (update as changelog evolves):
 - [ ] SessionStart (v1.0.62)
+- [ ] SessionEnd (version unknown, timeout fixed v2.1.74)
+- [ ] UserPromptSubmit (version unknown)
 - [ ] PreToolUse (v1.0.38, additionalContext v2.1.9)
 - [ ] PostToolUse (v1.0.38)
+- [ ] PostToolUseFailure (version unknown, source-only)
+- [ ] PermissionRequest (v2.0.45)
 - [ ] Stop (v1.0.38)
+- [ ] StopFailure (version unknown)
 - [ ] SubagentStart (v2.0.43)
 - [ ] SubagentStop (v1.0.41)
 - [ ] Notification (v2.0.37)
-- [ ] PermissionRequest (v2.0.45)
+- [ ] TeammateIdle (v2.1.33, fixed v2.1.69)
+- [ ] TaskCompleted (v2.1.33, fixed v2.1.69)
+- [ ] TaskCreated (v2.1.84)
+- [ ] InstructionsLoaded (v2.1.69)
+- [ ] ConfigChange (version unknown)
 - [ ] PreCompact (v1.0.48)
-- [ ] TeammateIdle (v2.1.33)
-- [ ] TaskCompleted (v2.1.33)
+- [ ] PostCompact (v2.1.76)
+- [ ] CwdChanged (v2.1.83)
+- [ ] FileChanged (v2.1.83)
+- [ ] WorktreeCreate (version unknown)
+- [ ] WorktreeRemove (version unknown)
+- [ ] Elicitation (v2.1.76)
+- [ ] ElicitationResult (v2.1.76)
 
 ### Settings Schema
 - [ ] Permission string formats are valid

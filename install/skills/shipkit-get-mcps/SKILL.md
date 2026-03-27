@@ -4,6 +4,7 @@ description: Discover and install MCP servers for enhanced Claude capabilities
 argument-hint: "<search query>"
 disable-model-invocation: true
 allowed-tools: Bash, Read, Write, WebFetch, WebSearch
+effort: medium
 ---
 
 # shipkit-get-mcps - MCP Discovery & Installation
@@ -102,7 +103,7 @@ User: /get-mcps supabase
 **If not in catalog, USE PARALLEL SUBAGENTS to search multiple registries:**
 
 ```
-Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+Launch these Agent subagents IN PARALLEL (single message, multiple tool calls):
 
 1. OFFICIAL REGISTRY AGENT (subagent_type: "Explore")
    Prompt: "Search for '[query]' MCP server on official registry.

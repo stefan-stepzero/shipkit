@@ -4,7 +4,8 @@ description: "Define the technical approach — mechanisms, design decisions, st
 argument-hint: "[focus area or --refresh]"
 context: fork
 agent: shipkit-architect-agent
-allowed-tools: Read, Write, Edit, Glob, Grep, Task, AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Grep, Agent, AskUserQuestion
+effort: medium
 ---
 
 # shipkit-engineering-definition — Technical Approach

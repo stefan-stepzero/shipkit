@@ -6,6 +6,7 @@ model: opus
 context: fork
 agent: shipkit-architect-agent
 allowed-tools: Read, Glob, Grep, Bash
+effort: high
 ---
 
 # shipkit-prompt-audit - LLM Prompt Architecture Audit
@@ -74,7 +75,7 @@ Scan the codebase for all LLM-related code using detection patterns.
 **USE SUBAGENT FOR DISCOVERY** — Launch Explore subagent for efficient parallel scanning:
 
 ```
-Task tool with subagent_type: "Explore"
+Agent tool with subagent_type: "Explore"
 Prompt: "Find all LLM integration points in this codebase.
 [If index exists, include: 'The codebase index shows: directories=[dirs], config files=[configs], concepts=[concepts]. Focus search on these locations first before scanning broadly.']
 
@@ -184,7 +185,7 @@ Review each integration point and pipeline against these dimensions.
 **FOR MULTIPLE INTEGRATION POINTS (3+), USE PARALLEL SUBAGENTS:**
 
 ```
-Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+Launch these Agent subagents IN PARALLEL (single message, multiple tool calls):
 
 1. ARCHITECTURE AGENT (subagent_type: "Explore")
    Prompt: "Audit prompt decomposition and parallelization for these LLM integrations: [list files:lines]

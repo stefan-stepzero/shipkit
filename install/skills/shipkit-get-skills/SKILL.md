@@ -4,6 +4,7 @@ description: Discover and install skills and plugins from the Claude Code ecosys
 argument-hint: "<search query>"
 disable-model-invocation: true
 allowed-tools: Bash, Read
+effort: medium
 ---
 
 # shipkit-get-skills - Skill & Plugin Discovery

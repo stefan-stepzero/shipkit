@@ -4,6 +4,7 @@ description: "Define project stage, scope constraints, and graduation criteria. 
 argument-hint: "[set | --evaluate]"
 context: fork
 agent: shipkit-visionary-agent
+effort: medium
 ---
 
 # shipkit-stage — Project Stage & Graduation Criteria

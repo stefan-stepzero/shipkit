@@ -2,6 +2,7 @@
 name: shipkit-metrics
 description: "Capture current metric values for goal evaluation. Triggers: 'log metrics', 'update metrics', 'record measurements'."
 argument-hint: "[metric ID or --list]"
+effort: low
 ---
 
 # shipkit-metrics - Metric Capture Utility

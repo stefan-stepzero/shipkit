@@ -4,6 +4,7 @@ description: Shipping judgment worker — verifies implementation quality across
 tools: Read, Write, Grep, Glob, Skill
 disallowedTools: Edit, Bash, NotebookEdit
 model: sonnet
+effort: medium
 maxTurns: 60
 ---
 

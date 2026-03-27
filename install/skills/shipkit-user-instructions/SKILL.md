@@ -1,6 +1,7 @@
 ---
 name: shipkit-user-instructions
 description: "Use when there are manual tasks the user must complete. Triggers: 'create task', 'track TODO', 'user needs to', 'manual step required'."
+effort: low
 ---
 
 # shipkit-user-instructions - Task Tracking for Manual User Actions

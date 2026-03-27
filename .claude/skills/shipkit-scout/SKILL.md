@@ -78,9 +78,19 @@ Fetch Claude Code documentation from code.claude.com/docs to extract current fea
    - memory.md — auto-memory, memory files
    - features-overview.md — feature catalog
    - best-practices.md — official best practices
+   - tools-reference.md — built-in tools, parameters, permissions
+   - channels.md — event channels system
+   - channels-reference.md — channels API reference
+   - cli-reference.md — CLI commands and flags
+   - headless.md — programmatic/headless usage
+   - scheduled-tasks.md — scheduled task system
+   - web-scheduled-tasks.md — web-based scheduled tasks
+   - env-vars.md — environment variables reference
+   - permission-modes.md — permission mode details
+   - model-config.md — model configuration
 
 For --full mode, fetch ALL pages in llms.txt.
-For --quick mode, only fetch: skills.md, hooks.md, agent-teams.md, changelog.md
+For --quick mode, only fetch: skills.md, hooks.md, agent-teams.md, tools-reference.md, changelog.md
 
 For each page, extract with this WebFetch prompt:
 "Extract from this Claude Code documentation:
@@ -88,6 +98,9 @@ For each page, extract with this WebFetch prompt:
 2. Breaking changes or deprecations
 3. New capabilities
 4. Code examples showing usage patterns
+5. Plugin system changes
+6. Channel/event system changes
+7. Tool additions or parameter changes
 Return as structured text: FEATURES, BREAKING_CHANGES, DEPRECATIONS, EXAMPLES sections"
 
 Return a combined report:
@@ -115,6 +128,7 @@ Fetch and parse the Claude Code CHANGELOG.md from GitHub.
    - Extract breaking changes
    - Extract bug fixes relevant to skills/hooks/agents
    - Extract new tool names, hook events, or settings fields
+   - Extract new plugin capabilities, channels features, or scheduled task changes
 
 3. Identify the latest version number
 

@@ -143,18 +143,23 @@ def main():
         skills_dir = claude_dir / 'skills'
         project_root = claude_dir.parent
 
+    # Collect output lines instead of printing directly
+    lines = []
+
     # Load master skill (orchestration context for every session)
     master_skill = skills_dir / 'shipkit-master' / 'SKILL.md'
     if not master_skill.exists():
-        print("Shipkit not properly installed. Run the installer again.")
+        lines.append("Shipkit not properly installed. Run the installer again.")
+        _emit_context('\n'.join(lines))
         return 0
 
-    print(master_skill.read_text(encoding='utf-8'))
-    print()
-    print("---")
-    print()
+    lines.append(master_skill.read_text(encoding='utf-8'))
+    lines.append('')
+    lines.append('---')
+    lines.append('')
 
     if project_root is None:
+        _emit_context('\n'.join(lines))
         return 0
 
     shipkit_dir = project_root / '.shipkit'
@@ -162,8 +167,8 @@ def main():
     # ── Version check ──
     update_msg = check_for_updates(project_root)
     if update_msg:
-        print(update_msg)
-        print()
+        lines.append(update_msg)
+        lines.append('')
 
     # ── Clean old observability logs ──
     obs_dir = shipkit_dir / 'observability'
@@ -176,22 +181,23 @@ def main():
 
     # ── Fresh project ──
     if not shipkit_dir.exists():
-        print("No `.shipkit/` folder found — fresh project.")
-        print()
-        print("Start with: `/shipkit-project-context` to scan your codebase")
+        lines.append("No `.shipkit/` folder found — fresh project.")
+        lines.append('')
+        lines.append("Start with: `/shipkit-project-context` to scan your codebase")
+        _emit_context('\n'.join(lines))
         return 0
 
     # ── Progress resume ──
     progress = get_progress_summary(project_root)
     if progress:
-        print(progress)
-        print()
+        lines.append(progress)
+        lines.append('')
 
     # ── Available context files ──
-    print("## Available Context")
-    print()
-    print("| File | Status | Purpose |")
-    print("|------|--------|---------|")
+    lines.append("## Available Context")
+    lines.append('')
+    lines.append("| File | Status | Purpose |")
+    lines.append("|------|--------|---------|")
 
     context_files = [
         ('why.json', 'Project vision & purpose'),
@@ -211,7 +217,7 @@ def main():
         file_path = shipkit_dir / filename
         if file_path.exists():
             age = format_age(get_file_age_days(file_path))
-            print(f"| `{filename}` | {age} | {purpose} |")
+            lines.append(f"| `{filename}` | {age} | {purpose} |")
             found_count += 1
 
     # Check for active specs and plans
@@ -221,9 +227,9 @@ def main():
     plan_count = len(list(plans_dir.glob('*.json'))) if plans_dir.exists() else 0
 
     if spec_count > 0:
-        print(f"| `specs/active/` | {spec_count} spec(s) | Feature specifications |")
+        lines.append(f"| `specs/active/` | {spec_count} spec(s) | Feature specifications |")
     if plan_count > 0:
-        print(f"| `plans/active/` | {plan_count} plan(s) | Implementation plans |")
+        lines.append(f"| `plans/active/` | {plan_count} plan(s) | Implementation plans |")
 
     # Check for goals
     goals_dir = shipkit_dir / 'goals'
@@ -231,18 +237,29 @@ def main():
         goal_files = list(goals_dir.glob('*.json'))
         if goal_files:
             names = ', '.join(f.stem for f in goal_files)
-            print(f"| `goals/` | {names} | Success criteria |")
+            lines.append(f"| `goals/` | {names} | Success criteria |")
 
-    print()
+    lines.append('')
 
     if found_count == 0 and spec_count == 0 and plan_count == 0:
-        print("No context files yet. Start with `/shipkit-project-context`.")
-        print()
+        lines.append("No context files yet. Start with `/shipkit-project-context`.")
+        lines.append('')
 
-    print("*Read context files before re-discovering patterns.*")
-    print()
+    lines.append("*Read context files before re-discovering patterns.*")
+    lines.append('')
 
+    _emit_context('\n'.join(lines))
     return 0
+
+
+def _emit_context(content: str):
+    """Output context using the structured additionalContext CC pattern."""
+    output = {
+        "hookSpecificOutput": {
+            "additionalContext": content
+        }
+    }
+    print(json.dumps(output))
 
 
 if __name__ == '__main__':

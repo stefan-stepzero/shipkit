@@ -4,6 +4,7 @@ description: Direction judgment worker — assesses strategic artifact coherence
 tools: Read, Write, Grep, Glob
 disallowedTools: Edit, Bash, NotebookEdit
 model: sonnet
+effort: medium
 maxTurns: 40
 ---
 

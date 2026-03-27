@@ -4,6 +4,7 @@ description: "Use when defining project vision and strategic direction. Triggers
 argument-hint: "[project name]"
 context: fork
 agent: shipkit-visionary-agent
+effort: medium
 ---
 
 # shipkit-why-project - Project Vision & Strategy

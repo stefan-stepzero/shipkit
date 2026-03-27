@@ -3,6 +3,7 @@ name: shipkit-update
 description: Install or update Shipkit via npx. Detects existing installations, archives them safely, and intelligently merges user content with new version.
 disable-model-invocation: true
 argument-hint: "[repo-url]"
+effort: low
 ---
 
 # shipkit-update - Install & Update Shipkit

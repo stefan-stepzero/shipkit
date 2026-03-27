@@ -3,6 +3,7 @@ name: shipkit-orch-shipping
 description: Shipping loop orchestrator — spawns an implementation Agent Team, then dispatches verification and preflight. Runs implement-verify-fix cycle until code passes all quality checks.
 tools: Read, Write, Glob, Skill
 model: sonnet
+effort: medium
 maxTurns: 150
 ---
 

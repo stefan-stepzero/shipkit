@@ -4,6 +4,7 @@ description: "Prioritize which specs to write first from product + engineering d
 argument-hint: "[--update | --regenerate]"
 context: fork
 agent: shipkit-product-owner-agent
+effort: medium
 ---
 
 # shipkit-spec-roadmap — Spec Prioritization Roadmap

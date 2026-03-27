@@ -1,13 +1,21 @@
 ---
 name: shipkit-orch-direction
-description: Internal orchestrator — direction loop. Dispatches strategic skills and assesses coherence. Dispatched by shipkit-master, not for direct use.
+description: Direction loop — defines WHY, WHAT, and strategic foundations. Dispatches producer skills and reviews coherence. Can be invoked standalone or by shipkit-master.
 context: fork
 agent: shipkit-orch-direction-agent
+effort: high
 ---
 
 # shipkit-orch-direction - Direction Loop
 
 **Purpose**: Orchestrate the production and review of strategic artifacts until direction is coherent and stable.
+
+## Standalone Invocation
+
+If invoked directly (no `orchestration.json` exists or `activeLoop` is not set by master):
+1. Check that `.shipkit/` directory exists — if not, tell the user to run `/shipkit-why-project` first
+2. Create `orchestration.json` yourself with `activeLoop: "direction"`
+3. Proceed with normal dispatch order below
 
 ## Scope
 

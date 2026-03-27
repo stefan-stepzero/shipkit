@@ -1,13 +1,21 @@
 ---
 name: shipkit-orch-shipping
-description: Internal orchestrator — shipping loop. Spawns implementation team, dispatches verification and preflight. Dispatched by shipkit-master, not for direct use.
+description: Shipping loop — spawns implementation team, verifies quality, gates release. Can be invoked standalone or by shipkit-master.
 context: fork
 agent: shipkit-orch-shipping-agent
+effort: high
 ---
 
 # shipkit-orch-shipping - Shipping Loop
 
 **Purpose**: Orchestrate implementation via an Agent Team, then verify quality and gate release.
+
+## Standalone Invocation
+
+If invoked directly (no `orchestration.json` exists or `activeLoop` is not set by master):
+1. Verify planning artifacts exist (`.shipkit/plans/` with at least one plan, `.shipkit/test-cases/`) — if missing, tell the user to run `/shipkit-orch-planning` first
+2. Create `orchestration.json` yourself with `activeLoop: "shipping"`
+3. Proceed with normal dispatch order below
 
 ## Scope
 
@@ -21,7 +29,7 @@ Execution that delivers working software:
 | Step | Method | What It Produces |
 |------|--------|-----------------|
 | `/shipkit-work-memory` | Skill dispatch | progress.json (checkpoint) |
-| Implement | Direct team (Agent/Task tools) | code changes |
+| Implement | Direct team (Agent tool) | code changes |
 | `/shipkit-review-shipping` | Skill dispatch → reviewer-shipping | verification-report.json |
 | `/shipkit-preflight` | Skill dispatch → reviewer-shipping | preflight.json |
 

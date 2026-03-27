@@ -1,13 +1,21 @@
 ---
 name: shipkit-orch-planning
-description: Internal orchestrator — planning loop. Dispatches definition and spec skills, assesses alignment. Dispatched by shipkit-master, not for direct use.
+description: Planning loop — translates definitions into specs, plans, and test cases. Dispatches planning skills and reviews alignment. Can be invoked standalone or by shipkit-master.
 context: fork
 agent: shipkit-orch-planning-agent
+effort: high
 ---
 
 # shipkit-orch-planning - Planning Loop
 
 **Purpose**: Orchestrate the production and review of planning artifacts until product and engineering definitions are aligned and specs are complete.
+
+## Standalone Invocation
+
+If invoked directly (no `orchestration.json` exists or `activeLoop` is not set by master):
+1. Verify direction artifacts exist (`.shipkit/why.json`, `.shipkit/vision.json`, `.shipkit/product-definition.json`, `.shipkit/engineering-definition.json`) — if missing, tell the user to run `/shipkit-orch-direction` first
+2. Create `orchestration.json` yourself with `activeLoop: "planning"`
+3. Proceed with normal dispatch order below
 
 ## Scope
 

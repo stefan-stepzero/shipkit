@@ -4,6 +4,7 @@ description: Engineering Manager — designs HOW to build through engineering de
 tools: Read, Glob, Grep, Write, Edit, Bash, Skill
 disallowedTools: NotebookEdit
 model: opus
+effort: high
 maxTurns: 50
 permissionMode: acceptEdits
 memory: project
@@ -75,7 +76,7 @@ You evaluate technical performance against engineering goals. This is the techni
 | `/shipkit-test-cases` | Test coverage, edge cases, integration tests |
 | `/shipkit-thinking-partner` | Architecture trade-off analysis |
 
-**Specialist Agents** (spawn via Agent tool when needed):
+**Specialist Agents** (spawn via Skill tool dispatch):
 
 | Agent | When to Spawn |
 |-------|--------------|

@@ -263,6 +263,13 @@ Location: `.claude/specs/`
 - Created by `shipkit-dev-spec` or manually
 - Read these before implementing any specced feature
 
+**Pending specs (not yet implemented):**
+- `thinking-partner-adversarial.json` — Adversarial debate mode for thinking-partner: 3-5 resource advocate agents debate autonomously, produce tension map + decision matrix
+- `ux-pattern-researcher.json` — UX pattern research skill: identify pattern from taxonomy → find orgs with best implementations → browser research with screenshots → analyze UX flow + UI component structure → design recommendations. Taxonomy: `P:/Projects2/sg-dendrite/trees/ux-pattern-taxonomy/tree.json` (177 patterns, 9 cognitive-task categories)
+- `gtm-strategy.json` — Go-to-market strategy skill: positioning, segments, pricing model, content strategy, trust signals, channels, launch plan → outputs `.shipkit/gtm-strategy.json` for downstream skills
+- `website-blueprint.json` — Website blueprint skill: page inventory, section-by-section specs with UX patterns, conversion flows, SEO map, trust architecture, content requirements → outputs `.shipkit/website-blueprint.json`. Consumes GTM strategy
+- `engineering-definition-ecosystem-defaults.json` — Add ecosystem-aware defaults to engineering-definition: Step 2b (Ecosystem Audit), stack-specific reference files (python-llm, python-api, nextjs-fullstack, react-spa), mechanism-standards.md mapping common mechanisms to standard solutions. Prevents reinventing the wheel.
+
 ### Testing & Feedback (external repos)
 - **Crypto test harness**: `P:/Projects2/shipkit-testing/` — 23 skills, 10 agents, SHA-256 hash chain tests
 - **Lite test project**: `P:/Projects2/sg-shipkit-testing/` — Shipkit Lite installation for integration testing

@@ -14,6 +14,49 @@
 
 ---
 
+## Working Smart
+
+### Decompose Before Starting
+Before diving into work, assess the task shape:
+
+| You notice... | Do this instead of working inline |
+|---|---|
+| Task touches 3+ independent files | Parallel agents, one per file/area |
+| Code changes could break things | `isolation: worktree` — review before merging |
+| Need to understand unfamiliar code | Fork an Explore agent (Haiku) before coding |
+| Generating large output (>200 lines) | Write sections to files, then combine |
+| Task will need 10+ tool calls | Fork it — keep main conversation for coordination |
+| Multiple research questions | Parallel background agents, each writes to a file |
+| Repetitive changes across many files | `/batch` — spawns parallel worktree agents |
+
+### Write to Files, Not Just Context
+Context gets compacted. Files persist. Default to disk.
+
+- **Research findings** → write to a file before acting on them
+- **Agent results** → each agent writes to a named output file, not just return text
+- **Intermediate state** → if a task has phases, write phase output to disk between phases
+- **Large generated content** → write to disk first, present summary to user
+
+### Orient Before Acting
+- **Read before editing** — always read a file before modifying it
+- **Search before creating** — Grep/Glob to check if a function, component, or pattern already exists
+- **Understand the test setup** — check for test files and test commands before implementing
+- **Check `.shipkit/` context** — architecture decisions, stack choices, and specs may already answer your question
+
+### Verify After Changing
+- **Run tests** if a test command is known (check `package.json` scripts, Makefile, etc.)
+- **Check imports** after multi-file changes — verify no broken references
+- **Spot-check output** — after generating config, data files, or code, read back a sample to verify correctness
+- **QA delegated work** — always review Sonnet/Haiku agent output before presenting as done
+
+### Model Budget
+Don't waste expensive models on cheap tasks:
+- **Haiku**: file search, codebase exploration, audit, validation, reading/summarizing
+- **Sonnet**: code changes, research, data processing, multi-step tasks
+- **Opus**: complex architecture, ambiguous design, nuanced writing — or when the user is present and expects it
+
+---
+
 ## Quality Standards
 
 ### AI Agent Accessibility

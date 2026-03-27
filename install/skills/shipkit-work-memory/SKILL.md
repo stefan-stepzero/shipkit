@@ -2,6 +2,7 @@
 name: shipkit-work-memory
 description: "Log session progress and save resume state. Infers from conversation and git. Triggers: 'log progress', 'session summary', 'checkpoint', 'save progress', 'end session'."
 argument-hint: "[checkpoint name]"
+effort: low
 ---
 
 # shipkit-work-memory - Session Progress & Resume State

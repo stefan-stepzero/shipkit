@@ -2,7 +2,8 @@
 name: shipkit-qa-visual
 description: "Visual QA with dual artifacts: maintains a user-confirmed UI goals document (pages × personas × goals), then generates and runs Playwright tests against those goals. Auto-installs Chromium, runs headlessly, captures screenshots."
 argument-hint: "<url-or-command> [--update-goals] [--run-only] [--screenshots]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent
+effort: medium
 ---
 
 # shipkit-qa-visual

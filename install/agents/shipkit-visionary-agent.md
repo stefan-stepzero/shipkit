@@ -3,6 +3,7 @@ name: shipkit-visionary
 description: Strategic visionary — sets project direction, stage, quality constraints, and business goals. Owns the WHY. Use when setting vision, defining stage, or evaluating business metrics.
 tools: Read, Glob, Grep, Write, Edit, Skill
 model: opus
+effort: high
 maxTurns: 50
 memory: project
 skills: shipkit-why-project, shipkit-stage
@@ -63,7 +64,7 @@ You evaluate business metrics against strategic goals. This is the highest-level
 - Key business KPIs defined in goals/strategic.json
 - Whether the current stage is still appropriate
 
-**Specialist Agents** (spawn via Agent tool when needed):
+**Specialist Agents** (spawn via Skill tool dispatch):
 
 | Agent | When to Spawn |
 |-------|--------------|

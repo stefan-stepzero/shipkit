@@ -5,6 +5,7 @@ argument-hint: "<component or area>"
 context: fork
 agent: shipkit-reviewer-shipping-agent
 allowed-tools: Read, Glob, Grep
+effort: medium
 ---
 
 # shipkit-ux-audit - Lightweight UX Guidance
@@ -138,7 +139,7 @@ UX decisions based on `.shipkit/` context files alone miss actual component patt
    - Pass component directories and framework to Explore agents for targeted scanning
 3. If index doesn't exist → agents scan entire codebase for UI patterns
 
-**Launch explore agents** — Use the Task tool with `subagent_type: Explore`:
+**Launch explore agents** — Use the Agent tool with `subagent_type: Explore`:
 
 ```
 Agent 1 - Component patterns: "Find UI components related to [component type]

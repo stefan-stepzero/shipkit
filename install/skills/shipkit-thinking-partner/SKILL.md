@@ -6,6 +6,7 @@ context: fork
 model: opus
 agent: shipkit-thinking-partner-agent
 allowed-tools: Read, Glob, Grep, AskUserQuestion
+effort: medium
 ---
 
 # shipkit-thinking-partner - Cognitive Thinking Partner

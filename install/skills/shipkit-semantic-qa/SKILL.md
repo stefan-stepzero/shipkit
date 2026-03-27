@@ -2,7 +2,8 @@
 name: shipkit-semantic-qa
 description: "Semantic QA — define inputs/criteria, generate test scripts, Claude judges API outputs or UI screenshots against quality criteria. Triggers: 'semantic qa', 'quality check', 'visual qa', 'judge outputs', 'QA suite'."
 argument-hint: "[suite-name] [--setup|--run|--judge|--full]"
-allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Task
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent
+effort: medium
 ---
 
 # shipkit-semantic-qa - Semantic Quality Assurance
@@ -260,7 +261,7 @@ Update `suite.json` with `lastRun` metadata.
 **For 5+ outputs, use parallel subagents (one per output):**
 
 ```
-Launch Task agents IN PARALLEL:
+Launch Agent subagents IN PARALLEL:
 
 For each output file:
   subagent_type: "general-purpose", model: "haiku"

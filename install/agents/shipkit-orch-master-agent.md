@@ -3,6 +3,7 @@ name: shipkit-orch-master
 description: Master loop orchestrator — dispatches direction, planning, and shipping loops sequentially. Reads orchestration.json for crash recovery. Never produces artifacts directly.
 tools: Read, Write, Glob, Skill
 model: sonnet
+effort: medium
 maxTurns: 200
 ---
 

@@ -4,6 +4,7 @@ description: Generate and maintain code-anchored test case specifications. Use w
 argument-hint: "[feature or scope]"
 context: fork
 agent: shipkit-product-owner-agent
+effort: medium
 ---
 
 # shipkit-test-cases - Code-Anchored Test Case Management
@@ -143,7 +144,7 @@ git diff --name-only HEAD~5..HEAD
 **FOR MULTIPLE FEATURES (3+), USE PARALLEL SUBAGENTS:**
 
 ```
-Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+Launch these Agent subagents IN PARALLEL (single message, multiple tool calls):
 
 For each feature area discovered (auth, billing, checkout, etc.):
 
@@ -245,7 +246,7 @@ For each feature area discovered (auth, billing, checkout, etc.):
 
 **Option B: Agent delegation (many cases)**
 ```
-Use Task tool with subagent_type=Explore:
+Use Agent tool with subagent_type=Explore:
 "Enrich test case [ID] by scanning [validated files] for:
 - data-testid attributes
 - aria-label attributes

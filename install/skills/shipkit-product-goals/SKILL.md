@@ -4,6 +4,7 @@ description: "Derive measurable user-outcome criteria from the product blueprint
 argument-hint: "[goal topic | --evaluate]"
 context: fork
 agent: shipkit-product-owner-agent
+effort: medium
 ---
 
 # shipkit-product-goals — Product Success Criteria

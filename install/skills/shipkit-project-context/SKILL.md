@@ -3,6 +3,7 @@ name: shipkit-project-context
 description: "Use when starting a new project or refreshing tech stack context. Triggers: 'scan project', 'what's my stack', 'refresh context', 'generate stack'."
 model: haiku
 context: fork
+effort: medium
 ---
 
 # shipkit-project-context - Smart Project Context Scanner
@@ -102,7 +103,7 @@ stack.json alone is NOT done — env-requirements.md and schema.json must also b
 **USE SUBAGENT FOR COMPREHENSIVE STACK DETECTION** - For first run or full rescan:
 
 ```
-Task tool with subagent_type: "Explore"
+Agent tool with subagent_type: "Explore"
 Prompt: "Scan this project to detect complete tech stack.
 [If index exists, include: 'The codebase index already detected: framework=[X], config files=[list], directories=[list]. Skip re-detecting these. Focus on: working patterns (provider hierarchy, API route structure, import aliases from tsconfig), auth setup detail, and database schema specifics.']
 Report:

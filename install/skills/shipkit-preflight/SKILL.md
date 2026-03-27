@@ -6,6 +6,7 @@ model: opus
 context: fork
 agent: shipkit-reviewer-shipping-agent
 allowed-tools: Read, Glob, Grep, Bash
+effort: high
 ---
 
 # shipkit-preflight - MVP Production Readiness Audit
@@ -191,7 +192,7 @@ Possible questions (only if not already documented):
 **USE PARALLEL SUBAGENTS BY CATEGORY** - For full audits, spawn multiple Explore agents in parallel:
 
 ```
-Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+Launch these Agent subagents IN PARALLEL (single message, multiple tool calls):
 
 1. AUTH & SECURITY AGENT (subagent_type: "Explore")
    Prompt: "Audit authentication and security patterns in this [stack] codebase.

@@ -4,6 +4,7 @@ description: "Use when defining users, personas, or user journeys. Triggers: 'wh
 argument-hint: "[persona or journey]"
 context: fork
 agent: shipkit-product-owner-agent
+effort: medium
 ---
 
 # shipkit-product-discovery - Lightweight Product Discovery

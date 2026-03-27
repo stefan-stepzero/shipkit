@@ -4,6 +4,7 @@ description: Product Manager — defines WHAT to build through product definitio
 tools: Read, Glob, Grep, Write, Edit, Skill
 disallowedTools: NotebookEdit
 model: opus
+effort: high
 maxTurns: 50
 permissionMode: acceptEdits
 memory: project

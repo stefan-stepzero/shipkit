@@ -170,7 +170,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -X utf8 .claude/hooks/shipkit-track-skill-usage.py"
+            "command": "python -X utf8 .claude/hooks/shipkit-track-skill-usage.py",
+            "async": true
           }
         ]
       }
@@ -208,9 +209,76 @@
         ]
       }
     ],
+    "TaskCreated": [],
     "WorktreeCreate": [],
     "WorktreeRemove": [],
-    "ConfigChange": []
+    "ConfigChange": [],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-subagent-context.py"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-context-check.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-diagnostics.py"
+          }
+        ]
+      }
+    ],
+    "Notification": [],
+    "PermissionRequest": [],
+    "InstructionsLoaded": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-prereq-check.py"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 .claude/hooks/shipkit-session-end.py"
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 .claude/hooks/shipkit-post-compact.py"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [],
+    "Elicitation": [],
+    "ElicitationResult": []
   },
 
   "skills": {

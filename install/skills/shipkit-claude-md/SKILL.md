@@ -2,6 +2,7 @@
 name: shipkit-claude-md
 description: Update CLAUDE.md with learnings, preferences, or project context. Use when user says "update claude.md", "add to claude.md", or wants to persist something.
 allowed-tools: Read, Write, Glob
+effort: low
 ---
 
 # shipkit-claude-md

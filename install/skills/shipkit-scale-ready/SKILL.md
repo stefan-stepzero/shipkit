@@ -6,6 +6,7 @@ model: opus
 context: fork
 agent: shipkit-reviewer-shipping-agent
 allowed-tools: Read, Glob, Grep, Bash
+effort: high
 ---
 
 # shipkit-scale-ready - Scale Readiness Audit
@@ -115,7 +116,7 @@ For each applicable category, run checks and classify as:
 **USE PARALLEL SUBAGENTS BY CATEGORY** - For full audits, spawn multiple Explore agents in parallel:
 
 ```
-Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+Launch these Agent subagents IN PARALLEL (single message, multiple tool calls):
 
 1. SECURITY & DATABASE AGENT (subagent_type: "Explore")
    Prompt: "Audit security hardening and database optimization in this [stack] codebase.

@@ -1,8 +1,10 @@
 ---
 name: shipkit-review-direction
 description: Internal reviewer — assesses strategic artifact coherence. Checks vision/why alignment, goal completeness, stage realism. Dispatched by orch-direction, not for direct use.
+user-invocable: false
 context: fork
 agent: shipkit-reviewer-direction-agent
+effort: medium
 ---
 
 # shipkit-review-direction - Direction Assessment

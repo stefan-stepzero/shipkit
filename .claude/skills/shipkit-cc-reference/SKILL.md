@@ -1,7 +1,7 @@
 ---
 name: shipkit-cc-reference
-description: Fetches latest Claude Code documentation on skills, agents, hooks, and settings, then synthesizes it into maintained coding reference files. Merges official docs with DOC-023 empirical test results. Use when CC reference docs are stale or before authoring new skills/agents.
-argument-hint: "[--domain skills|agents|hooks|settings|all] [--quick] [--diff]"
+description: Fetches latest Claude Code documentation on skills, agents, hooks, settings, tools, and plugins, then synthesizes it into maintained coding reference files. Merges official docs with DOC-023 empirical test results. Use when CC reference docs are stale or before authoring new skills/agents.
+argument-hint: "[--domain skills|agents|hooks|settings|tools|plugins|all] [--quick] [--diff]"
 ---
 
 # shipkit-cc-reference - CC Primitives Reference Builder
@@ -37,7 +37,7 @@ argument-hint: "[--domain skills|agents|hooks|settings|all] [--quick] [--diff]"
 - `docs/development/cc-reference/DOC-023-pipeline-test-report.md` — empirical test results
 
 **Arguments**:
-- `--domain <name>` — Only refresh one domain: `skills`, `agents`, `hooks`, or `settings`. Default: `all`
+- `--domain <name>` — Only refresh one domain: `skills`, `agents`, `hooks`, `settings`, `tools`, or `plugins`. Default: `all`
 - `--quick` — Fetch only primary doc page per domain (faster, 4 pages total)
 - `--diff` — Show what changed since last synthesis without rewriting files
 
@@ -50,6 +50,8 @@ argument-hint: "[--domain skills|agents|hooks|settings|all] [--quick] [--diff]"
 - `docs/development/cc-reference/synthesized/agents-reference.md`
 - `docs/development/cc-reference/synthesized/hooks-reference.md`
 - `docs/development/cc-reference/synthesized/settings-reference.md`
+- `docs/development/cc-reference/synthesized/tools-reference.md`
+- `docs/development/cc-reference/synthesized/plugins-reference.md`
 - `docs/development/cc-reference/synthesized/cc-reference.meta.json`
 
 These files are gitignored (inside `docs/development/`) and available as references for other dev skills.
@@ -63,7 +65,7 @@ These files are gitignored (inside `docs/development/`) and available as referen
 1. Parse `--domain`, `--quick`, `--diff` from user input. Defaults: domain=all, quick=false, diff=false
 2. Read `docs/development/cc-reference/synthesized/cc-reference.meta.json` if it exists — extract `synthesizedAt` and `ccVersion`
 3. Read `docs/development/cc-reference/DOC-023-pipeline-test-report.md` — this is REQUIRED for merge. If missing, note all behaviors as "unverified"
-4. Determine which domains to process
+4. Determine which domains to process: skills, agents, hooks, settings, tools, plugins
 
 ### Step 1: Fetch CC Documentation (Parallel Agents)
 
@@ -82,6 +84,7 @@ Each agent fetches pages via WebFetch and extracts structured content.
 **Pages to fetch**:
 - Primary: `https://code.claude.com/docs/en/skills.md`
 - Secondary (skip in --quick): `https://code.claude.com/docs/en/best-practices.md`
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/features-overview.md` (feature comparison table)
 
 **Prompt**:
 ```
@@ -120,6 +123,7 @@ Return a combined SKILLS_DOCS report with these sections:
 - Primary: `https://code.claude.com/docs/en/sub-agents.md`
 - Primary: `https://code.claude.com/docs/en/agent-teams.md`
 - Secondary (skip in --quick): `https://code.claude.com/docs/en/cli-reference.md` (for --agents flag)
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/headless.md` (programmatic/headless mode)
 
 **Prompt**:
 ```
@@ -164,6 +168,8 @@ Return a combined AGENTS_DOCS report with these sections:
 **Pages to fetch**:
 - Primary: `https://code.claude.com/docs/en/hooks.md`
 - Secondary (skip in --quick): `https://code.claude.com/docs/en/hooks-guide.md`
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/channels.md` (event channels)
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/channels-reference.md` (channels API)
 
 **Prompt**:
 ```
@@ -204,6 +210,9 @@ Return a combined HOOKS_DOCS report with these sections:
 - Primary: `https://code.claude.com/docs/en/settings.md`
 - Primary: `https://code.claude.com/docs/en/permissions.md`
 - Secondary (skip in --quick): `https://code.claude.com/docs/en/memory.md`
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/env-vars.md` (environment variables)
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/permission-modes.md` (permission modes detail)
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/model-config.md` (model configuration)
 
 **Prompt**:
 ```
@@ -243,6 +252,86 @@ Return a combined SETTINGS_DOCS report with these sections:
 
 ---
 
+#### Tools Domain Agent
+
+**Pages to fetch**:
+- Primary: `https://code.claude.com/docs/en/tools-reference.md`
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/cli-reference.md`
+
+**Prompt**:
+```
+Fetch Claude Code tools reference documentation. For each page use WebFetch.
+
+Pages:
+1. https://code.claude.com/docs/en/tools-reference.md
+2. https://code.claude.com/docs/en/cli-reference.md (skip if told --quick)
+
+For each page, extract with this WebFetch prompt:
+"Extract ALL technical details about Claude Code built-in tools:
+1. Complete tool list (tool name, description, parameters, permission requirements)
+2. Tool permission categories (read-only vs write vs dangerous)
+3. Tool parameter schemas and required fields
+4. Which tools are available in different contexts (main, fork, agent teams)
+5. Tool restriction patterns (allowed-tools, disallowedTools syntax)
+6. CLI commands and flags reference
+7. Code examples showing tool invocation
+8. Any warnings, gotchas, or anti-patterns mentioned
+Return as structured text with clear section headers."
+
+Return a combined TOOLS_DOCS report with these sections:
+- TOOL_LIST: [name, description, parameters, permissionRequired]
+- PERMISSION_CATEGORIES: which tools need which permissions
+- CONTEXT_AVAILABILITY: tools available in main vs fork vs teams
+- RESTRICTION_PATTERNS: allowed-tools and disallowedTools syntax
+- CLI_REFERENCE: key commands and flags
+- EXAMPLES: code blocks from docs
+- WARNINGS: gotchas, limitations
+```
+
+---
+
+#### Plugins Domain Agent
+
+**Pages to fetch**:
+- Primary: `https://code.claude.com/docs/en/plugins-reference.md`
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/plugins.md`
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/discover-plugins.md`
+- Secondary (skip in --quick): `https://code.claude.com/docs/en/plugin-marketplaces.md`
+
+**Prompt**:
+```
+Fetch Claude Code plugins documentation. For each page use WebFetch.
+
+Pages:
+1. https://code.claude.com/docs/en/plugins-reference.md
+2. https://code.claude.com/docs/en/plugins.md (skip if told --quick)
+3. https://code.claude.com/docs/en/discover-plugins.md (skip if told --quick)
+4. https://code.claude.com/docs/en/plugin-marketplaces.md (skip if told --quick)
+
+For each page, extract with this WebFetch prompt:
+"Extract ALL technical details about Claude Code plugins:
+1. Plugin file structure and manifest schema (.claude-plugin)
+2. What plugins can contain (skills, agents, hooks, settings, MCP servers)
+3. Plugin agent restrictions (which frontmatter fields are forbidden)
+4. Plugin installation and discovery mechanisms
+5. Plugin marketplace creation and distribution
+6. Plugin vs direct skill/agent installation trade-offs
+7. Code examples showing plugin structure
+8. Any warnings, gotchas, or anti-patterns mentioned
+Return as structured text with clear section headers."
+
+Return a combined PLUGINS_DOCS report with these sections:
+- MANIFEST_SCHEMA: plugin manifest fields and structure
+- CONTENTS: what plugins can bundle
+- AGENT_RESTRICTIONS: forbidden frontmatter fields in plugin agents
+- INSTALLATION: how plugins are installed and discovered
+- MARKETPLACES: how to create and distribute plugin marketplaces
+- EXAMPLES: code blocks from docs
+- WARNINGS: gotchas, limitations
+```
+
+---
+
 ### Step 2: Read DOC-023 (Inline)
 
 Read the full `docs/development/cc-reference/DOC-023-pipeline-test-report.md`.
@@ -252,6 +341,8 @@ Organize confirmed behaviors by domain:
 - **Agents domain**: fork isolation, tool restrictions, nesting, Agent tool blocked, teams
 - **Hooks domain**: settings.json hook propagation, frontmatter hooks silently ignored
 - **Settings domain**: permissionMode in forks, env vars
+- **Tools domain**: built-in tool availability, permission enforcement, context restrictions
+- **Plugins domain**: plugin installation, manifest structure, agent restrictions
 
 ### Step 3: Synthesize Per Domain (Inline)
 
@@ -317,7 +408,9 @@ Write metadata sidecar `docs/development/cc-reference/synthesized/cc-reference.m
     },
     "agents": { ... },
     "hooks": { ... },
-    "settings": { ... }
+    "settings": { ... },
+    "tools": { ... },
+    "plugins": { ... }
   },
   "previousRun": null
 }
@@ -339,6 +432,8 @@ Present summary:
 - Agents: {N} fields, {N} examples
 - Hooks: {N} events, {N} examples
 - Settings: {N} fields, {N} examples
+- Tools: {N} tools, {N} examples
+- Plugins: {N} fields, {N} examples
 
 ### Conflicts Found
 - {any doc vs DOC-023 conflicts}

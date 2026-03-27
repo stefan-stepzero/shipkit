@@ -4,6 +4,7 @@ description: "Derive technical performance criteria from the engineering bluepri
 argument-hint: "[goal topic | --evaluate]"
 context: fork
 agent: shipkit-architect-agent
+effort: medium
 ---
 
 # shipkit-engineering-goals — Technical Performance Criteria

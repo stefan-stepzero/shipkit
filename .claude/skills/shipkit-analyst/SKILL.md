@@ -202,12 +202,17 @@ Produce a coverage score for each Shipkit skill against available Claude Code fe
    - context: fork (agent isolation)
    - agent: (agent persona)
    - memory: (cross-session persistence)
-   - hooks: (lifecycle hooks in frontmatter)
    - allowed-tools: / disallowedTools: (tool restrictions)
    - model: (model selection)
    - disable-model-invocation: (infrastructure skill)
    - argument-hint: (CLI hint)
    - user-invocable: (visibility control)
+   - paths: (file path scoping, supports YAML list of globs)
+   - description: (skill description for model matching)
+   - initialPrompt: (auto-submit first turn for agents)
+   - skills: (preload specific skills in agents)
+   - background: (run agent in background)
+   - maxTurns: (agent turn budget)
 
 3. Calculate coverage = features_used / features_available
    Where features_available = features relevant to this skill type

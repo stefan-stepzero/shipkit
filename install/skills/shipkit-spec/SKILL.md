@@ -5,6 +5,7 @@ argument-hint: "<feature name or description>"
 context: fork
 model: opus
 agent: shipkit-product-owner-agent
+effort: medium
 ---
 
 # shipkit-spec - Lightweight Feature Specification
@@ -210,7 +211,7 @@ Specs written without reading source code miss existing patterns, hidden constra
 - Which files/modules will be directly modified or created?
 - What naming patterns, conventions, or abstractions exist in those areas?
 
-**3c. Launch explore agents** — Use the Task tool with `subagent_type: Explore` to investigate:
+**3c. Launch explore agents** — Use the Agent tool with `subagent_type: Explore` to investigate:
 
 ```
 Agent 1 - Direct code: "Find and summarize the code directly related to

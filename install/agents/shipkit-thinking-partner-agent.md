@@ -4,6 +4,7 @@ description: Cognitive thinking partner for working through decisions, trade-off
 tools: Read, Glob, Grep
 disallowedTools: Write, Edit, Bash, NotebookEdit
 model: sonnet
+effort: medium
 permissionMode: default
 memory: project
 maxTurns: 30

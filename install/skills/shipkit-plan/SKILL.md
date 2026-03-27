@@ -5,6 +5,7 @@ argument-hint: "[spec name]"
 context: fork
 model: opus
 agent: shipkit-architect-agent
+effort: medium
 ---
 
 # shipkit-plan - Implementation Planning with Failure Mode Prevention
@@ -176,7 +177,7 @@ options:
 **USE PARALLEL SUBAGENTS FOR PATTERN SCANNING** - Launch multiple Explore agents simultaneously for faster, more thorough scanning:
 
 ```
-Launch these Task agents IN PARALLEL (single message, multiple tool calls):
+Launch these Agent subagents IN PARALLEL (single message, multiple tool calls):
 
 1. FRONTEND PATTERNS AGENT (subagent_type: "Explore")
    Prompt: "Scan codebase for frontend patterns.
@@ -262,7 +263,7 @@ grep -r "ErrorBoundary\|onError\|handleError" --include="*.ts" --include="*.tsx"
 
    **For multiple references** (3+ existing files/functions to verify), use Explore subagent:
    ```
-   Task tool with subagent_type: "Explore"
+   Agent tool with subagent_type: "Explore"
    Prompt: "Verify these code artifacts exist and return their locations:
    1. [UserService or similar]
    2. [Auth middleware]

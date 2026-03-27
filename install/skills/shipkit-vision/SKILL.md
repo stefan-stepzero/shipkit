@@ -2,8 +2,10 @@
 name: shipkit-vision
 description: Internal producer — strategic visionary gateway. Sets project direction, stage, and business goals. Dispatched by orch-direction.
 argument-hint: "<gap description or strategic question>"
+user-invocable: false
 context: fork
 agent: shipkit-visionary-agent
+effort: medium
 ---
 
 # shipkit-vision - Strategic Vision Gateway
