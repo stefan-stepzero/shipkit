@@ -11,9 +11,11 @@ Exit 1: silently skipped (no .shipkit/, built-in agent, etc.)
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 
+HOOK_NAME = "subagent-context"
 # Built-in agents that don't need orchestration context
 SKIP_AGENTS = {"Explore", "Plan", "Bash", "general-purpose", "statusline-setup", "claude-code-guide"}
 
@@ -90,6 +92,7 @@ def build_context(project_root: Path) -> str | None:
 
 
 def main():
+    print(f"[shipkit:{HOOK_NAME}] running", file=sys.stderr)
     try:
         hook_input = json.load(sys.stdin)
     except (json.JSONDecodeError, EOFError):
@@ -100,7 +103,7 @@ def main():
     if agent_type in SKIP_AGENTS:
         sys.exit(1)
 
-    cwd = hook_input.get('cwd', os.getcwd() if 'os' in dir() else '.')
+    cwd = hook_input.get('cwd', os.getcwd())
     project_root = find_project_root(cwd)
     if not project_root:
         sys.exit(1)
@@ -120,5 +123,8 @@ def main():
 
 
 if __name__ == '__main__':
-    import os
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"[shipkit:{HOOK_NAME}] ERROR: {e}", file=sys.stderr)
+        sys.exit(0)

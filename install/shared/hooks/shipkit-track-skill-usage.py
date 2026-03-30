@@ -10,10 +10,12 @@ Hook type: PostToolUse (matcher: Skill)
 """
 
 import sys
+import os
 import json
 from pathlib import Path
 from datetime import datetime
 
+HOOK_NAME = "track-skill-usage"
 
 def _find_project_root(start: Path) -> Path | None:
     """Walk up from start to find the project root (directory containing .shipkit/ or .claude/)."""
@@ -29,6 +31,7 @@ def _find_project_root(start: Path) -> Path | None:
 
 
 def main():
+    print(f"[shipkit:{HOOK_NAME}] running", file=sys.stderr)
     # Read hook input from stdin
     try:
         hook_input = json.loads(sys.stdin.read())
@@ -84,6 +87,6 @@ def main():
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except Exception:
-        # Silent failure — never block on hook errors
+    except Exception as e:
+        print(f"[shipkit:{HOOK_NAME}] ERROR: {e}", file=sys.stderr)
         sys.exit(0)

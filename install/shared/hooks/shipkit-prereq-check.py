@@ -16,6 +16,7 @@ import os
 import sys
 from pathlib import Path
 
+HOOK_NAME = "prereq-check"
 # Skill name → list of (required file, skill to create it)
 SKILL_PREREQUISITES = {
     'shipkit-spec': [
@@ -106,6 +107,7 @@ def extract_skill_name(file_path: str) -> str | None:
 
 
 def main():
+    print(f"[shipkit:{HOOK_NAME}] running", file=sys.stderr)
     try:
         hook_input = json.load(sys.stdin)
     except (json.JSONDecodeError, EOFError):
@@ -153,4 +155,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"[shipkit:{HOOK_NAME}] ERROR: {e}", file=sys.stderr)
+        sys.exit(0)

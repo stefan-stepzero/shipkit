@@ -13,6 +13,7 @@ import urllib.request
 from pathlib import Path
 from datetime import datetime
 
+HOOK_NAME = "session-start"
 GITHUB_VERSION_URL = "https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/VERSION"
 
 
@@ -127,6 +128,7 @@ def get_progress_summary(project_root: Path) -> str | None:
 
 
 def main():
+    print(f"[shipkit:{HOOK_NAME}] running", file=sys.stderr)
     # Parse hook input
     try:
         hook_input = json.load(sys.stdin)
@@ -265,6 +267,6 @@ def _emit_context(content: str):
 if __name__ == '__main__':
     try:
         sys.exit(main())
-    except Exception:
-        # Silent failure — never block on hook errors
+    except Exception as e:
+        print(f"[shipkit:{HOOK_NAME}] ERROR: {e}", file=sys.stderr)
         sys.exit(0)

@@ -15,6 +15,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+HOOK_NAME = "session-end"
 
 def find_project_root(start: Path) -> Path | None:
     """Walk up from start to find the project root."""
@@ -30,6 +31,7 @@ def find_project_root(start: Path) -> Path | None:
 
 
 def main():
+    print(f"[shipkit:{HOOK_NAME}] running", file=sys.stderr)
     try:
         hook_input = json.load(sys.stdin)
     except (json.JSONDecodeError, EOFError):
@@ -95,5 +97,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except Exception:
+    except Exception as e:
+        print(f"[shipkit:{HOOK_NAME}] ERROR: {e}", file=sys.stderr)
         sys.exit(0)

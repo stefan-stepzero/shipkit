@@ -16,6 +16,7 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+HOOK_NAME = "diagnostics"
 MAX_ENTRIES = 100
 
 
@@ -32,6 +33,7 @@ def find_project_root(cwd: str) -> Path | None:
 
 
 def main():
+    print(f"[shipkit:{HOOK_NAME}] running", file=sys.stderr)
     try:
         hook_input = json.load(sys.stdin)
     except (json.JSONDecodeError, EOFError):
@@ -87,4 +89,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as e:
+        print(f"[shipkit:{HOOK_NAME}] ERROR: {e}", file=sys.stderr)
+        sys.exit(0)

@@ -22,6 +22,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+HOOK_NAME = "task-completed"
 
 def find_project_root(start: Path) -> Path | None:
     """Walk up from start to find the project root (directory containing .shipkit/ or .claude/)."""
@@ -101,6 +102,7 @@ def run_command(cmd: list[str], cwd: Path, timeout: int = 90) -> tuple[bool, str
 
 
 def main():
+    print(f"[shipkit:{HOOK_NAME}] running", file=sys.stderr)
     # Read hook input from stdin
     hook_input = {}
     try:
@@ -170,6 +172,6 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except Exception:
-        # Silent failure — never block on hook errors
+    except Exception as e:
+        print(f"[shipkit:{HOOK_NAME}] ERROR: {e}", file=sys.stderr)
         sys.exit(0)
