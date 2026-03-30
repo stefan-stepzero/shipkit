@@ -2,7 +2,6 @@
 name: shipkit-product-discovery
 description: "Use when defining users, personas, or user journeys. Triggers: 'who are users', 'create personas', 'user research', 'user stories'."
 argument-hint: "[persona or journey]"
-context: fork
 agent: shipkit-product-owner-agent
 effort: medium
 ---
