@@ -32,7 +32,7 @@
   "bugs": {
     "url": "https://github.com/stefan-stepzero/shipkit/issues"
   },
-  "license": "CC-BY-NC-4.0",
+  "license": "MIT",
   "author": "Stefan / StepZero",
   "scripts": {
     "prepublishOnly": "node -e \"const v=require('fs').readFileSync('VERSION','utf8').trim();const p=require('./package.json');if(p.version!==v){console.error('VERSION mismatch: VERSION='+v+' package.json='+p.version);process.exit(1)}\""

@@ -318,7 +318,7 @@ This preserves your `.shipkit/` context files and custom settings while updating
 
 ## License
 
-CC-BY-NC-4.0 — See [LICENSE](LICENSE) for details.
+MIT — See [LICENSE](LICENSE) for details.
 
 ---
 
