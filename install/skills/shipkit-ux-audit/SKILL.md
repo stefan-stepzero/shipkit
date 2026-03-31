@@ -162,7 +162,7 @@ most common UX debt is."
 
 **Launch both agents in parallel** — they are independent scans.
 
-**Design system context** — If `.design-system/PRINCIPLES.md` exists, check alignment with design principles. If `.design-system/MATURITY.md` exists, reference it for expected component abstractions and reuse opportunities. If neither exists, audit against general UX best practices only.
+**Design system context** — If `.shipkit/design-system/PRINCIPLES.md` exists, check alignment with design principles. If `.shipkit/design-system/MATURITY.md` exists, reference it for expected component abstractions and reuse opportunities. If neither exists, audit against general UX best practices only.
 
 **Synthesize findings** — Before generating UX guidance, note:
 - Established patterns to reference (e.g., "your existing modals use X pattern — follow that")
@@ -395,8 +395,8 @@ Copy and track:
 - `.shipkit/ux-decisions.json` - Previous UX decisions
 - `.shipkit/product-discovery.json` - Personas, pain points
 - `.shipkit/product-definition.json` - UX patterns, features
-- `.design-system/PRINCIPLES.md` - Design system principles for audit context (skip if absent)
-- `.design-system/MATURITY.md` - Component maturity for expected abstractions (skip if absent)
+- `.shipkit/design-system/PRINCIPLES.md` - Design system principles for audit context (skip if absent)
+- `.shipkit/design-system/MATURITY.md` - Component maturity for expected abstractions (skip if absent)
 
 **Never reads**:
 - Specs, plans, tasks (not relevant for UX guidance)

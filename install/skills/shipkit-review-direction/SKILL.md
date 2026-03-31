@@ -20,7 +20,7 @@ effort: medium
 - `.shipkit/product-definition.json`
 - `.shipkit/engineering-definition.json`
 - `.shipkit/architecture.json`
-- `.design-system/` (DIRECTION.md, PRINCIPLES.md, tokens/ — if exists)
+- `.shipkit/design-system/` (DIRECTION.md, PRINCIPLES.md, tokens/ — if exists)
 - `.shipkit/goals/strategic.json`
 - `.shipkit/goals/product.json`
 - `.shipkit/goals/engineering.json`
@@ -36,7 +36,7 @@ effort: medium
 4. **Goals ↔ Stage**: Are thresholds realistic for the current stage? Do all goals have rubrics?
 5. **Internal consistency**: Do goals reference capabilities the vision describes?
 6. **Architecture ↔ Engineering Definition**: Are architecture decisions consistent with the mechanisms and components defined?
-7. **Design System ↔ Vision** (if `.design-system/` exists): Do principles align with the vision? Does aesthetic direction fit the target audience? Does token format match the stack?
+7. **Design System ↔ Vision** (if `.shipkit/design-system/` exists): Do principles align with the vision? Does aesthetic direction fit the target audience? Does token format match the stack?
 
 ## Output
 

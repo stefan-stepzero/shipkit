@@ -21,7 +21,7 @@ Reference for tier definitions, promotion rules, and governance. Read by the ski
 
 ### Tier 0
 ```
-.design-system/
+.shipkit/design-system/
 ├── DIRECTION.md
 ├── PRINCIPLES.md
 ├── MATURITY.md
@@ -73,7 +73,7 @@ Reference for tier definitions, promotion rules, and governance. Read by the ski
 ### How to Promote
 
 1. Identify the repeated pattern in MATURITY.md emerging section
-2. Extract the component from product code into `.design-system/components/`
+2. Extract the component from product code into `.shipkit/design-system/components/`
 3. Refactor product code to import from the design system
 4. Document the component (inline, co-located)
 5. Add a Storybook story (Tier 2+)

@@ -299,9 +299,9 @@ Write the verification report to `.shipkit/verification-report.json` (see agent 
 - Inconsistent patterns vs rest of app
 - Interactive elements missing `data-testid` or ARIA attributes (blocks AI testing)
 
-### 8.5. Design System Compliance (when `.design-system/` exists)
-- If changes include UI code and `.design-system/` exists: verify design tokens are used instead of hardcoded color/spacing/typography values, and component patterns align with design principles
-- If `.design-system/` does not exist, skip this check entirely
+### 8.5. Design System Compliance (when `.shipkit/design-system/` exists)
+- If changes include UI code and `.shipkit/design-system/` exists: verify design tokens are used instead of hardcoded color/spacing/typography values, and component patterns align with design principles
+- If `.shipkit/design-system/` does not exist, skip this check entirely
 
 ### 9. Maintainability
 - Magic numbers/strings
@@ -632,7 +632,7 @@ When running as part of an Agent Team:
 | `.shipkit/specs/active/*` | Check spec compliance |
 | `.shipkit/architecture.json` | Check pattern consistency |
 | `.shipkit/codebase-index.json` | Find related code |
-| `.design-system/tokens/`, `.design-system/PRINCIPLES.md` | Check token usage and principle compliance in UI code (optional, skip if absent) |
+| `.shipkit/design-system/tokens/`, `.shipkit/design-system/PRINCIPLES.md` | Check token usage and principle compliance in UI code (optional, skip if absent) |
 | Source files | The actual code |
 
 ---

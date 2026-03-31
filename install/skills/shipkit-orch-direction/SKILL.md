@@ -27,7 +27,7 @@ Strategic artifacts that define WHY, WHAT, and HOW at definition level:
 - `.shipkit/product-definition.json` — Features, patterns, differentiators
 - `.shipkit/engineering-definition.json` — Mechanisms, components, stack
 - `.shipkit/architecture.json` — Architecture decisions (derived from engineering-definition)
-- `.design-system/` — Design principles, tokens, aesthetic direction (UI projects only)
+- `.shipkit/design-system/` — Design principles, tokens, aesthetic direction (UI projects only)
 - `.shipkit/goals/product.json` — Product success criteria
 - `.shipkit/goals/engineering.json` — Engineering success criteria
 
@@ -41,7 +41,7 @@ Strategic artifacts that define WHY, WHAT, and HOW at definition level:
 | `/shipkit-product-discovery` | product-discovery.json |
 | `/shipkit-product-definition` | product-definition.json |
 | `/shipkit-engineering-definition` | engineering-definition.json + architecture.json |
-| `/shipkit-design-system` | .design-system/ (DIRECTION.md, PRINCIPLES.md, MATURITY.md, tokens/) — **UI projects only** |
+| `/shipkit-design-system` | .shipkit/design-system/ (DIRECTION.md, PRINCIPLES.md, MATURITY.md, tokens/) — **UI projects only** |
 | `/shipkit-product-goals` | goals/product.json |
 | `/shipkit-engineering-goals` | goals/engineering.json |
 | `/shipkit-review-direction` | reviews/direction-assessment.json |

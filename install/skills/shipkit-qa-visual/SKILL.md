@@ -190,7 +190,7 @@ test.describe('{persona.name}', () => {
 });
 ```
 
-**Design token check:** When `.design-system/tokens/` exists, verify that UI components reference design tokens for colors, spacing, and typography rather than hardcoded values. Flag hardcoded values as visual consistency findings in the report.
+**Design token check:** When `.shipkit/design-system/tokens/` exists, verify that UI components reference design tokens for colors, spacing, and typography rather than hardcoded values. Flag hardcoded values as visual consistency findings in the report.
 
 **Selector strategy (in priority order):**
 1. Use `selectors` from the goal in `ui-goals.json` when specified
@@ -353,7 +353,7 @@ This skill is used by:
 | `.shipkit/ui-goals.json` | Persistent goals — loaded on every run |
 | `package.json` | Dev server port inference, Playwright dependency check |
 | `tests/e2e/*.spec.ts` | Existing tests — checked before regenerating |
-| `.design-system/tokens/` | Design tokens for visual consistency checks (optional, skip if absent) |
+| `.shipkit/design-system/tokens/` | Design tokens for visual consistency checks (optional, skip if absent) |
 
 ---
 

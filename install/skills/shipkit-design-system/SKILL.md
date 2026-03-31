@@ -62,11 +62,11 @@ After reading prerequisites, create tasks:
 
 ### Step 0: Check for Existing Files
 
-1. Check if `.design-system/` directory exists
+1. Check if `.shipkit/design-system/` directory exists
 2. Also check for common alternatives: `design-system/`, `design-tokens/`, `tokens/`, `theme/`
-3. If `.design-system/` exists AND modified < 5 minutes ago: Show user, ask "Use this or regenerate?"
-4. If `.design-system/` exists AND modified > 5 minutes ago: File Exists Workflow (Step 0b)
-5. If alternative directory found: Ask user whether to adopt it or create `.design-system/`
+3. If `.shipkit/design-system/` exists AND modified < 5 minutes ago: Show user, ask "Use this or regenerate?"
+4. If `.shipkit/design-system/` exists AND modified > 5 minutes ago: File Exists Workflow (Step 0b)
+5. If alternative directory found: Ask user whether to adopt it or create `.shipkit/design-system/`
 6. If nothing exists: Skip to Step 1
 
 **File Exists Workflow (Step 0b)**:
@@ -102,10 +102,10 @@ If `.shipkit/why.json` AND `.shipkit/product-discovery.json` both exist, attempt
 4. Read `references/direction-guide.md` for the creative direction framework
 
 5. Synthesize and write all artifacts:
-   - `.design-system/DIRECTION.md` — aesthetic brief
-   - `.design-system/PRINCIPLES.md` — 3-5 principles
-   - `.design-system/MATURITY.md` — tier declaration
-   - `.design-system/tokens/tokens.css` or Tailwind extension
+   - `.shipkit/design-system/DIRECTION.md` — aesthetic brief
+   - `.shipkit/design-system/PRINCIPLES.md` — 3-5 principles
+   - `.shipkit/design-system/MATURITY.md` — tier declaration
+   - `.shipkit/design-system/tokens/tokens.css` or Tailwind extension
    - Update `.shipkit/architecture.json` with `designSystem` section
 
 6. Present summary — the orchestrator's review cycle will catch issues
@@ -200,10 +200,10 @@ If user provided brand colors in `$ARGUMENTS`, use those as the brand palette se
 
 Write these files:
 
-1. **`.design-system/DIRECTION.md`** — the aesthetic brief (6 dimensions)
-2. **`.design-system/PRINCIPLES.md`** — 3-5 verb-based principles
-3. **`.design-system/MATURITY.md`** — Tier 0 declaration with checklists
-4. **`.design-system/tokens/tokens.css`** (or Tailwind config extension)
+1. **`.shipkit/design-system/DIRECTION.md`** — the aesthetic brief (6 dimensions)
+2. **`.shipkit/design-system/PRINCIPLES.md`** — 3-5 verb-based principles
+3. **`.shipkit/design-system/MATURITY.md`** — Tier 0 declaration with checklists
+4. **`.shipkit/design-system/tokens/tokens.css`** (or Tailwind config extension)
 5. **`.shipkit/architecture.json`** — add/update `designSystem` section:
 
 ```json
@@ -213,7 +213,7 @@ Write these files:
     "tierName": "Seed",
     "principles": ["Verb1", "Verb2", "Verb3"],
     "tokenFormat": "css|tailwind",
-    "location": ".design-system/",
+    "location": ".shipkit/design-system/",
     "lastUpdated": "ISO date"
   }
 }
@@ -226,7 +226,7 @@ For MATURITY.md format, read `references/maturity-tiers.md`.
 ### Step 6: Suggest Next Steps
 
 ```
-Design system scaffolded to .design-system/
+Design system scaffolded to .shipkit/design-system/
 Tier: Seed (Tier 0) | Principles: {N} | Token categories: {N}
 
 Files created:
@@ -249,7 +249,7 @@ Ready to define goals?
 
 When `$ARGUMENTS` contains `--audit`:
 
-1. Read `.design-system/MATURITY.md` (must exist)
+1. Read `.shipkit/design-system/MATURITY.md` (must exist)
 2. Read `.shipkit/codebase-index.json` if available, otherwise scan `src/` or `app/`
 3. Search for repeated UI patterns:
    - Components imported in 2+ files
@@ -269,7 +269,7 @@ When `$ARGUMENTS` contains `--audit`:
 
 - **Brand colors** (e.g., `#3b82f6 #10b981`): Use as brand palette seed
 - **`--audit`**: Run audit mode instead of scaffold
-- **`--refresh`**: Regenerate even if .design-system/ exists
+- **`--refresh`**: Regenerate even if .shipkit/design-system/ exists
 
 ---
 
@@ -312,13 +312,13 @@ When `$ARGUMENTS` contains `--audit`:
 
 | File | When |
 |------|------|
-| `.design-system/DIRECTION.md` | Every run |
-| `.design-system/PRINCIPLES.md` | Every run |
-| `.design-system/MATURITY.md` | Every run + audit mode |
-| `.design-system/tokens/tokens.css` | Every run (or Tailwind equivalent) |
+| `.shipkit/design-system/DIRECTION.md` | Every run |
+| `.shipkit/design-system/PRINCIPLES.md` | Every run |
+| `.shipkit/design-system/MATURITY.md` | Every run + audit mode |
+| `.shipkit/design-system/tokens/tokens.css` | Every run (or Tailwind equivalent) |
 | `.shipkit/architecture.json` | Adds/updates `designSystem` section |
 
-**Archive location**: `.design-system/archive/{filename}.{timestamp}`
+**Archive location**: `.shipkit/design-system/archive/{filename}.{timestamp}`
 
 ---
 
@@ -327,7 +327,7 @@ When `$ARGUMENTS` contains `--audit`:
 
 **Guardrails Check:** Before moving to next task, verify:
 
-1. **Persistence** - All artifacts written to `.design-system/`?
+1. **Persistence** - All artifacts written to `.shipkit/design-system/`?
 2. **Prerequisites** - Does the next action need goals first?
 3. **Session length** - Long session? Consider `/shipkit-work-memory` for continuity.
 
@@ -348,7 +348,7 @@ Design system scaffold is complete when:
 - [ ] tokens/ contains full token set matching detected format (CSS or Tailwind)
 - [ ] Token set covers: brand colors, semantic colors, neutrals, type, fonts, spacing, radius, breakpoints
 - [ ] architecture.json updated with designSystem section
-- [ ] All files written to `.design-system/`
+- [ ] All files written to `.shipkit/design-system/`
 <!-- /SECTION:success-criteria -->
 
 ---
