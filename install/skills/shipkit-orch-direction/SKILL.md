@@ -27,6 +27,7 @@ Strategic artifacts that define WHY, WHAT, and HOW at definition level:
 - `.shipkit/product-definition.json` — Features, patterns, differentiators
 - `.shipkit/engineering-definition.json` — Mechanisms, components, stack
 - `.shipkit/architecture.json` — Architecture decisions (derived from engineering-definition)
+- `.design-system/` — Design principles, tokens, aesthetic direction (UI projects only)
 - `.shipkit/goals/product.json` — Product success criteria
 - `.shipkit/goals/engineering.json` — Engineering success criteria
 
@@ -40,6 +41,7 @@ Strategic artifacts that define WHY, WHAT, and HOW at definition level:
 | `/shipkit-product-discovery` | product-discovery.json |
 | `/shipkit-product-definition` | product-definition.json |
 | `/shipkit-engineering-definition` | engineering-definition.json + architecture.json |
+| `/shipkit-design-system` | .design-system/ (DIRECTION.md, PRINCIPLES.md, MATURITY.md, tokens/) — **UI projects only** |
 | `/shipkit-product-goals` | goals/product.json |
 | `/shipkit-engineering-goals` | goals/engineering.json |
 | `/shipkit-review-direction` | reviews/direction-assessment.json |
@@ -84,6 +86,7 @@ Before dispatching any skills, create tasks for every dispatch in the roster:
    - "Dispatch: /shipkit-product-discovery"
    - "Dispatch: /shipkit-product-definition"
    - "Dispatch: /shipkit-engineering-definition"
+   - "Dispatch: /shipkit-design-system" (skip if no UI — check stack.json for frontend framework)
    - "Dispatch: /shipkit-product-goals"
    - "Dispatch: /shipkit-engineering-goals"
 2. `TaskCreate`: "Review: /shipkit-review-direction"
@@ -101,8 +104,9 @@ Before dispatching any skills, create tasks for every dispatch in the roster:
 3. `/shipkit-stage` — sets constraints
 4. `/shipkit-product-discovery` — informs product definition
 5. `/shipkit-product-definition` — informs engineering definition
-6. `/shipkit-engineering-definition` — informs goals
-7. `/shipkit-product-goals` — defines product success
-8. `/shipkit-engineering-goals` — defines technical success
-9. `/shipkit-review-direction` — assesses coherence
-10. If gaps found → re-dispatch specific producers → re-review
+6. `/shipkit-engineering-definition` — informs goals and design system
+7. `/shipkit-design-system` — scaffolds design direction + tokens (UI projects only; skip for CLI/API)
+8. `/shipkit-product-goals` — defines product success
+9. `/shipkit-engineering-goals` — defines technical success
+10. `/shipkit-review-direction` — assesses coherence
+11. If gaps found → re-dispatch specific producers → re-review

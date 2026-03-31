@@ -44,6 +44,7 @@
         {"name": "shipkit-codebase-index", "desc": "Index codebase for navigation"},
         {"name": "shipkit-product-definition", "desc": "Define what to build (features, patterns, differentiators)"},
         {"name": "shipkit-engineering-definition", "desc": "Design technical approach (mechanisms, components, stack)"},
+        {"name": "shipkit-design-system", "desc": "Scaffold tiered design system — principles, tokens, aesthetic direction from project context"},
         {"name": "shipkit-stage", "desc": "Define project stage, constraints, and graduation criteria"},
         {"name": "shipkit-product-goals", "desc": "Define user-outcome success criteria (P-*)"},
         {"name": "shipkit-engineering-goals", "desc": "Define technical performance criteria"},

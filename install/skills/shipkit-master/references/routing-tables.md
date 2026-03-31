@@ -10,6 +10,7 @@ These tables serve as **fallback** for explicit keyword-matched requests. The lo
 | "Who are our users?", "Create personas", "User research", "User journey" | `/shipkit-product-discovery` | .shipkit/why.json, stack.json |
 | "Define solution", "Product definition", "What to build", "Features", "Differentiators" | `/shipkit-product-definition` | .shipkit/product-discovery.json, why.json |
 | "Technical approach", "Engineering design", "How to build", "Mechanisms", "Components" | `/shipkit-engineering-definition` | .shipkit/product-definition.json, stack.json |
+| "Design system", "Design tokens", "Brand guidelines", "Visual direction", "Design principles" | `/shipkit-design-system` | .shipkit/why.json, product-discovery.json, engineering-definition.json |
 | "Set stage", "Project stage", "Constraints", "Graduation" | `/shipkit-stage` | .shipkit/goals/strategic.json |
 | "Success criteria", "Measure success", "Product goals" | `/shipkit-product-goals` | .shipkit/product-definition.json |
 | "Engineering goals", "Technical criteria", "SLAs", "Performance targets" | `/shipkit-engineering-goals` | .shipkit/engineering-definition.json |

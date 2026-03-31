@@ -117,6 +117,7 @@ Check if sufficient context exists to propose a spec without interactive questio
    - Edge cases inferred from stack constraints and dependencies
    - Acceptance criteria derived from goals served
    - Technical notes derived from architecture and stack
+   - If `.design-system/` exists and the feature has a UI component, reference design tokens in the spec's technical notes and check that scenarios respect design principles
 3. Present the proposed spec:
    ```
    Proposed spec for: {feature name}
@@ -524,8 +525,9 @@ Copy and track:
 
 **Optional** (read if relevant):
 - `.shipkit/specs/active/*.json` - Check for similar specs
+- `.design-system/DIRECTION.md`, `.design-system/tokens/`, `.design-system/PRINCIPLES.md` - Design tokens and principles for UI feature specs
 
-**If missing**: Ask user for needed context
+**If missing**: Ask user for needed context. Design system files are optional — proceed without if absent.
 
 ---
 

@@ -121,6 +121,7 @@ If `.shipkit/codebase-index.json` exists:
 |---------|-----|
 | Design solution blueprint | `/shipkit-product-definition` |
 | Design technical approach | `/shipkit-engineering-definition` |
+| Set up design system, tokens, brand direction | `/shipkit-design-system` |
 | Define user-outcome success criteria | `/shipkit-product-goals` |
 | Define technical performance criteria | `/shipkit-engineering-goals` |
 

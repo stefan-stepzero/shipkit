@@ -227,6 +227,8 @@ grep -r "ErrorBoundary\|onError\|handleError" --include="*.ts" --include="*.tsx"
 | Auth | [e.g., JWT middleware] | [file path] |
 | Components | [e.g., feature folders] | [file path] |
 
+**Design system check:** When planning UI tasks and `.design-system/MATURITY.md` exists, check it for existing atoms/molecules that can be reused rather than rebuilt.
+
 **Iron rule:** Plan MUST use patterns found here. If codebase uses pattern X, plan uses pattern X. No exceptions without explicit justification.
 
 ---
@@ -634,6 +636,7 @@ Copy and track:
 - `.shipkit/schema.json` - Database schema
 - `.shipkit/goals/engineering.json` - Engineering criteria for implementation priorities
 - `.shipkit/reviews/planning-assessment.json` - Reviewer feedback (on re-dispatch)
+- `.design-system/MATURITY.md` - Component inventory — know what exists vs needs building (optional, skip if absent)
 
 ---
 
