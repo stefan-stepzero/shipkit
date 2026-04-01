@@ -160,7 +160,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -X utf8 .claude/hooks/session-start.py"
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/session-start.py"
           }
         ]
       }
@@ -171,7 +171,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -X utf8 .claude/hooks/shipkit-track-skill-usage.py",
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-track-skill-usage.py",
             "async": true
           }
         ]
@@ -194,7 +194,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -X utf8 .claude/hooks/shipkit-teammate-idle-hook.py"
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-teammate-idle-hook.py"
           }
         ]
       }
@@ -204,7 +204,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -X utf8 .claude/hooks/shipkit-task-completed-hook.py",
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-task-completed-hook.py",
             "timeout": 120
           }
         ]
@@ -262,7 +262,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -X utf8 .claude/hooks/shipkit-session-end.py"
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-session-end.py"
           }
         ]
       }
@@ -272,7 +272,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python -X utf8 .claude/hooks/shipkit-post-compact.py"
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-post-compact.py"
           }
         ]
       }
