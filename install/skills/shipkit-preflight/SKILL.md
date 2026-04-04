@@ -67,6 +67,8 @@ After determining audit scope, create tasks for each checklist category being au
 - `TaskCreate`: "Write preflight.json"
 - `TaskCreate`: "Archive previous audit (if exists)"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 Do NOT present results until all applicable category tasks AND the file-write task show completed.
 
 ### Step 0: Determine Audit Scope (Full vs Incremental)

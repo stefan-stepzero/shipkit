@@ -69,6 +69,8 @@ After clarifying the feature (Step 1), create tasks:
 - `TaskCreate`: "Write spec to disk"
 - In batch mode, for EACH remaining roadmap feature: `TaskCreate`: "Spec: {feature-name}"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 Do NOT skip the validation step (Step 5) after generating the spec. In batch mode, do NOT stop after the first feature — ask to continue.
 
 ### Step -1: Batch Detection

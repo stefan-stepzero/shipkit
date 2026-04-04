@@ -58,6 +58,8 @@ After determining scope, create tasks per audit category:
 - `TaskCreate`: "Write scale-readiness.json"
 - `TaskCreate`: "Archive previous audit (if full audit)"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 Subagent results returning is NOT done — results must be merged, classified, and written to the JSON artifact. Do NOT skip the archive step.
 
 ### Step 0: Verify Prerequisites

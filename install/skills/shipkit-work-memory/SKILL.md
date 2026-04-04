@@ -73,6 +73,8 @@ Create tasks:
 - `TaskCreate`: "Write progress.json (all 10 sub-fields)"
 - `TaskCreate`: "Auto-archive sessions older than 48 hours"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 The progress.json write is NOT done until summary fields are recalculated and workstreams updated. The auto-archive step runs AFTER the main write — do not skip it.
 
 ---

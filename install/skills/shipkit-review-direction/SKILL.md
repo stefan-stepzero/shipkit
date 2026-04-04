@@ -20,7 +20,7 @@ effort: medium
 - `.shipkit/product-definition.json`
 - `.shipkit/engineering-definition.json`
 - `.shipkit/architecture.json`
-- `.shipkit/design-system/` (DIRECTION.md, PRINCIPLES.md, tokens/ — if exists)
+- `.shipkit/design-system/` (DIRECTION.md, PRINCIPLES.md, tokens/)
 - `.shipkit/goals/strategic.json`
 - `.shipkit/goals/product.json`
 - `.shipkit/goals/engineering.json`
@@ -30,13 +30,14 @@ effort: medium
 
 ## Coherence Checks
 
-1. **Completeness**: Are ALL 9 required direction artifacts present with non-placeholder content? Missing artifacts are gaps.
+1. **Completeness**: Are ALL 10 required direction artifacts present with non-placeholder content? Missing artifacts are gaps.
 2. **Vision ↔ Why**: Does the vision describe a future that fulfills the stated purpose?
 3. **Goals ↔ Vision**: Do goals, if achieved, realize the vision?
 4. **Goals ↔ Stage**: Are thresholds realistic for the current stage? Do all goals have rubrics?
 5. **Internal consistency**: Do goals reference capabilities the vision describes?
 6. **Architecture ↔ Engineering Definition**: Are architecture decisions consistent with the mechanisms and components defined?
-7. **Design System ↔ Vision** (if `.shipkit/design-system/` exists): Do principles align with the vision? Does aesthetic direction fit the target audience? Does token format match the stack?
+7. **Design System ↔ Vision**: Do principles align with the vision? Does aesthetic direction fit the target audience? Does token format match the stack?
+8. **Design System specificity**: Does DIRECTION.md use concrete values (hex codes, exact font names, px values, CSS easing functions) for every field? Flag any field that uses vague language ("clean", "modern", "intuitive", "user-friendly", "seamless", "elegant") without a measurable specification alongside it. Flag any missing source citations. Every dimension must trace back to a specific `.shipkit/` field.
 
 ## Output
 

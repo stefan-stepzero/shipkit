@@ -71,6 +71,8 @@ After loading context, create tasks:
 - `TaskCreate`: "Write goals/engineering.json"
 - `TaskCreate`: "Update strategic.json gates with E-* IDs"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 Writing engineering.json is NOT done — strategic.json gates must also be updated with E-* IDs. Every criterion must include a rubric (3-5 levels).
 
 ### Step 0: Check for Existing File

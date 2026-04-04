@@ -59,6 +59,8 @@ Create tasks for each alignment check:
 - `TaskCreate`: "Check 9: Prerequisites by phase"
 - `TaskCreate`: "Write planning-assessment.json"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 Each check task requires evidence — do NOT mark complete without citing specific artifacts. Do NOT write the assessment until all 9 checks are completed.
 
 ## Output

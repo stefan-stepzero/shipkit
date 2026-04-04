@@ -60,6 +60,8 @@ After reading prerequisites, create tasks:
 - `TaskCreate`: "Write MATURITY.md and DIRECTION.md"
 - `TaskCreate`: "Update architecture.json with designSystem section"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 ### Step 0: Check for Existing Files
 
 1. Check if `.shipkit/design-system/` directory exists
@@ -138,18 +140,17 @@ If insufficient context → fall through to Step 1.
 
 ### Step 2: Design Direction
 
-Read `references/direction-guide.md` for the creative direction framework.
+Read `references/direction-guide.md` for the creative direction framework and the **structured DIRECTION.md template**.
 
 **Benchmark first:** Before committing to aesthetic choices, identify the key UX patterns from product-definition.json (e.g., dashboard, onboarding, search/filter). For each, web-search for 2-3 products known for excellent implementations and note what makes their design work. Let these benchmarks inform the direction — reference real evidence, not abstract theory. See `references/direction-guide.md` Step 0 for details.
 
-Synthesize an aesthetic brief covering 6 dimensions, each derived from project context:
+Fill in the 6-dimension DIRECTION.md template from `references/direction-guide.md`. Every field is required and constrained — no freeform prose. Each dimension requires:
+- A **classification** from a fixed set of options
+- **Concrete values** (exact hex codes, font names, px values, CSS functions)
+- A **source citation** (which `.shipkit/` field drove the decision)
+- A **benchmark** (named real product, not abstract theory)
 
-1. **Aesthetic Tone** — from why.json vision + persona needs
-2. **Typography Direction** — from brand personality + accessibility
-3. **Color Philosophy** — from brand identity + emotional targets
-4. **Spacing & Density** — from product type + primary persona
-5. **Motion Principles** — from UX patterns + interaction style
-6. **Accessibility Stance** — from personas + legal/ethical requirements
+**Banned words in output:** "clean", "modern", "intuitive", "user-friendly", "seamless", "elegant", "simple" — unless accompanied by a measurable specification. These words are meaningless without concrete choices backing them.
 
 **Use AskUserQuestion** if context is insufficient for any dimension:
 ```

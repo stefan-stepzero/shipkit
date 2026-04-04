@@ -56,6 +56,8 @@ After discovering integration points (Step 1), create tasks:
 - `TaskCreate`: "Write prompt-audit.json (schema-validated)"
 - `TaskCreate`: "Present summary to user"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 If using parallel subagents for dimension auditing, verify ALL agent results are collected before synthesizing. Do NOT write the report until all 10 dimensions have findings (even if finding is "N/A").
 
 ### Step 1: Discover LLM Integration Points

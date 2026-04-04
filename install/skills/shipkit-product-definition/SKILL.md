@@ -57,6 +57,8 @@ After reading context, create tasks:
 - `TaskCreate`: "Get user confirmation on blueprint"
 - `TaskCreate`: "Write product-definition.json"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 In propose mode (Step 0c), still verify all sections are populated — features, patterns, AND differentiators. A file with only features is incomplete.
 
 ### Step 0: Check for Existing File

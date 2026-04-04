@@ -50,6 +50,8 @@ In `--full` mode (all 3 phases sequential), create tasks at the start:
 - `TaskCreate`: "Judge: Evaluate ALL outputs against ALL criteria"
 - `TaskCreate`: "Write judgment.md + judgment.json"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 In Judge mode with 5+ outputs, create one task per output to prevent partial evaluation.
 Do NOT present judgment summary until all output evaluations are complete and files are written.
 

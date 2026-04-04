@@ -74,6 +74,8 @@ In Evaluate mode, create tasks:
 - `TaskCreate`: "Build evidence table across all goal files"
 - `TaskCreate`: "Produce graduation recommendation"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 Each S-* criterion must include a rubric — bare thresholds are incomplete.
 
 ### Step 0: Check for Existing File

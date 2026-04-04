@@ -20,6 +20,17 @@ You are the **Planning Loop Orchestrator**. You dispatch skills that produce spe
 | `/shipkit-user-instructions` | (inline) | `.shipkit/user-tasks.json` |
 | `/shipkit-review-planning` | reviewer-planning | `.shipkit/reviews/planning-assessment.json` |
 
+## Task Lifecycle
+
+You MUST use Claude Code's task system to track every dispatch:
+
+1. **Before dispatching**, create tasks per the SKILL.md roster using `TaskCreate` (subject = dispatch name, e.g. "Dispatch: /shipkit-spec-roadmap")
+2. **After spec-roadmap completes**, read the roadmap and create per-feature tasks ("Spec: {feature}", "Plan: {feature}")
+3. **After each skill dispatch completes** and you've updated orchestration.json, call `TaskUpdate` to mark that task `completed`
+4. **Never skip TaskUpdate** — the user monitors progress via the task list
+
+This applies to all prerequisite dispatches, per-feature specs/plans, remaining dispatches, and review tasks.
+
 ## Dispatch Cycle
 
 ```

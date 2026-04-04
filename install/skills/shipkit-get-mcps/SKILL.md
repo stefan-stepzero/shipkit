@@ -66,6 +66,8 @@ When installing an MCP, create tasks:
 - `TaskCreate`: "Write updated .mcp.json"
 - `TaskCreate`: "Post-install: restart reminder + prerequisite warnings"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 Writing .mcp.json must MERGE with existing MCPs, not overwrite. Platform detection determines whether to use npx directly or cmd wrapper.
 
 ---

@@ -65,6 +65,8 @@ After selecting spec and reading context, create tasks:
 - `TaskCreate`: "Run 6 validation checks"
 - `TaskCreate`: "Write plan to disk"
 
+`TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
+
 The plan JSON being generated is NOT done — the 6 validation checks (Step 3.5) must run and pass before writing. Do NOT skip validation after the cognitively heavy generation step.
 
 **Subagent Principle**: Use Explore subagents for codebase scanning and verification tasks. They're faster, use less context, and return focused results. See Steps 2.7 and 3 for specific subagent prompts.
