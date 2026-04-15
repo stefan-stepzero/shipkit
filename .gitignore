@@ -13,9 +13,10 @@ Thumbs.db
 .idea/
 *.code-workspace
 
-# Local Claude Code session files (but track skills for cross-session access)
-.claude/*
-!.claude/skills/
+# Local Claude Code session files + dev-only tooling
+# Dev skills (framework-integrity, dev-release, wiring-graph, etc.) are
+# maintainer power tools, not consumer features — kept in the private repo only.
+.claude/
 
 # Node (if you add any tooling)
 node_modules/
