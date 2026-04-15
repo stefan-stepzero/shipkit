@@ -55,6 +55,18 @@ Run these quick checks inline before dispatching agents:
 2. Read package.json version — if mismatch → ERROR
 ```
 
+**Installer smoke test (ERROR if fails):**
+```
+Run: python .claude/skills/shipkit-framework-integrity/scripts/installer-smoke-test.py
+```
+Runs the real installer into a temp dir and asserts invariants on the generated
+`settings.json`: every hook event from `install/settings/shipkit.settings.json` is
+present, every command hook uses `$CLAUDE_PROJECT_DIR/`, and the `Skill()` allow-list
+count matches the manifest. Catches installer drift that static file comparison
+cannot (e.g. the v2.4.4 regression where reference settings were correct but the
+JS generator emitted bare relative paths). Exit code 0 = PASS, 1 = FAIL. Include
+the printed `INSTALLER_SMOKE_TEST:` block verbatim in the final report.
+
 **Changelog freshness (optional — skip if docs/development/ doesn't exist):**
 ```
 1. Read docs/development/cc-reference/claude-code-changelog.meta.json
@@ -155,7 +167,7 @@ INSTALLER PATHS:
    install/settings, install/claude-md, install/profiles, docs/generated
 2. Check CLI paths exist:
    cli/bin/shipkit.js, cli/src/index.js, cli/src/init.js, cli/src/update.js,
-   cli/src/hooks.js, cli/src/settings.js, VERSION, package.json
+   cli/src/settings.js, VERSION, package.json
 
 HOOK COVERAGE:
 1. List all .py files in install/shared/hooks/
@@ -164,10 +176,10 @@ HOOK COVERAGE:
 4. Report any hooks that exist on disk but the CLI won't install
 
 SETTINGS CONSISTENCY:
-1. Read install/settings/shipkit.settings.json
-2. Read cli/src/hooks.js — find buildHooksConfig
-3. Check that hook events and commands are consistent between them
-4. Check package.json version matches VERSION file
+1. cli/src/settings.js reads install/settings/shipkit.settings.json as the single
+   source of truth — no separate hooks.js to compare against. Runtime correctness
+   of the generator is verified by the Step 0 installer smoke test, not this agent.
+2. Check package.json version matches VERSION file
 
 Report format:
 HOOKS:
@@ -382,6 +394,7 @@ When invoked with `--loop N`, the skill runs iteratively — checking, fixing, a
 |-------|----------|-------|-------------|
 | VERSION missing | ERROR | inline | VERSION file doesn't exist |
 | VERSION invalid | ERROR | inline | VERSION file empty or not valid semver |
+| Installer smoke test fail | ERROR | inline | Generated settings.json drops events, missing $CLAUDE_PROJECT_DIR/, or skill count mismatch |
 | Orphan skill | ERROR | 1 | Skill directory exists but not in manifest |
 | Ghost skill | ERROR | 1 | Skill in manifest but no directory |
 | Naming violation | ERROR | 1 | Orch/review prefix missing or old names found |

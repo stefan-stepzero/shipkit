@@ -11,7 +11,7 @@ effort: medium
 
 **Purpose**: Derive measurable technical performance criteria from the engineering blueprint. Each mechanism, component, and design decision implies criteria for "how do we know this performs?" — this skill makes those criteria explicit, measurable, and trackable.
 
-**What it does**: Reads the engineering blueprint + stage context, proposes technical criteria, lets user validate, then generates the engineering goal file. Adds engineering criteria to existing stage gates.
+**What it does**: Reads the engineering blueprint + stage context, derives technical criteria, writes the engineering goal file, and adds engineering criteria to existing stage gates. Dispatched in fork context — proceeds without user prompts; the reviewer catches misalignments.
 
 **Output**: One JSON file:
 - `goals/engineering.json` — Technical-performance criteria (EM owns)
@@ -52,7 +52,7 @@ effort: medium
 | File | Required? | Mode | Provides | If Missing |
 |------|-----------|------|----------|------------|
 | `.shipkit/engineering-definition.json` | **Yes** | Define | Mechanisms, components, design decisions | Route to `/shipkit-engineering-definition` |
-| `.shipkit/goals/strategic.json` | Recommended | Define | Stage context, existing gates | Ask user for stage; create gates locally |
+| `.shipkit/goals/strategic.json` | Recommended | Define | Stage context, existing gates | Default to MVP stage; create gates locally |
 | `.shipkit/goals/product.json` | Recommended | Define | User-outcome targets for alignment | Proceed without alignment check |
 | `.shipkit/goals/engineering.json` | **Yes** | Evaluate | Current targets | Route to Define mode first |
 | `.shipkit/metrics/latest.json` | **Yes** | Evaluate | Current actuals | Report "no metrics available" |
@@ -66,7 +66,6 @@ effort: medium
 After loading context, create tasks:
 - `TaskCreate`: "Derive E-* criteria with rubrics from engineering blueprint"
 - `TaskCreate`: "Classify checkability + verificationTool per criterion"
-- `TaskCreate`: "Get user validation on criteria"
 - `TaskCreate`: "Map E-* to existing gates"
 - `TaskCreate`: "Write goals/engineering.json"
 - `TaskCreate`: "Update strategic.json gates with E-* IDs"
@@ -78,18 +77,8 @@ Writing engineering.json is NOT done — strategic.json gates must also be updat
 ### Step 0: Check for Existing File
 
 1. Check if `.shipkit/goals/engineering.json` exists
-2. If exists AND modified < 5 minutes ago: Show user, ask "Use these or regenerate?"
-3. If exists AND modified > 5 minutes ago: Read and display summary, ask "View/Update/Replace/Cancel?"
-4. If nothing exists: Skip to Step 1
-
-**If Update:**
-- Read existing engineering goals
-- Ask: "What should change? (add criteria, adjust thresholds, add SLAs, etc.)"
-- Regenerate incorporating updates
-
-**If Replace:**
-- Archive current file to `.shipkit/.archive/goals-engineering.YYYY-MM-DD.json`
-- Proceed to Step 1
+2. If exists: archive current file to `.shipkit/.archive/goals-engineering.YYYY-MM-DD.json` and regenerate (fork context — no user prompt; the reviewer catches over-eager rewrites)
+3. If nothing exists: Skip to Step 1
 
 ---
 
@@ -109,7 +98,7 @@ Writing engineering.json is NOT done — strategic.json gates must also be updat
 
 ### Step 2: Read Stage
 
-Read stage from `goals/strategic.json` (if exists) or ask user:
+Read stage from `goals/strategic.json` (if exists) or default to MVP (fork context — no user prompt; dispatch `/shipkit-stage` first if stage needs to be set explicitly):
 
 | Stage | Engineering Criteria | Focus |
 |-------|---------------------|-------|
@@ -181,53 +170,9 @@ For each derived criterion, assign `checkability` and `verificationTool`:
 
 ---
 
-### Step 4: Propose Criteria for Validation
+### Step 4: Finalize Criteria
 
-**Present proposed criteria:**
-
-```
-Based on your engineering blueprint:
-
-ENGINEERING (EM — goals/engineering.json):
-  E-001: Generation speed — < 5 seconds for first content
-    Rubric:
-      > 30s: Broken — users assume it failed
-      10-30s: Poor — users wait but lose confidence
-      5-10s: Marginal — noticeable delay
-      2-5s: Good — acceptable wait
-      < 2s: Excellent — feels responsive
-    Verify: automated-test → semantic-qa
-    Derived from: M-001 (LLM Generation Chain)
-
-  E-002: Build passes — 0 errors
-    Rubric:
-      > 0 errors: Broken — cannot deploy
-      0 errors: Pass — deployable
-    Verify: automated-test → build
-
-  E-003: Test suite passes — 0 failures
-    Rubric:
-      > 5 failures: Significant regression
-      1-5 failures: Minor issues — investigate before deploy
-      0 failures: Clean — ready to ship
-    Verify: automated-test → test
-
-  E-004: Generation reliability — > 99% success rate
-    Rubric:
-      < 90%: Unreliable — users encounter frequent errors
-      90-95%: Flaky — occasional failures erode trust
-      95-99%: Stable — rare failures, acceptable
-      > 99%: Production-ready — reliable under sustained load
-    Verify: analytics (needs production traffic)
-    Checkability: observable
-
-Accept these? Or:
-  - Add: "I also want to track response time for search"
-  - Remove: "Skip lint for now"
-  - Adjust: "Make generation speed < 3 seconds"
-```
-
-**If user modifies**: Incorporate changes. Re-present if major changes.
+> **Forked producer — do not prompt.** You have no user channel inside a fork. Finalize the E-* criteria from Step 3's derivation directly and proceed to Step 5. The direction reviewer will flag any misalignment via the loop's feedback cycle. If engineering-definition.json is genuinely missing or unusable, return `gaps_found` in the artifact rather than asking the user.
 
 ---
 
@@ -251,7 +196,7 @@ Beta Ready:
 
 If `goals/strategic.json` doesn't exist, define gates locally in `engineering.json`.
 
-Ask user to confirm gate assignment.
+Assign gates directly — no user prompt (fork context). The reviewer will flag misalignments in the loop's review cycle.
 
 ---
 
@@ -407,7 +352,7 @@ RECOMMENDATION:
 | File | Purpose | If Missing |
 |------|---------|------------|
 | `.shipkit/engineering-definition.json` | Engineering blueprint | Route to `/shipkit-engineering-definition` |
-| `.shipkit/goals/strategic.json` | Stage + existing gates | Ask user for stage |
+| `.shipkit/goals/strategic.json` | Stage + existing gates | Default to MVP; dispatch `/shipkit-stage` first if stage is missing |
 | `.shipkit/goals/product.json` | User-outcome targets for alignment | Proceed without alignment |
 | `.shipkit/stack.json` | Tech stack for calibrating criteria | Proceed with generic criteria |
 | `.shipkit/metrics/latest.json` | Current actuals (Evaluate mode) | Report "no metrics" |
@@ -452,8 +397,6 @@ Engineering goals artifact is complete when:
 - [ ] Each criterion has checkability classification
 - [ ] Each verifiable criterion has a verificationTool assigned
 - [ ] Criteria mapped to existing stage gates (or new gates created)
-- [ ] User confirmed criteria and thresholds
-- [ ] Gate assignments confirmed
 - [ ] derivedFrom traceability links are valid
 - [ ] Summary counts match actual array length
 - [ ] File saved to `.shipkit/goals/engineering.json`

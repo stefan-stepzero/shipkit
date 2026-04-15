@@ -61,9 +61,6 @@ SKILL_PREREQUISITES = {
         ('why.json', '/shipkit-why-project'),
         ('architecture.json', '/shipkit-project-context'),
     ],
-    'shipkit-vision': [
-        ('why.json', '/shipkit-why-project'),
-    ],
     'shipkit-stage': [
         ('why.json', '/shipkit-why-project'),
     ],

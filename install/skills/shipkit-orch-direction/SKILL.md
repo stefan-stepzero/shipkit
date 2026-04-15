@@ -21,7 +21,6 @@ If invoked directly (no `orchestration.json` exists or `activeLoop` is not set b
 
 Strategic artifacts that define WHY, WHAT, and HOW at definition level:
 - `.shipkit/why.json` — Project vision and purpose
-- `.shipkit/vision.json` — Strategic vision
 - Stage assessment in why.json
 - `.shipkit/product-discovery.json` — Personas and user journeys
 - `.shipkit/product-definition.json` — Features, patterns, differentiators
@@ -36,7 +35,6 @@ Strategic artifacts that define WHY, WHAT, and HOW at definition level:
 | Skill | What It Produces |
 |-------|-----------------|
 | `/shipkit-why-project` | why.json |
-| `/shipkit-vision` | vision.json |
 | `/shipkit-stage` | goals/strategic.json |
 | `/shipkit-product-discovery` | product-discovery.json |
 | `/shipkit-product-definition` | product-definition.json |
@@ -61,7 +59,7 @@ After each skill dispatch and after each review cycle, update `.shipkit/orchestr
   "loops": {
     "direction": {
       "status": "in_progress",
-      "currentSkill": "shipkit-vision",
+      "currentSkill": "shipkit-why-project",
       "completedDispatches": [
         { "skill": "shipkit-why-project", "timestamp": "ISO" }
       ],
@@ -79,9 +77,8 @@ Set `status` to `"pass"` or `"partial"` when the loop finishes. Increment `revie
 
 Before dispatching any skills, create tasks for every dispatch in the roster:
 
-1. `TaskCreate` for each of the 8 producer dispatches:
+1. `TaskCreate` for each producer dispatch:
    - "Dispatch: /shipkit-why-project"
-   - "Dispatch: /shipkit-vision"
    - "Dispatch: /shipkit-stage"
    - "Dispatch: /shipkit-product-discovery"
    - "Dispatch: /shipkit-product-definition"
@@ -99,14 +96,13 @@ Before dispatching any skills, create tasks for every dispatch in the roster:
 - If review returns gaps: update re-dispatch and re-review tasks to `in_progress`, dispatch fixes, then re-review
 - Before declaring done, read orchestration.json and verify completedDispatches count >= 8 producers + 1 passing review
 
-1. `/shipkit-why-project` — establishes foundation
-2. `/shipkit-vision` — builds on why
-3. `/shipkit-stage` — sets constraints
-4. `/shipkit-product-discovery` — informs product definition
-5. `/shipkit-product-definition` — informs engineering definition
-6. `/shipkit-engineering-definition` — informs goals and design system
-7. `/shipkit-design-system` — scaffolds design direction + tokens (UI projects only; skip for CLI/API)
-8. `/shipkit-product-goals` — defines product success
-9. `/shipkit-engineering-goals` — defines technical success
-10. `/shipkit-review-direction` — assesses coherence
-11. If gaps found → re-dispatch specific producers → re-review
+1. `/shipkit-why-project` — establishes foundation (vision lives inside why.json)
+2. `/shipkit-stage` — sets stage, constraints, business gates
+3. `/shipkit-product-discovery` — informs product definition
+4. `/shipkit-product-definition` — informs engineering definition
+5. `/shipkit-engineering-definition` — informs goals and design system
+6. `/shipkit-design-system` — scaffolds design direction + tokens (UI projects only; skip for CLI/API)
+7. `/shipkit-product-goals` — defines product success
+8. `/shipkit-engineering-goals` — defines technical success
+9. `/shipkit-review-direction` — assesses coherence
+10. If gaps found → re-dispatch specific producers → re-review

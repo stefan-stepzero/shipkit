@@ -183,10 +183,10 @@ async function init(packageRoot, flags) {
     if (fs.existsSync(settingsDest)) {
       ui.warning('settings.json already exists — merging skill permissions and hooks');
       const { mergeSettings } = require('./settings');
-      const merged = mergeSettings(settingsDest, selectedSkills);
+      const merged = mergeSettings(packageRoot, settingsDest, selectedSkills);
       fs.writeFileSync(settingsDest, JSON.stringify(merged, null, 2) + '\n', 'utf8');
     } else {
-      const settings = generateSettings(manifest, selectedSkills);
+      const settings = generateSettings(packageRoot, manifest, selectedSkills);
       fs.writeFileSync(settingsDest, JSON.stringify(settings, null, 2) + '\n', 'utf8');
     }
     ui.success('settings.json configured');

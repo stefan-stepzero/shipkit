@@ -3,7 +3,8 @@ name: shipkit-product-definition
 description: "Define what to build — features, UX patterns, and differentiators that solve discovered user needs. Triggers: 'product definition', 'what to build', 'features', 'solution design'."
 argument-hint: "[product name or focus area]"
 agent: shipkit-product-owner-agent
-allowed-tools: Read, Write, Edit, Glob, Grep, Agent, AskUserQuestion
+context: fork
+allowed-tools: Read, Write, Edit, Glob, Grep
 effort: medium
 ---
 
@@ -54,7 +55,6 @@ After reading context, create tasks:
 - `TaskCreate`: "Define features mapped to pain points"
 - `TaskCreate`: "Define 2-4 UX patterns with rationale"
 - `TaskCreate`: "Identify 1-3 differentiators"
-- `TaskCreate`: "Get user confirmation on blueprint"
 - `TaskCreate`: "Write product-definition.json"
 
 `TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
@@ -63,17 +63,11 @@ In propose mode (Step 0c), still verify all sections are populated — features,
 
 ### Step 0: Check for Existing File
 
-1. Check if `.shipkit/product-definition.json` exists
-2. If exists AND modified < 5 minutes ago: Show user, ask "Use this or regenerate?"
-3. If exists AND modified > 5 minutes ago: Proceed to File Exists Workflow (Step 0b)
-4. If doesn't exist: Skip to Step 1 (generate new)
+> **Fork context — no user prompts.** You are dispatched in a fork and have no user channel. Skip the file-exists menu entirely.
 
-**File Exists Workflow (Step 0b)**:
-- Options: View / Update / Replace / Cancel
-- View: Display current file, then ask what to do
-- Update: Read existing, ask what to change, regenerate with updates
-- Replace: Archive old version, generate completely new
-- Cancel: Exit without changes
+1. Check if `.shipkit/product-definition.json` exists
+2. If exists: read `.shipkit/reviews/direction-assessment.json` if present. If the latest review lists a gap against this artifact, archive the existing file to `.shipkit/.archive/product-definition.YYYY-MM-DD.json` and regenerate addressing the gap. Otherwise, read the existing file and exit early with a "no changes needed" report — the reviewer already accepted it.
+3. If no file exists: proceed to Step 0c (propose mode).
 
 ---
 
@@ -128,17 +122,7 @@ If `.shipkit/product-discovery.json` does NOT exist → fail with message to run
 
 For each major user need/pain point from discovery, define features:
 
-**Use AskUserQuestion tool:**
-
-```
-header: "Features"
-question: "For [pain point], what should users be able to do?"
-options:
-  - label: "[Proposed feature from context]"
-    description: "Based on the pain point and opportunities"
-  - label: "Different feature"
-    description: "I have another idea"
-```
+**Fork context — no user prompts.** If upstream context is insufficient to propose features for a pain point, return a `gaps_found` status pointing at the missing input (product-discovery.json, why.json, etc.) and exit. The orchestrator reviewer will trigger a re-dispatch after upstream is fixed.
 
 For each feature:
 1. **Name** — concise feature name
@@ -224,14 +208,7 @@ Present the full product blueprint:
   F-003: [Name] — patterns: P-003 | deps: F-002 | addresses: pain-1, pain-3
 ```
 
-Then ask: **"Confirm this product blueprint, or adjust?"**
-
-User can:
-- Confirm as-is
-- Add/remove/modify features or patterns
-- Change differentiators
-
-Incorporate adjustments and re-present if changed significantly.
+> **Fork context — do not prompt for confirmation.** Write the blueprint directly. The direction reviewer will flag any misalignment on the next review cycle.
 
 ---
 
@@ -362,7 +339,7 @@ If `$ARGUMENTS` contains text:
 | File | Purpose | If Missing |
 |------|---------|------------|
 | `.shipkit/product-discovery.json` | User needs, pain points, personas | Route to `/shipkit-product-discovery` |
-| `.shipkit/why.json` | Project purpose and stage | Proceed with user input |
+| `.shipkit/why.json` | Project purpose and stage | Proceed without |
 | `.shipkit/stack.json` | Tech capabilities (feasibility check) | Proceed without |
 | `.shipkit/codebase-index.json` | Existing code for existing projects | Skip |
 | `.shipkit/product-definition.json` | Previous definition (for update mode) | Generate new |
@@ -408,7 +385,6 @@ Product blueprint is complete when:
 - [ ] Features reference patterns by ID
 - [ ] All cross-references use stable IDs (F-001, P-001, D-001)
 - [ ] Summary counts match actual array lengths
-- [ ] User confirmed the blueprint before writing
 - [ ] File saved to `.shipkit/product-definition.json`
 <!-- /SECTION:success-criteria -->
 

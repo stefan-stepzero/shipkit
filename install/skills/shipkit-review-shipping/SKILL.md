@@ -639,7 +639,7 @@ When running as part of an Agent Team:
 
 ## Context Files This Skill Writes
 
-None. This is a read-only reporting tool.
+- `.shipkit/verification-report.json` — QA verdict written on every run (summary + per-check results the shipping orchestrator reads for routing decisions)
 
 ---
 

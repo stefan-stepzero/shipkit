@@ -33,7 +33,6 @@ Before applying rules, classify each skill:
 
 **reviewer-direction** should read ALL direction + definition artifacts:
 - `.shipkit/why.json`
-- `.shipkit/vision.json` (if separate)
 - `.shipkit/goals/strategic.json`
 - `.shipkit/goals/product.json`
 - `.shipkit/goals/engineering.json`

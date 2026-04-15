@@ -215,8 +215,8 @@ After all 3 agents return, build the wiring graph:
   "artifactFlow": {
     ".shipkit/why.json": {
       "writers": ["shipkit-why-project"],
-      "readers": ["shipkit-vision", "shipkit-product-discovery", ...],
-      "expectedReaders": ["shipkit-vision", "shipkit-product-discovery", "shipkit-spec", ...],
+      "readers": ["shipkit-stage", "shipkit-product-discovery", ...],
+      "expectedReaders": ["shipkit-stage", "shipkit-product-discovery", "shipkit-spec", ...],
       "missingReaders": ["shipkit-spec"]
     }
   },

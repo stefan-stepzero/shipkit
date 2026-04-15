@@ -3,7 +3,8 @@ name: shipkit-design-system
 description: "Scaffold a tiered design system — principles, tokens, and aesthetic direction grounded in project context. Triggers: 'design system', 'design tokens', 'brand guidelines', 'visual direction', 'design principles'."
 argument-hint: "[brand colors or focus] [--audit] [--refresh]"
 agent: shipkit-architect-agent
-allowed-tools: Read, Write, Edit, Glob, Grep, Agent, AskUserQuestion
+context: fork
+allowed-tools: Read, Write, Edit, Glob, Grep
 effort: medium
 ---
 
@@ -64,19 +65,13 @@ After reading prerequisites, create tasks:
 
 ### Step 0: Check for Existing Files
 
+> **Fork context — no user prompts.** You are dispatched in a fork and have no user channel. Skip the file-exists menu and any "adopt or create" prompts entirely.
+
 1. Check if `.shipkit/design-system/` directory exists
 2. Also check for common alternatives: `design-system/`, `design-tokens/`, `tokens/`, `theme/`
-3. If `.shipkit/design-system/` exists AND modified < 5 minutes ago: Show user, ask "Use this or regenerate?"
-4. If `.shipkit/design-system/` exists AND modified > 5 minutes ago: File Exists Workflow (Step 0b)
-5. If alternative directory found: Ask user whether to adopt it or create `.shipkit/design-system/`
-6. If nothing exists: Skip to Step 1
-
-**File Exists Workflow (Step 0b)**:
-- Options: View / Update / Replace / Cancel
-- View: Display current files, then ask what to do
-- Update: Read existing, ask what to change, regenerate with updates
-- Replace: Archive old version, generate completely new
-- Cancel: Exit without changes
+3. If `.shipkit/design-system/` exists: read `.shipkit/reviews/direction-assessment.json` if present. If the latest review lists a gap against this artifact, archive the existing directory to `.shipkit/.archive/design-system.YYYY-MM-DD/` and regenerate addressing the gap. Otherwise, read the existing files and exit early with a "no changes needed" report — the reviewer already accepted it.
+4. If an alternative directory is found but `.shipkit/design-system/` does not exist: treat it as the existing design system source — read it for context and write the canonical output to `.shipkit/design-system/`.
+5. If nothing exists: proceed to Step 0c (propose mode).
 
 ---
 
@@ -152,16 +147,7 @@ Fill in the 6-dimension DIRECTION.md template from `references/direction-guide.m
 
 **Banned words in output:** "clean", "modern", "intuitive", "user-friendly", "seamless", "elegant", "simple" — unless accompanied by a measurable specification. These words are meaningless without concrete choices backing them.
 
-**Use AskUserQuestion** if context is insufficient for any dimension:
-```
-header: "Design Direction"
-question: "What aesthetic tone fits this product?"
-options:
-  - label: "[Proposed tone from context]"
-    description: "Based on your vision and audience"
-  - label: "Different direction"
-    description: "I have something else in mind"
-```
+**Fork context — no user prompts.** If context is insufficient for any dimension, return a `gaps_found` status pointing at the missing input (why.json, product-discovery.json, etc.) and exit. The orchestrator reviewer will trigger a re-dispatch after upstream is fixed.
 
 ---
 
@@ -175,7 +161,7 @@ Generate 3-5 verb-based principles. Each principle has:
 
 Principles must be **product-specific** (derived from vision and personas), not generic. They should create productive tension with each other.
 
-Ask user to confirm or adjust.
+> **Fork context — do not prompt for confirmation.** Write the principles directly. The direction reviewer will flag any misalignment on the next review cycle.
 
 ---
 
@@ -300,7 +286,7 @@ When `$ARGUMENTS` contains `--audit`:
 | File | Purpose | If Missing |
 |------|---------|------------|
 | `.shipkit/why.json` | Vision, tone, brand identity | Stop — route to `/shipkit-why-project` |
-| `.shipkit/product-discovery.json` | Personas, accessibility | Ask user about audience |
+| `.shipkit/product-discovery.json` | Personas, accessibility | Default to broad audience; dispatch `/shipkit-product-discovery` first if personas need explicit definition |
 | `.shipkit/product-definition.json` | Features, UX patterns | Proceed without |
 | `.shipkit/engineering-definition.json` | Stack, components | Default to CSS tokens |
 | `.shipkit/goals/strategic.json` | Project stage | Default to Tier 0 |

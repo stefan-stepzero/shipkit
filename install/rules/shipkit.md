@@ -113,7 +113,6 @@ If `.shipkit/codebase-index.json` exists:
 | Create personas & journeys | `/shipkit-product-discovery` |
 | Scan codebase, detect stack | `/shipkit-project-context` |
 | Index codebase for navigation | `/shipkit-codebase-index` |
-| Set strategic direction & stage | `/shipkit-vision` |
 | Define project stage & constraints | `/shipkit-stage` |
 
 ### Solution Design

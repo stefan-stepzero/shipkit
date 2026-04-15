@@ -14,8 +14,7 @@ effort: medium
 ## Input
 
 **Required artifacts** (the direction loop must produce all of these):
-- `.shipkit/why.json`
-- `.shipkit/vision.json`
+- `.shipkit/why.json` (contains vision, purpose, stage)
 - `.shipkit/product-discovery.json`
 - `.shipkit/product-definition.json`
 - `.shipkit/engineering-definition.json`
@@ -30,9 +29,9 @@ effort: medium
 
 ## Coherence Checks
 
-1. **Completeness**: Are ALL 10 required direction artifacts present with non-placeholder content? Missing artifacts are gaps.
-2. **Vision ↔ Why**: Does the vision describe a future that fulfills the stated purpose?
-3. **Goals ↔ Vision**: Do goals, if achieved, realize the vision?
+1. **Completeness**: Are ALL 9 required direction artifacts present with non-placeholder content? Missing artifacts are gaps.
+2. **Vision coherence**: Does why.json state a vision that fulfills its stated purpose? (vision and purpose both live inside why.json)
+3. **Goals ↔ Vision**: Do goals, if achieved, realize the vision stated in why.json?
 4. **Goals ↔ Stage**: Are thresholds realistic for the current stage? Do all goals have rubrics?
 5. **Internal consistency**: Do goals reference capabilities the vision describes?
 6. **Architecture ↔ Engineering Definition**: Are architecture decisions consistent with the mechanisms and components defined?

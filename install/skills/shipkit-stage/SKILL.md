@@ -11,7 +11,7 @@ effort: medium
 
 **Purpose**: Define the project stage (POC/Alpha/MVP/Scale), derive scope constraints and quality bars from that stage, set business-metric criteria (S-*), and define stage gates. Evaluate mode assesses gate readiness for human-approved graduation.
 
-**What it does**: Reads the project vision, asks the human to confirm stage, derives constraints and business metrics, defines gates with S-* criteria, and writes `goals/strategic.json`. Evaluate mode cross-references ALL goal files to build a graduation evidence table.
+**What it does**: Reads the project vision and codebase signals, **infers** the stage, derives constraints and business metrics, defines gates with S-* criteria, and writes `goals/strategic.json`. Dispatched in fork context — proceeds without user prompts in Set mode; the direction reviewer catches misalignments. Evaluate mode is user-invoked and human-gated — it cross-references ALL goal files to build a graduation evidence table for human approval.
 
 **Output**: One JSON file:
 - `goals/strategic.json` — Stage, constraints, stageImplications, business-metric criteria, gates
@@ -64,7 +64,7 @@ effort: medium
 ### Completion Tracking
 
 Create tasks for each major output:
-- `TaskCreate`: "Confirm stage with user"
+- `TaskCreate`: "Infer stage from why.json + codebase signals"
 - `TaskCreate`: "Derive constraints + stageImplications"
 - `TaskCreate`: "Derive S-* criteria with rubrics"
 - `TaskCreate`: "Define stage gates"
@@ -80,19 +80,11 @@ Each S-* criterion must include a rubric — bare thresholds are incomplete.
 
 ### Step 0: Check for Existing File
 
+> **Fork context — no user prompts.** You are dispatched in a fork and have no user channel. Skip the file-exists menu entirely.
+
 1. Check if `.shipkit/goals/strategic.json` exists
-2. If exists AND modified < 5 minutes ago: Show user, ask "Use this or regenerate?"
-3. If exists AND modified > 5 minutes ago: Read and display summary, ask "View/Update/Replace/Cancel?"
-4. If nothing exists: Skip to Step 1
-
-**If Update:**
-- Read existing strategic goals
-- Ask: "What should change? (stage, constraints, add criteria, adjust thresholds, etc.)"
-- Regenerate incorporating updates
-
-**If Replace:**
-- Archive current file to `.shipkit/.archive/goals-strategic.YYYY-MM-DD.json`
-- Proceed to Step 1
+2. If exists: read `.shipkit/reviews/direction-assessment.json` if present. If the latest review lists a gap against `goals/strategic.json` or `stage`, archive the existing file to `.shipkit/.archive/goals-strategic.YYYY-MM-DD.json` and regenerate addressing the gap. Otherwise, read the existing file and exit early with a "no changes needed" report — the reviewer already accepted it.
+3. If no file exists: proceed to Step 1.
 
 ---
 
@@ -101,34 +93,44 @@ Each S-* criterion must include a rubric — bare thresholds are incomplete.
 **Read these files:**
 
 ```
-.shipkit/why.json      → vision, purpose, approach (REQUIRED)
+.shipkit/why.json                       → vision, purpose, approach, currentState (REQUIRED)
+.shipkit/stack.json                     → tech stack, file counts (if exists)
+.shipkit/codebase-index.json            → module structure (if exists)
+.shipkit/specs/active/*.json            → spec presence is a maturity signal (if exists)
+.shipkit/plans/active/*.json            → plan presence is a maturity signal (if exists)
+.shipkit/reviews/direction-assessment.json → reviewer feedback on a prior run (if exists)
 ```
 
-**If why.json missing**: Route to `/shipkit-why-project` first.
+**If why.json missing**: return `status: "gaps_found"` with gap `"why.json missing — dispatch /shipkit-why-project first"` in the artifact. Do NOT prompt the user.
 
 ---
 
-### Step 2: Ask Human for Stage
+### Step 2: Infer Stage (Propose Mode)
 
-Present stage options and ask the human to choose:
+You MUST infer a stage. Do NOT ask the user — this is a forked producer with no user channel.
 
-```
-What stage is this project at?
+**Inference order:**
 
-  1. POC   — Prove the core mechanism works
-  2. Alpha — Core flow works E2E for testers
-  3. MVP   — Production-ready for launch segment
-  4. Scale — Enterprise-ready, optimized for growth
+1. **Explicit stage field in why.json.** If `why.json.stage` exists, use it. Done.
+2. **Explicit stage language in why.json.** Scan `why.json` (vision, approach, currentState, constraints, etc.) for stage keywords:
+   - POC: "proof of concept", "poc", "prototype", "weekend project", "learning exercise", "just exploring", "spike", "throwaway"
+   - Alpha: "alpha", "internal testing", "testers", "early users", "core flow", "happy path"
+   - MVP: "mvp", "minimum viable", "launch", "production-ready", "first customers", "beta"
+   - Scale: "scale", "enterprise", "growth", "multi-tenant", "compliance", "soc2", "gdpr", "high availability"
+3. **Codebase signals** (if stage still unclear):
+   - Zero or very few source files (<10), no specs, no tests → POC
+   - Some source files, basic structure, no deployment config → Alpha
+   - Significant source, CI/CD config, tests, deployment infrastructure → MVP
+   - Production deploys, monitoring, auth, multi-environment → Scale
+4. **Default fallback**: If all signals are ambiguous, choose **MVP**. It's the most common stage and its constraints are moderate — the reviewer will flag if it's wrong.
 
-Current stage: [detected from goals/strategic.json or "not set"]
-Target stage: [ask user]
-```
+Record the inference rationale in the artifact's `stageRationale` field. The reviewer reads this to decide if the inference was defensible.
 
 ---
 
 ### Step 3: Derive Constraints and Stage Implications
 
-Based on stage choice, derive constraints and `stageImplications`:
+Based on the inferred stage, derive constraints and `stageImplications` directly — no user prompt.
 
 | Stage | Quality | Scope | Skip | Focus |
 |-------|---------|-------|------|-------|
@@ -137,26 +139,7 @@ Based on stage choice, derive constraints and `stageImplications`:
 | **MVP** | "Production-ready" | Feature-complete for launch | Scale testing, enterprise features | Launch readiness |
 | **Scale** | "Enterprise-ready" | Full product | Nothing | Growth + operational excellence |
 
-Present constraints and let user adjust:
-
-```
-Stage: MVP
-
-Constraints:
-  Quality: production-ready — CI/CD, monitoring, error handling
-  Scope: feature-complete for launch segment
-  Cost: moderate — dedicated resources acceptable
-
-Stage Implications (cascaded to all agents):
-  Skip: scale testing, enterprise features
-  Focus: launch readiness, user experience, reliability
-  Quality bar: "works for customers"
-
-Accept these? Or adjust:
-  - "Make quality bar higher"
-  - "Tighten scope to just core flow"
-  - "Custom constraint"
-```
+Write the derived constraints into the artifact. The direction reviewer will flag if the quality bar or scope constraint is misaligned with the vision.
 
 ---
 
@@ -173,50 +156,22 @@ Based on vision + stage, derive business-metric criteria:
 
 **Every threshold MUST include a rubric.** A bare number like "> 100 DAU" is meaningless without defining what each level indicates. For each criterion, generate a rubric with 3-5 level descriptors explaining what the number means in practice.
 
-Present proposed criteria with rubrics for validation:
+Derive S-* criteria directly — no user prompt. Example shape at MVP stage:
 
 ```
-Based on your vision and stage (MVP):
-
-STRATEGIC CRITERIA (Visionary — goals/strategic.json):
-  S-001: User acquisition
-    Threshold: > 100 DAU within 30 days of launch
-    Rubric:
-      < 10 DAU: No traction — revisit distribution or value prop
-      10-50 DAU: Early signal — some interest but not enough to validate
-      50-100 DAU: Growing — close to validation threshold
-      100-500 DAU: Validated — enough users to measure retention
-      500+ DAU: Strong traction — ready for growth investment
-    Verify: analytics
-    Checkability: observable — needs real user data
-
-  S-002: Return usage
-    Threshold: > 40% 7-day return rate
-    Rubric:
-      < 10%: No retention — users try once and leave
-      10-25%: Weak — product doesn't compel return visits
-      25-40%: Moderate — some value but not habit-forming
-      40-60%: Good — users find ongoing value
-      60%+: Excellent — strong product-market fit signal
-    Verify: analytics
-    Checkability: observable — needs cohort data
-
-  S-003: User satisfaction
-    Threshold: > 4.0/5.0 average rating
-    Rubric:
-      < 2.0: Users actively dislike the product
-      2.0-3.0: Below expectations — significant gaps
-      3.0-4.0: Acceptable — meets basic needs but uninspiring
-      4.0-4.5: Good — users are satisfied and would recommend
-      4.5-5.0: Exceptional — strong advocacy potential
-    Verify: user-feedback
-    Checkability: observable — needs survey data
-
-Accept these? Or:
-  - Add: "I also want to track revenue"
-  - Remove: "Skip satisfaction for now"
-  - Adjust: "Make DAU threshold 50"
+S-001: User acquisition
+  Threshold: > 100 DAU within 30 days of launch
+  Rubric:
+    < 10 DAU: No traction — revisit distribution or value prop
+    10-50 DAU: Early signal — some interest but not enough to validate
+    50-100 DAU: Growing — close to validation threshold
+    100-500 DAU: Validated — enough users to measure retention
+    500+ DAU: Strong traction — ready for growth investment
+  Verify: analytics
+  Checkability: observable — needs real user data
 ```
+
+Do the same for return usage, user satisfaction, revenue, or whatever criteria match stage + vision. The direction reviewer will flag misaligned or missing criteria on the next review cycle.
 
 ---
 
@@ -239,15 +194,15 @@ beta-ready (mvp-launch + these):
 
 > **Note**: Gates are defined here with S-* criteria only. `/shipkit-product-goals` appends P-* IDs, `/shipkit-engineering-goals` appends E-* IDs. Gates grow as other skills add their criteria.
 
-Ask user to confirm gate composition.
+Define gate composition directly — no user prompt (fork context). The reviewer catches misalignments.
 
 ---
 
 ### Step 6: Generate Strategic Goals File
 
-After confirmation, write:
+Write:
 
-`.shipkit/goals/strategic.json` — stage, constraints, stageImplications, S-* criteria, gates
+`.shipkit/goals/strategic.json` — stage, `stageRationale` (why this stage was inferred), constraints, stageImplications, S-* criteria, gates
 
 See `references/output-schema.md` for full schema.
 
@@ -419,15 +374,16 @@ When `.shipkit/goals/strategic.json` exists with `"source": "shipkit-product-goa
 
 Stage artifact is complete when:
 - [ ] why.json read and vision context extracted
-- [ ] Human confirmed current stage and target stage
-- [ ] Constraints derived from stage and confirmed by human
+- [ ] Stage inferred from why.json + codebase signals (see Step 2 inference order)
+- [ ] `stageRationale` field populated with the inference evidence
+- [ ] Constraints derived from stage (no user prompt)
 - [ ] stageImplications derived (skip, focus, qualityBar)
 - [ ] S-* business-metric criteria derived from vision + stage
 - [ ] Each criterion has measurable threshold
+- [ ] Each criterion has a rubric with 3-5 level descriptors
 - [ ] Each criterion has verification method and checkability classification
 - [ ] Criteria grouped into named stage gates
 - [ ] Gates contain only S-* criteria (P-*/E-* added by downstream skills)
-- [ ] User confirmed criteria, thresholds, and gate composition
 - [ ] derivedFrom references only why.json
 - [ ] Summary counts match actual array length
 - [ ] File saved to `.shipkit/goals/strategic.json`
@@ -439,4 +395,4 @@ Stage artifact is complete when:
 
 **Backward compatibility**: Files with `source: "shipkit-product-goals"` are from the previous owner. The criteria and gate schemas are compatible; only `source`, `version`, `stageImplications`, and `derivedFrom` differ. Migration is automatic on first run.
 
-**Remember**: This skill defines the strategic frame — stage, constraints, and business metrics. Stage advancement is always a human checkpoint. Other skills (product-goals, engineering-goals) append their criteria to the gates defined here.
+**Remember**: This skill defines the strategic frame — stage, constraints, and business metrics. In Set mode (dispatched by orch-direction) the skill runs autonomously in fork context — no user prompts, the reviewer catches misalignments. In Evaluate mode (user-invoked graduation check) stage advancement remains a human checkpoint. Other skills (product-goals, engineering-goals) append their criteria to the gates defined here.

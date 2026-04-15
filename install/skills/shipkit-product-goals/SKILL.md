@@ -75,15 +75,14 @@ After loading context (Step 1), create tasks:
 1. `TaskCreate`: "Load context (product-definition + strategic.json)"
 2. `TaskCreate`: "Derive P-* criteria with rubrics from product blueprint"
 3. `TaskCreate`: "Classify checkability + verificationTool for each criterion"
-4. `TaskCreate`: "Present criteria for user validation"
-5. `TaskCreate`: "Map P-* criteria to existing gates in strategic.json"
-6. `TaskCreate`: "Archive existing artifact (if replacing)"
-7. `TaskCreate`: "Write goals/product.json"
-8. `TaskCreate`: "Update strategic.json gates with P-* IDs"
-9. `TaskCreate`: "Verify summary counts match actual array length"
+4. `TaskCreate`: "Map P-* criteria to existing gates in strategic.json"
+5. `TaskCreate`: "Archive existing artifact (if replacing)"
+6. `TaskCreate`: "Write goals/product.json"
+7. `TaskCreate`: "Update strategic.json gates with P-* IDs"
+8. `TaskCreate`: "Verify summary counts match actual array length"
 
 **Rules:**
-- Writing product.json (task 7) is NOT done — strategic.json gates must also be updated (task 8)
+- Writing product.json (task 6) is NOT done — strategic.json gates must also be updated (task 7)
 - `TaskUpdate` the gates task to `completed` only after reading strategic.json back and confirming P-* IDs appear in gate criteria arrays
 - Every criterion must have a rubric (3-5 levels) — bare thresholds fail the criteria derivation task
 - Do NOT present the final summary until ALL tasks show completed
@@ -91,19 +90,9 @@ After loading context (Step 1), create tasks:
 ### Step 0: Check for Existing Files
 
 1. Check if `.shipkit/goals/product.json` exists
-2. If exists AND modified < 5 minutes ago: Show user, ask "Use this or regenerate?"
-3. If exists AND modified > 5 minutes ago: Read and display summary, ask "View/Update/Replace/Cancel?"
-4. If doesn't exist: Check for legacy `.shipkit/goals.json` — offer migration (see Migration section)
-5. If nothing exists: Skip to Step 1
-
-**If Update:**
-- Read existing product goal file
-- Ask: "What should change? (add criteria, adjust thresholds, mark achieved, etc.)"
-- Regenerate incorporating updates
-
-**If Replace:**
-- Archive current file to `.shipkit/.archive/goals-product.YYYY-MM-DD.json`
-- Proceed to Step 1
+2. If exists: archive current file to `.shipkit/.archive/goals-product.YYYY-MM-DD.json` and regenerate (fork context — no user prompt; let the reviewer catch over-eager rewrites)
+3. If legacy `.shipkit/goals.json` exists: migrate (see Migration section)
+4. If nothing exists: Skip to Step 1
 
 ---
 
@@ -133,7 +122,7 @@ Read stage and constraints from `goals/strategic.json` (set by `/shipkit-stage`)
 | MVP | Moderate: user outcome thresholds (5-10 criteria) | Usability + satisfaction |
 | Scale | Comprehensive: full UX quality (10-15 criteria) | Growth + user delight |
 
-If `goals/strategic.json` is missing, ask user for stage or default to MVP.
+If `goals/strategic.json` is missing, default to MVP stage (fork context — no user prompt; dispatch `/shipkit-stage` first if stage needs to be set explicitly).
 
 ---
 
@@ -193,44 +182,9 @@ For each derived criterion, assign `checkability` and `verificationTool`:
 
 ---
 
-### Step 4: Propose Criteria for Validation
+### Step 4: Finalize Criteria
 
-**Present proposed product criteria:**
-
-```
-Based on your product blueprint (stage: {stage}):
-
-PRODUCT CRITERIA (PM — goals/product.json):
-  P-001: Wizard completion time
-    Threshold: 80% of users complete in < 2 min
-    Rubric:
-      < 30%: Flow is broken — users can't find or start the wizard
-      30-60%: Major friction — users start but abandon mid-flow
-      60-80%: Workable — most complete but some struggle
-      80-95%: Smooth — users complete without confusion
-      95%+: Effortless — intuitive flow, no hesitation
-    Verify: analytics (time-to-complete)
-    Checkability: observable — needs real user funnel
-    Derived from: P-001 (Wizard Flow)
-
-  P-002: Wizard flow E2E
-    Threshold: 100% E2E pass rate
-    Rubric:
-      0%: Flow is completely broken
-      50-99%: Some paths work, others fail — partial implementation
-      100%: All paths pass end-to-end
-    Verify: automated-test (Playwright)
-    Checkability: verifiable → visual-qa
-    Derived from: P-001 (Wizard Flow)
-
-Accept these? Or:
-  - Add: "I also want to track X"
-  - Remove: "Skip the completion time metric"
-  - Adjust: "Make threshold higher"
-  - Custom: "Replace with my own criteria"
-```
-
-**If user modifies**: Incorporate changes. Re-present if major changes.
+> **Forked producer — do not prompt.** You are dispatched inside a fork and have no user channel. Finalize the P-* criteria from your derivation pass (Step 3) directly, write them in Step 6, and let the direction reviewer catch any miscalibration via the loop's feedback cycle. If context is genuinely insufficient (missing product-definition.json, no stage set), return a `gaps_found` signal in the artifact instead of asking the user.
 
 ---
 
@@ -255,7 +209,7 @@ Beta Ready:
 
 If `goals/strategic.json` doesn't exist or has no gates, define gates locally in `product.json` and note they should be merged when `/shipkit-stage` runs.
 
-Ask user to confirm gate assignment.
+Assign gates directly — no user prompt (fork context). The reviewer will flag misalignments in the loop's review cycle.
 
 ---
 
@@ -487,8 +441,6 @@ Product goals artifact is complete when:
 - [ ] Each criterion has checkability classification (verifiable or observable)
 - [ ] Each verifiable criterion has a verificationTool assigned
 - [ ] P-* criteria mapped to existing gates in strategic.json (or local gates created)
-- [ ] User confirmed criteria and thresholds
-- [ ] Gate assignment confirmed
 - [ ] derivedFrom traceability links are valid
 - [ ] Summary counts match actual array length
 - [ ] File saved to `.shipkit/goals/product.json`

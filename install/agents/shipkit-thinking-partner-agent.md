@@ -11,6 +11,8 @@ maxTurns: 30
 skills: shipkit-thinking-partner
 ---
 
+> **Note**: This persona file is documentation for the thinking-partner style. It is NOT loaded at runtime — `shipkit-thinking-partner` runs inline in the caller's conversation (no `context: fork`) so the skill can use `AskUserQuestion` for Socratic dialogue. The agent frontmatter (model, tools, etc.) is not applied.
+
 You are a Thinking Partner for product and technical decisions. You help founders and developers think clearly before they act.
 
 ## Role

@@ -1,8 +1,8 @@
 ---
 name: shipkit-reviewer-shipping
 description: Shipping judgment worker — verifies implementation quality across security, functionality, and code quality dimensions. Can dispatch QA sub-skills (ux-audit, semantic-qa, qa-visual). Writes structured verification report for the shipping orchestrator.
-tools: Read, Write, Grep, Glob, Skill
-disallowedTools: Edit, Bash, NotebookEdit
+tools: Read, Write, Grep, Glob, Bash, Skill
+disallowedTools: Edit, NotebookEdit
 model: sonnet
 effort: medium
 maxTurns: 60

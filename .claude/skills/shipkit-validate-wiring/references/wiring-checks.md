@@ -50,7 +50,32 @@ This prevents known, intentional design choices from being flagged on every run.
 ### W-007: Orchestrator Must Have Skill Tool
 **Check**: Every agent whose name contains `orch-` must have `Skill` in its `tools` list.
 **Data source**: `agents[*]` where name matches `*orch-*` → `frontmatter.tools` contains "Skill"
-**Failure**: Orchestrator agent can't dispatch gateway skills without the Skill tool.
+**Failure**: Orchestrator agent can't dispatch producer skills without the Skill tool.
+
+### W-008: Orchestrator Roster Output Match (AR-001)
+**Check**: For every orchestrator skill (`shipkit-orch-direction`, `shipkit-orch-planning`, `shipkit-orch-shipping`), parse its Roster table. For each row, the declared output artifact(s) must appear in the dispatched skill's `writes` set in DOC-025. Also check each reviewer skill's Required/Input artifact list against producer `writes` sets.
+**Data source**: Orchestrator/reviewer SKILL.md body text (Roster tables + Required artifacts) parsed into `{skill: [artifacts]}` pairs → compared against `skills[skill].writes` in DOC-025.
+**Failure**: Orch claims skill X produces artifact Y, but X doesn't write Y. The orch advances assuming Y exists; downstream skills hit missing file at runtime. Was the root cause of the vision.json contract drift that led to AR-001.
+**Parser hint**: Roster rows typically follow `| /shipkit-{name} | {artifact} |` markdown. Split on `|` and trim. Handle multiple-artifact cells (e.g. "why.json + goals/strategic.json").
+**Rationale**: Formalizes architectural rule AR-001 from DOC-015 — producer outputs must match what the orchestrator contracts for.
+
+### W-009: Fork-Skill Prompts in Orchestrated Runs (AR-002)
+**Check**: For every skill with `context: fork` AND `reachability == "orchestrated"` in DOC-025 (i.e. appears in some loop orchestrator's dispatch chain), scan the SKILL.md body for interactive-prompt patterns:
+  - `Accept these\?`
+  - `Ask user` (case-insensitive)
+  - `View\s*/\s*Update\s*/\s*Replace\s*/\s*Cancel`
+  - `Use this or regenerate`
+  - `What should change`
+  - `Confirm this .* blueprint`
+  - `Ask user to confirm`
+  - `Scan now\? \(yes/no\)`
+  - `Rescan\? \(yes/no\)`
+  - `Any folders I should skip`
+  - `\?\n\s*-\s` (interrogative followed by a bulleted option list inside a prompt template)
+**Data source**: Filesystem scan of `install/skills/*/SKILL.md` filtered by `frontmatter.context == "fork"` AND `skills[*].reachability == "orchestrated"` in DOC-025.
+**Failure**: A forked skill that prompts inside an orchestrated run either hangs waiting or hallucinates an answer. The check covers both **producer** forks (fork + worker agent) AND **utility** forks (fork with no agent: field, e.g. project-context, codebase-index) when they're in an orchestrator's roster. Root cause of every hang fixed in the 2026-04-13 cleanup.
+**Exception**: Skills with `reachability == "standalone"` (user-invocable, not orchestrator-dispatched) are allowed to prompt — e.g. `shipkit-communications`. Skills without `context: fork` at all (`shipkit-thinking-partner`, `shipkit-feedback-bug`, `shipkit-master`) run in caller context on purpose and can prompt. The check gates on reachability, not on agent type.
+**Rationale**: Formalizes architectural rule AR-002 from DOC-015 — fork skills dispatched by an orchestrator must not prompt the user.
 
 ---
 

@@ -40,8 +40,7 @@ These are not automatic blockers — flag them as gaps for the orchestrator to e
 
 | Artifact | What to Check |
 |----------|--------------|
-| `.shipkit/why.json` | Vision and purpose exist, are specific (not generic) |
-| `.shipkit/vision.json` | Aligns with why.json, describes a concrete future state |
+| `.shipkit/why.json` | Vision and purpose exist, are specific (not generic), describe a concrete future state |
 | `.shipkit/goals/strategic.json` | Stage is explicitly set, stage implications are realistic |
 | `.shipkit/goals/product.json` | Product goals exist, align with vision, have measurable criteria |
 | `.shipkit/goals/engineering.json` | Engineering goals exist, align with stage constraints |
@@ -51,8 +50,8 @@ These are not automatic blockers — flag them as gaps for the orchestrator to e
 
 ### Coherence Checks
 
-1. **Vision ↔ Why**: Does the vision describe a future that fulfills the stated purpose?
-2. **Goals ↔ Vision**: Do product and engineering goals, if achieved, realize the vision?
+1. **Vision coherence**: Does why.json's vision field describe a future that fulfills the stated purpose? (vision and purpose both live inside why.json)
+2. **Goals ↔ Vision**: Do product and engineering goals, if achieved, realize the vision stated in why.json?
 3. **Goals ↔ Stage**: Are goal thresholds realistic for the current stage? (POC goals shouldn't require Scale-level metrics)
 4. **Completeness**: Are all required artifacts present? Any empty or placeholder content?
 5. **Internal consistency**: Do goals reference features/capabilities that the vision describes?
@@ -98,7 +97,7 @@ Write `.shipkit/reviews/direction-assessment.json`:
 {
   "assessedAt": "ISO timestamp",
   "status": "pass" | "gaps_found",
-  "artifactsReviewed": ["why.json", "vision.json", "goals/product.json", "goals/engineering.json"],
+  "artifactsReviewed": ["why.json", "goals/strategic.json", "goals/product.json", "goals/engineering.json"],
   "summary": "Brief overall assessment",
   "evidenceLog": {
     "why.json": {
@@ -112,10 +111,10 @@ Write `.shipkit/reviews/direction-assessment.json`:
   },
   "gaps": [
     {
-      "artifact": "vision.json",
+      "artifact": "why.json",
       "issue": "Specific description of the gap or contradiction",
       "evidence": "Quote or reference from the artifact",
-      "fix": "What the orchestrator should re-dispatch to close this gap"
+      "fix": "What the orchestrator should re-dispatch to close this gap (e.g. /shipkit-why-project or /shipkit-stage)"
     }
   ],
   "tensions": [

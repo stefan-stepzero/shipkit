@@ -104,7 +104,6 @@ AGENT_MODEL_MAP = {
 # Skills to their declared agent (from SKILL.md frontmatter `agent:` field)
 SKILL_AGENT_MAP = {
     'shipkit-why-project': 'visionary',
-    'shipkit-vision': 'visionary',
     'shipkit-stage': 'visionary',
     'shipkit-product-discovery': 'product-owner',
     'shipkit-product-definition': 'product-owner',
@@ -135,7 +134,6 @@ SKILL_AGENT_MAP = {
 # Skills that dispatch to known agents
 SKILL_MODEL_MAP = {
     'shipkit-why-project': 'opus',
-    'shipkit-vision': 'opus',
     'shipkit-product-discovery': 'opus',
     'shipkit-product-definition': 'opus',
     'shipkit-engineering-definition': 'opus',
@@ -278,7 +276,7 @@ def render_skill_invocations(usage_summary: list[dict]) -> str:
 
 ARTIFACT_GROUPS = [
     ('Direction', [
-        'why.json', 'vision.json', 'product-discovery.json',
+        'why.json', 'product-discovery.json',
         'product-definition.json', 'engineering-definition.json',
         'architecture.json',
     ]),

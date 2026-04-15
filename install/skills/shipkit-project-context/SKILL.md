@@ -67,25 +67,15 @@ stack.json alone is NOT done — env-requirements.md and schema.json must also b
 **Commands**: See `references/bash-commands.md` for platform-specific freshness checks
 
 **Freshness logic**:
-1. If `.shipkit/stack.json` doesn't exist → First run, proceed to Step 2
+1. If `.shipkit/stack.json` doesn't exist → First run, proceed directly to Step 3 (scan).
 2. If `stack.json` exists:
-   - Compare modification times
-   - If `stack.json` newer than `package.json` → **SKIP SCAN**, just read cached file
-   - If `package.json` newer than `stack.json` → Ask user to confirm rescan
+   - Compare modification times.
+   - If `stack.json` newer than `package.json` → **SKIP SCAN**, read cached file and exit early with a "using cached stack" report.
+   - If `package.json` newer than `stack.json` → Rescan automatically (no prompt). Archive the stale `stack.json` if overwrite risk matters, then proceed to Step 3.
 
 **Token savings**: Cached read ~100-200 tokens vs Full scan ~1,500 tokens
 
----
-
-### Step 2: Ask Before Heavy Work
-
-**If rescan is needed, ask user first**:
-
-**First run**: "First run detected - no context files exist. Scan now? (yes/no)"
-
-**Stale context**: "Context appears stale: package.json modified after stack.json. Rescan? (yes/no)"
-
-**If user says no**: "Okay, using existing context. Run `/shipkit-project-context` when you want to update."
+> **Fork context — no user prompts.** This skill is dispatched by orch-planning (or inline by other skills) and has no user channel when forked. Rescans proceed automatically whenever the freshness check flags them. If the user wants to suppress automatic rescans, they edit `.shipkit/stack.json` mtime or skip this skill in the orch roster.
 
 ---
 

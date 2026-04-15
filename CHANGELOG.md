@@ -10,6 +10,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.6.0] - 2026-04-15
+
+Architectural cleanup release. Retired a vestigial gateway skill, fixed a runtime bug where 4 producer skills were silently running inline instead of forking with their personas, swept the framework for fork-prompt anti-patterns, and added 3 new architectural rules + 2 new wiring validation checks to catch this class of drift on every release.
+
+### Removed
+- **`shipkit-vision` skill** — Retired. Was a 2-tier-era routing gateway that became structurally redundant when the 3-loop orchestrator tier was added. The `vision.json` artifact it was supposed to produce never had a real writer — it was a phantom contract referenced in 11 places. `why.json` already contains vision/purpose/stage; the direction loop now routes to `/shipkit-why-project` or `/shipkit-stage` directly. Skill count: 38 → 37. See KI-001 in DOC-025 for history.
+
+### Fixed
+- **Producer skills now actually load their personas** (W-006) — `shipkit-product-definition`, `shipkit-engineering-definition`, `shipkit-design-system`, and `shipkit-spec` had decorative `agent:` fields without `context: fork`. Per DOC-023, this meant the producer persona never loaded at runtime — they ran as whatever the caller's context was (sonnet with orchestrator tools) instead of as product-owner/architect with opus and acceptEdits. All four now fork correctly with their personas.
+- **`shipkit-stage` broken on every dispatch** — Had no propose mode at all. Every run prompted for stage/constraints/criteria/gates. In fork context those prompts hung or hallucinated. Rewritten with full propose mode: infers stage from `why.json` + codebase signals, derives constraints directly, writes the artifact without user prompts.
+- **`shipkit-reviewer-shipping-agent` Bash contradiction** (W-005) — Agent declared `Bash` in `disallowedTools` but three skills using it (preflight, scale-ready, review-shipping) need Bash for build/test commands. Removed Bash from disallowedTools, added to tools. Kept `Edit, NotebookEdit` denied.
+- **Fork-prompt anti-pattern swept from 15 skills** (W-009) — Removed every `Accept these?`, `Ask user to confirm`, `View/Update/Replace/Cancel`, `Use this or regenerate`, and similar prompt in any fork-dispatched producer. Also fixed residual soft-prose "ask user for stage" instructions in prerequisite tables. Fork-dispatched skills now propose-and-write-and-exit; user feedback enters through the reviewer loop at loop boundaries.
+- **Step 0 ordering bug across 6 skills** — `shipkit-product-definition`, `shipkit-engineering-definition`, `shipkit-design-system`, `shipkit-product-discovery`, `shipkit-spec-roadmap`, `shipkit-why-project` had their file-exists menu running before their propose-mode check, intercepting on reviewer re-dispatch. Reordered to read `reviews/*-assessment.json` on re-dispatch and regenerate-on-gap or exit-early, with no user prompt.
+- **`shipkit-spec` Agent tool → Skill dispatch** — Step 3c was instructing `Agent(subagent_type: "Explore")` for code exploration, which fails in fork context (subagents cannot spawn sub-subagents via Agent). Replaced with inline Read/Grep/Glob exploration.
+- **`shipkit-thinking-partner` decorative agent field** — Removed the `agent:` field (it was never loaded because the skill intentionally runs inline for Socratic dialogue). Annotated the agent `.md` file as documentation-only.
+
+### Added
+- **Three architectural rules in DOC-015:**
+  - **AR-001**: *No routing skills — routing is an orchestrator's job.* Shipkit has exactly 3 orchestration tiers (master → loop orch → producer). Router skills that conditionally dispatch one of N producers are forbidden; that logic belongs in the enclosing loop orchestrator.
+  - **AR-002**: *Fork skills dispatched by an orchestrator must not prompt the user.* Gates on reachability (`orchestrated`) rather than agent type, so it covers both producer forks and utility forks.
+  - **AR-003**: *When adding an orchestration tier, audit gateway skills for redundancy.* Future tier changes must include a "retired skills" section. Captures the lesson from why shipkit-vision sat as architectural debt for a year.
+- **Two new validation checks in `shipkit-validate-wiring`:**
+  - **W-008**: Orchestrator roster output match — every orch roster row's declared artifact must appear in the dispatched skill's `writes` set. Catches the vision.json-style contract drift.
+  - **W-009**: Fork-skill prompt scan — scans every `context: fork` + `reachability: orchestrated` skill body for interactive prompt patterns. Exception allowlist gates on reachability.
+
+### Changed
+- **`cli/src/settings.js` refactor** — Settings generator no longer hardcodes permissions in JS. It loads `install/settings/shipkit.settings.json` as the single source of truth, strips the editorial `_notes` block, and replaces the `Skill()` allow-list with the caller's selected set. Eliminates a real drift risk and removes `cli/src/hooks.js` entirely. Net: -176 lines.
+- **DOC-015 skill taxonomy**: Renamed the "Gateway" skill type to "Producer" (the term "gateway" was overloaded — meant both "fork + worker" and colloquially "router"). All 4 KI entries documented.
+- **DOC-025 wiring graph regenerated** — now correctly captures `architecture.json` with 3 writers and 15 readers (previous regen had missed both). Contains `knownIssues` entries KI-001 through KI-004.
+- **`shipkit-architect-agent` skills preload list** — Added `shipkit-design-system` (was missing; blocker for the W-006 fork fix).
+- **Utility fork skills** — `shipkit-project-context` and `shipkit-codebase-index` stopped prompting during rescan/skip-folder decisions. Both now use sensible defaults in fork context.
+
+### Internal
+- Archived `.claude/specs/orchestration-artifact.md` — the unimplemented draft spec that seeded the phantom `vision.json` contract. Annotated as superseded.
+- 5 audit reports added under `docs/development/` documenting the pre/post state at each fix round.
+- `package.json` description corrected from 38 to 37 skills.
+
+---
+
 ## [1.12.0] - 2026-02-28
 
 ### Added

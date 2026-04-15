@@ -50,7 +50,10 @@ Run all checks inline (no agents needed). Read DOC-025 JSON and apply the check 
 1. Read `docs/development/system-design/DOC-025-wiring-graph.json`
 2. Check staleness: compare DOC-025 `generatedAt` against latest modification time of any file in `install/skills/` or `install/agents/`. If DOC-025 is older, emit WARNING: "Wiring graph is stale — run /shipkit-wiring-graph --refresh"
 3. For each check in the catalog (see `references/wiring-checks.md`), evaluate against the DOC-025 data
-4. Collect results by severity: BLOCK, WARN, NOTE
+4. **W-008 and W-009 require additional filesystem scans** beyond DOC-025:
+   - **W-008**: For each orchestrator skill, read the SKILL.md body, parse the Roster table, and compare declared outputs against `skills[dispatched-skill].writes` in DOC-025. Also read each reviewer skill's Required/Input list and verify every referenced artifact has a writer.
+   - **W-009**: For each skill in DOC-025 where `frontmatter.context == "fork"` AND `frontmatter.agent` does NOT contain `orch-`, read the SKILL.md body and grep for the interrogative patterns listed in W-009 (see `references/wiring-checks.md`). Skip skills in the allowlist.
+5. Collect results by severity: BLOCK, WARN, NOTE
 
 ### Report Format
 
@@ -66,6 +69,8 @@ BLOCK ISSUES (must fix)
 ───────────────────────
 {W-001: Agent binding exists — ...}
 {W-003: Dispatch target exists — ...}
+{W-008: Orchestrator roster output match — orch claims X, skill writes Y}
+{W-009: Fork-producer prompt — {skill}:{line} matches "Accept these?"}
 ...or "None"
 
 WARNINGS (should fix)
@@ -113,11 +118,10 @@ Starting state: No .shipkit/ artifacts exist (greenfield project). Only README a
 
 Walk through the Direction loop's dispatch order:
 1. /shipkit-why-project → produces what? Needs what inputs?
-2. /shipkit-vision → produces what? Needs what inputs? Are they available now?
-3. /shipkit-stage → produces what? Needs what inputs?
-4. /shipkit-product-goals → produces what? Needs what inputs?
-5. /shipkit-engineering-goals → produces what? Needs what inputs?
-6. /shipkit-review-direction → reads what? Produces what assessment?
+2. /shipkit-stage → produces what? Needs what inputs?
+3. /shipkit-product-goals → produces what? Needs what inputs?
+4. /shipkit-engineering-goals → produces what? Needs what inputs?
+5. /shipkit-review-direction → reads what? Produces what assessment?
 
 At each step:
 - List the skill's reads (from DOC-025)
@@ -127,8 +131,8 @@ At each step:
 - Flag any MISSING INPUT (read required but no upstream writer has produced it yet)
 
 Then simulate a re-dispatch scenario:
-- Assume reviewer-direction finds a gap (e.g., "vision doesn't align with updated why")
-- Can the orchestrator re-dispatch /shipkit-vision? Are its inputs still available?
+- Assume reviewer-direction finds a gap (e.g., "why.json vision field is too generic")
+- Can the orchestrator re-dispatch /shipkit-why-project? Are its inputs still available?
 - Trace the re-dispatch through the DOC-025 data
 
 Report format:
@@ -160,7 +164,6 @@ Read the wiring graph at P:\Projects2\sg-shipkit\docs\development\system-design\
 
 Starting state: Direction loop has completed. These artifacts exist:
 - .shipkit/why.json
-- .shipkit/vision.json
 - .shipkit/goals/strategic.json
 - .shipkit/goals/product.json (draft)
 - .shipkit/goals/engineering.json (draft)
@@ -199,7 +202,7 @@ Simulate the Shipping loop of Shipkit's orchestration pipeline.
 Read the wiring graph at P:\Projects2\sg-shipkit\docs\development\system-design\DOC-025-wiring-graph.json.
 
 Starting state: Direction + Planning loops complete. All direction and planning artifacts exist:
-- .shipkit/why.json, vision.json, goals/strategic.json, goals/product.json, goals/engineering.json
+- .shipkit/why.json, goals/strategic.json, goals/product.json, goals/engineering.json
 - .shipkit/product-discovery.json, product-definition.json, engineering-definition.json
 - .shipkit/spec-roadmap.json, specs/todo/*.json, user-instructions.json
 - .shipkit/reviews/direction-assessment.json, planning-assessment.json

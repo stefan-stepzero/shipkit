@@ -94,7 +94,16 @@ options:
   - (dynamically list spec files found)
 ```
 
-**Question 2 - Plan Detail:**
+**Question 2 - Plan Detail:** (user-invoked only; skipped in fork context)
+
+> **Fork context — infer from stage.** When this skill is dispatched by an orchestrator (fork), do NOT prompt. Read `.shipkit/goals/strategic.json` and infer planning depth from the stage field:
+> - POC / Alpha → "Quick POC" (minimal steps, get something working fast)
+> - MVP → "Standard" (balanced detail, covers major concerns)
+> - Scale → "Detailed" (comprehensive plan with alternatives)
+>
+> Record the chosen level in the plan's `planningLevel` field so the review loop can flag mismatches.
+
+When user-invoked directly (no fork), ask:
 ```
 header: "Detail"
 question: "What level of planning do you need?"
@@ -106,8 +115,6 @@ options:
   - label: "Detailed"
     description: "Comprehensive plan with alternatives"
 ```
-
-**If user selects "Other"**: Ask clarifying questions about their specific needs.
 
 ---
 

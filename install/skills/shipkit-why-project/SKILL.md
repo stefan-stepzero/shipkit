@@ -69,17 +69,11 @@ Before asking questions, check if the project already has enough context to prop
 
 ### Step 1: Check if why.json Already Exists
 
-```
-If .shipkit/why.json exists:
-  - Read and parse existing file
-  - Ask user: "A project vision already exists. Would you like to:"
-     1. View current vision
-     2. Update vision (will overwrite)
-     3. Cancel
+> **Fork context — no user prompts.** You are dispatched in a fork and have no user channel. Skip the file-exists menu entirely.
 
-If .shipkit/why.json does NOT exist:
-  - Proceed directly to Step 2
-```
+1. Check if `.shipkit/why.json` exists
+2. If exists: read `.shipkit/reviews/direction-assessment.json` if present. If the latest review lists a gap against this artifact, archive the existing file to `.shipkit/.archive/why.YYYY-MM-DD.json` and regenerate addressing the gap. Otherwise, read the existing file and exit early with a "no changes needed" report — the reviewer already accepted it.
+3. If no file exists: proceed to Step 2.
 
 ---
 
@@ -260,12 +254,12 @@ Copy and track:
 ## Success Criteria
 
 Vision is defined when:
-- [ ] User answered all 5 core questions
+- [ ] All 5 core vision fields populated (targetUsers, problem, currentState, vision, approach)
 - [ ] Answers are high-level (1-3 sentences each)
 - [ ] why.json created in `.shipkit/`
 - [ ] File follows Shipkit artifact envelope schema
 - [ ] Dates are correct (`createdAt` preserved if updating)
-- [ ] User knows vision will auto-load at session start
+- [ ] Session-start auto-load confirmed
 <!-- /SECTION:success-criteria -->
 ---
 

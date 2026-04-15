@@ -3,7 +3,6 @@ name: shipkit-thinking-partner
 description: "Use when user needs to think through decisions, explore trade-offs, or challenge assumptions before acting. Triggers: 'think with me', 'help me decide', 'what am I missing?', 'devil's advocate', 'pre-mortem'."
 argument-hint: "<decision or topic to think through>"
 model: opus
-agent: shipkit-thinking-partner-agent
 allowed-tools: Read, Glob, Grep, AskUserQuestion
 effort: medium
 ---

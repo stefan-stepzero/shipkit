@@ -23,7 +23,7 @@ effort: medium
 - `.shipkit/user-tasks.json` — manual user tasks
 
 **Direction context** (produced by prior loop, read for cross-reference):
-- `.shipkit/why.json`, `.shipkit/vision.json`
+- `.shipkit/why.json`
 - `.shipkit/product-definition.json`, `.shipkit/engineering-definition.json`
 - `.shipkit/architecture.json`
 - `.shipkit/goals/strategic.json`, `.shipkit/goals/product.json`, `.shipkit/goals/engineering.json`

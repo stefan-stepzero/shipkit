@@ -165,7 +165,7 @@ async function update(packageRoot, flags) {
     copyFile(path.join(packageRoot, 'VERSION'), path.join(targetDir, '.shipkit', 'VERSION'));
 
     // 5. Merge settings.json
-    const merged = mergeSettings(settingsPath, selectedSkills);
+    const merged = mergeSettings(packageRoot, settingsPath, selectedSkills);
     fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2) + '\n', 'utf8');
     ui.success('settings.json merged (custom permissions preserved)');
 

@@ -3,7 +3,8 @@ name: shipkit-engineering-definition
 description: "Define the technical approach — mechanisms, design decisions, stack direction, and component structure for building the product. Triggers: 'engineering approach', 'how to build this', 'technical design', 'mechanisms'."
 argument-hint: "[focus area or --refresh]"
 agent: shipkit-architect-agent
-allowed-tools: Read, Write, Edit, Glob, Grep, Agent, AskUserQuestion
+context: fork
+allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 effort: medium
 ---
 
@@ -54,7 +55,6 @@ After reading prerequisites, create tasks:
 - `TaskCreate`: "Design 2-5 mechanisms mapped to features"
 - `TaskCreate`: "Define 2-6 components mapped to mechanisms"
 - `TaskCreate`: "Capture cross-cutting design decisions"
-- `TaskCreate`: "Get user confirmation"
 - `TaskCreate`: "Write engineering-definition.json"
 - `TaskCreate`: "Derive and write architecture.json"
 
@@ -62,17 +62,11 @@ engineering-definition.json alone is NOT done — architecture.json must also be
 
 ### Step 0: Check for Existing File
 
-1. Check if `.shipkit/engineering-definition.json` exists
-2. If exists AND modified < 5 minutes ago: Show user, ask "Use this or regenerate?"
-3. If exists AND modified > 5 minutes ago: Proceed to File Exists Workflow (Step 0b)
-4. If doesn't exist: Skip to Step 1 (generate new)
+> **Fork context — no user prompts.** You are dispatched in a fork and have no user channel. Skip the file-exists menu entirely.
 
-**File Exists Workflow (Step 0b)**:
-- Options: View / Update / Replace / Cancel
-- View: Display current file, then ask what to do
-- Update: Read existing, ask what to change, regenerate with updates
-- Replace: Archive old version, generate completely new
-- Cancel: Exit without changes
+1. Check if `.shipkit/engineering-definition.json` exists
+2. If exists: read `.shipkit/reviews/direction-assessment.json` if present. If the latest review lists a gap against this artifact, archive the existing file to `.shipkit/.archive/engineering-definition.YYYY-MM-DD.json` and regenerate addressing the gap. Otherwise, read the existing file and exit early with a "no changes needed" report — the reviewer already accepted it.
+3. If no file exists: proceed to Step 0c (propose mode).
 
 ---
 
@@ -132,17 +126,7 @@ Key Design Decisions: [cross-cutting technical choices]
 
 For each feature (or group of related features), define a mechanism:
 
-**Use AskUserQuestion tool:**
-
-```
-header: "Mechanisms"
-question: "For [feature name], what's the technical approach? How should we build this?"
-options:
-  - label: "[Proposed mechanism from context]"
-    description: "Based on the feature requirements and stack"
-  - label: "Different approach"
-    description: "I have another idea"
-```
+**Fork context — no user prompts.** Infer mechanisms from upstream context (.shipkit/ files). If insufficient, return `gaps_found` and exit; the reviewer will trigger re-dispatch.
 
 For each mechanism, capture:
 - **Name** — concise mechanism name
@@ -158,15 +142,7 @@ Aim for 2-5 mechanisms. Each feature should be served by at least one mechanism.
 
 Based on mechanisms, define how the solution is modularized:
 
-```
-header: "Components"
-question: "How should the system be componentized?"
-options:
-  - label: "[Proposed structure based on mechanisms]"
-    description: "[Why this structure]"
-  - label: "Different structure"
-    description: "I have a different modularity in mind"
-```
+**Fork context — no user prompts.** Infer component structure from mechanisms and upstream context. If insufficient, return `gaps_found` and exit; the reviewer will trigger re-dispatch.
 
 For each component, capture:
 - **Name** — component/module/service name
@@ -203,15 +179,7 @@ For each decision, capture:
 
 For greenfield projects, ask about technology direction:
 
-```
-header: "Stack"
-question: "What tech direction for this solution?"
-options:
-  - label: "[Recommended stack based on mechanisms]"
-    description: "[Why it fits the technical design]"
-  - label: "Different stack"
-    description: "I have preferences"
-```
+**Fork context — no user prompts.** Infer stack direction from existing `.shipkit/` context files and mechanism requirements. If insufficient, return `gaps_found` and exit; the reviewer will trigger re-dispatch.
 
 Capture:
 - Recommended technologies (frontend, backend, database, hosting)
@@ -252,9 +220,7 @@ Present the full engineering blueprint:
   F-003: [Feature Name] → M-003 via C-003
 ```
 
-Then ask: **"Confirm this engineering blueprint, or adjust?"**
-
-Incorporate adjustments and re-present if changed significantly.
+> **Fork context — do not prompt for confirmation.** Write the blueprint directly. The direction reviewer will flag any misalignment on the next review cycle.
 
 ---
 
@@ -459,7 +425,6 @@ Engineering blueprint is complete when:
 - [ ] Stack direction captured (greenfield only)
 - [ ] All cross-references use stable IDs (M-001, C-001)
 - [ ] Summary counts match actual array lengths
-- [ ] User confirmed the blueprint before writing
 - [ ] File saved to `.shipkit/engineering-definition.json`
 - [ ] Architecture decisions derived and saved to `.shipkit/architecture.json`
 <!-- /SECTION:success-criteria -->

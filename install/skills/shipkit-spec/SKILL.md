@@ -4,6 +4,8 @@ description: "Use when user describes a feature to build. Triggers: 'spec this',
 argument-hint: "<feature name or description>"
 model: opus
 agent: shipkit-product-owner-agent
+context: fork
+allowed-tools: Read, Write, Edit, Glob, Grep, Skill
 effort: medium
 ---
 
@@ -45,7 +47,7 @@ effort: medium
 - Architecture decisions: `.shipkit/architecture.json`
 - Existing specs: `.shipkit/specs/todo/*.json`, `.shipkit/specs/active/*.json` (check for similar patterns)
 
-**If missing**: Ask user basic questions about tech stack and data instead
+**If missing**: Infer tech stack from codebase signals (package.json, imports, config files); return `gaps_found` if critical context cannot be derived (fork context — no user prompt)
 
 ---
 
@@ -136,39 +138,7 @@ Check if sufficient context exists to propose a spec without interactive questio
 
 ### Step 1: Understand the Feature
 
-**Before generating anything**, use AskUserQuestion tool to gather requirements:
-
-**Question 1 - Feature Type:**
-```
-header: "Type"
-question: "What type of feature are you specifying?"
-options:
-  - label: "User-facing UI"
-    description: "Forms, dashboards, navigation, visual components"
-  - label: "API/Backend"
-    description: "Endpoints, services, data processing"
-  - label: "Integration"
-    description: "Third-party services, webhooks, external APIs"
-  - label: "Infrastructure"
-    description: "Auth, caching, database changes"
-```
-
-**Question 2 - Complexity:**
-```
-header: "Scope"
-question: "How complex is this feature?"
-options:
-  - label: "Simple (Recommended)"
-    description: "Single component/endpoint, minimal state"
-  - label: "Medium"
-    description: "Multiple components, some state management"
-  - label: "Complex"
-    description: "Cross-cutting concerns, significant architecture"
-```
-
-**If user selects "Other"**: Follow up with clarifying questions about their specific needs.
-
-**Why ask first**: Avoid generating wrong spec based on assumptions.
+**Fork context — no user prompts.** Read requirements from the upstream spec-roadmap entry and product-definition features. Infer feature type and complexity from the feature description, stack.json, and engineering-definition.json. If the feature is ambiguous and the description is insufficient to proceed, return a `gaps_found` status pointing at the specific missing clarification and exit. The orchestrator reviewer will trigger a re-dispatch after upstream is fixed.
 
 ---
 
@@ -189,7 +159,7 @@ Read these files IN PARALLEL (single message, multiple tool calls):
 
 **Token budget**: Keep context reading under 1500 tokens total.
 
-**If files don't exist**: Proceed without them, ask user about tech/data as needed.
+**If files don't exist**: Proceed without them using inferred context from codebase; return `gaps_found` if critical context is missing (fork context — no user prompt).
 
 ---
 
@@ -213,24 +183,12 @@ Specs written without reading source code miss existing patterns, hidden constra
 - Which files/modules will be directly modified or created?
 - What naming patterns, conventions, or abstractions exist in those areas?
 
-**3c. Launch explore agents** — Use the Agent tool with `subagent_type: Explore` to investigate:
+**3c. Explore code** — Use Read, Grep, and Glob directly to investigate the feature area (Agent tool is not available in fork context):
 
-```
-Agent 1 - Direct code: "Find and summarize the code directly related to
-[feature area].
-[If index exists, include: 'The codebase index maps these relevant files: [concept files]. Entry points: [entryPoints]. Start from these — focus on patterns, data structures, and API signatures rather than broad search.']
-Report: what exists today, what patterns are used,
-what constraints the existing code imposes."
+- **Direct code**: Find and summarize code directly related to the feature area. If a codebase index exists, use the mapped files as starting points. Focus on patterns, data structures, and API signatures.
+- **Ripple effects**: Find code that depends on or interacts with the feature area. Look for callers, consumers, imports, tests, shared state, and integration points.
 
-Agent 2 - Ripple effects: "Find code that depends on or interacts with
-[feature area].
-[If index exists, include: 'Core files (high fan-in): [coreFiles]. Use these to trace dependency chains. Concepts: [concepts] — check cross-concept interactions.']
-Look for callers, consumers, imports, tests, shared state,
-and integration points. Report: what other code would be affected by changes,
-what contracts exist that must be preserved."
-```
-
-**Launch both agents in parallel** — they are independent searches.
+**Run both explorations sequentially** — direct code first, then ripple effects using findings from the first pass.
 
 **3d. Synthesize findings** — Before generating the spec, note:
 - Existing patterns the spec should follow or explicitly deviate from
@@ -529,7 +487,7 @@ Copy and track:
 - `.shipkit/specs/active/*.json` - Check for similar specs
 - `.shipkit/design-system/DIRECTION.md`, `.shipkit/design-system/tokens/`, `.shipkit/design-system/PRINCIPLES.md` - Design tokens and principles for UI feature specs
 
-**If missing**: Ask user for needed context. Design system files are optional — proceed without if absent.
+**If missing**: Design system files are optional — proceed without if absent. Return `gaps_found` only if the spec explicitly requires design system context (fork context — no user prompt).
 
 ---
 

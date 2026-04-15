@@ -89,7 +89,7 @@ def scan(shipkit_dir: Path) -> dict:
 
     # Core artifacts
     core_files = [
-        'why.json', 'vision.json', 'product-discovery.json',
+        'why.json', 'product-discovery.json',
         'product-definition.json', 'engineering-definition.json',
         'stack.json', 'architecture.json', 'codebase-index.json',
         'progress.json', 'spec-roadmap.json', 'orchestration.json',

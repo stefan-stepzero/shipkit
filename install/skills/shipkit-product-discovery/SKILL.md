@@ -39,18 +39,11 @@ effort: medium
 
 ### Step 0: Check for Existing File
 
-**Quick Exit Check**:
-1. Check if `.shipkit/product-discovery.json` exists
-2. If exists AND modified < 5 minutes ago: Show user, ask "Use this or regenerate?"
-3. If exists AND modified > 5 minutes ago: Proceed to File Exists Workflow (Step 0b)
-4. If doesn't exist: Skip to Step 1 (generate new)
+> **Fork context — no user prompts.** You are dispatched in a fork and have no user channel. Skip the file-exists menu entirely.
 
-**File Exists Workflow (Step 0b)**:
-- Options: View / Update / Replace / Cancel
-- View: Display current file, then ask what to do
-- Update: Read existing, ask what to change, regenerate with updates
-- Replace: Archive old version, generate completely new
-- Cancel: Exit without changes
+1. Check if `.shipkit/product-discovery.json` exists
+2. If exists: read `.shipkit/reviews/direction-assessment.json` if present. If the latest review lists a gap against this artifact, archive the existing file to `.shipkit/.archive/product-discovery.YYYY-MM-DD.json` and regenerate addressing the gap. Otherwise, read the existing file and exit early with a "no changes needed" report — the reviewer already accepted it.
+3. If no file exists: proceed to Step 0b (propose mode).
 
 ---
 

@@ -113,8 +113,7 @@ For core files, include import count."
 
 4. **Identify core files** — files that are imported by many others
 
-5. **Ask user about skip list**:
-   - "Any folders I should skip? (legacy, deprecated, etc.)"
+5. **Skip list** — derive a default skip list (no user prompt; this skill runs in fork context). Defaults: `node_modules`, `dist`, `build`, `.next`, `coverage`, `.git`, `.venv`, `venv`, `__pycache__`, `.pytest_cache`, `target`, `vendor`. If any of these directories don't exist, omit them. Add additional entries if the codebase has an obvious "legacy" or "deprecated" folder at the top level.
 
 ### Step 2.5: Verification Requirements
 

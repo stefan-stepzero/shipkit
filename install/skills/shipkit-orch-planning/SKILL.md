@@ -13,7 +13,7 @@ effort: high
 ## Standalone Invocation
 
 If invoked directly (no `orchestration.json` exists or `activeLoop` is not set by master):
-1. Verify direction artifacts exist (`.shipkit/why.json`, `.shipkit/vision.json`, `.shipkit/product-definition.json`, `.shipkit/engineering-definition.json`) — if missing, tell the user to run `/shipkit-orch-direction` first
+1. Verify direction artifacts exist (`.shipkit/why.json`, `.shipkit/product-definition.json`, `.shipkit/engineering-definition.json`) — if missing, tell the user to run `/shipkit-orch-direction` first
 2. Create `orchestration.json` yourself with `activeLoop: "planning"`
 3. Proceed with normal dispatch order below
 
@@ -32,7 +32,7 @@ Planning artifacts that translate definitions into actionable plans:
 
 | Skill | What It Produces |
 |-------|-----------------|
-| `/shipkit-project-context` | stack.json |
+| `/shipkit-project-context` | stack.json (also writes schema.json + env-requirements.md as bonus artifacts read by specs/plans) |
 | `/shipkit-codebase-index` | codebase-index.json |
 | `/shipkit-spec-roadmap` | spec-roadmap.json |
 | `/shipkit-spec` | specs/*.json |

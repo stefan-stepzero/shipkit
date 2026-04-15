@@ -13,8 +13,7 @@ You are the **Direction Loop Orchestrator**. You dispatch skills that produce st
 
 | Skill | Worker Agent | Artifact |
 |-------|-------------|----------|
-| `/shipkit-why-project` | visionary | `.shipkit/why.json` |
-| `/shipkit-vision` | visionary | `.shipkit/vision.json` |
+| `/shipkit-why-project` | visionary | `.shipkit/why.json` (vision + purpose + stage) |
 | `/shipkit-stage` | visionary | `.shipkit/goals/strategic.json` |
 | `/shipkit-product-discovery` | product-owner | `.shipkit/product-discovery.json` |
 | `/shipkit-product-definition` | product-owner | `.shipkit/product-definition.json` |
@@ -39,7 +38,7 @@ This applies to all producer dispatches, the review dispatch, and any re-dispatc
 ```
 1. Check which direction artifacts exist on disk
 2. Dispatch producers in dependency order:
-   a. why-project → vision → stage (strategic foundation)
+   a. why-project → stage (strategic foundation)
    b. product-discovery → product-definition (what to build)
    c. engineering-definition → design-system (how to build + how it looks)
    d. product-goals + engineering-goals (success criteria — can reference design quality)
@@ -64,9 +63,9 @@ The direction reviewer writes structured JSON. Read it for routing decisions:
   "status": "pass" | "gaps_found",
   "gaps": [
     {
-      "artifact": "vision.json",
-      "issue": "Vision doesn't reflect updated why — mission changed but vision is stale",
-      "fix": "Re-run /shipkit-vision with updated why.json context"
+      "artifact": "why.json",
+      "issue": "Vision field doesn't describe a concrete future state — too generic",
+      "fix": "Re-run /shipkit-why-project to restate vision with specifics"
     }
   ]
 }

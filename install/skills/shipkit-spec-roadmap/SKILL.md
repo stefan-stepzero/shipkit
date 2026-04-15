@@ -68,17 +68,12 @@ If `$ARGUMENTS` is empty: Check for existing file and offer choices.
 
 ### Step 0: Check Existing Roadmap
 
-1. Read `.shipkit/spec-roadmap.json` (if exists)
-2. If found, present current state:
-   ```
-   Existing spec roadmap found (last updated: {date})
-   {N} features across {M} phases, {K} already specced
+> **Fork context — no user prompts.** You are dispatched in a fork and have no user channel. Skip the file-exists menu entirely.
 
-   View current | Update (re-score + refresh) | Regenerate from scratch?
-   ```
-3. If user selects "View" → display roadmap summary and exit
-4. If user selects "Update" → proceed to Step 1 with existing data as baseline
-5. If user selects "Regenerate" or no file exists → proceed to Step 1 fresh
+1. Read `.shipkit/spec-roadmap.json` (if exists)
+2. If `$ARGUMENTS` contains `--update`: proceed to Step 1 with existing data as baseline
+3. If `$ARGUMENTS` contains `--regenerate` or no file exists: proceed to Step 1 fresh
+4. If file exists and no argument: read `.shipkit/reviews/planning-assessment.json` if present. If the latest review lists a gap against this artifact, archive the existing file to `.shipkit/.archive/spec-roadmap.YYYY-MM-DD.json` and regenerate addressing the gap. Otherwise, read the existing file and exit early with a "no changes needed" report — the reviewer already accepted it.
 
 ---
 
@@ -178,7 +173,7 @@ Group features by phase (gate), sorted by priority within each phase.
 Confirm this roadmap? (Adjust priorities / Confirm / Regenerate)
 ```
 
-**If user adjusts**: Incorporate changes and re-present.
+> **Fork context — do not prompt for confirmation.** Write the roadmap directly. The planning reviewer will flag any misalignment on the next review cycle.
 
 ---
 
