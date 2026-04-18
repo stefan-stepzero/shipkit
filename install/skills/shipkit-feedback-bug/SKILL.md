@@ -2,7 +2,6 @@
 name: shipkit-feedback-bug
 description: "Process user feedback into investigated bug specs with root cause analysis. Triggers: 'triage feedback', 'process bug reports', 'user testing feedback'."
 argument-hint: "<paste feedback or describe source>"
-context: fork
 agent: shipkit-product-owner-agent
 effort: high
 ---

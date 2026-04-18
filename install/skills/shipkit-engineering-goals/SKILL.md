@@ -2,7 +2,6 @@
 name: shipkit-engineering-goals
 description: "Derive technical performance criteria from the engineering blueprint. Writes goals/engineering.json with response times, reliability, test coverage thresholds. Evaluate mode checks actuals against targets."
 argument-hint: "[goal topic | --evaluate]"
-context: fork
 agent: shipkit-architect-agent
 effort: medium
 ---
@@ -11,7 +10,7 @@ effort: medium
 
 **Purpose**: Derive measurable technical performance criteria from the engineering blueprint. Each mechanism, component, and design decision implies criteria for "how do we know this performs?" — this skill makes those criteria explicit, measurable, and trackable.
 
-**What it does**: Reads the engineering blueprint + stage context, derives technical criteria, writes the engineering goal file, and adds engineering criteria to existing stage gates. Dispatched in fork context — proceeds without user prompts; the reviewer catches misalignments.
+**What it does**: Reads the engineering blueprint + stage context, proposes technical criteria (confirms with user via `AskUserQuestion`), writes the engineering goal file, and adds engineering criteria to existing stage gates. Runs inline to avoid hallucinating SLA targets.
 
 **Output**: One JSON file:
 - `goals/engineering.json` — Technical-performance criteria (EM owns)

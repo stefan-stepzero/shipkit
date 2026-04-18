@@ -671,15 +671,11 @@ Copy and track:
 <!-- SECTION:after-completion -->
 ## After Completion
 
-**Guardrails Check:** Before moving to next task, verify:
+Plan written to `.shipkit/plans/todo/<feature-slug>.json`.
 
-1. **Persistence** - Plan saved to `.shipkit/plans/todo/`
-2. **Validation** - All 6 checks passing
-3. **Prerequisites** - Implementation can start with Phase 1 (move plan to active/ when starting)
+**Next:** Run `/shipkit-ship <feature-slug>` to execute the plan.
 
-**Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
-
-**Suggest skill when:** User needs to make decisions, create persistence, or check project status.
+This dispatches `shipkit-orch-shipping-agent`, which runs phases with gates, dispatches implementation work to the appropriate producer agents, and invokes `shipkit-review-shipping` between phases. **Do not dispatch architect or producer agents directly to execute plan phases** — that bypasses the shipping loop's review gates.
 <!-- /SECTION:after-completion -->
 
 <!-- SECTION:success-criteria -->

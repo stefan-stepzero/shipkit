@@ -269,3 +269,11 @@ I'll use this index to navigate faster.
 - [ ] Core files identified
 - [ ] User confirmed skip list (if any)
 - [ ] Index saved
+
+---
+
+## After Completion
+
+Codebase index written to `.shipkit/codebase-index.json`.
+
+**Next:** The index is read during execution by skills that navigate code — `/shipkit-spec`, `/shipkit-plan`, `/shipkit-preflight`, `/shipkit-review-shipping`, `/shipkit-prompt-audit`, `/shipkit-ux-audit`, and others use it for faster file/symbol lookup. Refresh by re-running `/shipkit-codebase-index` when the codebase structure changes significantly (new modules, major refactors).

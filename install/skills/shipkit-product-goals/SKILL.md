@@ -2,7 +2,6 @@
 name: shipkit-product-goals
 description: "Derive measurable user-outcome criteria from the product blueprint. Writes goals/product.json (completion rates, UX quality, satisfaction). Evaluate mode compares actuals to targets."
 argument-hint: "[goal topic | --evaluate]"
-context: fork
 agent: shipkit-product-owner-agent
 effort: medium
 ---

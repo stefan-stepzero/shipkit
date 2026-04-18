@@ -10,6 +10,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.7.0] - 2026-04-18
+
+Interim reliability release. Fixes silent hallucination in forked elicitive skills by flipping them to inline execution, and sharpens the "After Completion" guidance across 8 skills so it reflects the actual orchestration flow instead of the older user-facing "decide next steps" prose.
+
+### Fixed
+- **Silent hallucination in 5 elicitive skills** — `shipkit-why-project`, `shipkit-stage`, `shipkit-product-goals`, `shipkit-engineering-goals`, and `shipkit-feedback-bug` previously ran with `context: fork`. Because CC strips `AskUserQuestion` from forks ([issues #12890](https://github.com/anthropics/claude-code/issues/12890), [#18721](https://github.com/anthropics/claude-code/issues/18721)), these skills were inventing strategic visions, project stages, goals, and bug root causes with no confidence flags and writing them to `.shipkit/` artifacts as if the user had provided them. Frontmatter flipped to inline so they ask the user directly via `AskUserQuestion`. Empirically validated pilot (T4/T5/T6) in `P:/Projects2/shipkit-testing/`.
+- **Body copy corrected** in `shipkit-stage` and `shipkit-engineering-goals` — removed "Dispatched in fork context — proceeds without user prompts" language that described the hallucination pattern in broad daylight.
+
+### Changed
+- **Direction loop is no longer fully autonomous** — elicitive skills now halt orchestration for user input instead of running silently. Planning and shipping loops unaffected. Walk-away mode still possible by pre-populating `.shipkit/elicitation/<skill-slug>/answers.md` before invocation.
+- **"After Completion" sections rewritten** in 8 skills (`shipkit-codebase-index`, `shipkit-plan`, `shipkit-preflight`, `shipkit-review-direction`, `shipkit-review-planning`, `shipkit-review-shipping`, `shipkit-semantic-qa`, `shipkit-test-cases`) — now point at the correct next orchestrator/skill in the pipeline instead of older "user decides next steps" prose that treated every skill as a user-invoked terminal. Clarifies that reviewer skills are orchestrator-dispatched, and that plan/test-cases hand off to the shipping loop.
+
+### Added
+- **`install/shared/references/elicitation-protocol.md`** — Canonical reference for the return-prompt-resume pattern (fork emits marker, main session resumes). Currently dormant pending T7/T8/T9 orchestrator-bubble integration tests; kept on disk so the pilot skill body and future rollout can reference it without re-deriving the protocol.
+- **`shipkit-why-project` pilot refactor** — Entry protocol implements context shortcut → artifact check → answers-file check → question generation → state-file writes, with runtime `AskUserQuestion` detection so the skill works correctly in both inline and (future) fork modes.
+
+### Known Interim State
+- Spec `.claude/specs/return-prompt-resume.json` (local only) tracks the paused rollout. The orchestrator-bubble design (rec #2 in the spec) was never validated end-to-end; T7/T8/T9 test plan is drafted but not yet run. Until those tests pass, all elicitive skills run inline — the cost is that direction-loop orchestration pauses for answers instead of running walk-away.
+
+---
+
 ## [2.6.0] - 2026-04-15
 
 Architectural cleanup release. Retired a vestigial gateway skill, fixed a runtime bug where 4 producer skills were silently running inline instead of forking with their personas, swept the framework for fork-prompt anti-patterns, and added 3 new architectural rules + 2 new wiring validation checks to catch this class of drift on every release.

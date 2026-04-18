@@ -81,3 +81,13 @@ Write `.shipkit/reviews/planning-assessment.json` with structured findings.
 }
 ```
 The `blocking` array drives the blocker count. `futurePhase` and `general` are informational only.
+
+## After Completion
+
+Assessment written to `.shipkit/reviews/planning-assessment.json`.
+
+**Next:** The calling orchestrator (`shipkit-orch-planning-agent`) reads this assessment:
+- If **gaps found**: re-dispatches the affected upstream skills for revision, then re-runs this reviewer.
+- If **pass**: proceeds to the next loop phase (or reports completion to shipkit-orch-master-agent).
+
+This skill is normally invoked by the orchestrator, not called directly by the user.

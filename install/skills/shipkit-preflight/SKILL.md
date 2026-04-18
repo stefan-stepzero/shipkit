@@ -594,16 +594,13 @@ This skill follows the **Shipkit JSON artifact convention**. See `references/out
 <!-- SECTION:after-completion -->
 ## After Completion
 
-**Audit delivered. User decides next steps:**
+Preflight report written to `.shipkit/preflight.json`.
 
-1. **Fix blockers** — Ask Claude to help fix specific issues
-2. **Review warnings** — Decide which to address now vs later
-3. **Re-run audit** — Verify fixes resolved the issues
-4. **Proceed with launch** — If no blockers remain
+**Next:**
+- If **critical blockers** present: fix them, then re-run `/shipkit-preflight`.
+- If **clean or warnings only**: run `/shipkit-review-shipping` as the final pre-ship gate.
 
-**Natural capabilities** (no skill needed): Implementing fixes for identified issues.
-
-**Suggest re-running** when significant fixes have been made.
+Preflight is a fast first-pass; review-shipping is the deeper verification.
 <!-- /SECTION:after-completion -->
 
 ---

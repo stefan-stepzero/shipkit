@@ -680,17 +680,13 @@ For **thorough multi-agent review**, two plugins are available:
 <!-- SECTION:after-completion -->
 ## After Completion
 
-Verification complete. Final report shows:
-- Critical findings that must be fixed before commit
-- Should-fix items for quality improvement
-- Minor suggestions to consider
-- Dismissed themes
+Assessment written to `.shipkit/verification-report.json`.
 
-User decides next steps:
-- Fix critical issues (ask Claude to help implement fixes)
-- Address should-fix items
-- Ignore minor suggestions
-- Proceed with commit
+**Next:** The calling orchestrator (`shipkit-orch-shipping-agent`) reads this assessment:
+- If **gaps found**: re-dispatches the affected upstream skills for revision, then re-runs this reviewer.
+- If **pass**: proceeds to the next loop phase (or reports completion to shipkit-orch-master-agent).
+
+This skill is normally invoked by the orchestrator, not called directly by the user.
 
 **Want deeper scrutiny?** Use `/code-review` (4 agents) or `/pr-review-toolkit:review-pr` (6 agents) — requires plugins.
 <!-- /SECTION:after-completion -->

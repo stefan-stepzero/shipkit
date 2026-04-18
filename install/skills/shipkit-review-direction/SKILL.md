@@ -43,3 +43,13 @@ effort: medium
 Write `.shipkit/reviews/direction-assessment.json` with structured findings.
 
 `status: "pass"` when all checks pass. `status: "gaps_found"` with specific `gaps[]` entries when issues exist. Each gap must include `artifact`, `issue`, `evidence`, and `fix` fields.
+
+## After Completion
+
+Assessment written to `.shipkit/reviews/direction-assessment.json`.
+
+**Next:** The calling orchestrator (`shipkit-orch-direction-agent`) reads this assessment:
+- If **gaps found**: re-dispatches the affected upstream skills for revision, then re-runs this reviewer.
+- If **pass**: proceeds to the next loop phase (or reports completion to shipkit-orch-master-agent).
+
+This skill is normally invoked by the orchestrator, not called directly by the user.

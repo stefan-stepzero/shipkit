@@ -2,7 +2,6 @@
 name: shipkit-stage
 description: "Define project stage, scope constraints, and graduation criteria. Set mode configures the stage; evaluate mode assesses readiness for human approval."
 argument-hint: "[set | --evaluate]"
-context: fork
 agent: shipkit-visionary-agent
 effort: medium
 ---
@@ -11,7 +10,7 @@ effort: medium
 
 **Purpose**: Define the project stage (POC/Alpha/MVP/Scale), derive scope constraints and quality bars from that stage, set business-metric criteria (S-*), and define stage gates. Evaluate mode assesses gate readiness for human-approved graduation.
 
-**What it does**: Reads the project vision and codebase signals, **infers** the stage, derives constraints and business metrics, defines gates with S-* criteria, and writes `goals/strategic.json`. Dispatched in fork context — proceeds without user prompts in Set mode; the direction reviewer catches misalignments. Evaluate mode is user-invoked and human-gated — it cross-references ALL goal files to build a graduation evidence table for human approval.
+**What it does**: Reads the project vision and codebase signals, proposes a stage (confirms with user via `AskUserQuestion`), derives constraints and business metrics, defines gates with S-* criteria, and writes `goals/strategic.json`. Runs inline to avoid hallucinating stage decisions. Evaluate mode is user-invoked and human-gated — it cross-references ALL goal files to build a graduation evidence table for human approval.
 
 **Output**: One JSON file:
 - `goals/strategic.json` — Stage, constraints, stageImplications, business-metric criteria, gates

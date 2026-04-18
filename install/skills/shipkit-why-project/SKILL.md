@@ -2,7 +2,6 @@
 name: shipkit-why-project
 description: "Use when defining project vision and strategic direction. Triggers: 'why this project', 'define vision', 'project goals', 'what are we building'."
 argument-hint: "[project name]"
-context: fork
 agent: shipkit-visionary-agent
 effort: medium
 ---
@@ -11,7 +10,9 @@ effort: medium
 
 **Purpose**: Create a strategic overview that answers: Who is this for? What problem does it solve? Where are we? Where are we going? How are we getting there? What are we NOT building?
 
-**What it does**: Asks core questions, generates `.shipkit/why.json`, provides strategic context for all future sessions.
+**What it does**: Collects core vision inputs, generates `.shipkit/why.json`, provides strategic context for all future sessions.
+
+**Protocol:** This skill follows the canonical elicitation protocol defined in `install/shared/references/elicitation-protocol.md`. The steps below are this skill's specific application of that protocol.
 
 ---
 
@@ -42,97 +43,127 @@ effort: medium
 
 ## Process
 
-### Step 0: Context Check + Propose Mode
+### Step 0: Context Shortcut
 
-Before asking questions, check if the project already has enough context to propose a vision:
+Before checking elicitation state, attempt a context-based shortcut:
 
-1. Read available context: `README.md`, `package.json` (name, description, keywords), existing source files, any `.shipkit/*.json` files
+1. Read available context: `README.md`, `package.json` (name, description, keywords), existing source files, any `.shipkit/*.json` files.
 2. **If sufficient context exists** (README or package.json with description, or >5 source files):
-   - Generate a complete `why.json` proposal based on what you found
+   - Generate a complete `why.json` proposal based on what you found.
    - **IMPORTANT: Keep it vision-level.** The why.json captures the enduring vision and customer problem — NOT stage-specific details like target markets, curriculum scope, timeline constraints, or POC boundaries. Those belong in `stage.json` (via `/shipkit-stage`).
-   - Present the proposal as a formatted summary:
-     ```
-     Based on your project files, here's a proposed vision:
-
-     Who: [broad target audience — not narrowed by current stage]
-     Problem: [the full problem worth solving]
-     Current State: [brief maturity assessment]
-     Vision: [the big picture — what success looks like at scale]
-     Approach: [high-level methodology, not stage-specific tactics]
-
-     ```
-   - Write `why.json` directly and skip to Step 7 (suggest next steps)
-   - Present a summary of what was written so the user can review
-3. **If insufficient context** (empty project, no README, no package.json): Fall through to Step 1
+   - Write `.shipkit/why.json` directly and skip to Step 6 (confirm to user).
+   - Present a summary of what was written so the user can review.
+3. **If insufficient context** (empty project, no README, no package.json): Fall through to Step 1.
 
 ---
 
 ### Step 1: Check if why.json Already Exists
 
-> **Fork context — no user prompts.** You are dispatched in a fork and have no user channel. Skip the file-exists menu entirely.
-
-1. Check if `.shipkit/why.json` exists
-2. If exists: read `.shipkit/reviews/direction-assessment.json` if present. If the latest review lists a gap against this artifact, archive the existing file to `.shipkit/.archive/why.YYYY-MM-DD.json` and regenerate addressing the gap. Otherwise, read the existing file and exit early with a "no changes needed" report — the reviewer already accepted it.
+1. Read `.shipkit/why.json` if it exists.
+2. If it exists: read `.shipkit/reviews/direction-assessment.json` if present. If the latest review lists a gap against this artifact, archive the existing file to `.shipkit/.archive/why.YYYY-MM-DD.json` and regenerate addressing the gap. Otherwise, exit early with a "no changes needed" report — the reviewer already accepted it.
 3. If no file exists: proceed to Step 2.
 
 ---
 
-### Step 2: Ask Core Questions
+### Step 2: Check Elicitation State
 
-**Ask questions ONE AT A TIME** - Wait for user answer before asking next.
+Read `.shipkit/elicitation/why-project/answers.md`.
 
-#### Question 1: Who Is This For?
-**Ask**: "Who is this project for?" (target users, audience, stakeholders)
-**Capture as**: `targetUsers` - 1-3 sentences max
+**Classify each `A:` line as real or placeholder:**
+- Placeholder markers: `[awaiting answer]`, empty string, literal `A:` with nothing after.
+- Real answer: any other non-empty content.
 
-#### Question 2: What Problem Are We Solving?
-**Ask**: "What problem does this solve? Why does it exist?"
-**Capture as**: `problem` - 1-3 sentences max
+Then:
 
-#### Question 3: Where Are We Now?
-**Ask**: "Where are we now?" (current state: POC/MVP/Beta/Production/Starting)
-**Capture as**: `currentState` - 1-2 sentences max
-
-#### Question 4: Where Do We Need To Be?
-**Ask**: "What does success look like? What's the vision?"
-**Capture as**: `vision` - 1-3 sentences max
-
-#### Question 5: How Are We Getting There?
-**Ask**: "What's the approach? How are we getting there?"
-**Capture as**: `approach` - 1-3 sentences max
+- **All 5 core fields have real answers** (Q1–Q5 → `targetUsers`, `problem`, `currentState`, `vision`, `approach`): synthesize `.shipkit/why.json` from those answers per the schema in Step 5. Update `progress.json` with `status: complete`, set `completed_at` and `last_elicited_at` to current ISO 8601 UTC timestamp. Skip to Step 6. Do NOT overwrite `answers.md` — the user's input is preserved as-is.
+- **Some core fields have real answers, others are placeholders**: determine which questions still need answers. Proceed to Step 3 for those, but do NOT clobber `answers.md` — append a new turn header to the existing file for the unanswered questions only.
+- **File absent, empty, or all placeholders**: proceed to Step 3 at turn 1. Safe to (over)write `answers.md` in Step 4 since no real content exists.
 
 ---
 
-### Step 3: Ask About Success Criteria (Optional)
+### Step 3: Generate Questions
 
-**Ask**: "What are the measurable success criteria? (or press Enter to skip)"
+Produce questions for the current turn. Two-turn split (recommended):
 
-**If user provides content**: Parse into array for `successCriteria`
-**If user skips**: Set `successCriteria` to empty array `[]`
+**Turn 1** — core foundation (Q1–Q3):
+1. "Who is this project for?" (target users, audience, stakeholders) → `targetUsers`
+2. "What problem does this solve? Why does it exist?" → `problem`
+3. "Where are we now?" (current state: POC / MVP / Beta / Production / Starting) → `currentState`
 
----
+**Turn 2** — direction + optional (Q4–Q5 + optional):
+4. "What does success look like? What's the vision?" → `vision`
+5. "What's the approach? How are we getting there?" → `approach`
+6. *(Optional)* "What are the measurable success criteria? (or skip)" → `successCriteria`
+7. *(Optional)* "Any enduring constraints? (e.g., must run on mobile, no paid APIs — or skip)" → `constraints`
+8. *(Optional)* "What are we explicitly NOT building? (or skip)" → `nonGoals`
 
-### Step 4: Ask About Constraints (Optional)
+> **Note on constraints**: Capture only enduring project-level constraints here. Stage-specific constraints like "AU curriculum only for POC" belong in `stage.json`.
 
-**Ask**: "Any constraints or must-haves? (budget, timeline, tech requirements - or Enter to skip)"
+For optional fields (Q6–Q8): if the user skips, set the corresponding field to an empty array `[]`.
 
-**Note**: Capture only enduring project-level constraints here (e.g., "must run on mobile", "no paid APIs"). Stage-specific constraints like "AU curriculum only for POC" or "Year 1-2 only" belong in `stage.json`.
-
-**If user provides content**: Parse into array for `constraints`
-**If user skips**: Set `constraints` to empty array `[]`
-
----
-
-### Step 5: Ask About Non-Goals (Optional)
-
-**Ask**: "What are we explicitly NOT building? (helps prevent scope creep - or Enter to skip)"
-
-**If user provides content**: Parse into array for `nonGoals`
-**If user skips**: Set `nonGoals` to empty array `[]`
+One-turn mode is also acceptable for pilot: ask all 8 questions in a single turn if context suggests the user prefers a direct Q&A session.
 
 ---
 
-### Step 6: Generate why.json
+### Step 4: Write State Files
+
+Write the following files. All timestamps ISO 8601 UTC.
+
+**`.shipkit/elicitation/why-project/questions.md`** — overwrite with current turn's questions using the schema from `install/shared/references/elicitation-protocol.md`:
+```
+---
+skill: shipkit-why-project
+turn: <n>
+last_updated: <ISO 8601 UTC>
+---
+
+## Turn <n>
+
+1. Question text (field: `targetUsers`)
+2. ...
+```
+
+**`.shipkit/elicitation/why-project/answers.md`** — **DO NOT write this file from the fork.** The main session creates and maintains this file when it collects answers via AskUserQuestion. Writing placeholders here from the fork clobbers any real user answers (pre-populated or from prior turns). The fork's job is to emit the marker and signal which questions need answering — `questions.md` carries that information.
+
+If you want to leave a clear breadcrumb, you may create an empty `answers.md` with only the frontmatter header **only if the file does not already exist**. Never overwrite an existing `answers.md`.
+
+**`.shipkit/elicitation/why-project/progress.json`** — create or update:
+```json
+{
+  "skill": "shipkit-why-project",
+  "status": "in_progress",
+  "elicitation_turn": <n>,
+  "started_at": "<ISO 8601 UTC>",
+  "last_updated_at": "<ISO 8601 UTC>",
+  "completed_at": null,
+  "last_elicited_at": "<ISO 8601 UTC>",
+  "total_questions_planned": 5,
+  "questions_answered": <count from prior turns>,
+  "confidence": "medium"
+}
+```
+
+---
+
+### Step 5: Emit Marker and Return
+
+Emit the following as the **final line** of your output:
+
+```
+NEEDS_ELICITATION:shipkit-why-project
+status=paused
+turn=<n>
+questions_file=.shipkit/elicitation/why-project/questions.md
+reason=awaiting user answers for turn <n>
+```
+
+Do **not** synthesize `why.json`. Do **not** invent answers. Return immediately after emitting the marker.
+
+---
+
+### Step 5 (synthesis): Generate why.json
+
+*Only reached when real answers are available — from the context shortcut (Step 0), a pre-populated answers.md (Step 2), or completed elicitation.*
 
 **Location**: `.shipkit/why.json`
 
@@ -147,20 +178,22 @@ Before asking questions, check if the project already has enough context to prop
   "lastUpdated": "{Current date YYYY-MM-DD}",
   "createdAt": "{First creation date - preserve if updating}",
   "source": "shipkit-why-project",
-  "vision": "{Answer to Question 4}",
-  "problem": "{Answer to Question 2}",
-  "targetUsers": "{Answer to Question 1}",
-  "currentState": "{Answer to Question 3}",
-  "successCriteria": ["{parsed from Step 3}"],
-  "constraints": ["{parsed from Step 4}"],
-  "nonGoals": ["{parsed from Step 5}"],
-  "approach": "{Answer to Question 5}"
+  "vision": "{answer to Q4}",
+  "problem": "{answer to Q2}",
+  "targetUsers": "{answer to Q1}",
+  "currentState": "{answer to Q3}",
+  "successCriteria": ["{parsed from Q6, or []}"],
+  "constraints": ["{parsed from Q7, or []}"],
+  "nonGoals": ["{parsed from Q8, or []}"],
+  "approach": "{answer to Q5}"
 }
 ```
 
+Update `progress.json`: set `status: complete`, `completed_at` and `last_elicited_at` to current ISO 8601 UTC timestamp.
+
 ---
 
-### Step 7: Confirm to User
+### Step 6: Confirm to User
 
 **Output**:
 - Summary of vision, problem, target users
@@ -176,6 +209,11 @@ Before asking questions, check if the project already has enough context to prop
 
 Creates `.shipkit/why.json` (auto-loaded by shipkit-session-start.py)
 
+Elicitation state (persists as audit trail):
+- `.shipkit/elicitation/why-project/questions.md`
+- `.shipkit/elicitation/why-project/answers.md`
+- `.shipkit/elicitation/why-project/progress.json`
+
 ---
 
 ## Completion Checklist
@@ -188,6 +226,7 @@ Copy and track:
 - [ ] Captured constraints (or explicitly skipped)
 - [ ] Captured non-goals (or explicitly skipped)
 - [ ] Saved to `.shipkit/why.json`
+- [ ] Elicitation state written to `.shipkit/elicitation/why-project/`
 - [ ] Suggested `/shipkit-stage` for project stage and business metrics
 - [ ] Suggested `/shipkit-product-discovery` for user needs
 
@@ -245,6 +284,8 @@ Copy and track:
 2. **Prerequisites** - Does the next action need a spec or plan first?
 3. **Session length** - Long session? Consider `/shipkit-work-memory` for continuity.
 
+**If `NEEDS_ELICITATION:shipkit-why-project` was emitted:** The skill paused without writing `why.json`. The main session should run `/shipkit-why-project` inline (where `AskUserQuestion` is available), answer the questions in `.shipkit/elicitation/why-project/questions.md`, then re-invoke the original skill or orchestrator to resume. See `install/shared/references/elicitation-protocol.md` for full handling instructions.
+
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 
 **Suggest skill when:** User needs to set project stage (`/shipkit-stage`), define user needs (`/shipkit-product-discovery`), or check project status.
@@ -260,6 +301,8 @@ Vision is defined when:
 - [ ] File follows Shipkit artifact envelope schema
 - [ ] Dates are correct (`createdAt` preserved if updating)
 - [ ] Session-start auto-load confirmed
+- [ ] If elicitation ran: state files present in `.shipkit/elicitation/why-project/` with ISO 8601 UTC timestamps
+- [ ] If marker emitted: `NEEDS_ELICITATION:shipkit-why-project` is the final output line; why.json was NOT written
 <!-- /SECTION:success-criteria -->
 ---
 

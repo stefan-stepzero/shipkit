@@ -433,11 +433,13 @@ Run Setup (if needed) → Run → Judge sequentially.
 <!-- SECTION:after-completion -->
 ## After Completion
 
-**After Setup:** User can customize the generated script, add more inputs, then `--run`.
-**After Run:** Outputs ready. Run `--judge` or let `--full` continue automatically.
-**After Judge:** User reviews findings. Fix issues and re-run, or accept quality level.
+QA judgment written to `.shipkit/semantic-qa/suites/{suite-name}/judgments/run-{timestamp}/judgment.md` (and `judgment.json`).
 
-No automatic follow-up. Natural capabilities handle fixing code based on findings.
+**Next:**
+- If **quality gaps found**: fix the underlying artifact (prompts, definitions, specs) and re-run this skill. For systemic pattern issues, log decisions in `/shipkit-engineering-definition`.
+- If **judgment passes**: proceed to the next workflow step — typically `/shipkit-review-shipping` (if QAing implemented features before commit) or back to `/shipkit-spec` refinement (if QAing spec-derived criteria).
+
+This skill is a judgment gate; it does not auto-dispatch fixes.
 <!-- /SECTION:after-completion -->
 
 ---
