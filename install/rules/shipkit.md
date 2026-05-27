@@ -49,6 +49,14 @@ Context gets compacted. Files persist. Default to disk.
 - **Spot-check output** — after generating config, data files, or code, read back a sample to verify correctness
 - **QA delegated work** — always review Sonnet/Haiku agent output before presenting as done
 
+### Structured Artifact Updates
+For updates to structured JSON artifacts (`.shipkit/progress.json`, spec/plan files, any skill-produced JSON, config files), use **targeted Edit calls — never a Python/Node script**. Each field you need to change is one Edit: one for summary fields, one to splice the new entry into an array, one to overwrite a sub-object, etc. The Edit tool handles large JSON files fine.
+
+- **Don't reach for bash heredocs with inline Python** — a classic quoting trap when the Python contains apostrophes in strings. The retreat to "write it as a script file instead" is a sign you started in the wrong place.
+- **Only write a script when you need programmatic computation across many files or values** — e.g. batch renames, bulk schema migrations, data aggregation. Splicing one value into one location is not that.
+- **Read + Write (overwrite the whole file) is the acceptable fallback** when many fields change at once, but prefer Edit first — it keeps diffs reviewable and doesn't pull the whole file into context.
+- Rule of thumb: if you can describe the change as "replace block A with block B," it's an Edit.
+
 ### Model Budget
 Don't waste expensive models on cheap tasks:
 - **Haiku**: file search, codebase exploration, audit, validation, reading/summarizing

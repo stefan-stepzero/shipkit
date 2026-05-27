@@ -224,16 +224,7 @@
       }
     ],
     "SubagentStop": [],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-context-check.py"
-          }
-        ]
-      }
-    ],
+    "UserPromptSubmit": [],
     "PostToolUseFailure": [
       {
         "hooks": [

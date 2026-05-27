@@ -128,7 +128,7 @@ def main():
 
     shipkit_dir = project_root / '.shipkit'
     if not shipkit_dir.is_dir():
-        # No .shipkit/ at all — the context-check hook handles this
+        # No .shipkit/ at all — session-start surfaces this on the Available Context table
         sys.exit(1)
 
     # Check which prerequisites are missing

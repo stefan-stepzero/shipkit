@@ -10,6 +10,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.7.1] - 2026-05-27
+
+Patch release. Removes the buggy `context-check` UserPromptSubmit hook, and adds intellectual-posture + structured-artifact guidance to the installed CLAUDE.md template and framework rules.
+
+### Removed
+- **`shipkit-context-check.py` UserPromptSubmit hook** — Misfired with false positives ("missing key context: why.json, stack.json, ...") on projects where those files were present and populated. Root cause: the hook resolved `project_root` by walking up from `hook_input['cwd']` and short-circuiting on the first dir with either `.claude/` or `.shipkit/`, which under cwd-drift conditions resolved to the wrong root. The functionality was also redundant with the SessionStart hook's "Available Context" table, which already surfaces missing-file status without per-prompt nagging. Removed the script, the `UserPromptSubmit` entry in `shipkit.settings.json`, and the corresponding entry in `cli/src/init.js`. A stale comment in `shipkit-prereq-check.py` referencing the deleted hook was updated.
+
+### Added
+- **`install/claude-md/shipkit.md` — "How to engage with me" section** — Five intellectual-posture rules (communication style, disagreement posture, confidence calibration, use-the-method-not-the-eyeball, always-consider-the-alternate) plus a Challenge Calibration block for when to steelman vs execute. Installs into the user CLAUDE.md template so new Shipkit projects start with these defaults.
+- **`install/rules/shipkit.md` — "Structured Artifact Updates" guidance** — Directs Claude to use targeted Edit calls (not Python/Node heredocs) when modifying `.shipkit/progress.json`, spec/plan files, and other structured JSON artifacts. Closes a recurring failure mode where agents reached for inline-Python and tripped over quoting.
+
+---
+
 ## [2.7.0] - 2026-04-18
 
 Interim reliability release. Fixes silent hallucination in forked elicitive skills by flipping them to inline execution, and sharpens the "After Completion" guidance across 8 skills so it reflects the actual orchestration flow instead of the older user-facing "decide next steps" prose.
