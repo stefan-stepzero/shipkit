@@ -1,6 +1,6 @@
 ---
 name: shipkit-engineering-goals
-description: "Derive technical performance criteria from the engineering blueprint. Writes goals/engineering.json with response times, reliability, test coverage thresholds. Evaluate mode checks actuals against targets."
+description: "Derive technical performance criteria from the engineering blueprint. Writes goals/engineering.json with response times, reliability, coverage thresholds. Evaluate mode checks actuals against targets."
 argument-hint: "[goal topic | --evaluate]"
 agent: shipkit-architect-agent
 effort: medium

@@ -21,6 +21,9 @@ const HOOK_FILES = {
   'shipkit-subagent-context.py': 'shipkit-subagent-context.py',
   'shipkit-diagnostics.py': 'shipkit-diagnostics.py',
   'shipkit-prereq-check.py': 'shipkit-prereq-check.py',
+  'shipkit-pre-compact.py': 'shipkit-pre-compact.py',
+  'shipkit-task-created-hook.py': 'shipkit-task-created-hook.py',
+  'shipkit-permission-denied-hook.py': 'shipkit-permission-denied-hook.py',
 };
 
 async function init(packageRoot, flags) {

@@ -14,6 +14,14 @@ const HOOK_FILES = {
   'shipkit-track-skill-usage.py': 'shipkit-track-skill-usage.py',
   'shipkit-task-completed-hook.py': 'shipkit-task-completed-hook.py',
   'shipkit-teammate-idle-hook.py': 'shipkit-teammate-idle-hook.py',
+  'shipkit-post-compact.py': 'shipkit-post-compact.py',
+  'shipkit-session-end.py': 'shipkit-session-end.py',
+  'shipkit-subagent-context.py': 'shipkit-subagent-context.py',
+  'shipkit-diagnostics.py': 'shipkit-diagnostics.py',
+  'shipkit-prereq-check.py': 'shipkit-prereq-check.py',
+  'shipkit-pre-compact.py': 'shipkit-pre-compact.py',
+  'shipkit-task-created-hook.py': 'shipkit-task-created-hook.py',
+  'shipkit-permission-denied-hook.py': 'shipkit-permission-denied-hook.py',
 };
 
 async function update(packageRoot, flags) {

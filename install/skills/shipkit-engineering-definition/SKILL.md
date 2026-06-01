@@ -1,6 +1,6 @@
 ---
 name: shipkit-engineering-definition
-description: "Define the technical approach — mechanisms, design decisions, stack direction, and component structure for building the product. Triggers: 'engineering approach', 'how to build this', 'technical design', 'mechanisms'."
+description: "Define the technical approach — mechanisms, design decisions, stack direction, and component structure. Triggers: 'engineering approach', 'how to build this', 'technical design', 'mechanisms'."
 argument-hint: "[focus area or --refresh]"
 agent: shipkit-architect-agent
 context: fork

@@ -1,6 +1,6 @@
 ---
 name: shipkit-semantic-qa
-description: "Semantic QA — define inputs/criteria, generate test scripts, Claude judges API outputs or UI screenshots against quality criteria. Triggers: 'semantic qa', 'quality check', 'visual qa', 'judge outputs', 'QA suite'."
+description: "Semantic QA — define inputs/criteria, generate test scripts, Claude judges outputs or screenshots against criteria. Triggers: 'semantic qa', 'quality check', 'visual qa', 'judge outputs', 'QA suite'."
 argument-hint: "[suite-name] [--setup|--run|--judge|--full]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent
 effort: medium

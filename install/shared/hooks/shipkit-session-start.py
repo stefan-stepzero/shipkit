@@ -152,7 +152,7 @@ def main():
     master_skill = skills_dir / 'shipkit-master' / 'SKILL.md'
     if not master_skill.exists():
         lines.append("Shipkit not properly installed. Run the installer again.")
-        _emit_context('\n'.join(lines))
+        _emit_context('\n'.join(lines), project_root)
         return 0
 
     lines.append(master_skill.read_text(encoding='utf-8'))
@@ -161,7 +161,7 @@ def main():
     lines.append('')
 
     if project_root is None:
-        _emit_context('\n'.join(lines))
+        _emit_context('\n'.join(lines), project_root)
         return 0
 
     shipkit_dir = project_root / '.shipkit'
@@ -186,7 +186,7 @@ def main():
         lines.append("No `.shipkit/` folder found — fresh project.")
         lines.append('')
         lines.append("Start with: `/shipkit-project-context` to scan your codebase")
-        _emit_context('\n'.join(lines))
+        _emit_context('\n'.join(lines), project_root)
         return 0
 
     # ── Progress resume ──
@@ -250,15 +250,30 @@ def main():
     lines.append("*Read context files before re-discovering patterns.*")
     lines.append('')
 
-    _emit_context('\n'.join(lines))
+    artifact_count = found_count + spec_count + plan_count
+    _emit_context('\n'.join(lines), project_root, artifact_count)
     return 0
 
 
-def _emit_context(content: str):
-    """Output context using the structured additionalContext CC pattern."""
+def _emit_context(content: str, project_root: Path = None, artifact_count: int = 0):
+    """Output context using the structured additionalContext CC pattern.
+
+    Emits reloadSkills (refresh skill registry on session start) and a dynamic
+    sessionTitle. Per hooks-reference.md / official CC docs (SessionStart output
+    schema), ALL SessionStart fields — hookEventName, additionalContext,
+    sessionTitle, reloadSkills — live INSIDE hookSpecificOutput; hookEventName is
+    required. sessionTitle is honoured only on source=startup|resume (ignored on
+    clear/compact, which is harmless). Placing these at the top level silently
+    no-ops them, so they must be nested.
+    """
+    project_name = project_root.name if project_root else "project"
+    session_title = f"Shipkit — {project_name} ({artifact_count} artifacts)"
     output = {
         "hookSpecificOutput": {
-            "additionalContext": content
+            "hookEventName": "SessionStart",
+            "additionalContext": content,
+            "sessionTitle": session_title,
+            "reloadSkills": True
         }
     }
     print(json.dumps(output))

@@ -6,6 +6,20 @@ This repo contains the Shipkit framework: skills, agents, hooks, and templates t
 
 ---
 
+## Working Posture for This Repo — Depth Over Frugality
+
+**This repo is the exception to token-thrift.** Stefan is product-first, not an engineer-by-trade, but technical — and the entire point of Shipkit is to build the scaffolding *around* Claude Code that bridges his efficiency gaps and lets him work faster. Getting that scaffolding right is the highest-leverage work he does. So on framework development here, **spend tokens well rather than sparingly.**
+
+Concretely, for substantive work in this repo (intelligence pipeline, design, audits, multi-file framework changes):
+- **Do not optimize for token savings.** Depth, completeness, and correctness beat brevity. A thorough scout/analysis that catches everything is worth far more than a cheap one that misses a month-old feature.
+- **Use parallel agents liberally.** Fan out wide — more vectors, more coverage, more independent perspectives. This is encouraged, not rationed.
+- **Go deeper on everything by default.** When the intelligence skills (`shipkit-scout`/`-analyst`/`-ideator`) or dev skills offer a `--full`/deep mode, prefer it unless told otherwise. Err toward exhaustive.
+- **This overrides the global "Token Efficiency" / "minimize verbose output" default** for *substantive* work in this repo. It does **not** license noisy execution chatter — keep tool narration and status terse; the depth belongs in the analysis and the artifacts, not in the running commentary.
+
+The trade is deliberate: time and tokens spent making the Claude-Code housing sharper compound across every future session.
+
+---
+
 ## Repo Model & Audience
 
 **This is a public repo but not open-source-in-the-contributions-sense.** Stefan is the solo developer. The expected audience is **consumers** of the framework — people who install Shipkit into their own projects and use the skills — not contributors. Only a tiny fraction of visitors will ever read the source beyond the README.
@@ -347,6 +361,7 @@ Before publishing changes to GitHub:
 Location: `.claude/skills/`
 - Framework integrity, scout, analyst, ideator (intelligence & QA)
 - Dev-spec, dev-plan, dev-review, dev-team, dev-release (development workflow)
+- Dev-backlog (partitioned sprint commissioning — turns scout/analyst/ideator findings into the DOC-005 atomic-sprint registry; routes items to dev-spec/plan/team by size)
 - Wiring-graph, validate-wiring (contract validation)
 - Documenter, smoketest (administration & testing)
 

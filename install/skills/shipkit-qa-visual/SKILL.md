@@ -1,6 +1,6 @@
 ---
 name: shipkit-qa-visual
-description: "Visual QA using Playwright as a browser automation library. Two modes: --setup installs Playwright and creates ui-goals.json; default mode writes inline scripts to navigate, interact, screenshot, and report against goals."
+description: "Visual QA using Playwright as a browser automation library. --setup installs Playwright and creates ui-goals.json; default mode writes inline scripts to navigate, screenshot, and report against goals."
 argument-hint: "<what to test> or --setup"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash
 effort: medium

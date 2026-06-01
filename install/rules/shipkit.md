@@ -177,9 +177,10 @@ If `.shipkit/codebase-index.json` exists:
 **No skill needed for:** implementing, debugging, testing, refactoring, documenting code.
 
 **Built-in commands:**
-- `/simplify` — Launches 3 parallel agents (reuse, quality, efficiency) to review changed code and auto-fix issues. Good for post-implementation cleanup.
+- `/simplify` — Cleanup-only: reviews changed code for reuse, simplification, efficiency, and altitude issues, then applies the fixes automatically. No bug-hunting.
+- `/code-review` — Bug-hunting review. Use `--fix` to apply findings or `--comment` to post inline PR comments.
 - `/batch <instruction>` — Decomposes a large mechanical change into 5–30 independent units, spawns parallel worktree agents that each open a PR. For migrations, bulk refactors, mass renames.
-- Use `/simplify` for code cleanup after writing. Use `/shipkit-review-shipping` for comprehensive spec-aligned review (12 quality dimensions).
+- Use `/simplify` for post-implementation cleanup. Use `/code-review` for correctness bugs. Use `/shipkit-review-shipping` for comprehensive spec-aligned review (12 quality dimensions).
 - The shipping orchestrator manages Agent Teams directly for parallel implementation.
 
 ---

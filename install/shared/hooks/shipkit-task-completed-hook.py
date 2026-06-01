@@ -5,19 +5,25 @@ Shipkit TaskCompleted Hook
 Quality gate that fires when a teammate marks a task as complete.
 Validates that build and tests pass before allowing task completion.
 
-Hook events:
-  - Exit 0: Allow task completion
-  - Exit 2: Block completion, stderr message sent as feedback
+Blocking mechanism (per hooks-reference.md, CC 2.1.156):
+  - Allow completion: exit 0 with no decision.
+  - Block completion: exit 0 + {"decision": "block", "reason": "..."} on stdout.
+    TaskCompleted parses stdout JSON ONLY at exit 0 (gotcha #1 / exit-code rule);
+    the top-level decision:"block" + reason is the documented way to feed a
+    reason back to Claude. Exit 2 also blocks TaskCompleted, but its stdout JSON
+    is ignored — so we use exit 0 + decision:block to guarantee the reason lands.
+    (There is no `continueOnBlock` field — confirmed non-existent, gotcha #12.)
 
 Requires: .shipkit/team-state.local.json to be present (written by the shipping orchestrator).
 If no team state file exists, this hook exits 0 (no-op outside team mode).
 
 Input: JSON on stdin with hook event data (session_id, task info, etc.)
-Output: stderr for feedback messages when blocking (exit 2)
+Output: JSON on stdout ({"decision":"block","reason":...}) when blocking; exit 0.
 """
 
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -80,11 +86,42 @@ def detect_test_command(project_dir: Path) -> list[str] | None:
     return None
 
 
+def soft_reject(message: str) -> None:
+    """Block task completion via the documented TaskCompleted mechanism:
+    exit 0 + top-level {"decision": "block", "reason": ...} on stdout.
+
+    Per hooks-reference.md (CC 2.1.156), stdout JSON is parsed ONLY at exit 0;
+    at exit 2 the JSON is ignored (only stderr is surfaced). TaskCompleted
+    supports a top-level `decision: "block"` with `reason` fed back to Claude as
+    the next instruction, so we emit that at exit 0 to guarantee the reason is
+    delivered. (`continueOnBlock` is not a real field — gotcha #12.)
+    """
+    print(json.dumps({
+        "decision": "block",
+        "reason": message
+    }))
+    sys.exit(0)
+
+
 def run_command(cmd: list[str], cwd: Path, timeout: int = 90) -> tuple[bool, str]:
-    """Run a command and return (success, output)."""
+    """Run a command and return (success, output).
+
+    On Windows the package-manager front-ends (npm/npx/yarn/pnpm) are `.cmd`
+    shims that CreateProcess cannot spawn directly — a bare
+    subprocess.run(["npm", ...]) raises FileNotFoundError, which would falsely
+    score the build/test as failed. Resolve the executable via shutil.which and
+    route `.cmd`/`.bat` shims through the command processor. POSIX is unaffected.
+    """
+    exe = shutil.which(cmd[0])
+    if exe is None:
+        return False, f"Command not found: {cmd[0]}"
+    if os.name == "nt" and exe.lower().endswith((".cmd", ".bat")):
+        run_cmd = ["cmd", "/c", exe, *cmd[1:]]
+    else:
+        run_cmd = [exe, *cmd[1:]]
     try:
         result = subprocess.run(
-            cmd,
+            run_cmd,
             cwd=str(cwd),
             capture_output=True,
             text=True,
@@ -144,26 +181,22 @@ def main():
     if build_cmd:
         success, output = run_command(build_cmd, project_dir)
         if not success:
-            print(
+            soft_reject(
                 f"Build failed. Fix before completing this task.\n\n"
                 f"Command: {' '.join(build_cmd)}\n"
-                f"Output:\n{output}",
-                file=sys.stderr,
+                f"Output:\n{output}"
             )
-            sys.exit(2)
 
     # Run test check
     test_cmd = detect_test_command(project_dir)
     if test_cmd:
         success, output = run_command(test_cmd, project_dir)
         if not success:
-            print(
+            soft_reject(
                 f"Tests failed. Fix before completing this task.\n\n"
                 f"Command: {' '.join(test_cmd)}\n"
-                f"Output:\n{output}",
-                file=sys.stderr,
+                f"Output:\n{output}"
             )
-            sys.exit(2)
 
     # All checks passed
     sys.exit(0)

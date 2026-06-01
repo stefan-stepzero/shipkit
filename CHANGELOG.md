@@ -10,6 +10,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.8.0] - 2026-06-01
+
+Hook-system release. Expands the installed hook set from 4 to 12 active hooks, **fixes a latent installer bug where `/shipkit-update` silently delivered only 4 of the 12 hooks**, and adds Windows shell parity. All hook output schemas were verified field-by-field against the CC 2.1.156 hooks reference and official docs before release.
+
+### Fixed
+- **`/shipkit-update` delivered only 4 of 12 hooks (latent install bug).** `cli/src/update.js` listed just the original four hooks (`session-start`, `track-skill-usage`, `task-completed`, `teammate-idle`), so existing users who ran `/shipkit-update` never received the other eight — `post-compact`, `session-end`, `subagent-context`, `diagnostics`, `prereq-check`, `pre-compact`, `task-created`, `permission-denied`. Updating to 2.8.0 now installs the full set. **Existing users gain eight previously-undelivered hooks.**
+- **Windows: task-completed quality gate falsely blocked every shipping task.** The gate spawned `["npm", "run", "build"]` without a shell; on Windows the package-manager front-ends are `.cmd` shims that `CreateProcess` can't launch directly, so the subprocess raised `FileNotFoundError` and the hook scored it as a failed build — blocking completion of every shipping-agent task in team mode. `run_command` now resolves the executable via `shutil.which` and routes `.cmd`/`.bat` shims through the command processor. POSIX behaviour is unchanged.
+
+### Added
+- **Three new hooks:**
+  - `shipkit-pre-compact.py` (PreCompact) — snapshots `.shipkit/orchestration.json` to a timestamped checkpoint before compaction so the pipeline can recover lost in-context state. Observability only; never blocks.
+  - `shipkit-task-created-hook.py` (TaskCreated) — minimal legibility gate that rejects tasks with an empty title. Description is validated only when the event payload actually carries one (the standard TaskCreated event does not include a description).
+  - `shipkit-permission-denied-hook.py` (PermissionDenied) — surfaces auto-mode tool denials with a remediation message (add the permission, or run `/shipkit-update`), and signals `retry: true` only for known-safe read-only denials.
+- **Dynamic session title + skill reload on session start.** `shipkit-session-start.py` now emits `reloadSkills` (so hook-installed skills are live from the first prompt) and a `sessionTitle` of `Shipkit — {project} ({N} artifacts)`.
+- **PowerShell permission surface.** `shipkit.settings.json` mirrors the Bash command allow-list with `PowerShell(...)` rules for Windows environments.
+- **`skillOverrides` (`name-only`)** for the six orchestration/review skills (`shipkit-master`, `orch-direction/planning/shipping`, `review-direction/planning`) — they list by name without their full descriptions to conserve context budget.
+- **`/reload-skills` step** in the `shipkit-update` post-install guidance (CC 2.1.152+), so newly installed skills activate without restarting the session.
+- **Read-only tool locks** on `shipkit-ux-audit` (`disallowed-tools: Write, Edit, Bash, Agent, Task, WebFetch`) and `shipkit-thinking-partner` (`disallowed-tools: Write, Edit, Bash, Agent, Task`) — both are analysis/advisory skills that should never mutate the workspace.
+
+### Changed
+- **task-completed block mechanism: `exit 2` → `exit 0` + `{"decision":"block","reason":...}`.** TaskCompleted parses stdout JSON only at exit 0, so the top-level `decision:"block"` form guarantees the rejection reason is fed back to Claude rather than discarded.
+- **Rules: `/code-review` guidance** added alongside `/simplify` in `install/rules/shipkit.md` — `/simplify` for cleanup, `/code-review` for correctness bugs, `/shipkit-review-shipping` for spec-aligned review.
+- **Skill description trims** across eight skills (`design-system`, `engineering-definition`, `engineering-goals`, `qa-visual`, `semantic-qa`, `thinking-partner`, `update`, `ux-audit`) for context economy; behaviour unchanged.
+
+---
+
 ## [2.7.1] - 2026-05-27
 
 Patch release. Removes the buggy `context-check` UserPromptSubmit hook, and adds intellectual-posture + structured-artifact guidance to the installed CLAUDE.md template and framework rules.

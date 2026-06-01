@@ -32,7 +32,7 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-orch-planning` - Planning loop — definitions/specs + alignment review
 - `shipkit-orch-shipping` - Shipping loop — implementation + verification + release gate
 
-**Discovery & Planning (13 skills):**
+**Discovery & Planning (14 skills):**
 - `shipkit-why-project` - Strategic vision definition
 - `shipkit-product-discovery` - Personas, journeys, user needs
 - `shipkit-product-definition` - Product blueprint (features, patterns, differentiators)

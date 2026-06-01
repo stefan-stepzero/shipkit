@@ -5,6 +5,7 @@ argument-hint: "<component or area>"
 context: fork
 agent: shipkit-reviewer-shipping-agent
 allowed-tools: Read, Glob, Grep
+disallowed-tools: Write, Edit, Bash, Agent, Task, WebFetch
 effort: medium
 ---
 

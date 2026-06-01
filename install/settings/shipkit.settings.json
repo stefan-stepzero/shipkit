@@ -84,6 +84,36 @@
       "Bash(tree *)",
       "Bash(gh *)",
 
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Select-String *)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(Set-Content *)",
+      "PowerShell(Out-File *)",
+      "PowerShell(Copy-Item *)",
+      "PowerShell(Move-Item *)",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(New-Item *)",
+      "PowerShell(Test-Path *)",
+      "PowerShell(Resolve-Path *)",
+      "PowerShell(Get-Location *)",
+      "PowerShell(Set-Location *)",
+      "PowerShell(Invoke-WebRequest *)",
+      "PowerShell(Invoke-RestMethod *)",
+      "PowerShell(Write-Output *)",
+      "PowerShell(Write-Host *)",
+      "PowerShell(ForEach-Object *)",
+      "PowerShell(Where-Object *)",
+      "PowerShell(Select-Object *)",
+      "PowerShell(Sort-Object *)",
+      "PowerShell(Measure-Object *)",
+      "PowerShell(ConvertTo-Json *)",
+      "PowerShell(ConvertFrom-Json *)",
+      "PowerShell(git *)",
+      "PowerShell(python *)",
+      "PowerShell(node *)",
+      "PowerShell(npm *)",
+      "PowerShell(npx *)",
+
       "WebFetch(domain:github.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:docs.anthropic.com)",
@@ -138,7 +168,7 @@
     ],
 
     "deny": [
-      
+
       "Bash(sudo *)",
       "Bash(su *)",
       "Bash(ssh *)"
@@ -151,6 +181,15 @@
 
   "teammateMode": "in-process",
   "defaultMode": "acceptEdits",
+
+  "skillOverrides": {
+    "shipkit-master": "name-only",
+    "shipkit-orch-direction": "name-only",
+    "shipkit-orch-planning": "name-only",
+    "shipkit-orch-shipping": "name-only",
+    "shipkit-review-direction": "name-only",
+    "shipkit-review-planning": "name-only"
+  },
 
   "hooks": {
     "SessionStart": [
@@ -182,8 +221,8 @@
       {
         "hooks": [
           {
-            "type": "prompt",
-            "prompt": "Context compaction is approaching. If significant work is in progress, consider running /shipkit-work-memory to save your current work state before details are lost."
+            "type": "command",
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-pre-compact.py"
           }
         ]
       }
@@ -209,7 +248,16 @@
         ]
       }
     ],
-    "TaskCreated": [],
+    "TaskCreated": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-task-created-hook.py"
+          }
+        ]
+      }
+    ],
     "WorktreeCreate": [],
     "WorktreeRemove": [],
     "ConfigChange": [],
@@ -218,7 +266,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-subagent-context.py"
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-subagent-context.py"
           }
         ]
       }
@@ -230,19 +278,29 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-diagnostics.py"
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-diagnostics.py"
           }
         ]
       }
     ],
     "Notification": [],
     "PermissionRequest": [],
+    "PermissionDenied": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-permission-denied-hook.py"
+          }
+        ]
+      }
+    ],
     "InstructionsLoaded": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "python $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-prereq-check.py"
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-prereq-check.py"
           }
         ]
       }
@@ -291,6 +349,12 @@
     "allowedFiles": "Can read .env.example files. Full access to project source code and skill outputs via Read tool.",
     "sessionHooks": "SessionStart loads master routing + context summary. PostToolUse tracks skill usage. TeammateIdle and TaskCompleted are team quality gates.",
     "contextFiles": "All context stored in .shipkit/ folder",
-    "customization": "Users can override by editing this file"
+    "customization": "Users can override by editing this file",
+    "powershellPermissions": "PowerShell(...) rules mirror the Bash command surface for Windows environments. On mixed-shell setups, set CLAUDE_CODE_GIT_BASH_PATH to point to Git Bash so Unix commands resolve correctly alongside PowerShell.",
+    "disableSkillShellExecution": "WARNING: Orgs setting disableSkillShellExecution:true will break inline-shell skills: shipkit-project-context, shipkit-codebase-index, shipkit-preflight, shipkit-qa-visual. Workaround: run with shell access enabled, or request an IT exemption for these skills.",
+    "defaultModeScope": "defaultMode:auto (and other defaultMode values) is ignored at project scope. It must be set in user-level ~/.claude/settings.json to take effect. This file sets defaultMode:acceptEdits which is valid at project scope.",
+    "preCompactHook": "PreCompact is wired to shipkit-pre-compact.py (type:command). The hook body is maintained separately — only the wiring lives here.",
+    "permissionDeniedHook": "PermissionDenied event used (confirmed event name per hooks-reference.md, CC 2.1.156). Fires after the auto-mode classifier denies a tool call; not blockable. The hook surfaces the denied permission + remediation, and emits {retry:true} only for known-safe/recoverable denials. PermissionRequest (the blockable permission-dialog event) is intentionally left unwired — this hook's purpose is auto-mode denial surfacing.",
+    "sk010Deferred": "SK-010 (hook if: conditionals) DEFERRED — if: field is not documented in hooks-reference.md and has no confirmed CC support. TeammateIdle and TaskCompleted hooks already self-guard in their .py implementations."
   }
 }

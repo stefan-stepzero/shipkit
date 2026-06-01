@@ -1,6 +1,6 @@
 ---
 name: shipkit-design-system
-description: "Scaffold a tiered design system — principles, tokens, and aesthetic direction grounded in project context. Triggers: 'design system', 'design tokens', 'brand guidelines', 'visual direction', 'design principles'."
+description: "Scaffold a tiered design system — principles, tokens, aesthetic direction from project context. Triggers: 'design system', 'design tokens', 'brand guidelines', 'visual direction', 'design principles'."
 argument-hint: "[brand colors or focus] [--audit] [--refresh]"
 agent: shipkit-architect-agent
 context: fork

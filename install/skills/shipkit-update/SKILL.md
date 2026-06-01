@@ -675,8 +675,9 @@ This skill is typically the **first skill run** — it bootstraps or updates the
 
 1. **Review merged files** — Check CLAUDE.md and settings.json look correct
 2. **Check archive** — Originals in `.shipkit-archive/{timestamp}/` if needed
-3. **Test a skill** — Try `/shipkit-work-memory` to verify installation works
-4. **Optional refresh** — Run `/shipkit-project-context` if you want fresh stack detection
+3. **Activate skills** — Run `/reload-skills` to activate newly installed skills in this session without restarting (CC 2.1.152+).
+4. **Test a skill** — Try `/shipkit-work-memory` to verify installation works
+5. **Optional refresh** — Run `/shipkit-project-context` if you want fresh stack detection
 
 **If something looks wrong:**
 - Archive has all original files
