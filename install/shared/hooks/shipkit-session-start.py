@@ -135,36 +135,58 @@ def main():
     except Exception:
         hook_input = {}
 
-    # Find project root
+    # Resolve skills_dir from the hook's OWN location — works whether installed
+    # in a project's .claude/, at user level ~/.claude/, or run from source.
     hook_dir = Path(__file__).parent
     if hook_dir.name == 'hooks' and hook_dir.parent.name == 'shared':
-        skills_dir = hook_dir.parent.parent / 'skills'
-        project_root = None
+        skills_dir = hook_dir.parent.parent / 'skills'   # source repo (install/shared/hooks)
     else:
-        claude_dir = hook_dir.parent
-        skills_dir = claude_dir / 'skills'
-        project_root = claude_dir.parent
+        skills_dir = hook_dir.parent / 'skills'          # installed (.claude/hooks → .claude/skills)
+
+    # Resolve project root from the SESSION, NOT the hook's file location.
+    # At user scope the hook lives in ~/.claude, so deriving the project from the
+    # hook path would wrongly point at $HOME. CLAUDE_PROJECT_DIR is the session's
+    # project root; fall back to the hook input's cwd.
+    env_dir = os.environ.get('CLAUDE_PROJECT_DIR', '')
+    input_cwd = hook_input.get('cwd', '') if isinstance(hook_input, dict) else ''
+    if env_dir:
+        project_root = Path(env_dir)
+    elif input_cwd:
+        project_root = Path(input_cwd)
+    else:
+        project_root = None
 
     # Collect output lines instead of printing directly
     lines = []
 
-    # Load master skill (orchestration context for every session)
+    # Master skill must be installed.
     master_skill = skills_dir / 'shipkit-master' / 'SKILL.md'
     if not master_skill.exists():
         lines.append("Shipkit not properly installed. Run the installer again.")
         _emit_context('\n'.join(lines), project_root)
         return 0
 
+    # Gate the heavy orchestration injection on an ACTIVATED Shipkit project
+    # (a project with a .shipkit/ folder). This matters at user scope, where the
+    # hook fires in every project globally — we must not dump the master skill
+    # (~1500 tokens) + routing into unrelated work. A project is activated the
+    # first time any /shipkit-* skill writes into .shipkit/. Until then, emit a
+    # single-line hint. At project scope the installer creates .shipkit/, so this
+    # path is behavior-preserving (full context loads as before).
+    shipkit_dir = (project_root / '.shipkit') if project_root is not None else None
+    if shipkit_dir is None or not shipkit_dir.exists():
+        lines.append(
+            "Shipkit is installed. Run `/shipkit-project-context` to activate it "
+            "in this project (creates `.shipkit/` and loads full context next session)."
+        )
+        _emit_context('\n'.join(lines), project_root)
+        return 0
+
+    # ── Activated Shipkit project: load full orchestration context ──
     lines.append(master_skill.read_text(encoding='utf-8'))
     lines.append('')
     lines.append('---')
     lines.append('')
-
-    if project_root is None:
-        _emit_context('\n'.join(lines), project_root)
-        return 0
-
-    shipkit_dir = project_root / '.shipkit'
 
     # ── Version check ──
     update_msg = check_for_updates(project_root)
@@ -180,14 +202,6 @@ def main():
                 old_log.unlink()
             except OSError:
                 pass
-
-    # ── Fresh project ──
-    if not shipkit_dir.exists():
-        lines.append("No `.shipkit/` folder found — fresh project.")
-        lines.append('')
-        lines.append("Start with: `/shipkit-project-context` to scan your codebase")
-        _emit_context('\n'.join(lines), project_root)
-        return 0
 
     # ── Progress resume ──
     progress = get_progress_summary(project_root)

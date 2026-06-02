@@ -14,6 +14,7 @@ function parseArgs(argv) {
       claudeMd: null,
       yes: false,
       target: null,
+      user: false,
     }
   };
 
@@ -51,6 +52,9 @@ function parseArgs(argv) {
         break;
       case '--target':
         args.flags.target = argv[++i];
+        break;
+      case '--user':
+        args.flags.user = true;
         break;
       default:
         // ignore unknown flags
@@ -130,6 +134,8 @@ Options:
   --no-mcps            Skip MCP example file creation
   --claude-md <mode>   CLAUDE.md handling: skip, overwrite, merge
   --target <path>      Installation directory (default: current directory)
+  --user               Install at user level (~/.claude) for all projects;
+                       skills/agents/hooks shared across projects, .shipkit/ stays per-project
   -y, --yes            Non-interactive mode (accept all defaults)
 
 Examples:

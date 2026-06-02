@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const ui = require('./ui');
 const { createInterface, confirm, promptForSkills, promptForAgents } = require('./prompt');
@@ -30,16 +31,21 @@ async function update(packageRoot, flags) {
   const nonInteractive = flags.yes;
   const installDir = path.join(packageRoot, 'install');
 
+  // Scope split (mirrors init.js): user-level code in ~/.claude, no ~/.shipkit.
+  const userScope = !!flags.user;
+  const claudeDir = userScope ? path.join(os.homedir(), '.claude') : path.join(targetDir, '.claude');
+  const dataDir = userScope ? null : path.join(targetDir, '.shipkit');
+
   ui.logo(version);
-  ui.section('Update Shipkit');
-  ui.info(`Target: ${targetDir}`);
+  ui.section(userScope ? 'Update Shipkit (user level)' : 'Update Shipkit');
+  ui.info(`Target: ${userScope ? claudeDir : targetDir}`);
 
   // Verify existing installation
-  const settingsPath = path.join(targetDir, '.claude', 'settings.json');
+  const settingsPath = path.join(claudeDir, 'settings.json');
   if (!fs.existsSync(settingsPath)) {
     throw new Error(
-      'No existing Shipkit installation found (.claude/settings.json missing).\n' +
-      'Run "npx github:stefan-stepzero/shipkit init" for a fresh install.'
+      `No existing Shipkit installation found (${settingsPath} missing).\n` +
+      `Run "npx github:stefan-stepzero/shipkit init${userScope ? ' --user' : ''}" for a fresh install.`
     );
   }
 
@@ -47,11 +53,16 @@ async function update(packageRoot, flags) {
   const currentSettings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
   const currentSkills = (currentSettings.shipkit && currentSettings.shipkit.installedSkills) || [];
 
-  // Check installed version
-  const versionPath = path.join(targetDir, '.shipkit', 'VERSION');
-  const installedVersion = fs.existsSync(versionPath)
-    ? fs.readFileSync(versionPath, 'utf8').trim()
-    : 'unknown';
+  // Check installed version: user scope records it in settings (no ~/.shipkit/VERSION).
+  let installedVersion;
+  if (userScope) {
+    installedVersion = (currentSettings.shipkit && currentSettings.shipkit.version) || 'unknown';
+  } else {
+    const versionPath = path.join(dataDir, 'VERSION');
+    installedVersion = fs.existsSync(versionPath)
+      ? fs.readFileSync(versionPath, 'utf8').trim()
+      : 'unknown';
+  }
 
   ui.info(`Installed version: ${installedVersion}`);
   ui.info(`Updating to: ${version}`);
@@ -133,11 +144,11 @@ async function update(packageRoot, flags) {
     ui.section('Updating');
 
     // 1. Update hooks (overwrite)
-    ensureDir(path.join(targetDir, '.claude', 'hooks'));
+    ensureDir(path.join(claudeDir, 'hooks'));
     const hooksDir = path.join(installDir, 'shared', 'hooks');
     for (const [src, dest] of Object.entries(HOOK_FILES)) {
       const srcPath = path.join(hooksDir, src);
-      const destPath = path.join(targetDir, '.claude', 'hooks', dest);
+      const destPath = path.join(claudeDir, 'hooks', dest);
       if (fs.existsSync(srcPath)) {
         copyFile(srcPath, destPath);
         makeExecutable(destPath);
@@ -148,37 +159,50 @@ async function update(packageRoot, flags) {
     // 2. Update rules (overwrite)
     const rulesDir = path.join(installDir, 'rules');
     if (fs.existsSync(rulesDir)) {
-      ensureDir(path.join(targetDir, '.claude', 'rules'));
-      copyDir(rulesDir, path.join(targetDir, '.claude', 'rules'));
+      const rulesDestDir = path.join(claudeDir, 'rules');
+      ensureDir(rulesDestDir);
+      copyDir(rulesDir, rulesDestDir);
+      if (userScope) {
+        // Re-apply Shipkit-project path gating (overwrite above stripped it).
+        const shipkitRule = path.join(rulesDestDir, 'shipkit.md');
+        if (fs.existsSync(shipkitRule)) {
+          const body = fs.readFileSync(shipkitRule, 'utf8');
+          if (!body.startsWith('---')) {
+            fs.writeFileSync(shipkitRule, '---\npaths:\n  - "**/.shipkit/**"\n---\n\n' + body, 'utf8');
+          }
+        }
+      }
     }
-    ui.success('Rules updated');
+    ui.success(userScope ? 'Rules updated (scoped to Shipkit projects)' : 'Rules updated');
 
-    // 3. Update scripts (overwrite)
-    const pythonScriptsDir = path.join(installDir, 'shared', 'scripts', 'python');
-    if (fs.existsSync(pythonScriptsDir)) {
-      ensureDir(path.join(targetDir, '.shipkit', 'scripts'));
-      copyDir(pythonScriptsDir, path.join(targetDir, '.shipkit', 'scripts'));
+    // 3 / 3b / 4. Update scripts + VERSION marker (per-project .shipkit only)
+    if (dataDir) {
+      const pythonScriptsDir = path.join(installDir, 'shared', 'scripts', 'python');
+      if (fs.existsSync(pythonScriptsDir)) {
+        ensureDir(path.join(dataDir, 'scripts'));
+        copyDir(pythonScriptsDir, path.join(dataDir, 'scripts'));
+      }
+      const obsScriptsDir = path.join(installDir, 'shared', 'scripts', 'observability');
+      if (fs.existsSync(obsScriptsDir)) {
+        const obsDestDir = path.join(dataDir, 'observability');
+        ensureDir(obsDestDir);
+        copyDir(obsScriptsDir, obsDestDir);
+      }
+      ui.success('Scripts updated');
+      copyFile(path.join(packageRoot, 'VERSION'), path.join(dataDir, 'VERSION'));
     }
 
-    // 3b. Update observability scripts (overwrite)
-    const obsScriptsDir = path.join(installDir, 'shared', 'scripts', 'observability');
-    if (fs.existsSync(obsScriptsDir)) {
-      const obsDestDir = path.join(targetDir, '.shipkit', 'observability');
-      ensureDir(obsDestDir);
-      copyDir(obsScriptsDir, obsDestDir);
-    }
-    ui.success('Scripts updated');
-
-    // 4. Update VERSION
-    copyFile(path.join(packageRoot, 'VERSION'), path.join(targetDir, '.shipkit', 'VERSION'));
-
-    // 5. Merge settings.json
+    // 5. Merge settings.json (user scope: also record the new version marker)
     const merged = mergeSettings(packageRoot, settingsPath, selectedSkills);
+    if (userScope) {
+      merged.shipkit = merged.shipkit || {};
+      merged.shipkit.version = version;
+    }
     fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2) + '\n', 'utf8');
     ui.success('settings.json merged (custom permissions preserved)');
 
     // 6. Update skills (overwrite selected, remove deselected)
-    const skillsDestDir = path.join(targetDir, '.claude', 'skills');
+    const skillsDestDir = path.join(claudeDir, 'skills');
     const skillsDir = path.join(installDir, 'skills');
     let skillsUpdated = 0;
 
@@ -203,7 +227,7 @@ async function update(packageRoot, flags) {
     ui.success(`${skillsUpdated} skills updated`);
 
     // 7. Update agents (overwrite selected, remove deselected)
-    const agentsDestDir = path.join(targetDir, '.claude', 'agents');
+    const agentsDestDir = path.join(claudeDir, 'agents');
     ensureDir(agentsDestDir);
     const agentsDir = path.join(installDir, 'agents');
     let agentsUpdated = 0;
@@ -228,12 +252,14 @@ async function update(packageRoot, flags) {
     }
     ui.success(`${agentsUpdated} agents updated`);
 
-    // 8. Update HTML overview
-    const overviewSrc = path.join(packageRoot, 'docs', 'generated', 'shipkit-overview.html');
-    if (fs.existsSync(overviewSrc)) {
-      let html = fs.readFileSync(overviewSrc, 'utf8');
-      html = html.replace(/\{\{SHIPKIT_VERSION\}\}/g, `v${version}`);
-      fs.writeFileSync(path.join(targetDir, '.shipkit', 'shipkit-overview.html'), html, 'utf8');
+    // 8. Update HTML overview (per-project .shipkit only)
+    if (dataDir) {
+      const overviewSrc = path.join(packageRoot, 'docs', 'generated', 'shipkit-overview.html');
+      if (fs.existsSync(overviewSrc)) {
+        let html = fs.readFileSync(overviewSrc, 'utf8');
+        html = html.replace(/\{\{SHIPKIT_VERSION\}\}/g, `v${version}`);
+        fs.writeFileSync(path.join(dataDir, 'shipkit-overview.html'), html, 'utf8');
+      }
     }
 
     // Done!
@@ -241,10 +267,15 @@ async function update(packageRoot, flags) {
     ui.section('Update Complete');
     ui.success(`Shipkit updated to v${version}`);
     console.log();
-    ui.warning('CLAUDE.md was not updated (your customizations were preserved)');
-    ui.info(`  Framework rules are auto-loaded from .claude/rules/shipkit.md`);
-    ui.info(`  To refresh CLAUDE.md: run /shipkit-claude-md in Claude Code`);
-    ui.bullet('.gitignore was not modified');
+    if (userScope) {
+      ui.info(`  Framework rules are auto-loaded from ${path.join(claudeDir, 'rules', 'shipkit.md')} (scoped to Shipkit projects)`);
+      ui.bullet('All projects pick up the update on their next session');
+    } else {
+      ui.warning('CLAUDE.md was not updated (your customizations were preserved)');
+      ui.info(`  Framework rules are auto-loaded from .claude/rules/shipkit.md`);
+      ui.info(`  To refresh CLAUDE.md: run /shipkit-claude-md in Claude Code`);
+      ui.bullet('.gitignore was not modified');
+    }
     console.log();
 
   } finally {

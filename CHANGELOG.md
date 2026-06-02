@@ -10,6 +10,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.8.1] - 2026-06-02
+
+Adds **user-level install** (`--user`): install Shipkit's skills/agents/hooks once at `~/.claude/` and share them across every project — fix once, every project picks it up on its next session, no per-project re-update or version drift. Per-project `.shipkit/` data is unchanged.
+
+### Added
+- **`--user` install scope for `init` and `update`.** Installs framework code (skills, agents, hooks, rules, settings) to `~/.claude/` instead of the project, so skills/agents are available in every project. `.shipkit/` stays per-project and is created on first skill use — there is no `~/.shipkit/`; the installed version is recorded in `settings.shipkit.version` instead. `CLAUDE.md` and `.gitignore` are skipped at user scope (project-only files). Activating a project = running any `/shipkit-*` skill there (it writes `.shipkit/`).
+- **User-scope rule gating.** At user scope the installed `rules/shipkit.md` gets `paths: ["**/.shipkit/**"]` frontmatter so Shipkit's framework rules load only in Shipkit projects, not across unrelated work on the machine. Project-scope installs keep the unconditional rules (loaded at launch, as before).
+
+### Changed
+- **`session-start` hook is now scope-aware.** It resolves `skills_dir` from its own install location (project `.claude/` or `~/.claude/`) but the **project root from `$CLAUDE_PROJECT_DIR`** (fallback: hook input `cwd`) rather than from its file location. Required so a user-level hook targets the session's project instead of `$HOME`. Behavior-preserving at project scope (`$CLAUDE_PROJECT_DIR` equals the project there).
+- **`session-start` gates the master-orchestration injection on an activated project** (one with a `.shipkit/` folder). In a non-Shipkit directory it emits a one-line "run `/shipkit-project-context` to activate" hint instead of dumping the full master skill — so a user-level install doesn't inject Shipkit context into unrelated projects. Project-scope installs are unaffected (the installer creates `.shipkit/`).
+
+---
+
 ## [2.8.0] - 2026-06-01
 
 Hook-system release. Expands the installed hook set from 4 to 12 active hooks, **fixes a latent installer bug where `/shipkit-update` silently delivered only 4 of the 12 hooks**, and adds Windows shell parity. All hook output schemas were verified field-by-field against the CC 2.1.156 hooks reference and official docs before release.
