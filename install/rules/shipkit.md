@@ -159,6 +159,7 @@ If `.shipkit/codebase-index.json` exists:
 | Production readiness audit | `/shipkit-preflight` |
 | Scale & enterprise readiness | `/shipkit-scale-ready` |
 | Audit LLM prompt architecture | `/shipkit-prompt-audit` |
+| Audit dead code, orphans & unwired seams | `/shipkit-codebase-audit` |
 | Audit UX patterns | `/shipkit-ux-audit` |
 | Semantic QA for API/LLM outputs | `/shipkit-semantic-qa` |
 | Track & visualize metrics | `/shipkit-metrics` |

@@ -153,6 +153,7 @@
       "Skill(shipkit-thinking-partner)",
       "Skill(shipkit-scale-ready)",
       "Skill(shipkit-prompt-audit)",
+      "Skill(shipkit-codebase-audit)",
 
       "Skill(shipkit-stage)",
       "Skill(shipkit-product-goals)",
@@ -327,7 +328,21 @@
     ],
     "StopFailure": [],
     "Elicitation": [],
-    "ElicitationResult": []
+    "ElicitationResult": [],
+    "Setup": [
+      {
+        "matcher": "init",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-prereq-check.py"
+          }
+        ]
+      }
+    ],
+    "UserPromptExpansion": [],
+    "CwdChanged": [],
+    "FileChanged": []
   },
 
   "skills": {
@@ -351,10 +366,12 @@
     "contextFiles": "All context stored in .shipkit/ folder",
     "customization": "Users can override by editing this file",
     "powershellPermissions": "PowerShell(...) rules mirror the Bash command surface for Windows environments. On mixed-shell setups, set CLAUDE_CODE_GIT_BASH_PATH to point to Git Bash so Unix commands resolve correctly alongside PowerShell.",
-    "disableSkillShellExecution": "WARNING: Orgs setting disableSkillShellExecution:true will break inline-shell skills: shipkit-project-context, shipkit-codebase-index, shipkit-preflight, shipkit-qa-visual. Workaround: run with shell access enabled, or request an IT exemption for these skills.",
+    "disableSkillShellExecution": "WARNING: Orgs setting disableSkillShellExecution:true will break inline-shell skills: shipkit-project-context, shipkit-codebase-index, shipkit-preflight, shipkit-qa-visual, shipkit-codebase-audit. Workaround: run with shell access enabled, or request an IT exemption for these skills.",
     "defaultModeScope": "defaultMode:auto (and other defaultMode values) is ignored at project scope. It must be set in user-level ~/.claude/settings.json to take effect. This file sets defaultMode:acceptEdits which is valid at project scope.",
     "preCompactHook": "PreCompact is wired to shipkit-pre-compact.py (type:command). The hook body is maintained separately — only the wiring lives here.",
     "permissionDeniedHook": "PermissionDenied event used (confirmed event name per hooks-reference.md, CC 2.1.156). Fires after the auto-mode classifier denies a tool call; not blockable. The hook surfaces the denied permission + remediation, and emits {retry:true} only for known-safe/recoverable denials. PermissionRequest (the blockable permission-dialog event) is intentionally left unwired — this hook's purpose is auto-mode denial surfacing.",
-    "sk010Deferred": "SK-010 (hook if: conditionals) DEFERRED — if: field is not documented in hooks-reference.md and has no confirmed CC support. TeammateIdle and TaskCompleted hooks already self-guard in their .py implementations."
+    "sk010Resolved": "SK-010 (hook if: conditionals) RESOLVED 2026-06-11 — if: IS supported (CC v2.1.85+, documented in hooks-reference.md), but applies ONLY to tool events (PreToolUse, PostToolUse, PostToolUseFailure, PermissionRequest, PermissionDenied). TeammateIdle and TaskCompleted are NOT tool events, so if: cannot scope them — they correctly self-guard in their .py implementations. No if: wiring needed. See hooks-reference.md 'Hook Authoring Guard-Rails'.",
+    "setupHook": "Setup:init wired to shipkit-prereq-check.py for first-init prerequisite validation. InstructionsLoaded also runs prereq-check each session; Setup covers the canonical one-time init event. prereq-check is idempotent (read-only checks) so the overlap is harmless.",
+    "eventStubs": "Empty-array events (UserPromptExpansion, CwdChanged, FileChanged, PreToolUse, Stop, etc.) are intentional self-documenting stubs: every known CC hook event is listed so the surface is complete and future wiring needs no research. FileChanged pairs with the watchPaths emitted by session-start.py."
   }
 }

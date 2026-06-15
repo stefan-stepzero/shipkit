@@ -275,19 +275,22 @@ def _emit_context(content: str, project_root: Path = None, artifact_count: int =
     Emits reloadSkills (refresh skill registry on session start) and a dynamic
     sessionTitle. Per hooks-reference.md / official CC docs (SessionStart output
     schema), ALL SessionStart fields — hookEventName, additionalContext,
-    sessionTitle, reloadSkills — live INSIDE hookSpecificOutput; hookEventName is
-    required. sessionTitle is honoured only on source=startup|resume (ignored on
-    clear/compact, which is harmless). Placing these at the top level silently
-    no-ops them, so they must be nested.
+    sessionTitle, reloadSkills, watchPaths — live INSIDE hookSpecificOutput;
+    hookEventName is required. sessionTitle is honoured only on source=startup|resume
+    (ignored on clear/compact, which is harmless). watchPaths registers .shipkit/ so
+    FileChanged events can fire when context files change. Placing any of these at the
+    top level silently no-ops them, so they must be nested.
     """
     project_name = project_root.name if project_root else "project"
     session_title = f"Shipkit — {project_name} ({artifact_count} artifacts)"
+    watch_dir = str(project_root / ".shipkit") if project_root else ".shipkit"
     output = {
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
             "additionalContext": content,
             "sessionTitle": session_title,
-            "reloadSkills": True
+            "reloadSkills": True,
+            "watchPaths": [watch_dir]
         }
     }
     print(json.dumps(output))

@@ -10,6 +10,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.9.0] - 2026-06-15
+
+Adds **`shipkit-codebase-audit`** (38th skill) — a portable dead-code & wiring audit whose deliverable is "this codebase has nothing stale, orphaned, or unwired." It works in any repo, including ones with no dead-code tooling installed, and reasons past what linters can't see.
+
+### Added
+- **`shipkit-codebase-audit` skill** with three effort tiers:
+  - **quick** (default) — runs knip-class checks **ephemerally** via `npx`/`pnpm dlx`/`yarn dlx`/`bunx` (no repo mutation), reporting unused exports/files/dependencies and unresolved imports. CI-suitable.
+  - **deep** — adds a parallel dimension-sweep over what tooling can't see: contract drift, half-wired seams, declared-but-unbuilt and built-but-undeclared components, reconciled against an intent source.
+  - **exhaustive** — one read-only agent per file (or cohesive slice) emitting a contract ledger, reconciled via a cross-file **ledger-join** with gap re-dispatch until coverage is complete. Full coverage by design; opt-in because it's the expensive path.
+- **Ephemeral-by-default, opt-in persistence.** The audit never mutates the consumer's `package.json`/lockfile on a routine run; wiring a `devDep` + `lint:dead` script is a separate, explicitly-confirmed, idempotent step (detect-before-install, package-manager-aware).
+- **Always-on artifact.** Writes `.shipkit/codebase-audit.json` on every tier (including quick), bootstrapping `.shipkit/` if absent (non-Shipkit repos), enabling run-over-run delta tracking.
+- **Portable intent source.** Mode B reconciles against `.shipkit/` artifacts in Shipkit repos and degrades to README + entry points + exported API surface elsewhere, stating the reduced-signal caveat in its output.
+
+### Changed
+- **Hook event coverage (`shipkit.settings.json`).** Wired the `Setup` event (`matcher: "init"`) to the prereq-check hook and added explicit stubs for the remaining known CC events (`UserPromptExpansion`, `CwdChanged`, `FileChanged`) so the settings file enumerates the full event surface rather than a subset.
+- **`session-start` registers `watchPaths`.** The hook now emits `watchPaths: [".shipkit/"]` inside `hookSpecificOutput`, so `FileChanged` events fire when context files change.
+
+### Fixed
+- **Corrected a stale `if:`-conditional note in `shipkit.settings.json`.** The prior note claimed hook `if:` conditionals were unavailable; `if:` is in fact supported (CC v2.1.85+) but scoped to tool events only — `TeammateIdle`/`TaskCompleted` self-guard in their `.py` implementations and need no `if:`. Added a "Hook Authoring Guard-Rails" block to the synthesized hooks reference to prevent the belief recurring.
+
+### Notes
+- Runs **inline (not `context: fork`)** so it can use the Agent tool — the confirmed parallel primitive — for Mode B fan-out, rather than the Agent-tool-from-fork path that CC blocks (DOC-023 T1-D2).
+- Distinct from `/shipkit-validate-wiring` and `/shipkit-wiring-graph`, which validate Shipkit's own framework graph; this audits the consumer's application code.
+
+---
+
 ## [2.8.1] - 2026-06-02
 
 Adds **user-level install** (`--user`): install Shipkit's skills/agents/hooks once at `~/.claude/` and share them across every project — fix once, every project picks it up on its next session, no per-project re-update or version drift. Per-project `.shipkit/` data is unchanged.
