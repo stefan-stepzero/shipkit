@@ -121,6 +121,13 @@ your-project/
     └── [context files]       # Specs, plans, architecture, etc.
 ```
 
+## Environment Notes
+
+Shipkit runs inside your Claude Code environment and inherits its network and auth config — there's nothing Shipkit-specific to configure. Two setup notes that occasionally matter:
+
+- **Corporate proxy:** set `HTTPS_PROXY` / `HTTP_PROXY` in your environment; verify Claude Code picked them up with `/status`.
+- **Windows + hooks:** if a hook can't find Git Bash, point `CLAUDE_CODE_GIT_BASH_PATH` at your Git Bash install.
+
 ## Future Installers
 
 Potential additional installation methods:

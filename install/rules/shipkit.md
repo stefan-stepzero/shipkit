@@ -223,3 +223,13 @@ Claude Code maintains persistent memory across sessions in `~/.claude/projects/<
 If sandbox mode is enabled, `.claude/skills/` is write-protected. Shipkit install/update requires either:
 - Sandbox disabled during install, or
 - `.claude/` added to `sandbox.filesystem.allowWrite`
+
+---
+
+## Operating Environment
+
+### Session continuity
+Sessions are stored locally (`~/.claude/projects/<project>/`) with ~30-day retention. Use `--continue` / `--resume` to pick up prior work, `--fork-session` to branch, and `/compact` / `/export` to manage context. In dev containers, persist `~/.claude/` and the project's `.shipkit/` across rebuilds so session history and artifacts survive.
+
+### Enterprise & managed settings
+Shipkit targets solo / MVP development, not enterprise rollout. If your organisation enforces managed settings or Zero-Data-Retention, some Claude Code features (e.g. dynamic workflows) may be disabled — Shipkit's core is local skills and keeps working regardless. Broader enterprise / ZDR support is out of scope for now.
