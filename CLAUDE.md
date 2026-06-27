@@ -353,8 +353,8 @@ Before publishing changes to GitHub:
 **Read DOC-015 (`docs/development/system-design/DOC-015-orchestration-pipeline.json`) before modifying agents, skills, or the orchestration pipeline.** It is the single source of truth for the 3-loop architecture, agent taxonomy, skill types, naming conventions, and artifact flow.
 
 ### Quick Reference
-- **38 skills** (28 user-invocable + 10 infrastructure) — see `install/profiles/shipkit.manifest.json`
-- **11 agents** (4 orchestrators, 4 producers, 3 reviewers) — see `install/agents/`
+- **40 skills** (29 user-invocable + 11 infrastructure) — see `install/profiles/shipkit.manifest.json`
+- **12 agents** (4 orchestrators, 5 producers, 3 reviewers) — see `install/agents/`
 - **DOC-025 Wiring Graph** — machine-readable dispatch chains, artifact flow, tool restrictions
 
 ### Dev Skills (local only, not distributed)
@@ -371,15 +371,16 @@ Location: `.claude/specs/`
 - Created by `shipkit-dev-spec` or manually
 - Read these before implementing any specced feature
 
-**Pending specs (not yet implemented):**
-- `thinking-partner-adversarial.json` — Adversarial debate mode for thinking-partner: 3-5 resource advocate agents debate autonomously, produce tension map + decision matrix
-- `ux-pattern-researcher.json` — UX pattern research skill: identify pattern from taxonomy → find orgs with best implementations → browser research with screenshots → analyze UX flow + UI component structure → design recommendations. Taxonomy: `P:/Projects2/sg-dendrite/trees/ux-pattern-taxonomy/tree.json` (177 patterns, 9 cognitive-task categories)
-- `gtm-strategy.json` — Go-to-market strategy skill: positioning, segments, pricing model, content strategy, trust signals, channels, launch plan → outputs `.shipkit/gtm-strategy.json` for downstream skills
-- `website-blueprint.json` — Website blueprint skill: page inventory, section-by-section specs with UX patterns, conversion flows, SEO map, trust architecture, content requirements → outputs `.shipkit/website-blueprint.json`. Consumes GTM strategy
-- `engineering-definition-ecosystem-defaults.json` — Add ecosystem-aware defaults to engineering-definition: Step 2b (Ecosystem Audit), stack-specific reference files (python-llm, python-api, nextjs-fullstack, react-spa), mechanism-standards.md mapping common mechanisms to standard solutions. Prevents reinventing the wheel.
+**The folder is the source of truth for spec state — do NOT enumerate specs here.**
+Lifecycle is encoded by location, and per-spec detail lives in each file — so this section never needs editing when specs are added, shipped, or abandoned:
 
-**Known interim state (2026-04-18):**
-- `return-prompt-resume.json` — rollout paused pending orchestrator-bubble integration tests (T7/T8/T9). Interim: 5 elicitive skills (why-project, stage, product-goals, engineering-goals, feedback-bug) flipped from `context: fork` to inline to prevent silent hallucination. Direction loop now halts for user input instead of running fully autonomous. Planning and shipping loops unaffected.
+| Location | State |
+|----------|-------|
+| `.claude/specs/*.json` (top level) | **Pending** — proposed, not yet implemented |
+| `.claude/specs/implemented/*.json` | **Shipped** — implemented; kept for history |
+| `.claude/specs/archive/*.json` | **Abandoned / superseded** |
+
+To see what's pending, list the top level (`ls .claude/specs/*.json`). For what each one is and its finer state, read the spec's own fields — `goal`, and where present `status` / `openDecision` / `interimFix` (e.g. `return-prompt-resume.json` carries its paused-rollout state in its `status` field; `architecture-living-map.json` carries an unresolved A/B/C decision in `openDecision`). When implementing or abandoning a spec, **move the file** to `implemented/` or `archive/` rather than recording state here.
 
 ### Testing & Feedback (external repos)
 - **Crypto test harness**: `P:/Projects2/shipkit-testing/` — 23 skills, 10 agents, SHA-256 hash chain tests

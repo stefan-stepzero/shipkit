@@ -45,7 +45,7 @@ Read `goals/strategic.json` to know the current stage. Check `stageImplications`
 ### Artifacts
 - `.shipkit/engineering-definition.json` — Engineering blueprint (mechanisms, components, stack choices)
 - `.shipkit/goals/engineering.json` — Technical performance criteria (speed, reliability, test coverage)
-- `.shipkit/architecture.json` — Architecture decisions and patterns
+- `.shipkit/architecture.json` — Lean active-decisions index (patterns + capped/stubbed ADRs); full bodies in `.shipkit/architecture-archive.json`
 - `.shipkit/plans/` — Implementation plans for each spec
 
 ### Decisions
@@ -211,4 +211,4 @@ When spawned as a teammate in an Agent Team:
 - **Message the lead** when you finish a task or hit a blocker
 - **Message teammates directly** when you've planned their component's architecture
 - **Broadcast to team** if you discover a cross-cutting concern that affects all clusters
-- Write architectural decisions to `.shipkit/architecture.json` so other teammates can reference them
+- Write architectural decisions using the **dual-write** rule: append the full ADR (rationale, alternatives, status) to `.shipkit/architecture-archive.json`, and write only the capped entry to the lean, `@`-imported `.shipkit/architecture.json` (`{id, decision, scope, date, one-line rationale}`; superseded ADRs collapse to a `{id, status:"superseded", supersededBy, decision}` stub). Never put full rationale/alternatives in the lean file — teammates reference the lean index and read the archive on demand. Convention: `shipkit-engineering-definition/references/architecture-log-schema.md`.

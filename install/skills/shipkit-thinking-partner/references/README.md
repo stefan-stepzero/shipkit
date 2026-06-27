@@ -15,10 +15,20 @@ Cognitive frameworks and discussion styles for structured thinking.
 
 ## Discussion Styles
 
-See `discussion-styles.md` for the three conversation modes:
+See `discussion-styles.md` for the four conversation modes:
 - **Socratic** — Question-led discovery
 - **Direct** — Structured analysis with clear recommendations
 - **Framework-Guided** — Step-by-step framework application
+- **Adversarial** — Autonomous resource-advocate debate (see below)
+
+## Adversarial Mode
+
+The thinking-partner's autonomous debate mode. A panel of 3-5 resource advocates (from a pool of 8) argues a concrete decision over 3 rounds, then the orchestrator synthesizes a tension map + decision matrix.
+
+- `adversarial-mode.md` — Debate orchestration: dispatch protocol, round structure, synthesis template, token budget.
+- `resource-advocates.md` — The pool of 8 advocates (time, cost, scope, ux, tech-debt, risk, scale, simplicity) with stance, rhetorical style, and natural enemies.
+
+Advocates are dispatched via the `shipkit-resource-advocate` infrastructure skill (`shipkit-resource-advocate-agent` persona). Not user-invoked.
 
 ## Framework Selection Guide
 

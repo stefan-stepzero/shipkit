@@ -16,6 +16,15 @@ from datetime import datetime
 HOOK_NAME = "session-start"
 GITHUB_VERSION_URL = "https://raw.githubusercontent.com/stefan-stepzero/shipkit/main/VERSION"
 
+# Per the context-import policy: large artefacts are referenced (read on demand);
+# only lean, bounded SLICES are injected always-on. Cap each injected digest so a
+# large repo's index / goals file can never bloat context (AC-5 / AC-2).
+MAX_DIGEST_CHARS = 3500  # ~3-4 KB per injected digest
+
+# Artefacts the CLAUDE.md template `@`-imports (install/claude-md/shipkit.md).
+# A missing one makes the `@`-import silently no-op, so the hook warns instead.
+IMPORTED_ARTIFACTS = ['architecture.json', 'stack.json', 'why.json']
+
 
 def get_installed_version(project_root: Path) -> str:
     """Read installed Shipkit version from .shipkit/VERSION or VERSION."""
@@ -127,6 +136,150 @@ def get_progress_summary(project_root: Path) -> str | None:
         return f"**Last session**: {format_age(age)}"
 
 
+def get_missing_import_warning(shipkit_dir: Path) -> str | None:
+    """Warn when a CLAUDE.md `@`-imported artefact is absent.
+
+    The `@.shipkit/<file>` imports silently no-op when the file is missing, leaving
+    the agent with zero context and no signal. The hook checks every session (the
+    installer can't catch a user later deleting the file), so it surfaces the gap.
+    """
+    missing = [name for name in IMPORTED_ARTIFACTS if not (shipkit_dir / name).exists()]
+    if not missing:
+        return None
+    files = ', '.join(f"`{m}`" for m in missing)
+    return (f"WARNING: missing context — {files}. The CLAUDE.md `@`-import(s) silently "
+            f"no-op, so the agent has no stack/architecture/vision context. "
+            f"Run `/shipkit-project-context` to (re)generate.")
+
+
+def get_strategic_digest(shipkit_dir: Path) -> str | None:
+    """Inject a lean slice of goals/strategic.json — the always-on definition of done.
+
+    Stage + stageImplications (focus/skip/qualityBar) + gates (name/status/criteria).
+    NOT the full 15 KB file (criteria objects, rubrics) — those stay on disk to Read.
+    Size-capped per the context-import policy.
+    """
+    strategic_file = shipkit_dir / 'goals' / 'strategic.json'
+    if not strategic_file.exists():
+        return None
+    try:
+        data = json.loads(strategic_file.read_text(encoding='utf-8'))
+    except Exception:
+        return None
+
+    age = format_age(get_file_age_days(strategic_file))
+    out = [f"## Stage & Gates — definition of done (age: {age})", '']
+
+    stage = data.get('stage', {})
+    if isinstance(stage, dict) and stage:
+        cur = stage.get('current', '?')
+        tgt = stage.get('target', '?')
+        out.append(f"**Stage:** {cur} -> {tgt}")
+
+    impl = data.get('stageImplications', {})
+    if isinstance(impl, dict):
+        qbar = impl.get('qualityBar')
+        if qbar:
+            out.append(f"**Quality bar:** {qbar}")
+        focus = impl.get('focus')
+        if isinstance(focus, list) and focus:
+            out.append(f"**Focus this stage:** {', '.join(focus)}")
+        skip = impl.get('skip')
+        if isinstance(skip, list) and skip:
+            out.append(f"**Out of scope this stage:** {', '.join(skip)}")
+    out.append('')
+
+    gates = data.get('gates', [])
+    if isinstance(gates, list) and gates:
+        out.append("**Gates (criteria that must pass):**")
+        for g in gates:
+            if not isinstance(g, dict):
+                continue
+            name = g.get('name', g.get('id', 'gate'))
+            status = g.get('status', '?')
+            crit = g.get('criteria', [])
+            crit_str = ', '.join(crit) if isinstance(crit, list) else ''
+            line = f"- {name} [{status}]"
+            if crit_str:
+                line += f" — {crit_str}"
+            out.append(line)
+        out.append('')
+
+    out.append("*Full criteria/rubrics on disk — `Read .shipkit/goals/strategic.json` for thresholds.*")
+    block = '\n'.join(out)
+    if len(block) > MAX_DIGEST_CHARS:
+        block = (block[:MAX_DIGEST_CHARS].rstrip() +
+                 "\n... (truncated — Read `.shipkit/goals/strategic.json` for the rest)")
+    return block
+
+
+def get_codebase_digest(shipkit_dir: Path) -> str | None:
+    """Inject a lean navigation digest from codebase-index.json — kills default-to-grep.
+
+    concepts (concept -> files) + entryPoints + skip, size-capped. On a large index,
+    inject top-N concepts + a pointer to the full on-disk file (never the whole thing).
+    """
+    index_file = shipkit_dir / 'codebase-index.json'
+    if not index_file.exists():
+        return None
+    try:
+        data = json.loads(index_file.read_text(encoding='utf-8'))
+    except Exception:
+        return None
+
+    age = format_age(get_file_age_days(index_file))
+    out = [f"## Codebase Map (index age: {age} — re-run /shipkit-codebase-index if stale)", '']
+
+    entry = data.get('entryPoints', {})
+    if isinstance(entry, dict) and entry:
+        pairs = [f"{k}: `{v}`" for k, v in entry.items() if isinstance(v, str)]
+        if pairs:
+            out.append("**Entry points:** " + ', '.join(pairs))
+            out.append('')
+
+    pointer = "*Full index on disk — `Read .shipkit/codebase-index.json` for per-file detail.*"
+
+    concepts = data.get('concepts', {})
+    concept_lines = []
+    if isinstance(concepts, dict):
+        for name, files in concepts.items():
+            if isinstance(files, list):
+                files_str = ', '.join(f"`{f}`" for f in files)
+            else:
+                files_str = f"`{files}`"
+            concept_lines.append(f"- **{name}:** {files_str}")
+
+    skip = data.get('skip', [])
+    skip_line = ''
+    if isinstance(skip, list) and skip:
+        skip_line = "**Skip (don't read):** " + ', '.join(f"`{s}`" for s in skip)
+
+    # Budget concept lines against the size cap, reserving room for skip + pointer,
+    # so a large index degrades to top-N concepts + pointer rather than dumping all.
+    reserve = len(skip_line) + len(pointer) + 80
+    budget = MAX_DIGEST_CHARS - len('\n'.join(out)) - reserve
+    kept = []
+    used = 0
+    for line in concept_lines:
+        if kept and used + len(line) + 1 > budget:
+            break
+        kept.append(line)
+        used += len(line) + 1
+    omitted = len(concept_lines) - len(kept)
+
+    if kept:
+        out.append("**Concepts -> files:**")
+        out.extend(kept)
+        if omitted > 0:
+            out.append(f"- ... {omitted} more concept(s) — Read the full index for the rest.")
+        out.append('')
+    if skip_line:
+        out.append(skip_line)
+        out.append('')
+    out.append(pointer)
+    return '\n'.join(out)
+
+
 def main():
     print(f"[shipkit:{HOOK_NAME}] running", file=sys.stderr)
     # Parse hook input
@@ -207,6 +360,24 @@ def main():
     progress = get_progress_summary(project_root)
     if progress:
         lines.append(progress)
+        lines.append('')
+
+    # ── Missing `@`-import warning (hook-warn guard) ──
+    import_warning = get_missing_import_warning(shipkit_dir)
+    if import_warning:
+        lines.append(import_warning)
+        lines.append('')
+
+    # ── Stage & gates: lean always-on "definition of done" ──
+    strategic = get_strategic_digest(shipkit_dir)
+    if strategic:
+        lines.append(strategic)
+        lines.append('')
+
+    # ── Codebase navigation map: lean digest (stops default-to-grep) ──
+    codebase = get_codebase_digest(shipkit_dir)
+    if codebase:
+        lines.append(codebase)
         lines.append('')
 
     # ── Available context files ──

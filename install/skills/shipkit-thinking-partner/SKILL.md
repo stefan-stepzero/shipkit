@@ -3,7 +3,7 @@ name: shipkit-thinking-partner
 description: "Use when user needs to think through decisions, explore trade-offs, or challenge assumptions. Triggers: 'think with me', 'help me decide', 'what am I missing?', 'devil's advocate', 'pre-mortem'."
 argument-hint: "<decision or topic to think through>"
 model: opus
-allowed-tools: Read, Glob, Grep, AskUserQuestion
+allowed-tools: Read, Glob, Grep, AskUserQuestion, Skill
 disallowed-tools: Write, Edit, Bash, Agent, Task
 effort: medium
 ---
@@ -28,6 +28,14 @@ effort: medium
 - "I'm torn between..."
 - "What are the trade-offs?"
 - "Challenge my thinking"
+
+**Adversarial-mode triggers** (route to the autonomous debate, not the interactive flow):
+- "Debate this"
+- "Stress test this decision"
+- "Adversarial analysis"
+- "Argue for and against"
+- "Resource tradeoff"
+- "What would [time / cost / scope / UX / risk] say about this?"
 
 **Workflow position**:
 - Before `/shipkit-spec` (clarify what to build)
@@ -66,7 +74,34 @@ If files don't exist, skip silently. The discussion can proceed without them.
 
 ---
 
-### Step 2: Scope the Discussion
+### Step 2: Detect Mode — Interactive or Adversarial
+
+**After reading context, before scoping, decide which mode this is.**
+
+| Mode | When | Flow |
+|------|------|------|
+| **Adversarial** | The request matches an adversarial-mode trigger ("debate this", "stress test", "adversarial", "argue for and against", "resource tradeoff", "what would [resource] say"), OR the user has a concrete decision with discrete options and wants to see genuine tension between competing resources. | Skip interactive scoping. Go to **Adversarial Flow** below. |
+| **Interactive** (default) | Anything else — exploratory thinking, "help me think through", open-ended decisions, when the user wants to be in the loop. | Continue to Step 2-Interactive (Scope the Discussion). |
+
+If it's ambiguous, ask the user once which they want: a back-and-forth discussion (interactive) or an autonomous advocate debate they watch (adversarial).
+
+---
+
+#### Adversarial Flow (autonomous resource debate)
+
+When adversarial mode is selected, **read `references/adversarial-mode.md` and follow it.** In brief:
+
+1. **Confirm inputs** (the only user interaction) via `AskUserQuestion`: the decision, the options (A/B/C…), and an optional 3-5 advocate selection override. Propose advocates from `references/resource-advocates.md` (always include a pair of natural enemies). Tell the user the rough token cost (~10-15k) and that it then runs autonomously.
+2. **Build a compact decision-context payload** (decision + options + key constraints).
+3. **Run 3 rounds** — opening, rebuttal, final — dispatching `/shipkit-resource-advocate "<resource-id>" "<decision-context>" round:<round> [positions:…] [rebuttals:…]` via the **Skill tool**, once per advocate per round. Summarize prior rounds when forwarding; never paste full transcripts. No user input during the debate.
+4. **Synthesize** all five components: Tension Map, Decision Matrix (weights derived from the debate), Consensus Points, Non-Negotiables, Recommended Exploration. Do not declare a winner.
+5. **Persistence handoff** — same as interactive (Step 5c). No files are written.
+
+Then skip Steps 2-Interactive through 5 below — `references/adversarial-mode.md` carries the adversarial flow to completion.
+
+---
+
+### Step 2-Interactive: Scope the Discussion
 
 **Ask the user to define the discussion scope using AskUserQuestion.**
 
@@ -160,7 +195,7 @@ When you detect a potential blind spot:
 
 ### Step 5: Check Exit Criteria and Conclude
 
-**Periodically check the exit criteria from Step 2.**
+**Periodically check the exit criteria from Step 2-Interactive.**
 
 When criteria are substantially met (or the discussion has naturally reached a conclusion):
 
@@ -198,10 +233,12 @@ Ask: "Would you like to explore any of these further, or shall we move to captur
 ## Constraints
 
 ### Tool Restrictions (Non-Negotiable)
-- **Allowed**: `Read`, `Glob`, `Grep`, `AskUserQuestion`
-- **Forbidden**: `Write`, `Edit`, `Bash`, `NotebookEdit`
+- **Allowed**: `Read`, `Glob`, `Grep`, `AskUserQuestion`, `Skill`
+- **Forbidden**: `Write`, `Edit`, `Bash`, `NotebookEdit`, `Agent`, `Task`
 - Reading project files for context is encouraged
 - Writing files is deliberately prevented — this forces genuine discussion
+- `Skill` is allowed **only** so adversarial mode can dispatch `/shipkit-resource-advocate` advocates. The skill never writes files, in either mode.
+- The skill runs **inline** (no `context: fork`) by design — this preserves `AskUserQuestion` for interactive scoping and adversarial setup. Advocates are dispatched via `Skill`, not `Agent` (which is forbidden and unavailable to forks).
 
 ### Behavioral Constraints
 - Never provide a single "right answer" — present trade-offs and let the user decide
@@ -282,7 +319,9 @@ If the user doesn't want to persist now, that's fine — the conversation histor
 - **Consequence Mapping** — `references/frameworks/consequence-mapping.md`
 - **Devil's Advocate** — `references/frameworks/devils-advocate.md`
 - **Option Evaluation Rubric** — `references/frameworks/option-evaluation-rubric.md`
-- **Discussion Styles** — `references/discussion-styles.md`
+- **Discussion Styles** — `references/discussion-styles.md` (includes Adversarial as a 4th style)
+- **Adversarial Mode** — `references/adversarial-mode.md` (debate orchestration + synthesis template)
+- **Resource Advocates** — `references/resource-advocates.md` (the pool of 8 advocates)
 
 ---
 

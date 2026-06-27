@@ -1,6 +1,6 @@
 # Discussion Styles
 
-Three conversation modes for the thinking partner. Offer these at the start of each discussion and let the user choose.
+Four conversation modes for the thinking partner. The first three are **interactive** (user in the loop every step). The fourth, **Adversarial**, is **autonomous** — a panel of resource advocates debates while the user watches. Offer the interactive three at the start of an interactive discussion; Adversarial is entered via its own triggers (see `adversarial-mode.md`).
 
 ---
 
@@ -64,6 +64,27 @@ Three conversation modes for the thinking partner. Offer these at the start of e
 5. Conclude with clear decision or next steps
 
 **When to suggest:** User says "run me through...", "let's analyze this properly", or the problem clearly maps to a specific framework.
+
+---
+
+## Adversarial Mode (autonomous)
+
+**Best for:** A concrete decision with discrete options where you need to *see* the genuine tension between competing resources (time, cost, scope, UX, tech-debt, risk, scale, simplicity) — not a balanced summary that smooths the conflict away. Decisions you keep going in circles on because every option sacrifices something real.
+
+**How it works:**
+- Fundamentally different from the other three: **no user input during the analysis.**
+- The thinking-partner convenes 3-5 single-minded **resource advocates** and runs a 3-round debate (opening → rebuttal → final) autonomously, dispatching each advocate as its own forked agent.
+- Each advocate pushes hard for ONE resource and attacks its natural enemies — the clash surfaces tradeoffs a single balanced view hides.
+- You confirm the decision, options, and advocate selection up front, then watch; the output is a **tension map + decision matrix + non-negotiables**, not a back-and-forth.
+
+**Example flow:**
+1. You: "Stress test this: rebuild the billing service now, or patch and defer?"
+2. Claude proposes advocates (time, scope, tech-debt, risk), you confirm.
+3. Advocates debate 3 rounds with no further input from you.
+4. Claude synthesizes the tension map, weighted decision matrix, consensus points, each advocate's non-negotiable, and open questions.
+5. You decide what to sacrifice — the synthesis makes the tradeoff unavoidable.
+
+**When to suggest:** User says "debate this", "stress test this decision", "adversarial analysis", "argue for and against", "resource tradeoff", or "what would [resource] say?" — or has a concrete options-on-the-table decision and wants tension surfaced, not facilitated. Full orchestration lives in `adversarial-mode.md`.
 
 ---
 

@@ -2,29 +2,30 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**<!-- sync:skill_count -->38<!-- /sync:skill_count --> skills** organized for streamlined workflow:
-<!-- sync:readme_summary -->- **Vision & Discovery** (11) - why-project, product-discovery, project-context, ...
-- **Spec & Planning** (5) - spec-roadmap, spec, feedback-bug, ...
+**<!-- sync:skill_count -->40<!-- /sync:skill_count --> skills** organized for streamlined workflow:
+<!-- sync:readme_summary -->- **Vision & Discovery** (12) - why-project, product-discovery, project-context, ...
+- **Spec & Planning** (6) - spec-roadmap, spec, feedback-bug, ...
 - **Knowledge & Memory** (2) - claude-md, work-memory
 - **Orchestration** (3) - orch-direction, orch-planning, orch-shipping
 - **Execution** (1) - test-cases
 - **Quality & Communication** (12) - review-direction, review-planning, review-shipping, ...
 - **System** (3) - update, get-skills, get-mcps<!-- /sync:readme_summary -->
 
-Plus **<!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
+Plus **<!-- sync:agent_count -->12<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
 
 ---
 
 ## What's Inside
 
-### Skills (<!-- sync:skill_count -->38<!-- /sync:skill_count --> total)
+### Skills (<!-- sync:skill_count -->40<!-- /sync:skill_count --> total)
 
 All skills use the `shipkit-` prefix for clarity.
 
-**Core Workflow (4 skills):**
+**Core Workflow (5 skills):**
 - `shipkit-master` - Meta skill for workflow orchestration
 - `shipkit-project-context` - Codebase scanning, stack detection
 - `shipkit-codebase-index` - Semantic codebase indexing
+- `shipkit-architecture-map` - Code-derived current-state architecture map (apps, datastores, contracts, integrations)
 - `shipkit-claude-md` - CLAUDE.md management
 
 **Orchestration (3 skills):**
@@ -32,7 +33,7 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-orch-planning` - Planning loop — definitions/specs + alignment review
 - `shipkit-orch-shipping` - Shipping loop — implementation + verification + release gate
 
-**Discovery & Planning (14 skills):**
+**Discovery & Planning (15 skills):**
 - `shipkit-why-project` - Strategic vision definition
 - `shipkit-product-discovery` - Personas, journeys, user needs
 - `shipkit-product-definition` - Product blueprint (features, patterns, differentiators)
@@ -46,7 +47,8 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-feedback-bug` - Process feedback into investigated bug specs (5 Whys root cause)
 - `shipkit-plan` - Implementation planning
 - `shipkit-metrics` - Capture metric values for goal evaluation
-- `shipkit-thinking-partner` - Think through decisions with cognitive frameworks
+- `shipkit-thinking-partner` - Think through decisions with cognitive frameworks (interactive + adversarial debate modes)
+- `shipkit-resource-advocate` - Infrastructure: single-resource advocate dispatched by thinking-partner's adversarial debate (not user-invoked)
 
 **Execution (1 skill):**
 - `shipkit-test-cases` - Generate code-anchored test case specs
@@ -72,7 +74,7 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-get-mcps` - Discover and install MCP servers
 
 
-### Agent Personas (<!-- sync:agent_count -->11<!-- /sync:agent_count -->)
+### Agent Personas (<!-- sync:agent_count -->12<!-- /sync:agent_count -->)
 
 <!-- sync:readme_agent_table -->**Orchestrators:**
 | Agent | Used For |
@@ -89,6 +91,7 @@ All skills use the `shipkit-` prefix for clarity.
 | `shipkit-product-owner-agent` | Product manager — definitions, specs, feedback, product goals |
 | `shipkit-architect-agent` | Engineering manager — architecture, plans, engineering goals |
 | `shipkit-thinking-partner-agent` | Cognitive discussion & thinking partner |
+| `shipkit-resource-advocate-agent` | Single-resource debate advocate — champions one resource in the adversarial debate |
 
 **Reviewers:**
 | Agent | Used For |
@@ -128,8 +131,8 @@ python install.py --from-github
 </details>
 
 The installer will:
-- Install all <!-- sync:skill_count -->38<!-- /sync:skill_count --> skills
-- Set up <!-- sync:agent_count -->11<!-- /sync:agent_count --> agent personas
+- Install all <!-- sync:skill_count -->40<!-- /sync:skill_count --> skills
+- Set up <!-- sync:agent_count -->12<!-- /sync:agent_count --> agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
 
@@ -143,8 +146,8 @@ your-project/
 │   ├── settings.json            # Permissions + hooks
 │   ├── rules/
 │   │   └── shipkit.md           # Framework rules (managed by /shipkit-update)
-│   ├── skills/                  # 38 skill definitions
-│   ├── agents/                  # 11 agent personas
+│   ├── skills/                  # 40 skill definitions
+│   ├── agents/                  # 12 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
     ├── specs/                   # Feature specifications
@@ -221,8 +224,8 @@ shipkit/
 │   └── src/                         # Commands, prompts, utilities
 │
 ├── install/                         # Everything that gets installed
-│   ├── skills/                      # <!-- sync:skill_count -->38<!-- /sync:skill_count --> shipkit-* skill definitions
-│   ├── agents/                      # <!-- sync:agent_count -->11<!-- /sync:agent_count --> shipkit-*-agent personas
+│   ├── skills/                      # <!-- sync:skill_count -->40<!-- /sync:skill_count --> shipkit-* skill definitions
+│   ├── agents/                      # <!-- sync:agent_count -->12<!-- /sync:agent_count --> shipkit-*-agent personas
 │   ├── rules/
 │   │   └── shipkit.md               # Framework rules (auto-loaded)
 │   ├── profiles/
@@ -255,7 +258,7 @@ shipkit/
 ## Key Features
 
 ### Streamlined Workflow
-- <!-- sync:skill_count -->38<!-- /sync:skill_count --> focused skills
+- <!-- sync:skill_count -->40<!-- /sync:skill_count --> focused skills
 - All skills use `shipkit-` prefix for clarity
 - Context stored in single `.shipkit/` folder
 - No complex workspace structure

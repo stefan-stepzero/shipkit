@@ -82,6 +82,7 @@ Write `.shipkit/reviews/planning-assessment.json` with structured findings.
 ```
 The `blocking` array drives the blocker count. `futurePhase` and `general` are informational only.
 
+<!-- SECTION:after-completion -->
 ## After Completion
 
 Assessment written to `.shipkit/reviews/planning-assessment.json`.
@@ -91,3 +92,4 @@ Assessment written to `.shipkit/reviews/planning-assessment.json`.
 - If **pass**: proceeds to the next loop phase (or reports completion to shipkit-orch-master-agent).
 
 This skill is normally invoked by the orchestrator, not called directly by the user.
+<!-- /SECTION:after-completion -->

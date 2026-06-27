@@ -445,6 +445,20 @@ This skill follows the **Shipkit JSON artifact convention**. See `references/out
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+Scale readiness audit written to `.shipkit/scale-readiness.json`.
+
+**Next:**
+- If **critical blockers** present: fix them, then re-run `/shipkit-scale-ready` to confirm they clear.
+- If **scale-ready or warnings only**: run `/shipkit-preflight` (and then `/shipkit-review-shipping`) as the pre-ship gate before each deploy — preflight reads `.shipkit/scale-readiness.json` to skip re-checking what's already hardened.
+
+Scale-ready is a periodic system-wide hardening audit; preflight and review-shipping are the per-release gates. Re-run scale-ready when entering a new growth tier (more traction, enterprise customers) or after major architectural change.
+<!-- /SECTION:after-completion -->
+
+---
+
 ## Success Criteria
 
 - [ ] Preflight status verified (passed)

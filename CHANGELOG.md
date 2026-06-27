@@ -10,6 +10,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.10.0] - 2026-06-27
+
+Two new skills and a leaner architecture log. Adds **`shipkit-architecture-map`** — a refreshable current-state map of the system (applications, datastores, contracts, integrations), distinct from the architecture *decisions* log — and **`shipkit-resource-advocate`**, powering a new **adversarial debate mode** in `shipkit-thinking-partner`. Reworks the architecture decision log so it stays lean in context. **40 skills / 12 agents.**
+
+### Added
+- **`shipkit-architecture-map` skill** — code-derived, refreshable map of the system's current architecture (`applications`/`datastores`/`contracts`/`integrations` with stable `APP-`/`DS-`/`CON-`/`INT-` IDs) written to `.shipkit/architecture-map.json`. Answers "what does the system look like now?" alongside `architecture.json`'s "what did we decide and why?". Standalone/user-invocable; 14-day staleness, replace-on-rerun. Leaves the decisions log untouched.
+- **`shipkit-resource-advocate` (infrastructure skill) + `shipkit-resource-advocate-agent`** — power an autonomous **adversarial mode** in `shipkit-thinking-partner`: 3–5 resource advocates (from a pool of 8 — time/cost/scope/ux/tech-debt/risk/scale/simplicity) debate a decision over 3 rounds, then synthesize a tension map + decision matrix. No user input during the debate.
+- **Opt-in architecture-log migration** (`install/shared/scripts/python/migrate-architecture-log.py`) — splits an existing fat `architecture.json` into lean + archive and stubs superseded ADRs. Dry-run by default; `--apply` to write.
+
+### Changed
+- **Lean architecture decision log.** `architecture.json` is now a lean active-decisions index (still `@`-imported); full ADR history (rationale/alternatives/supersession) moves to `.shipkit/architecture-archive.json` (read on demand, **not** imported). Superseded ADRs collapse to one-line stubs; active ADRs keep a one-line rationale. In-context cost now scales with *active* decisions, not total. Every writer (`engineering-definition`, `design-system`, `architect-agent`) dual-writes.
+- **Session-start context hygiene.** The session-start hook now injects a lean "Stage & Gates — definition of done" digest (from `goals/strategic.json`), a size-capped codebase-index digest, and a warning when an expected `@`-imported artefact is missing. The rules gained an activity→artefact read-timing table.
+
+### Fixed
+- **Corrected the false "index injected at session start" claim** in the rules — it now is injected, and the claim is accurate.
+- **Fixed a stale `goals.json` reference** in the subagent-context hook (now points at `goals/strategic.json`).
+- **Rebuilt the overview's Agent×Skill matrix** — removed a phantom "Implementer" agent and added the missing skill rows; the matrix now reflects the real 40-skill / 12-agent taxonomy.
+- **Handoff hygiene** — `shipkit-scale-ready` gained a next-step handoff (→ preflight / review-shipping); three skills got their `after-completion` section markers.
+
+---
+
 ## [2.9.0] - 2026-06-15
 
 Adds **`shipkit-codebase-audit`** (38th skill) — a portable dead-code & wiring audit whose deliverable is "this codebase has nothing stale, orphaned, or unwired." It works in any repo, including ones with no dead-code tooling installed, and reasons past what linters can't see.

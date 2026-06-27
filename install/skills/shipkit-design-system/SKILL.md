@@ -191,7 +191,7 @@ Write these files:
 2. **`.shipkit/design-system/PRINCIPLES.md`** — 3-5 verb-based principles
 3. **`.shipkit/design-system/MATURITY.md`** — Tier 0 declaration with checklists
 4. **`.shipkit/design-system/tokens/tokens.css`** (or Tailwind config extension)
-5. **`.shipkit/architecture.json`** — add/update `designSystem` section:
+5. **`.shipkit/architecture.json`** — add/update **only** the `designSystem` section:
 
 ```json
 {
@@ -205,6 +205,12 @@ Write these files:
   }
 }
 ```
+
+> `architecture.json` is the **LEAN** active-decisions index (`@`-imported). The `designSystem`
+> block is a summary and correctly belongs in the lean file. Do a **targeted merge** of just this
+> section — never rewrite or clobber the `decisions[]` array, and never expand ADR entries with
+> full `rationale`/`alternatives` (those belong in `.shipkit/architecture-archive.json`). See
+> `shipkit-engineering-definition/references/architecture-log-schema.md` for the convention.
 
 For MATURITY.md format, read `references/maturity-tiers.md`.
 

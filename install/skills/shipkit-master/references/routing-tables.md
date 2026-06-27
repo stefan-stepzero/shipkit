@@ -21,6 +21,7 @@ These tables serve as **fallback** for explicit keyword-matched requests. The lo
 |-----------|----------|--------------|
 | "Scan project", "Generate stack", "What's my tech stack?" | `/shipkit-project-context` | package.json, .env.example |
 | "Index codebase", "Map project", "Create index", "Update index" | `/shipkit-codebase-index` | None (generates from git) |
+| "Map architecture", "Architecture map", "What does the system look like?", "Refresh architecture map" | `/shipkit-architecture-map` | codebase-index, engineering-definition (hints; derives from code) |
 | "Log progress", "Session summary", "What did we do?", "Checkpoint", "Save state", "End session" | `/shipkit-work-memory` | .shipkit/progress.json |
 | "Help", "What skills exist?", "What can you do?" | List all shipkit skills | None |
 | "Find skills", "Get skills", "Is there a skill for?", "Install skill" | `/shipkit-get-skills` | None |
@@ -37,6 +38,7 @@ These tables serve as **fallback** for explicit keyword-matched requests. The lo
 | "Plan this", "How to implement?", "Create plan" | `/shipkit-plan` | specs/{todo,active}/, stack.json, architecture.json |
 | "Help me think through", "Think with me", "Let's discuss", "What am I missing?" | `/shipkit-thinking-partner` | .shipkit/why.json, architecture.json |
 | "Devil's advocate", "Pre-mortem", "Trade-offs", "I'm torn between" | `/shipkit-thinking-partner` | .shipkit/why.json, architecture.json |
+| "Debate this", "Stress test this decision", "Adversarial analysis", "Argue for and against", "Resource tradeoff", "What would [time/cost/scope/UX/risk] say?" | `/shipkit-thinking-partner` (adversarial mode) | .shipkit/why.json, architecture.json, stack.json |
 
 ## Knowledge Persistence
 

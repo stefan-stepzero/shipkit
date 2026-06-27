@@ -42,6 +42,7 @@
         {"name": "shipkit-product-discovery", "desc": "Create personas & user journeys"},
         {"name": "shipkit-project-context", "desc": "Scan codebase, detect stack"},
         {"name": "shipkit-codebase-index", "desc": "Index codebase for navigation"},
+        {"name": "shipkit-architecture-map", "desc": "Maintain a code-derived current-state architecture map (apps, datastores, contracts, integrations)"},
         {"name": "shipkit-product-definition", "desc": "Define what to build (features, patterns, differentiators)"},
         {"name": "shipkit-engineering-definition", "desc": "Design technical approach (mechanisms, components, stack)"},
         {"name": "shipkit-design-system", "desc": "Scaffold tiered design system — principles, tokens, aesthetic direction from project context"},
@@ -55,7 +56,8 @@
         {"name": "shipkit-spec", "desc": "Create feature specifications"},
         {"name": "shipkit-feedback-bug", "desc": "Process feedback into investigated bug specs"},
         {"name": "shipkit-plan", "desc": "Plan implementation steps"},
-        {"name": "shipkit-thinking-partner", "desc": "Think through decisions with cognitive frameworks"}
+        {"name": "shipkit-thinking-partner", "desc": "Think through decisions with cognitive frameworks (interactive + adversarial debate modes)"},
+        {"name": "shipkit-resource-advocate", "desc": "Infrastructure — single-resource advocate dispatched by thinking-partner's adversarial debate (not user-invoked)"}
       ],
       "Knowledge & Memory": [
         {"name": "shipkit-claude-md", "desc": "Update CLAUDE.md with learnings"},
@@ -104,7 +106,8 @@
       {"name": "shipkit-product-owner-agent", "desc": "Product manager — definitions, specs, feedback, product goals"},
       {"name": "shipkit-architect-agent", "desc": "Engineering manager — architecture, plans, engineering goals"},
 
-      {"name": "shipkit-thinking-partner-agent", "desc": "Cognitive discussion & thinking partner"}
+      {"name": "shipkit-thinking-partner-agent", "desc": "Cognitive discussion & thinking partner"},
+      {"name": "shipkit-resource-advocate-agent", "desc": "Single-resource debate advocate — champions one resource in the adversarial debate"}
     ],
     "reviewers": [
       {"name": "shipkit-reviewer-direction-agent", "desc": "Direction judgment — strategic coherence assessment"},

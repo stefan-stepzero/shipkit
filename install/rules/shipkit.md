@@ -87,9 +87,13 @@ All project context lives in `.shipkit/`:
 | `product-discovery.json` | User needs, personas, journeys |
 | `product-definition.json` | Product blueprint (features, patterns, differentiators) |
 | `engineering-definition.json` | Engineering blueprint (mechanisms, components) |
-| `goals.json` | Success criteria & stage gates |
+| `goals/strategic.json` | Stage, stage implications & gates (S-* criteria) |
+| `goals/product.json` | User-outcome success criteria (P-*) |
+| `goals/engineering.json` | Technical-performance criteria (E-*) |
 | `stack.json` | Tech choices (auto-scanned) |
-| `architecture.json` | Decisions log (append-only) |
+| `architecture.json` | Decisions log — *why* (**lean** active-decisions index: capped active ADRs + one-line superseded stubs; `@`-imported) |
+| `architecture-archive.json` | Full ADR history — complete rationale, alternatives, supersession chains (append-only; **not** `@`-imported; read on demand) |
+| `architecture-map.json` | Current-state map — *what-is* (apps, datastores, contracts, integrations; code-derived, refreshable) |
 | `progress.json` | Session continuity |
 | `codebase-index.json` | Navigation index (concept → files) |
 | `specs/active/*.json` | Feature specs |
@@ -97,18 +101,32 @@ All project context lives in `.shipkit/`:
 
 **Always check context before making architectural decisions.**
 
+### When to read what (read-on-demand triggers)
+
+The lean slices below — current **stage + gates** and the **codebase map** — are injected at session start (see Codebase Navigation). The large artefacts are *referenced*: know they exist and read them at the moment of need.
+
+| Before you... | Read |
+|---|---|
+| implement/modify a feature | its `specs/active/*.json` + `engineering-definition.json` (mechanisms + data contracts — the frontend→backend gap lives here) |
+| decide what to build next | `spec-roadmap.json` |
+| make a product / UX / scope call | `product-definition.json` (+ `product-discovery.json` for personas/journeys) |
+| need an ADR's full rationale, rejected alternatives, or the chain behind a superseded stub | `architecture-archive.json` (the lean `architecture.json` carries only the capped entry / stub) |
+| judge whether something is "done" | `goals/strategic.json` gates (lean slice injected at session start) + the spec's acceptance criteria |
+| navigate the codebase | the injected Codebase Map digest; `Read .shipkit/codebase-index.json` for per-file detail |
+
 ---
 
 ## Codebase Navigation
 
-If `.shipkit/codebase-index.json` exists:
-1. Read it FIRST before globbing or exploring files
-2. Use `concepts` to find feature-related files
-3. Use `entryPoints` to find starting points
-4. Check `skip` to avoid wasting context on irrelevant files
-5. Don't glob or explore if the index answers the question
+When `.shipkit/codebase-index.json` exists, the session-start hook injects a **lean Codebase Map digest** (concepts → files, entry points, skip globs, with the index's age). Use it before reaching for glob/grep:
 
-**The index is injected at session start.** Use the concept mappings shown there for quick navigation.
+1. Use the injected `concepts` map to find feature-related files
+2. Use `entryPoints` to find starting points
+3. Check `skip` to avoid wasting context on irrelevant files
+4. Don't glob or explore if the digest answers the question
+5. `Read .shipkit/codebase-index.json` for per-file detail the digest omits (on a large repo the digest is the top concepts + a pointer)
+
+**The Codebase Map digest is injected at session start** (size-capped — not the full file). If the shown index age is stale, re-run `/shipkit-codebase-index`.
 
 ---
 
@@ -121,6 +139,7 @@ If `.shipkit/codebase-index.json` exists:
 | Create personas & journeys | `/shipkit-product-discovery` |
 | Scan codebase, detect stack | `/shipkit-project-context` |
 | Index codebase for navigation | `/shipkit-codebase-index` |
+| Map current-state architecture (apps, datastores, contracts, integrations) | `/shipkit-architecture-map` |
 | Define project stage & constraints | `/shipkit-stage` |
 
 ### Solution Design
@@ -233,3 +252,18 @@ Sessions are stored locally (`~/.claude/projects/<project>/`) with ~30-day reten
 
 ### Enterprise & managed settings
 Shipkit targets solo / MVP development, not enterprise rollout. If your organisation enforces managed settings or Zero-Data-Retention, some Claude Code features (e.g. dynamic workflows) may be disabled — Shipkit's core is local skills and keeps working regardless. Broader enterprise / ZDR support is out of scope for now.
+
+### Parallel sessions & the integration bench (opt-in)
+**Skip this entire section unless you run multiple Claude Code sessions concurrently across git worktrees of one repo.** Single-session work: your checkout is your normal workspace — commit, branch, and merge in it freely; none of the below applies.
+
+When you *do* fan out into parallel worktree sessions, designate the **primary checkout as the integration bench**: the one tree where branches get merged and integrated, never worked on directly by a spawned session. A session must first determine whether it is the bench or a linked worktree before running any git command:
+
+```
+git rev-parse --git-common-dir    # the shared .git
+git rev-parse --git-dir           # this tree's git dir
+```
+If the two differ (or `git worktree list` shows this directory as a **linked** entry), you are a worktree session, not the bench.
+
+- **Worktree sessions** keep all git work inside their own worktree and branch — commit, rebase, push your own branch freely. **Do not** run git commands that target the bench (no `checkout`/`switch`, `merge`, `reset`, `commit`, branch create/delete, or stash against the primary tree). Concurrent git operations on a shared tree corrupt each other's state.
+- **The bench session** (or you, manually) owns integration: pulling and merging the worktree branches together. Spawned sessions hand off finished branches; they don't integrate.
+- If you can't tell which you are, **stop and ask** rather than running git against an unknown tree.

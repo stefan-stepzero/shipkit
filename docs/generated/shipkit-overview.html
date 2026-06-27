@@ -621,11 +621,11 @@
             <h1>&#x1F680; Shipkit <span style="font-size: 0.5em; opacity: 0.8;">{{SHIPKIT_VERSION}}</span></h1>
             <div class="stats">
                 <div class="stat">
-                    <!-- sync:html_skill_count --><span class="stat-number">38</span><!-- /sync:html_skill_count -->
+                    <!-- sync:html_skill_count --><span class="stat-number">40</span><!-- /sync:html_skill_count -->
                     <span class="stat-label">Skills</span>
                 </div>
                 <div class="stat">
-                    <!-- sync:html_agent_count --><span class="stat-number">11</span><!-- /sync:html_agent_count -->
+                    <!-- sync:html_agent_count --><span class="stat-number">12</span><!-- /sync:html_agent_count -->
                     <span class="stat-label">Agents</span>
                 </div>
                 <div class="stat">
@@ -876,6 +876,11 @@
                             <td class="trigger">Index codebase for navigation</td>
                             <td><span class="skill">/shipkit-codebase-index</span></td>
                             <td class="creates">codebase-index.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Map current-state architecture</td>
+                            <td><span class="skill">/shipkit-architecture-map</span></td>
+                            <td class="creates">architecture-map.json</td>
                         </tr>
                         <tr>
                             <td class="trigger">Update CLAUDE.md with learnings</td>
@@ -1250,7 +1255,7 @@
                     </tr>
 
                     <!-- Specialist & Support -->
-                    <tr class="category-divider"><td colspan="7">Specialist &amp; Support (4 skills)</td></tr>
+                    <tr class="category-divider"><td colspan="7">Specialist &amp; Support (5 skills)</td></tr>
 
                     <tr>
                         <td class="skill-cell">shipkit-thinking-partner</td>
@@ -1259,7 +1264,16 @@
                         <td><span class="timing-pill trigger-human">human</span></td>
                         <td><span class="timing-pill mode-decision">decision-forcing</span></td>
                         <td></td>
-                        <td class="desc-cell">Structured analysis with cognitive frameworks (6 Hats, OODA). Discussion-only.</td>
+                        <td class="desc-cell">Structured analysis with cognitive frameworks. Interactive discussion or autonomous adversarial debate (resource advocates). Discussion-only.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-resource-advocate</td>
+                        <td class="phase-cell">&mdash;</td>
+                        <td><span class="timing-pill timing-demand">on-demand</span></td>
+                        <td><span class="timing-pill trigger-agent">agent</span></td>
+                        <td><span class="timing-pill mode-decision">decision-forcing</span></td>
+                        <td></td>
+                        <td class="desc-cell">Infrastructure. Single-resource advocate dispatched by thinking-partner's adversarial debate (one fork per advocate per round). Not user-invoked.</td>
                     </tr>
                     <tr>
                         <td class="skill-cell">shipkit-claude-md</td>
@@ -1326,7 +1340,7 @@
         <!-- AGENT x SKILL MATRIX TAB -->
         <div id="matrix" class="tab-content">
             <h2 class="section-header">Agent &times; Skill Matrix</h2>
-            <p style="color: #64748b; margin-bottom: 10px;">Which agents have access to which skills. 11 agents in 3 groups: Orchestrators, Producer Workers, Judgment Workers.</p>
+            <p style="color: #64748b; margin-bottom: 10px;">Which agents have access to which skills. 12 agents in 3 groups: Orchestrators, Producer Workers, Judgment Workers.</p>
 
             <div class="matrix-legend">
                 <div class="matrix-legend-item">
@@ -1361,8 +1375,8 @@
                             <th class="agent-header">Visionary</th>
                             <th class="agent-header">Product Owner</th>
                             <th class="agent-header">Architect</th>
-                            <th class="agent-header">Implementer</th>
                             <th class="agent-header">Thinking Partner</th>
+                            <th class="agent-header">Resource Advocate</th>
                             <!-- Judgment Workers (3) -->
                             <th class="agent-header" style="background: #7f1d1d;">Rev-Direction</th>
                             <th class="agent-header" style="background: #7f1d1d;">Rev-Planning</th>
@@ -1372,186 +1386,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Core Orchestration -->
-                        <tr><td class="category-row" colspan="14">Core Orchestration (27)</td></tr>
+                        <tr><td class="category-row" colspan="14">Mandatory (1)</td></tr>
                         <tr>
                             <th>shipkit-master</th>
                             <td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
-                            <td class="mark-auto">~</td>
+                            <td class="mark-human">&#x2713;</td>
                         </tr>
-                        <tr>
-                            <th>shipkit-orch-direction</th>
-                            <td class="mark-spawns">&#x25C6;</td><td class="mark-has">&#x25CF;</td><td></td><td></td>
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-auto">~</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-orch-planning</th>
-                            <td class="mark-spawns">&#x25C6;</td><td></td><td class="mark-has">&#x25CF;</td><td></td>
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-auto">~</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-orch-shipping</th>
-                            <td class="mark-spawns">&#x25C6;</td><td></td><td></td><td class="mark-has">&#x25CF;</td>
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-auto">~</td>
-                        </tr>
+                        <tr><td class="category-row" colspan="14">Vision &amp; Discovery (12)</td></tr>
                         <tr>
                             <th>shipkit-why-project</th>
-                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
                             <td class="mark-has">&#x25CF;</td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-product-discovery</th>
-                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
                             <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-                        <tr>
-                            <th>shipkit-product-definition</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-engineering-definition</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-stage</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td class="mark-has">&#x25CF;</td><td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-product-goals</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-engineering-goals</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-spec-roadmap</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-spec</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-feedback-bug</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-plan</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-test-cases</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td><td class="mark-has">&#x25CF;</td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-review-shipping</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-preflight</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-review-direction</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td class="mark-has">&#x25CF;</td><td></td><td></td>
-                            <td class="mark-auto">~</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-review-planning</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td></td><td class="mark-has">&#x25CF;</td><td></td>
-                            <td class="mark-auto">~</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-ux-audit</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-semantic-qa</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-qa-visual</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-scale-ready</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-                        <tr>
-                            <th>shipkit-prompt-audit</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
-                            <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
-                        </tr>
-
-                        <!-- Memory & Context -->
-                        <tr><td class="category-row" colspan="14">Memory &amp; Context (3)</td></tr>
                         <tr>
                             <th>shipkit-project-context</th>
                             <td></td><td></td><td></td><td></td>
@@ -1567,22 +1424,105 @@
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
-                            <th>shipkit-work-memory</th>
+                            <th>shipkit-architecture-map</th>
                             <td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-
-                        <!-- Specialist & Support -->
-                        <tr><td class="category-row" colspan="14">Specialist &amp; Support (4)</td></tr>
                         <tr>
-                            <th>shipkit-thinking-partner</th>
-                            <td></td><td></td><td></td><td></td>
-                            <td></td><td></td><td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <th>shipkit-product-definition</th>
+                            <td></td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
+                        <tr>
+                            <th>shipkit-engineering-definition</th>
+                            <td></td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-design-system</th>
+                            <td></td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-stage</th>
+                            <td></td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
+                            <td class="mark-has">&#x25CF;</td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-product-goals</th>
+                            <td></td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-engineering-goals</th>
+                            <td></td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-metrics</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr><td class="category-row" colspan="14">Spec &amp; Planning (6)</td></tr>
+                        <tr>
+                            <th>shipkit-spec-roadmap</th>
+                            <td></td><td></td><td class="mark-spawns">&#x25C6;</td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-spec</th>
+                            <td></td><td></td><td class="mark-spawns">&#x25C6;</td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-feedback-bug</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-plan</th>
+                            <td></td><td></td><td class="mark-spawns">&#x25C6;</td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-thinking-partner</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td class="mark-has">&#x25CF;</td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-resource-advocate</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-auto">~</td>
+                        </tr>
+                        <tr><td class="category-row" colspan="14">Knowledge &amp; Memory (2)</td></tr>
                         <tr>
                             <th>shipkit-claude-md</th>
                             <td></td><td></td><td></td><td></td>
@@ -1591,42 +1531,148 @@
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
-                            <th>shipkit-user-instructions</th>
+                            <th>shipkit-work-memory</th>
+                            <td class="mark-spawns">&#x25C6;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr><td class="category-row" colspan="14">Orchestration (3)</td></tr>
+                        <tr>
+                            <th>shipkit-orch-direction</th>
+                            <td class="mark-spawns">&#x25C6;</td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-orch-planning</th>
+                            <td class="mark-spawns">&#x25C6;</td><td></td><td class="mark-has">&#x25CF;</td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-orch-shipping</th>
+                            <td class="mark-spawns">&#x25C6;</td><td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr><td class="category-row" colspan="14">Execution (1)</td></tr>
+                        <tr>
+                            <th>shipkit-test-cases</th>
+                            <td></td><td></td><td class="mark-spawns">&#x25C6;</td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr><td class="category-row" colspan="14">Quality &amp; Communication (12)</td></tr>
+                        <tr>
+                            <th>shipkit-review-direction</th>
+                            <td></td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td class="mark-auto">~</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-review-planning</th>
+                            <td></td><td></td><td class="mark-spawns">&#x25C6;</td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td class="mark-has">&#x25CF;</td><td></td>
+                            <td class="mark-auto">~</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-review-shipping</th>
+                            <td></td><td></td><td></td><td class="mark-spawns">&#x25C6;</td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-preflight</th>
+                            <td></td><td></td><td></td><td class="mark-spawns">&#x25C6;</td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-scale-ready</th>
                             <td></td><td></td><td></td><td></td>
-                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-ux-audit</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-user-instructions</th>
+                            <td></td><td></td><td class="mark-spawns">&#x25C6;</td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-communications</th>
                             <td></td><td></td><td></td><td></td>
-                            <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-
-                        <!-- System Utilities -->
-                        <tr><td class="category-row" colspan="14">System Utilities (3)</td></tr>
+                        <tr>
+                            <th>shipkit-prompt-audit</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-codebase-audit</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-semantic-qa</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-spawns">&#x25C6;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr>
+                            <th>shipkit-qa-visual</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td class="mark-spawns">&#x25C6;</td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
+                        <tr><td class="category-row" colspan="14">System (3)</td></tr>
                         <tr>
                             <th>shipkit-update</th>
                             <td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
+                            <td class="mark-auto">~</td>
                         </tr>
                         <tr>
                             <th>shipkit-get-skills</th>
                             <td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
+                            <td class="mark-auto">~</td>
                         </tr>
                         <tr>
                             <th>shipkit-get-mcps</th>
                             <td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
-                            <td class="mark-human">&#x2713;</td>
+                            <td class="mark-auto">~</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1645,7 +1691,7 @@
                 <h4 style="color: #475569; margin: 16px 0 8px;">Agent Groups</h4>
                 <ul style="color: #64748b; font-size: 0.9em; line-height: 2;">
                     <li><strong>Orchestrators (4)</strong> &mdash; Orch-Master, Orch-Direction, Orch-Planning, Orch-Shipping &mdash; coordinate and dispatch, never produce artifacts directly</li>
-                    <li><strong>Producer Workers (5)</strong> &mdash; Visionary, Product Owner, Architect, Implementer, Thinking Partner &mdash; create artifacts</li>
+                    <li><strong>Producer Workers (5)</strong> &mdash; Visionary, Product Owner, Architect, Thinking Partner, Resource Advocate &mdash; create artifacts</li>
                     <li><strong>Judgment Workers (3)</strong> &mdash; Rev-Direction, Rev-Planning, Rev-Shipping &mdash; assess coherence and quality</li>
                 </ul>
             </div>
@@ -1780,7 +1826,7 @@
             </div>
 
             <div class="workflow-diagram" style="margin-top: 8px; border-left: 4px solid #8b5cf6;">
-                <div style="font-size: 0.8em; color: #7c3aed; font-weight: 600; margin-bottom: 8px;">SHIPPING LOOP (Orch-Shipping &rarr; Architect + Implementer + Rev-Shipping)</div>
+                <div style="font-size: 0.8em; color: #7c3aed; font-weight: 600; margin-bottom: 8px;">SHIPPING LOOP (Orch-Shipping &rarr; implementation via Agent Teams &rarr; Rev-Shipping + Preflight gate)</div>
                 <div class="workflow-steps">
                     <div class="workflow-step">
                         <div class="step-skill">/shipkit-plan</div>
@@ -1804,7 +1850,7 @@
                 </div>
             </div>
 
-            <h2 class="section-header" style="margin-top: 40px;">Agent Ownership (11 Agents)</h2>
+            <h2 class="section-header" style="margin-top: 40px;">Agent Ownership (12 Agents)</h2>
             <p style="color: #64748b; margin-bottom: 16px;">The master orchestrator dispatches 3 loop orchestrators. Each loop orchestrator dispatches producer workers and judgment workers.</p>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
@@ -1825,7 +1871,7 @@
                 </div>
                 <div style="background: #ede9fe; padding: 16px; border-radius: 12px; border-left: 4px solid #8b5cf6;">
                     <h4 style="color: #7c3aed; margin: 0 0 8px;">Orch-Shipping</h4>
-                    <p style="color: #475569; font-size: 0.85em; margin: 0;">Shipping loop &mdash; dispatches Architect + Implementer + Rev-Shipping</p>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">Shipping loop &mdash; dispatches Rev-Shipping + Preflight (implementation runs via Agent Teams)</p>
                     <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">shipkit-orch-shipping</p>
                 </div>
                 <div style="background: #f0f9ff; padding: 16px; border-radius: 12px; border-left: 4px solid #667eea;">
@@ -1844,9 +1890,9 @@
                     <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">5 skills incl. plan, engineering-goals, scale-ready</p>
                 </div>
                 <div style="background: #f0fdf4; padding: 16px; border-radius: 12px; border-left: 4px solid #16a34a;">
-                    <h4 style="color: #16a34a; margin: 0 0 8px;">Implementer</h4>
-                    <p style="color: #475569; font-size: 0.85em; margin: 0;">BUILD &mdash; test cases, team execution</p>
-                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">test-cases, team</p>
+                    <h4 style="color: #16a34a; margin: 0 0 8px;">Resource Advocate</h4>
+                    <p style="color: #475569; font-size: 0.85em; margin: 0;">ADVOCATE &mdash; champions one resource in the adversarial debate</p>
+                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">resource-advocate</p>
                 </div>
                 <div style="background: #fff7ed; padding: 16px; border-radius: 12px; border-left: 4px solid #ea580c;">
                     <h4 style="color: #ea580c; margin: 0 0 8px;">Thinking Partner</h4>

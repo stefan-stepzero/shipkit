@@ -56,9 +56,9 @@ After reading prerequisites, create tasks:
 - `TaskCreate`: "Define 2-6 components mapped to mechanisms"
 - `TaskCreate`: "Capture cross-cutting design decisions"
 - `TaskCreate`: "Write engineering-definition.json"
-- `TaskCreate`: "Derive and write architecture.json"
+- `TaskCreate`: "Derive and dual-write architecture.json (lean) + architecture-archive.json (full)"
 
-engineering-definition.json alone is NOT done — architecture.json must also be derived and written. This applies to propose mode (Step 0c) as well.
+engineering-definition.json alone is NOT done — the architecture decisions log must also be derived and written. The log is **dual-written**: a lean `architecture.json` (capped, `@`-imported) plus a full `architecture-archive.json` (complete bodies, read on demand). See `references/architecture-log-schema.md` for the canonical convention. This applies to propose mode (Step 0c) as well.
 
 ### Step 0: Check for Existing File
 
@@ -226,12 +226,21 @@ Present the full engineering blueprint:
 
 ### Step 7: Write Engineering Definition + Architecture Decisions
 
-After confirmation, write two files:
+After confirmation, write **three** files — the engineering blueprint, plus the **dual-written**
+architecture decisions log (lean index + full archive):
 
 1. **`.shipkit/engineering-definition.json`** — Full engineering blueprint (mechanisms, components, design decisions, stack direction)
 
-2. **`.shipkit/architecture.json`** — Architecture decisions log, derived from the engineering definition. This is the append-only decisions record that downstream skills (plan, spec, preflight, review-shipping) read for pattern context.
+2. **`.shipkit/architecture-archive.json`** — FULL append-only decisions log. Every ADR with complete `rationale`, `alternatives`, and supersession history. **NOT `@`-imported** — read on demand. This is the file that never loses information.
 
+3. **`.shipkit/architecture.json`** — LEAN active-decisions index, derived from the archive. Stays `@`-imported. Holds active/governing ADRs (capped), superseded ADRs as one-line stubs, and the `patterns` / `constraints` (and `designSystem`, written by `shipkit-design-system`) summaries. This is what downstream skills (plan, spec, preflight, review-shipping) read for pattern context; they read the archive only when they need an ADR's full rationale or rejected alternatives.
+
+> **Canonical convention — read it before writing:** the lean/full split, the capped active
+> schema, the superseded-stub schema, and the dual-write + supersession/amendment rules are
+> defined once in [`references/architecture-log-schema.md`](references/architecture-log-schema.md).
+> Follow it exactly. The shapes below are a quick reference.
+
+**Lean `architecture.json`** (capped active entries + superseded stubs):
 ```json
 {
   "$schema": "shipkit-artifact",
@@ -239,26 +248,46 @@ After confirmation, write two files:
   "version": "1.0",
   "lastUpdated": "ISO timestamp",
   "source": "shipkit-engineering-definition",
+  "note": "Lean active-decisions index. Full ADR bodies live in .shipkit/architecture-archive.json — read on demand.",
   "decisions": [
-    {
-      "id": "ADR-001",
-      "decision": "Decision from designDecisions or mechanism designChoices",
-      "rationale": "Why",
-      "alternatives": ["What was considered"],
-      "scope": "cross-cutting | mechanism:M-001",
-      "date": "ISO date"
-    }
+    { "id": "ADR-001", "decision": "What was decided (one line)", "rationale": "One-line rationale", "scope": "cross-cutting | mechanism:M-001", "date": "ISO date" },
+    { "id": "ADR-038", "status": "superseded", "supersededBy": "ADR-055", "decision": "One-line decision (replaced)" }
   ],
-  "patterns": ["Key architectural patterns in use (e.g., MVC, event-driven, serverless)"],
+  "patterns": ["Key architectural patterns in use"],
   "constraints": ["Technical constraints driving decisions"]
 }
 ```
 
-**Derivation**: Merge top-level `designDecisions` (scope: `"cross-cutting"`) with per-mechanism `designChoices` (scope: `"mechanism:M-001"`) into a flat decisions list. Add any patterns and constraints inferred from the stack and mechanisms.
+**Full `architecture-archive.json`** (complete bodies, append-only):
+```json
+{
+  "$schema": "shipkit-artifact",
+  "type": "architecture-decisions-archive",
+  "version": "1.0",
+  "lastUpdated": "ISO timestamp",
+  "source": "shipkit-engineering-definition",
+  "note": "Full append-only ADR log. Not @-imported — read on demand.",
+  "decisions": [
+    { "id": "ADR-001", "status": "active", "decision": "...", "rationale": "Full rationale", "alternatives": ["What was considered"], "scope": "cross-cutting | mechanism:M-001", "date": "ISO date" }
+  ],
+  "patterns": ["..."],
+  "constraints": ["..."]
+}
+```
 
-**On update**: When engineering-definition.json is updated, regenerate architecture.json. New decisions are appended; existing decisions are preserved with their original dates. This maintains the append-only log property.
+**Derivation**: Merge top-level `designDecisions` (scope: `"cross-cutting"`) with per-mechanism `designChoices` (scope: `"mechanism:M-001"`) into a flat ADR list. Add patterns and constraints inferred from the stack and mechanisms.
 
-See [Engineering Definition JSON Schema](#engineering-definition-json-schema) below.
+**Dual-write (every ADR write):**
+1. Write/append the **full** entry to `architecture-archive.json` (complete rationale + alternatives + status + any supersession links). Append-only — never delete; preserve original `date`.
+2. Write the **capped** projection to the lean `architecture.json`:
+   - active or amended ADR → `{ id, decision, scope, date, rationale(one line) }` (drop `alternatives` and long rationale — they live in the archive)
+   - superseded ADR → stub `{ id, status:"superseded", supersededBy, decision(one line) }`
+
+**On update**: regenerate from the archive. New ADRs append to the archive (full) and to the lean file (capped). Existing ADRs keep their original dates.
+
+**On supersession** (a new ADR replaces a prior one — mark this explicitly): in the archive, add the new ADR with `supersedes` and set the prior ADR `status:"superseded"` + `supersededBy` (keeping its full body); in the lean file, add the new ADR (capped) and **collapse the prior ADR to a one-line stub**. Amended ADRs (partial change, still governing) stay active and capped — do NOT stub them.
+
+See [Engineering Definition JSON Schema](#engineering-definition-json-schema) below, and `references/architecture-log-schema.md` for the full convention.
 
 ---
 
@@ -385,14 +414,15 @@ If `$ARGUMENTS` contains text:
 
 ## Context Files This Skill Writes
 
-**Artifact strategy: replace** — Overwrites the existing artifact file. Previous content is not preserved.
+**Artifact strategy: replace** — Overwrites `engineering-definition.json` and the lean `architecture.json` (the lean file is re-derived from the archive each write). **Exception:** `architecture-archive.json` is **append-only / merge** — existing ADR bodies are never dropped; superseding sets status + links but keeps the prior body.
 
-**Write Strategy: OVERWRITE**
+**Write Strategy: OVERWRITE** (lean files) / **APPEND-MERGE** (`architecture-archive.json`)
 
 | File | When |
 |------|------|
 | `.shipkit/engineering-definition.json` | Created on first run, updated on subsequent runs |
-| `.shipkit/architecture.json` | Derived from engineering-definition.json decisions on every write |
+| `.shipkit/architecture-archive.json` | FULL append-only decisions log — every ADR with complete rationale/alternatives. NOT `@`-imported. |
+| `.shipkit/architecture.json` | LEAN active-decisions index (capped active ADRs + superseded stubs). `@`-imported. Derived from the archive on every write. See `references/architecture-log-schema.md`. |
 
 **Archive location** (if replacing):
 - `.shipkit/archive/engineering-definition/engineering-definition.[timestamp].json`
@@ -426,7 +456,7 @@ Engineering blueprint is complete when:
 - [ ] All cross-references use stable IDs (M-001, C-001)
 - [ ] Summary counts match actual array lengths
 - [ ] File saved to `.shipkit/engineering-definition.json`
-- [ ] Architecture decisions derived and saved to `.shipkit/architecture.json`
+- [ ] Architecture decisions dual-written: full bodies to `.shipkit/architecture-archive.json`, capped/stubbed lean index to `.shipkit/architecture.json` (per `references/architecture-log-schema.md`)
 <!-- /SECTION:success-criteria -->
 
 ---

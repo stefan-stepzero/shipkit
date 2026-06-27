@@ -71,10 +71,10 @@ def build_context(project_root: Path) -> str | None:
     # List completed artifacts
     completed = []
     for name in ['why.json', 'product-discovery.json', 'product-definition.json',
-                 'engineering-definition.json', 'goals.json', 'stack.json',
+                 'engineering-definition.json', 'goals/strategic.json', 'stack.json',
                  'architecture.json', 'codebase-index.json']:
         if (shipkit / name).exists():
-            completed.append(name.replace('.json', ''))
+            completed.append(name.replace('.json', '').replace('goals/strategic', 'goals'))
     if completed:
         parts.append(f"Context: {', '.join(completed)}")
 

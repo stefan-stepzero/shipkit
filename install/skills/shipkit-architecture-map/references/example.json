@@ -1,0 +1,106 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "architecture-map",
+  "version": "1.0",
+  "lastUpdated": "2026-06-27T14:30:00Z",
+  "source": "shipkit-architecture-map",
+
+  "applications": [
+    {
+      "id": "APP-001",
+      "name": "web",
+      "responsibility": "User-facing Next.js app (app router) + API routes",
+      "kind": "frontend",
+      "path": "apps/web",
+      "confidence": "verified",
+      "notes": "Hosts both UI and serverless API routes under src/app/api."
+    },
+    {
+      "id": "APP-002",
+      "name": "worker",
+      "responsibility": "Background job processor (email, webhooks, scheduled tasks)",
+      "kind": "worker",
+      "path": "apps/worker",
+      "confidence": "verified",
+      "notes": ""
+    },
+    {
+      "id": "APP-003",
+      "name": "shared",
+      "responsibility": "Shared domain types and Zod schemas consumed by web + worker",
+      "kind": "lib",
+      "path": "packages/shared",
+      "confidence": "verified",
+      "notes": ""
+    }
+  ],
+
+  "datastores": [
+    {
+      "id": "DS-001",
+      "name": "app-db",
+      "kind": "postgres",
+      "purpose": "Primary relational store (users, orders, subscriptions)",
+      "ownedBy": "APP-001",
+      "evidence": "prisma/schema.prisma + DATABASE_URL",
+      "confidence": "verified"
+    },
+    {
+      "id": "DS-002",
+      "name": "job-queue",
+      "kind": "redis",
+      "purpose": "BullMQ queue backing the worker + session cache",
+      "ownedBy": "APP-002",
+      "evidence": "apps/worker/src/queue.ts (ioredis)",
+      "confidence": "verified"
+    }
+  ],
+
+  "contracts": [
+    {
+      "id": "CON-001",
+      "name": "POST /api/checkout",
+      "boundary": "external -> APP-001",
+      "shape": "apps/web/src/app/api/checkout/route.ts (Zod CheckoutInput)",
+      "kind": "rest",
+      "confidence": "verified"
+    },
+    {
+      "id": "CON-002",
+      "name": "POST /api/webhooks/stripe",
+      "boundary": "external -> APP-001",
+      "shape": "apps/web/src/app/api/webhooks/stripe/route.ts (Stripe.Event)",
+      "kind": "rest",
+      "confidence": "verified"
+    },
+    {
+      "id": "CON-003",
+      "name": "job:send-email",
+      "boundary": "APP-001 -> APP-002",
+      "shape": "packages/shared/src/jobs.ts (SendEmailJob)",
+      "kind": "event",
+      "confidence": "verified"
+    }
+  ],
+
+  "integrations": [
+    {
+      "id": "INT-001",
+      "name": "Stripe",
+      "direction": "outbound",
+      "kind": "saas",
+      "usedBy": "APP-001",
+      "evidence": "apps/web/src/lib/stripe.ts",
+      "confidence": "verified"
+    },
+    {
+      "id": "INT-002",
+      "name": "SendGrid",
+      "direction": "outbound",
+      "kind": "external-api",
+      "usedBy": "APP-002",
+      "evidence": "apps/worker/src/email.ts",
+      "confidence": "verified"
+    }
+  ]
+}

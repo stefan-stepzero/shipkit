@@ -143,6 +143,7 @@
       "Skill(shipkit-communications)",
       "Skill(shipkit-why-project)",
       "Skill(shipkit-codebase-index)",
+      "Skill(shipkit-architecture-map)",
       "Skill(shipkit-claude-md)",
       "Skill(shipkit-get-skills)",
       "Skill(shipkit-get-mcps)",
@@ -151,6 +152,7 @@
       "Skill(shipkit-update)",
       "Skill(shipkit-test-cases)",
       "Skill(shipkit-thinking-partner)",
+      "Skill(shipkit-resource-advocate)",
       "Skill(shipkit-scale-ready)",
       "Skill(shipkit-prompt-audit)",
       "Skill(shipkit-codebase-audit)",
@@ -189,7 +191,8 @@
     "shipkit-orch-planning": "name-only",
     "shipkit-orch-shipping": "name-only",
     "shipkit-review-direction": "name-only",
-    "shipkit-review-planning": "name-only"
+    "shipkit-review-planning": "name-only",
+    "shipkit-resource-advocate": "name-only"
   },
 
   "hooks": {

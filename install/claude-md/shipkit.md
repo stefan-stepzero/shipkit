@@ -4,6 +4,8 @@ Solo dev framework for shipping MVPs. AI-assisted, fast iteration, production-re
 
 <!-- Framework rules auto-loaded from .claude/rules/shipkit.md -->
 <!-- Project context auto-loaded if present. These files are created by Shipkit skills. -->
+<!-- architecture.json is the LEAN active-decisions index. Full ADR history lives in -->
+<!-- .shipkit/architecture-archive.json — deliberately NOT @-imported; read on demand. -->
 @.shipkit/architecture.json
 @.shipkit/stack.json
 @.shipkit/why.json
