@@ -217,6 +217,17 @@
             "async": true
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -X utf8 $CLAUDE_PROJECT_DIR/.claude/hooks/shipkit-codebase-index-refresh.py",
+            "if": "Bash(git commit *)",
+            "async": true
+          }
+        ]
       }
     ],
     "PreToolUse": [],
@@ -366,6 +377,7 @@
     "deniedFiles": "Critical infrastructure: settings.json, hooks. Protected context: specs, plans, engineering-definition.json, architecture.json, stack.json, codebase-index.json. Secrets: actual .env files (not .example), *.pem, *.key, production configs.",
     "allowedFiles": "Can read .env.example files. Full access to project source code and skill outputs via Read tool.",
     "sessionHooks": "SessionStart loads master routing + context summary. PostToolUse tracks skill usage. TeammateIdle and TaskCompleted are team quality gates.",
+    "codebaseIndexFreshness": "PostToolUse Bash + if:'Bash(git commit *)' runs shipkit-codebase-index-refresh.py (deterministic, no LLM): on every Claude-made commit it refreshes ONLY the mechanical fields of .shipkit/codebase-index.json (recentlyActive/directories/configFiles/scripts) and preserves the Claude-judgment fields (framework/concepts/coreFiles). A content-hash cache (.shipkit/cache/, gitignored) skips the write when nothing changed. SessionStart also runs the same refresh to catch commits made in the user's own terminal (the if: hook only fires on commits Claude runs). The semantic layer is re-derived only by a full /shipkit-codebase-index run; SessionStart nudges when fullRefreshedAt is >14d. TO DISABLE: remove this PostToolUse 'Bash' entry.",
     "contextFiles": "All context stored in .shipkit/ folder",
     "customization": "Users can override by editing this file",
     "powershellPermissions": "PowerShell(...) rules mirror the Bash command surface for Windows environments. On mixed-shell setups, set CLAUDE_CODE_GIT_BASH_PATH to point to Git Bash so Unix commands resolve correctly alongside PowerShell.",

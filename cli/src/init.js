@@ -25,6 +25,7 @@ const HOOK_FILES = {
   'shipkit-pre-compact.py': 'shipkit-pre-compact.py',
   'shipkit-task-created-hook.py': 'shipkit-task-created-hook.py',
   'shipkit-permission-denied-hook.py': 'shipkit-permission-denied-hook.py',
+  'shipkit-codebase-index-refresh.py': 'shipkit-codebase-index-refresh.py',
 };
 
 async function init(packageRoot, flags) {

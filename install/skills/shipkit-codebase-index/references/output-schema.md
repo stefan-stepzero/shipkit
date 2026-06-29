@@ -7,6 +7,8 @@ This document defines the JSON schema for `.shipkit/codebase-index.json`.
 ```json
 {
   "generated": "YYYY-MM-DD",
+  "fullRefreshedAt": "YYYY-MM-DD",
+  "mechanicalRefreshedAt": "YYYY-MM-DD",
 
   "scripts": {
     "<script-name>": "<script-command>"
@@ -55,7 +57,18 @@ This document defines the JSON schema for `.shipkit/codebase-index.json`.
 
 | Field | Type | Source | Description |
 |-------|------|--------|-------------|
-| `generated` | string | script | ISO date when index was generated |
+| `generated` | string | script | ISO date of the original full generation (kept for back-compat) |
+| `fullRefreshedAt` | string | script (full run) | ISO date the **judgment layer** (framework/concepts/coreFiles) was last derived. Staleness keys off this — re-run `/shipkit-codebase-index` when >14d. |
+| `mechanicalRefreshedAt` | string | script (mechanical refresh) | ISO date the **mechanical layer** was last refreshed. Advances on every commit (and at session start). NOT a staleness signal for the judgment layer. |
+
+### Two-Tier Freshness
+
+The index has two layers refreshed on different cadences:
+
+- **Mechanical layer** (`scripts`, `recentlyActive`, `directories`, `configFiles`) — refreshed **deterministically, with no LLM**, by a commit hook (`shipkit-codebase-index-refresh.py`, scoped to `git commit` via `if:`) and at session start. Cheap: a content-hash cache at `.shipkit/cache/` (gitignored) skips the write when nothing source-relevant changed.
+- **Judgment layer** (`framework`, `entryPoints`, `concepts`, `coreFiles`, `skip`) — requires Claude, so it is refreshed **only by a full `/shipkit-codebase-index` run**. The mechanical refresh preserves these fields byte-for-byte and never touches them.
+
+**Known limitation:** the commit hook only fires on commits **Claude** makes (`if:"Bash(git commit *)"`). A commit made in the user's own terminal is caught at the next session start (which runs the same mechanical refresh), not at commit time.
 
 ### Script-Generated Fields (100% reliable)
 
