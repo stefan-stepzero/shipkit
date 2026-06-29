@@ -11,7 +11,7 @@ effort: medium
 
 # shipkit-spec - Lightweight Feature Specification
 
-**Purpose**: Transform feature descriptions into structured JSON specifications with Given/When/Then scenarios and comprehensive edge case coverage, creating clear acceptance criteria for implementation.
+**Purpose**: Transform feature descriptions into structured JSON specifications with Given/When/Then scenarios and comprehensive edge case coverage, creating clear acceptance criteria for implementation. A **no-gaps completeness gate** (Step 5) ensures the spec names every application, datastore, contract, and integration it implies — so "done" can't mean green-but-not-functional.
 
 **Output format**: JSON -- structured data readable by Claude, machine-readable by other tools, and queryable by other skills.
 
@@ -67,7 +67,7 @@ After clarifying the feature (Step 1), create tasks:
 - `TaskCreate`: "Read context + explore affected code (2 agents)"
 - `TaskCreate`: "Archive existing spec (if overwriting)"
 - `TaskCreate`: "Generate spec JSON (all 20+ fields)"
-- `TaskCreate`: "Validate completeness (11-point checklist)"
+- `TaskCreate`: "Validate completeness (checklist + no-gaps gate)"
 - `TaskCreate`: "Write spec to disk"
 - In batch mode, for EACH remaining roadmap feature: `TaskCreate`: "Spec: {feature-name}"
 
@@ -108,6 +108,7 @@ Check if sufficient context exists to propose a spec without interactive questio
 1. Read available context in parallel:
    - `.shipkit/product-definition.json` — product blueprint: features, patterns, differentiators
    - `.shipkit/engineering-definition.json` — engineering blueprint: mechanisms, components
+   - `.shipkit/architecture-map.json` — current-state map (applications/datastores/contracts/integrations) for the no-gaps cross-check (if exists)
    - `.shipkit/goals/product.json` — product success criteria (if exists)
    - `.shipkit/goals/engineering.json` — engineering success criteria (if exists)
    - `.shipkit/product-discovery.json` — persona details and user needs
@@ -121,6 +122,7 @@ Check if sufficient context exists to propose a spec without interactive questio
    - Edge cases inferred from stack constraints and dependencies
    - Acceptance criteria derived from goals served
    - Technical notes derived from architecture and stack
+   - **Functional surface** proposed across the four no-gaps dimensions (applications, datastores, contracts, integrations) per `references/no-gaps-checklist.md` — each implied element classified COVERED / FLAGGED / EXPLICITLY-DEFERRED, cross-checked against `architecture-map.json` + `engineering-definition.json`
    - If `.shipkit/design-system/` exists and the feature has a UI component, reference design tokens in the spec's technical notes and check that scenarios respect design principles
 3. Present the proposed spec:
    ```
@@ -236,6 +238,18 @@ Specs written without reading source code miss existing patterns, hidden constra
 - [ ] Test strategy identifies call flows and coverage
 - [ ] Key test cases mapped from scenarios
 - [ ] Summary counts match actual array lengths
+
+#### No-Gaps Gate (blocks "done")
+
+Run the four-dimension completeness pass per **`references/no-gaps-checklist.md`**. This is what stops a spec being green-but-not-functional (a UI calling an endpoint nobody specified, saving to a table nobody created).
+
+1. **Enumerate** what the feature implies across **applications / datastores / contracts / integrations** — from the spec text, cross-checked against `.shipkit/architecture-map.json` and `.shipkit/engineering-definition.json` (greenfield: derive from spec + engineering-definition + stack; record `architectureMapUsed: false`).
+2. **Classify** every implied element: **COVERED** (named in the spec or already in the architecture) / **FLAGGED** (implied but named nowhere) / **EXPLICITLY-DEFERRED** (named + reason).
+3. **Frontend-implies-backend catch**: for every scenario `when`/`then` that displays, fetches, lists, saves, updates, or deletes data, confirm a **contract** serves it and a **datastore** holds it. If not → FLAGGED.
+4. **Surface FLAGGED items as a proposal** (not a quiz) — only the gaps, each with a proposed resolution. The user resolves each by **naming it** (→ COVERED, add to `technical`) or **deferring it with a reason** (→ EXPLICITLY-DEFERRED).
+5. Write `functionalSurface`, `gapReport`, and `deferred` onto the artifact (see `references/output-schema.md`).
+
+- [ ] No-gaps gate run; `gapReport.status` is **`clear`** (FLAGGED = 0) before saving. **A spec with any FLAGGED element is not done.**
 
 ---
 
@@ -362,6 +376,33 @@ Copy and track:
     "notes": ["Implementation hints"]
   },
 
+  "functionalSurface": {
+    "applications": [
+      { "name": "web-ui", "kind": "frontend", "verdict": "COVERED", "evidence": "exists in architecture-map" }
+    ],
+    "datastores": [
+      { "name": "share_links", "kind": "table", "verdict": "COVERED", "evidence": "technical.databaseChanges" }
+    ],
+    "contracts": [
+      { "name": "GET /api/share/{token}", "kind": "rest-endpoint", "verdict": "COVERED", "evidence": "technical.apiEndpoints; surfaced by no-gaps gate (frontend-implies-backend)" }
+    ],
+    "integrations": [
+      { "name": "Supabase Auth", "kind": "auth-provider", "verdict": "COVERED", "evidence": "dependencies" }
+    ]
+  },
+
+  "gapReport": {
+    "status": "clear",
+    "dimensions": { "applications": "covered", "datastores": "covered", "contracts": "covered", "integrations": "covered" },
+    "flagged": [],
+    "architectureMapUsed": true,
+    "confidence": "high"
+  },
+
+  "deferred": [
+    { "dimension": "datastores", "element": "share analytics store", "reason": "out of scope this iteration (acceptanceCriteria.wontHave)" }
+  ],
+
   "testStrategy": {
     "callFlows": ["User -> Component -> API -> DB -> Response"],
     "coverage": [
@@ -479,6 +520,8 @@ Copy and track:
 - `.shipkit/stack.json` - Tech stack constraints
 - `.shipkit/schema.json` - Data model
 - `.shipkit/architecture.json` - Past decisions
+- `.shipkit/architecture-map.json` - Current-state map (apps/datastores/contracts/integrations) for the no-gaps gate
+- `.shipkit/engineering-definition.json` - Engineering blueprint (mechanisms/components) for the no-gaps gate
 - `.shipkit/goals/product.json` - Product success criteria
 - `.shipkit/goals/engineering.json` - Engineering success criteria
 - `.shipkit/reviews/planning-assessment.json` - Reviewer feedback (on re-dispatch)
@@ -577,6 +620,7 @@ Spec is complete when:
 - [ ] Technical notes include DB/API changes
 - [ ] Test strategy identifies call flows and coverage approach
 - [ ] Key test cases mapped from scenarios
+- [ ] No-gaps gate passed: `functionalSurface` enumerated across all 4 dimensions, `gapReport.status` is `clear` (zero FLAGGED), any deferrals named with reason
 - [ ] File saved to `.shipkit/specs/todo/{name}.json`
 <!-- /SECTION:success-criteria -->
 ---

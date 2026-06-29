@@ -196,6 +196,42 @@
     ]
   },
 
+  "functionalSurface": {
+    "applications": [
+      { "name": "web-ui", "kind": "frontend", "verdict": "COVERED", "evidence": "exists in architecture-map.json (Next.js app)" },
+      { "name": "api-backend", "kind": "service", "verdict": "COVERED", "evidence": "exists in architecture-map.json (Next.js route handlers + Supabase)" }
+    ],
+    "datastores": [
+      { "name": "share_links", "kind": "table", "verdict": "COVERED", "evidence": "technical.databaseChanges (new table)" },
+      { "name": "recipes", "kind": "table", "verdict": "COVERED", "evidence": "exists in architecture-map.json; read by the share view" }
+    ],
+    "contracts": [
+      { "name": "POST /api/recipes/{id}/share", "kind": "rest-endpoint", "verdict": "COVERED", "evidence": "technical.apiEndpoints" },
+      { "name": "GET /api/share/{token}", "kind": "rest-endpoint", "verdict": "COVERED", "evidence": "technical.apiEndpoints; FLAGGED by no-gaps gate then named — scenario-2 'view shared recipe' rendered a screen with no serving endpoint" },
+      { "name": "GET /api/recipes/{id}/share", "kind": "rest-endpoint", "verdict": "COVERED", "evidence": "technical.apiEndpoints" },
+      { "name": "DELETE /api/recipes/{id}/share/{linkId}", "kind": "rest-endpoint", "verdict": "COVERED", "evidence": "technical.apiEndpoints" }
+    ],
+    "integrations": [
+      { "name": "Supabase Auth", "kind": "auth-provider", "verdict": "COVERED", "evidence": "dependencies (owner-only actions)" },
+      { "name": "Clipboard API", "kind": "browser-api", "verdict": "COVERED", "evidence": "dependencies (with fallback)" }
+    ]
+  },
+
+  "gapReport": {
+    "status": "clear",
+    "dimensions": { "applications": "covered", "datastores": "covered", "contracts": "covered", "integrations": "covered" },
+    "flagged": [],
+    "resolvedDuringGate": [
+      { "dimension": "contracts", "element": "GET /api/share/{token}", "impliedBy": "scenario-2 (view shared recipe as visitor)", "resolution": "named — added to technical.apiEndpoints" }
+    ],
+    "architectureMapUsed": true,
+    "confidence": "high"
+  },
+
+  "deferred": [
+    { "dimension": "datastores", "element": "share analytics / view-event store", "reason": "view-count column on share_links covers the must-have; a dedicated analytics store maps to wontHave 'Analytics dashboard for share performance'" }
+  ],
+
   "testStrategy": {
     "callFlows": [
       "Owner -> ShareButton -> POST /api/recipes/{id}/share -> DB insert -> Response -> Clipboard",

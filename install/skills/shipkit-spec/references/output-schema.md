@@ -160,6 +160,34 @@ Feature specs are stored as JSON files following the Shipkit artifact convention
     ]
   },
 
+  "functionalSurface": {
+    "applications": [
+      { "name": "web-ui", "kind": "frontend", "verdict": "COVERED", "evidence": "exists in architecture-map.json" },
+      { "name": "api-backend", "kind": "service", "verdict": "COVERED", "evidence": "exists in architecture-map.json" }
+    ],
+    "datastores": [
+      { "name": "share_links", "kind": "table", "verdict": "COVERED", "evidence": "technical.databaseChanges" }
+    ],
+    "contracts": [
+      { "name": "GET /api/share/{token}", "kind": "rest-endpoint", "verdict": "COVERED", "evidence": "technical.apiEndpoints; surfaced by no-gaps gate (frontend-implies-backend)" }
+    ],
+    "integrations": [
+      { "name": "Supabase Auth", "kind": "auth-provider", "verdict": "COVERED", "evidence": "dependencies" }
+    ]
+  },
+
+  "gapReport": {
+    "status": "clear",
+    "dimensions": { "applications": "covered", "datastores": "covered", "contracts": "covered", "integrations": "covered" },
+    "flagged": [],
+    "architectureMapUsed": true,
+    "confidence": "high"
+  },
+
+  "deferred": [
+    { "dimension": "datastores", "element": "share analytics store", "reason": "out of scope this iteration (acceptanceCriteria.wontHave)" }
+  ],
+
   "testStrategy": {
     "callFlows": [
       "User -> ShareButton -> API -> Database -> Response -> Clipboard",
@@ -324,6 +352,37 @@ Array of strings listing what must be in place before this feature.
 | `apiEndpoints[].purpose` | string | yes | What the endpoint does |
 | `notes` | string[] | no | Implementation hints and considerations |
 
+### Functional Surface (No-Gaps Gate)
+
+Produced by the no-gaps completeness gate (see `no-gaps-checklist.md`). Enumerates what the feature **implies** across four dimensions so nothing is silently missing. Each dimension is an array of element objects.
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `applications` | object[] | yes | Runnable surfaces implied (UI, service, worker, CLI, mobile) |
+| `datastores` | object[] | yes | Persistent stores read/written (tables, collections, buckets, caches) |
+| `contracts` | object[] | yes | APIs / function signatures / events connecting surfaces (the frontend-implies-backend dimension) |
+| `integrations` | object[] | yes | External services / providers / infra depended on |
+| `*[].name` | string | yes | The element (e.g. `GET /api/share/{token}`, `share_links`) |
+| `*[].kind` | string | yes | Sub-type (e.g. `rest-endpoint`, `table`, `auth-provider`) |
+| `*[].verdict` | enum | yes | `COVERED`, `FLAGGED`, or `EXPLICITLY-DEFERRED` |
+| `*[].evidence` | string | yes | Where it's covered (spec field / architecture-map) or why flagged |
+
+A dimension array may be empty only if the feature genuinely implies nothing in it (state why in `gapReport`, don't leave it unconsidered).
+
+### Gap Report (No-Gaps Gate)
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | enum | yes | `"clear"` (FLAGGED = 0) or `"flagged"` — **must be `clear` to save** |
+| `dimensions` | object | yes | Per-dimension roll-up: `covered` / `flagged` / `deferred` / `n-a` |
+| `flagged` | object[] | yes | Open gaps: `{ dimension, element, impliedBy, proposedResolution }` (empty when clear) |
+| `architectureMapUsed` | boolean | yes | `false` in greenfield (no `architecture-map.json`) |
+| `confidence` | enum | yes | `"high"` or `"reduced"` (greenfield / thin map) |
+
+### Deferred (No-Gaps Gate)
+
+Array of explicitly-deferred implied elements — each `{ dimension, element, reason }`. These are out of scope this iteration **on purpose, with a reason** (typically traced to `acceptanceCriteria.wontHave` or `outOfScope`); they do not block "done".
+
 ### Test Strategy
 
 | Field | Type | Required | Description |
@@ -361,6 +420,7 @@ Array of strings suggesting what to do after spec is complete.
 3. **At Least One Scenario**: The `scenarios` array must have at least one entry
 4. **Must Have Criteria**: The `mustHave` array must have at least one entry
 5. **Summary Sync**: Summary counts must match actual array lengths
+6. **No-Gaps Gate**: `gapReport.status` must be `"clear"` (zero FLAGGED elements) before a spec is saved to `todo/`. Every implied application, datastore, contract, and integration is either COVERED or EXPLICITLY-DEFERRED with a reason (see `no-gaps-checklist.md`).
 
 ---
 
