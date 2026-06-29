@@ -164,6 +164,9 @@ This is Claude writing a real script tailored to the project — NOT a rigid tem
 - Read inputs from `.shipkit/semantic-qa/suites/{suite}/inputs/`
 - Execute the strategy (API calls, function invocations, Playwright screenshots)
 - Save outputs to `.shipkit/semantic-qa/suites/{suite}/outputs/run-{timestamp}/`
+  (already per-run via `run-{timestamp}`; under the orchestration engine these run
+  outputs are transient and nest in the run root — see
+  `install/shared/references/run-artifacts.md`. Suite definitions/inputs are durable.)
 - Handle errors gracefully (save error info, don't crash on individual failures)
 
 **The user owns this script after creation.** Claude can update it as the project evolves.

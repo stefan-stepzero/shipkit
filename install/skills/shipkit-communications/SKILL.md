@@ -379,6 +379,12 @@ Copy and track:
 
 ## Context Files This Skill Writes
 
+**Run-scoped output (parallel-safe).** `communications/` is a transient artifact. When
+running under the orchestration engine, write under the run root
+(`<runDir>/communications/…`) per `install/shared/references/run-artifacts.md`; with no
+run context it stays at `.shipkit/communications/…` (back-compatible). Readers resolve
+the same base.
+
 **Creates/Updates**:
 - `.shipkit/communications/latest.html` - OVERWRITE AND REPLACE
   - **Write Strategy**: OVERWRITE AND REPLACE

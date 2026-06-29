@@ -537,6 +537,12 @@ Ready to fix the remaining blockers?
 
 ## Context Files This Skill Writes
 
+**Run-scoped output (parallel-safe).** `preflight.json` is a transient per-run audit.
+When running under the orchestration engine, write/read it under the run root
+(`<runDir>/preflight.json`) per `install/shared/references/run-artifacts.md`; with no run
+context it stays at `.shipkit/preflight.json` (back-compatible). Readers (e.g.
+shipkit-scale-ready, the shipping flow) resolve the same base.
+
 **Write Strategy**: OVERWRITE with ARCHIVE (full audit) or UPDATE-IN-PLACE (incremental)
 
 **Creates/Updates**:

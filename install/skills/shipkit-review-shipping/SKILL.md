@@ -235,6 +235,8 @@ After scanning all dimensions, classify each finding:
 
 Write the verification report to `.shipkit/verification-report.json` (see agent output schema). Present findings to the user with evidence and L-I-E ratings.
 
+> **Run-scoped output (parallel-safe).** `verification-report.json` is a transient per-run result. Under the orchestration engine, write/read it under the run root (`<runDir>/verification-report.json`) per `install/shared/references/run-artifacts.md`; with no run context it stays at `.shipkit/verification-report.json` (back-compatible). Writer and readers resolve the same base.
+
 ---
 
 ## The 12 Quality Dimensions

@@ -347,6 +347,8 @@ For enterprise customers and regulated industries.
 
 **Create file using Write tool**: `.shipkit/scale-readiness.json`
 
+> **Run-scoped output (parallel-safe).** `scale-readiness.json` is a transient per-run audit, and `preflight.json` (read above) is too. Under the orchestration engine, resolve both under the run root (`<runDir>/…`) per `install/shared/references/run-artifacts.md` — read `preflight.json` from the same base preflight wrote it to; with no run context both stay at `.shipkit/…` (back-compatible).
+
 The output MUST conform to the schema below. This is a strict contract — other skills depend on this structure.
 
 ---

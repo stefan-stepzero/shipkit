@@ -82,8 +82,19 @@ and easier reconciliation.
 
 ## 4. The ledger — state survives context
 
-The engine's source of truth is a **file**, not the conversation:
-`.shipkit/orchestration.json`. Record:
+**Run root (collision avoidance).** At run start the engine mints a **run id** and a
+**run root**, and writes `.shipkit/active-run.json` (`{runId, runDir, startedAt}`) so
+dispatched units and concurrent skills can find it; it also passes `SHIPKIT_RUN_DIR` in
+to any workflow agent (which can't mint its own id). **Transient** artifacts — run-state,
+elicitation scratch, verification/preflight reports, QA outputs, work-memory checkpoints,
+generated HTML — are written under the run root (`.shipkit/runs/<run-id>/…`), NOT the
+fixed path, so parallel runs / shared-cwd workflow agents / two runs at the same repo
+root don't stomp each other. **Durable singletons** (definitions, specs, architecture-map)
+are never run-scoped. The full rule + the transient-vs-durable lists live in
+`install/shared/references/run-artifacts.md` — writers and readers both cite it.
+
+The engine's run-state is itself a transient artifact: `<runDir>/orchestration.json`. It
+is the **file** source of truth (not the conversation). Record:
 - the partition and which unit owns each slice,
 - per-unit status: `claimed` / `working` / `ready` / `landed` / `blocked`,
 - the bar (the ground-truth completion criteria) and the target branch + integration

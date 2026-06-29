@@ -46,6 +46,14 @@ On every invocation, in order:
         └── progress.json                 ← turn state + timestamps
 ```
 
+**Run-scoped base.** The `elicitation/` folder is a **transient** artifact: when work
+runs under the orchestration engine, its base is the run root, not `.shipkit/` — i.e.
+`<runDir>/elicitation/<skill-slug>/…` where `runDir` comes from `SHIPKIT_RUN_DIR` /
+`.shipkit/active-run.json` (see `install/shared/references/run-artifacts.md`). With no
+run context (solo invocation) it stays at `.shipkit/elicitation/…` (back-compatible).
+The elicitive skill (writer) and the engine (reader of `answers.md`) resolve the **same**
+base. The `<artifact>.json` final output is a durable singleton and is **not** run-scoped.
+
 **Overwrite policy:** re-running a skill from scratch (user explicitly asks to refresh) overwrites all three files. Mid-elicitation resumption appends to `answers.md`.
 
 **The elicitation folder persists** even after the artifact is complete — it's the audit trail for how the artifact was shaped. Timestamps inside the files tell you when it was last elicited.

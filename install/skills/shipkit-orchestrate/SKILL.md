@@ -56,6 +56,14 @@ See `references/modes.md` for the full treatment. In brief:
 
 ## The loop
 
+**Run setup (once, at start):** mint a run id + run root, write
+`.shipkit/active-run.json` (`{runId, runDir, startedAt}`), and pass `SHIPKIT_RUN_DIR`
+into any workflow fan-out (workflow agents can't mint their own id). Every **transient**
+artifact this run writes — run-state, elicitation, reports, QA, checkpoints, HTML — goes
+under the run root (`.shipkit/runs/<run-id>/…`); **durable singletons** (definitions,
+specs, architecture-map) stay at `.shipkit/`. The rule + lists:
+`install/shared/references/run-artifacts.md`.
+
 Each round (contract §5):
 
 1. **Dispatch / resume** this round's units on the chosen substrate (§1 substrate rule:
@@ -66,7 +74,7 @@ Each round (contract §5):
 3. **Re-dispatch the gaps** until zero, the bar is met, or the slot ceiling hits.
 4. **Integrate** completed work per policy (§7: stage-for-review default; serial land,
    one at a time, never force past unverified work).
-5. **Update the ledger** (`.shipkit/orchestration.json`); early-exit at the bar.
+5. **Update the ledger** (`<runDir>/orchestration.json`); early-exit at the bar.
 
 **Stop condition**: the bar is met (every step's named artifact exists + passes its
 check) — reconciled, not reported.
@@ -110,17 +118,20 @@ behaviour that separates the engine from "dispatch and hope".
 ## Standalone invocation
 
 If invoked directly (not by a phase skill): ask for the **steps** + **bar** + **mode**
-(use `AskUserQuestion` — don't assume the bar), write them to
-`.shipkit/orchestration.json`, then run the loop.
+(use `AskUserQuestion` — don't assume the bar), do the run setup (mint the run root,
+write `.shipkit/active-run.json`), write the steps/bar to `<runDir>/orchestration.json`,
+then run the loop.
 
 ---
 
 ## Orchestration tracking
 
-`.shipkit/orchestration.json` is the ledger (contract §4). Read it first (merge, don't
-clobber), record the partition, per-unit status (`claimed`/`working`/`ready`/`landed`/
-`blocked`), the bar, target branch, integration policy, and per-round integration. It
-is the resume point and the ground truth for reconciliation — not the conversation.
+`<runDir>/orchestration.json` is the ledger (contract §4) — run-scoped, so concurrent
+runs don't collide (the run root comes from `.shipkit/active-run.json` / `SHIPKIT_RUN_DIR`
+per `install/shared/references/run-artifacts.md`). Read it first (merge, don't clobber),
+record the partition, per-unit status (`claimed`/`working`/`ready`/`landed`/`blocked`),
+the bar, target branch, integration policy, and per-round integration. It is the resume
+point and the ground truth for reconciliation — not the conversation.
 
 ---
 
@@ -142,16 +153,19 @@ do not re-implement the loop.)
 ---
 
 ## Context files this skill reads
-- `.shipkit/orchestration.json` — the ledger (resume point)
-- `.shipkit/plans/`, `.shipkit/specs/` — the work (per caller)
-- `.shipkit/elicitation/<skill>/answers.md` — collected answers on resume
+- `.shipkit/active-run.json` — the run pointer (runId / runDir)
+- `<runDir>/orchestration.json` — the ledger (resume point)
+- `.shipkit/plans/`, `.shipkit/specs/` — the work (per caller; durable, not run-scoped)
+- `<runDir>/elicitation/<skill>/answers.md` — collected answers on resume
 - `install/shared/references/core-automation.md` — the contract
+- `install/shared/references/run-artifacts.md` — the run-root resolution rule
 - `install/shared/references/elicitation-protocol.md` — the marker + file schema
 
 ## Context files this skill writes
-- `.shipkit/orchestration.json` — ledger / run-state
-- `.shipkit/elicitation/<skill>/questions.md` is written by the elicitive step; the
-  engine writes `.shipkit/elicitation/<skill>/answers.md`
+- `.shipkit/active-run.json` — run pointer (set at run start)
+- `<runDir>/orchestration.json` — ledger / run-state (run-scoped)
+- `<runDir>/elicitation/<skill>/questions.md` is written by the elicitive step; the
+  engine writes `<runDir>/elicitation/<skill>/answers.md`
 
 ---
 
