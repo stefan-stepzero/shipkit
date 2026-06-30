@@ -9,6 +9,7 @@ import sys
 import os
 import json
 import re
+import subprocess
 import urllib.request
 from pathlib import Path
 from datetime import datetime
@@ -24,6 +25,46 @@ MAX_DIGEST_CHARS = 3500  # ~3-4 KB per injected digest
 # Artefacts the CLAUDE.md template `@`-imports (install/claude-md/shipkit.md).
 # A missing one makes the `@`-import silently no-op, so the hook warns instead.
 IMPORTED_ARTIFACTS = ['architecture.json', 'stack.json', 'why.json']
+
+# The codebase index's JUDGMENT layer (framework/concepts/coreFiles) is considered
+# stale after this many days. The mechanical layer auto-refreshes on commit, so the
+# nudge keys off fullRefreshedAt — NOT file mtime, which now moves on every commit.
+INDEX_STALE_DAYS = 14
+
+
+def _date_age_days(date_str: str) -> float:
+    """Age in days from a 'YYYY-MM-DD' stamp; -1 if unparseable/empty."""
+    if not date_str:
+        return -1
+    try:
+        d = datetime.strptime(str(date_str)[:10], '%Y-%m-%d')
+        return (datetime.now() - d).total_seconds() / 86400
+    except Exception:
+        return -1
+
+
+def refresh_codebase_index(skills_dir: Path, project_root: Path) -> None:
+    """Deterministic (no-LLM) mechanical refresh of the codebase index at session start.
+
+    Catches commits made outside Claude (e.g. the user's own terminal) that the
+    PostToolUse git-commit hook never saw. Best-effort: only refreshes an EXISTING
+    index (never creates one), short timeout, never raises.
+    """
+    if project_root is None:
+        return
+    index_file = project_root / '.shipkit' / 'codebase-index.json'
+    if not index_file.exists():
+        return
+    generator = skills_dir / 'shipkit-codebase-index' / 'scripts' / 'generate_index.py'
+    if not generator.exists():
+        return
+    try:
+        subprocess.run(
+            [sys.executable, '-X', 'utf8', str(generator), '--refresh-mechanical'],
+            cwd=str(project_root), capture_output=True, text=True, timeout=20,
+        )
+    except Exception:
+        pass
 
 
 def get_installed_version(project_root: Path) -> str:
@@ -227,8 +268,19 @@ def get_codebase_digest(shipkit_dir: Path) -> str | None:
     except Exception:
         return None
 
-    age = format_age(get_file_age_days(index_file))
-    out = [f"## Codebase Map (index age: {age} — re-run /shipkit-codebase-index if stale)", '']
+    # Two-tier freshness: the mechanical layer auto-refreshes on commit
+    # (mechanicalRefreshedAt), so file mtime no longer signals judgment-layer age.
+    # Key the staleness nudge off fullRefreshedAt — when Claude last derived the
+    # framework/concepts/coreFiles fields.
+    full_age = _date_age_days(data.get('fullRefreshedAt') or data.get('generated'))
+    out = ["## Codebase Map", '']
+    if full_age >= INDEX_STALE_DAYS:
+        out.append(
+            f"> Semantic layer ~{int(full_age)}d old (last full index). File-level data "
+            f"auto-refreshes on commit, but framework/concepts/coreFiles may have drifted "
+            f"— re-run `/shipkit-codebase-index` to refresh."
+        )
+        out.append('')
 
     entry = data.get('entryPoints', {})
     if isinstance(entry, dict) and entry:
@@ -373,6 +425,10 @@ def main():
     if strategic:
         lines.append(strategic)
         lines.append('')
+
+    # ── Keep the codebase index fresh (deterministic, no LLM) before digesting it.
+    #    Catches commits made outside Claude that the git-commit hook never saw. ──
+    refresh_codebase_index(skills_dir, project_root)
 
     # ── Codebase navigation map: lean digest (stops default-to-grep) ──
     codebase = get_codebase_digest(shipkit_dir)

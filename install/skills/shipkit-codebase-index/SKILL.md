@@ -184,6 +184,8 @@ with open('.shipkit/codebase-index.json', 'w') as f:
     json.dump(index, f, indent=2)
 ```
 
+**Preserve the timestamps.** The generator script sets `generated`, `fullRefreshedAt`, and `mechanicalRefreshedAt`. This Step **loads-then-updates only the judgment fields**, so those stamps carry through untouched — a full run *is* a fresh judgment derivation, so `fullRefreshedAt` correctly reflects now. Don't delete or overwrite them.
+
 ### Step 4: Confirm to User
 
 ```
@@ -277,5 +279,12 @@ I'll use this index to navigate faster.
 
 Codebase index written to `.shipkit/codebase-index.json`.
 
-**Next:** The index is read during execution by skills that navigate code — `/shipkit-spec`, `/shipkit-plan`, `/shipkit-preflight`, `/shipkit-review-shipping`, `/shipkit-prompt-audit`, `/shipkit-ux-audit`, and others use it for faster file/symbol lookup. Refresh by re-running `/shipkit-codebase-index` when the codebase structure changes significantly (new modules, major refactors).
+**Next:** The index is read during execution by skills that navigate code — `/shipkit-spec`, `/shipkit-plan`, `/shipkit-preflight`, `/shipkit-review-shipping`, `/shipkit-prompt-audit`, `/shipkit-ux-audit`, and others use it for faster file/symbol lookup.
+
+**Staying fresh (you rarely need to re-run this).** The index keeps itself current on two cadences:
+
+- **Mechanical layer** (`recentlyActive`, `directories`, `configFiles`, `scripts`) — refreshed **automatically, with no LLM**, on every commit (a `git commit`-scoped hook) and at session start. A content-hash cache makes this near-instant and writes nothing when nothing changed.
+- **Judgment layer** (`framework`, `entryPoints`, `concepts`, `coreFiles`, `skip`) — only a full `/shipkit-codebase-index` run re-derives these (they need Claude). The auto-refresh preserves them untouched.
+
+So **re-run `/shipkit-codebase-index` only when the *semantic* shape shifts** — new modules, a new framework, a major refactor that moves where concepts live. Session start nudges you when `fullRefreshedAt` is older than 14 days. (Note: the commit hook fires on commits Claude makes; a commit from your own terminal is picked up at the next session start.)
 <!-- /SECTION:after-completion -->
