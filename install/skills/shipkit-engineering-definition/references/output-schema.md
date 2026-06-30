@@ -23,6 +23,8 @@ This document defines the JSON schema for `.shipkit/engineering-definition.json`
       "name": "Mechanism name",
       "description": "How this works technically",
       "implementsFeatures": ["F-001"],
+      "uses": ["library-or-pattern"],
+      "whyNotStandard": null,
       "designChoices": [
         { "decision": "What was decided", "rationale": "Why", "alternatives": ["Rejected"] }
       ]
@@ -95,7 +97,11 @@ This document defines the JSON schema for `.shipkit/engineering-definition.json`
 | `name` | string | yes | Concise mechanism name |
 | `description` | string | yes | How this mechanism works at a technical level |
 | `implementsFeatures` | string[] | yes | Feature IDs from product-definition.json `features[].id` |
+| `uses` | string[] | no | Libraries/patterns this mechanism adopts from the ecosystem defaults (e.g. `["pydantic", "anthropic-sdk"]`). Populated during Step 2b (Ecosystem Audit). |
+| `whyNotStandard` | string \| null | no | If the mechanism deviates from the standard solution in `mechanism-standards.md`, the reason for the deviation. `null` (or omitted) when it follows the standard. |
 | `designChoices` | object[] | no | Key decisions made for this mechanism |
+
+**Ecosystem fields (`uses` / `whyNotStandard`)**: Written by Step 2b. `uses` records the standard libraries/patterns the mechanism inherits for the chosen stack (see `mechanism-standards.md` and `ecosystem-defaults/<stack>.md`); `whyNotStandard` makes any deviation from the standard a conscious, recorded choice rather than an oversight. Both are optional — a mechanism with no notable library dependency can omit them.
 
 ### Design Choice Object (within Mechanism)
 

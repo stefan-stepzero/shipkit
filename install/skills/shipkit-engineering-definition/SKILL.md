@@ -138,6 +138,21 @@ Aim for 2-5 mechanisms. Each feature should be served by at least one mechanism.
 
 ---
 
+### Step 2b: Ecosystem Audit
+
+Before structuring components, ground each mechanism in what the stack already provides — don't reinvent libraries and patterns that exist.
+
+**Fork context — no user prompts.** Read the stack and consult the reference files; infer the rest.
+
+1. **Read the stack.** Use `.shipkit/stack.json` if present; otherwise use the Step 5 stack direction. For hybrid stacks (e.g. a Next.js frontend + a Python API backend), consult **every** matching reference.
+2. **Consult the standards.** Read [`references/mechanism-standards.md`](references/mechanism-standards.md) (stack-agnostic mechanism → standard mapping, with anti-patterns) plus the matching [`references/ecosystem-defaults/<stack>.md`](references/ecosystem-defaults/) file(s) for the concrete library per concern.
+3. **Default to the standard.** For each mechanism, adopt the standard library/pattern for its concern (e.g. Pydantic for Python data models, Zod for TS validation, an auth library over custom auth). Design something custom only when the standard genuinely doesn't fit.
+4. **Record it on the mechanism.** Capture `uses: [library, ...]` for the libraries/patterns it adopts, and `whyNotStandard: "<reason>"` when you deliberately deviate.
+
+Tone is **"default to this," not "you must"** — deviating is fine, but it should be a conscious, recorded choice rather than an oversight.
+
+---
+
 ### Step 3: Define Component Structure
 
 Based on mechanisms, define how the solution is modularized:
@@ -325,6 +340,8 @@ Ready to define success criteria?
       "name": "Mechanism name",
       "description": "How this works technically",
       "implementsFeatures": ["F-001", "F-002"],
+      "uses": ["library-or-pattern"],
+      "whyNotStandard": null,
       "designChoices": [
         { "decision": "Choice", "rationale": "Why", "alternatives": ["Rejected option"] }
       ]

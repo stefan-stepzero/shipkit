@@ -16,6 +16,8 @@
       "name": "LLM Generation Chain",
       "description": "Multi-step LLM pipeline: topic analysis -> difficulty calibration -> question generation -> format assembly -> answer key generation. Each step is a focused prompt that feeds into the next, enabling quality control at each stage.",
       "implementsFeatures": ["F-001", "F-003", "F-004"],
+      "uses": ["zod", "server-sent-events", "structured-outputs"],
+      "whyNotStandard": "The chain is a fixed 5-step linear pipeline; a chain-orchestration framework (LangChain/LangGraph) adds overhead and indirection without benefit. Using direct provider SDK calls with Zod-validated step I/O and schema-enforced structured outputs instead.",
       "designChoices": [
         {
           "decision": "Multi-step chain over single-prompt generation",
@@ -34,6 +36,8 @@
       "name": "Adaptive Difficulty Engine",
       "description": "Analyzes student performance data (completion rates, error patterns) to recommend difficulty adjustments per student or group. Maps curriculum standards to difficulty bands and adjusts question complexity, vocabulary level, and scaffold amount.",
       "implementsFeatures": ["F-004"],
+      "uses": ["zod", "tanstack-query"],
+      "whyNotStandard": null,
       "designChoices": [
         {
           "decision": "Difficulty bands (3 levels) over continuous scoring",
