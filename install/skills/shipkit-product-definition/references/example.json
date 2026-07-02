@@ -93,23 +93,51 @@
     {
       "id": "D-001",
       "statement": "Adaptive difficulty that automatically creates differentiated worksheet sets for the same topic — one creation flow produces materials for struggling, on-level, and advanced students",
+      "assertion": "One creation flow produces exactly three difficulty variants (below-level / on-level / advanced) of the same worksheet without re-entering the topic — countable from a single flow's output.",
+      "nonNegotiable": true,
       "enabledBy": ["F-004", "P-001"]
     },
     {
       "id": "D-002",
       "statement": "Standards-aligned generation that maps directly to curriculum objectives, enabling teachers to prove instructional alignment without manual tagging",
+      "assertion": "Every generated worksheet displays the specific curriculum standard IDs it targets; no worksheet ships with an empty or generic standards field.",
+      "nonNegotiable": true,
       "enabledBy": ["F-002", "F-001"]
     },
     {
       "id": "D-003",
       "statement": "Real-time preview with streaming output — teachers see the worksheet taking shape in seconds, not minutes, enabling rapid iteration",
+      "assertion": "Preview streams its first content within 2s of any parameter change and updates on every change — the user never waits on a blank spinner longer than 2s.",
+      "nonNegotiable": true,
       "enabledBy": ["F-001", "P-002"]
+    }
+  ],
+
+  "qualityBar": [
+    {
+      "id": "Q-001",
+      "dimension": "empty-state",
+      "assertion": "Every list/collection view (saved worksheets, standards browser, differentiated sets) has an empty state that names and links the next action — no screen renders blank or a bare 'No data'.",
+      "appliesTo": ["F-002", "F-003", "F-004"]
+    },
+    {
+      "id": "Q-002",
+      "dimension": "interaction",
+      "assertion": "The wizard flow is completable by keyboard alone — tab moves between steps/fields, enter advances; no step requires a mouse to progress.",
+      "appliesTo": ["F-001", "F-004"]
+    },
+    {
+      "id": "Q-003",
+      "dimension": "error",
+      "assertion": "Every generation or export failure shows a specific, recoverable message with a retry action — never a raw stack trace, silent failure, or dead-end spinner.",
+      "appliesTo": ["F-001", "F-003", "F-005"]
     }
   ],
 
   "summary": {
     "totalFeatures": 5,
     "totalPatterns": 3,
-    "totalDifferentiators": 3
+    "totalDifferentiators": 3,
+    "totalQualityBar": 3
   }
 }

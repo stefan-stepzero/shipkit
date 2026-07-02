@@ -54,17 +54,43 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v3
     {
       "id": "D-001",
       "statement": "What makes this unique",
+      "assertion": "The testable form — a checkable claim about the built product",
+      "nonNegotiable": true,
       "enabledBy": ["F-001", "P-001"]
+    }
+  ],
+
+  "qualityBar": [
+    {
+      "id": "Q-001",
+      "dimension": "interaction|feedback|empty-state|error|performance|accessibility|content",
+      "assertion": "Testable interaction/quality standard the build is scored against",
+      "appliesTo": ["F-001"]
     }
   ],
 
   "summary": {
     "totalFeatures": 0,
     "totalPatterns": 0,
-    "totalDifferentiators": 0
+    "totalDifferentiators": 0,
+    "totalQualityBar": 0
   }
 }
 ```
+
+## The Essence Block (Phase-3 fidelity target)
+
+`differentiators` + `qualityBar` together capture the app's **essence** — what makes it *this* app and
+the quality bar it holds itself to — as **checkable criteria**, so a downstream eval can score a built
+app for fidelity rather than judging prose.
+
+- **Essence scored by an eval** = `differentiators[]` items where `nonNegotiable: true` (via each
+  `assertion`) **+** every `qualityBar[]` assertion.
+- Every `assertion` must be **observable and binary-checkable** (yes / no / partially) against a built
+  screen or behaviour — not a feeling. Avoid "clean", "modern", "intuitive", "seamless" unless paired
+  with a measurable spec.
+- The `qualityBar` is the behavioural/interaction standard. It **references** the design system for
+  aesthetic direction (tokens/principles) rather than duplicating it.
 
 ## Field Reference
 
@@ -82,7 +108,8 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v3
 | `solutionApproach` | string | yes | High-level product approach description |
 | `features` | array | yes | User-facing features |
 | `uxPatterns` | array | yes | Key interaction patterns |
-| `differentiators` | array | yes | What makes this unique |
+| `differentiators` | array | yes | What makes this unique (essence — with testable assertions) |
+| `qualityBar` | array | yes | Interaction/product quality bar as testable assertions (essence) |
 | `summary` | object | yes | Aggregated counts |
 
 ### Product Object
@@ -129,7 +156,18 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v3
 |-------|------|----------|-------------|
 | `id` | string | yes | Stable ID: `D-001`, `D-002`, etc. |
 | `statement` | string | yes | What makes this unique — a clear differentiator claim |
+| `assertion` | string | yes | The differentiator restated as a **testable assertion** — an observable, binary-checkable claim about the built product that an eval can score |
+| `nonNegotiable` | boolean | no | `true` for the essence-floor differentiators that must ship faithfully. Defaults to `true` when omitted (differentiators are non-negotiable by intent). |
 | `enabledBy` | string[] | yes | Feature and/or pattern IDs that enable this |
+
+### Quality Bar Object
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | string | yes | Stable ID: `Q-001`, `Q-002`, etc. |
+| `dimension` | string | yes | Which quality dimension: `interaction`, `feedback`, `empty-state`, `error`, `performance`, `accessibility`, `content` (extend as needed) |
+| `assertion` | string | yes | The interaction/quality standard as a **testable assertion** — observable and binary-checkable against a built screen/behaviour |
+| `appliesTo` | string[] | yes | Feature IDs this bar holds (empty array = app-wide) |
 
 ### Summary Object
 
@@ -138,6 +176,7 @@ This document defines the JSON schema for `.shipkit/product-definition.json` (v3
 | `totalFeatures` | number | yes | Count of features array |
 | `totalPatterns` | number | yes | Count of uxPatterns array |
 | `totalDifferentiators` | number | yes | Count of differentiators array |
+| `totalQualityBar` | number | yes | Count of qualityBar array |
 
 **Recompute summary every time the file is written.**
 
@@ -151,6 +190,7 @@ The ID-based cross-references enable these traversals:
 | Feature | UX Patterns | `features[].patterns` |
 | UX Pattern | Features | `uxPatterns[].usedIn` |
 | Differentiator | Features/Patterns | `differentiators[].enabledBy` |
+| Quality Bar | Features | `qualityBar[].appliesTo` |
 | Problem Space | Pain Points (discovery) | `problemSpace.keyPainPoints` |
 | Problem Space | Personas (discovery) | `problemSpace.primaryPersona` |
 
