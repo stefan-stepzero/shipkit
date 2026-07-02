@@ -15,7 +15,9 @@ Before a spec is done, enumerate what the feature **implies** across four functi
 | **Applications** | What runnable surfaces does this feature need to exist? (web UI, API service, background worker, CLI, mobile app) | A scenario that renders something implies a UI surface; one that serves data implies a service. |
 | **Datastores** | What persistent stores does it read or write? (tables, collections, buckets, caches, queues) | Any `then` that saves, lists, updates, deletes, or "remembers" data. |
 | **Contracts** | What APIs / function signatures / events / message schemas connect the surfaces? | **Every UI action that fetches or mutates data implies a contract on the other side.** This is the load-bearing dimension. |
-| **Integrations** | What external services / third-party APIs / auth providers / infra does it depend on? | Auth, payments, email, storage, LLM APIs, any "via X" in the spec. |
+| **Integrations** | What external services / third-party APIs / auth providers / infra does it depend on? | Auth, payments, email, storage, LLM APIs, any "via X" in the spec. **If the app has auth, the row-identity key (e.g. `auth.uid()` → profile/tenant key) is a first-class contract — see identity-contract-first below.** |
+
+Two of these dimensions have failure modes that don't show up as a *missing* element — they show up as an element declared **inconsistently across surfaces**. The checklist catches them with two extra passes below: the **shared-contract SSOT pass** (fields/metrics/entities that ≥2 surfaces read) and **identity-contract-first** (the auth row-key, locked before any schema/RLS). These are where real multi-surface builds bleed rework — a metric recomputed four different ways, an identity key woven through 40 tables before it settled.
 
 ---
 
@@ -48,6 +50,26 @@ Walk every scenario's `when` and `then`. For each action that **displays, fetche
 
 A read-only "view shared recipe" screen with no `GET` endpoint and no row to read is the textbook failure this catch exists for. A UI that "saves your preferences" with no store and no write contract is the same class. Don't let a frontend imply a backend that the spec never names.
 
+### 4. The shared-contract SSOT pass (fields/metrics/entities read by ≥2 surfaces)
+
+The frontend-implies-backend catch stops a surface from having *no* backing. This pass stops the opposite failure: a field or metric that **several surfaces compute independently**, drifting out of agreement.
+
+Walk the scenarios and the functional surface. Enumerate every **field, metric, or entity that is used by two or more surfaces** (e.g. a `grade_band` shown on a student view *and* three staff dashboards; a "mastery" number rendered in two places; a `session_id` written by ingest and read by pacing). For each one:
+
+- Declare a **single owning source of truth** — the table / view / function that computes it. Every surface reads *from that owner*; none recomputes it locally.
+- A shared field that is **computed independently on more than one surface is a gate violation** → **FLAGGED**. The fix is to name the owning SSOT (a shared view, a derived column, a single function) and point every consumer at it, not to re-derive it per surface.
+- A surface that reads a shared field with **no declared owner** at all is an **unbacked surface** → FLAGGED (record it in `gapReport.unbackedSurfaces`).
+
+This is the catch that would have killed a metric implemented four different ways across four dashboards, or the wrong field shown on three staff surfaces until QA caught it. Declare the contract once, own it once.
+
+### 5. Identity-contract-first (apps with auth)
+
+If the app has authentication, the **row-identity key must be declared before any schema or RLS is specced** — not discovered while writing the first policy. It is an integration-dimension contract, resolved first:
+
+- Name the identity key and its mapping: what `auth.uid()` (or the equivalent principal) resolves to, and how it maps to the owning profile / tenant / account key that rows are scoped by.
+- Lock it **before** the spec names tables, migrations, or RLS policies that depend on it — every scoped table and policy inherits this contract, so a late change forces an all-tables sweep (and, on shared devices, identity-bleed bugs).
+- If auth is present and the identity key is **not declared** before schema/RLS elements appear in the spec → **FLAGGED** (integrations dimension). API auth requirements (which endpoints require which principal) are first-class contracts in the same pass — an endpoint that serves protected data with no declared auth requirement is FLAGGED.
+
 ---
 
 ## Propose, don't interrogate
@@ -75,7 +97,10 @@ If `.shipkit/architecture-map.json` is absent or thin (new project, nothing buil
 Record the result on the spec artifact (see `output-schema.md`):
 
 - **`functionalSurface`** — `applications[] / datastores[] / contracts[] / integrations[]`, each element `{ name, kind, verdict, evidence }`.
-- **`gapReport`** — `{ status: "clear" | "flagged", dimensions: {...}, flagged: [...], architectureMapUsed, confidence }`.
+- **`gapReport`** — `{ status: "clear" | "flagged", dimensions: {...}, flagged: [...], sharedContracts: [...], unbackedSurfaces: [...], identityContract: {...}, architectureMapUsed, confidence }`.
+  - **`sharedContracts`** — the SSOT map: `[ { field, usedBy: [surfaces], owner: "table/view/function", status: "owned" | "recomputed" } ]`. Any `status: "recomputed"` is a violation → `gapReport.status: "flagged"`.
+  - **`unbackedSurfaces`** — `[ { surface, field, reason } ]` — surfaces reading a shared field with no declared owner.
+  - **`identityContract`** — for auth apps: `{ key, mapsTo, declaredBeforeSchema: true | false }`. `declaredBeforeSchema: false` is a violation.
 - **`deferred`** — `[ { dimension, element, reason } ]`.
 
-A spec written to `todo/` must have `gapReport.status: "clear"` (FLAGGED = 0). If items remain flagged, the spec is incomplete — surface them and resolve before saving.
+A spec written to `todo/` must have `gapReport.status: "clear"` (FLAGGED = 0, no `recomputed` shared contracts, no `unbackedSurfaces`, and — if auth is present — `identityContract.declaredBeforeSchema: true`). If items remain flagged, the spec is incomplete — surface them and resolve before saving.

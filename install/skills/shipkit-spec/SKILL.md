@@ -246,10 +246,12 @@ Run the four-dimension completeness pass per **`references/no-gaps-checklist.md`
 1. **Enumerate** what the feature implies across **applications / datastores / contracts / integrations** — from the spec text, cross-checked against `.shipkit/architecture-map.json` and `.shipkit/engineering-definition.json` (greenfield: derive from spec + engineering-definition + stack; record `architectureMapUsed: false`).
 2. **Classify** every implied element: **COVERED** (named in the spec or already in the architecture) / **FLAGGED** (implied but named nowhere) / **EXPLICITLY-DEFERRED** (named + reason).
 3. **Frontend-implies-backend catch**: for every scenario `when`/`then` that displays, fetches, lists, saves, updates, or deletes data, confirm a **contract** serves it and a **datastore** holds it. If not → FLAGGED.
-4. **Surface FLAGGED items as a proposal** (not a quiz) — only the gaps, each with a proposed resolution. The user resolves each by **naming it** (→ COVERED, add to `technical`) or **deferring it with a reason** (→ EXPLICITLY-DEFERRED).
-5. Write `functionalSurface`, `gapReport`, and `deferred` onto the artifact (see `references/output-schema.md`).
+4. **Shared-contract SSOT pass**: enumerate every **field / metric / entity read by ≥2 surfaces** and declare a **single owning source of truth** (table / view / function) each reads from. A shared field **computed independently on more than one surface is a gate violation** → FLAGGED; a shared field with no declared owner is an **unbacked surface** → FLAGGED. Record the SSOT map in `gapReport.sharedContracts` and any ownerless reads in `gapReport.unbackedSurfaces`.
+5. **Identity-contract-first**: if the app has auth, the **row-identity key** (e.g. `auth.uid()` → profile/tenant key) must be **declared before any schema or RLS** is specced — it's an integrations-dimension contract resolved first. Auth present but identity key undeclared before schema/RLS elements → FLAGGED. Record it in `gapReport.identityContract`.
+6. **Surface FLAGGED items as a proposal** (not a quiz) — only the gaps, each with a proposed resolution. The user resolves each by **naming it** (→ COVERED, add to `technical`) or **deferring it with a reason** (→ EXPLICITLY-DEFERRED).
+7. Write `functionalSurface`, `gapReport` (incl. `sharedContracts`, `unbackedSurfaces`, `identityContract`), and `deferred` onto the artifact (see `references/output-schema.md`).
 
-- [ ] No-gaps gate run; `gapReport.status` is **`clear`** (FLAGGED = 0) before saving. **A spec with any FLAGGED element is not done.**
+- [ ] No-gaps gate run; `gapReport.status` is **`clear`** (FLAGGED = 0, no `recomputed` shared contracts, no `unbackedSurfaces`, and if auth is present `identityContract.declaredBeforeSchema: true`) before saving. **A spec with any FLAGGED element is not done.**
 
 ---
 
@@ -395,6 +397,11 @@ Copy and track:
     "status": "clear",
     "dimensions": { "applications": "covered", "datastores": "covered", "contracts": "covered", "integrations": "covered" },
     "flagged": [],
+    "sharedContracts": [
+      { "field": "grade_band", "usedBy": ["student-view", "coach-dashboard"], "owner": "grade_band_v (view)", "status": "owned" }
+    ],
+    "unbackedSurfaces": [],
+    "identityContract": { "key": "auth.uid()", "mapsTo": "profiles.id", "declaredBeforeSchema": true },
     "architectureMapUsed": true,
     "confidence": "high"
   },
@@ -620,7 +627,7 @@ Spec is complete when:
 - [ ] Technical notes include DB/API changes
 - [ ] Test strategy identifies call flows and coverage approach
 - [ ] Key test cases mapped from scenarios
-- [ ] No-gaps gate passed: `functionalSurface` enumerated across all 4 dimensions, `gapReport.status` is `clear` (zero FLAGGED), any deferrals named with reason
+- [ ] No-gaps gate passed: `functionalSurface` enumerated across all 4 dimensions; shared-contract SSOT map declared (`gapReport.sharedContracts`, no `recomputed`); no `unbackedSurfaces`; identity-contract-first satisfied for auth apps (`gapReport.identityContract.declaredBeforeSchema`); `gapReport.status` is `clear` (zero FLAGGED); any deferrals named with reason
 - [ ] File saved to `.shipkit/specs/todo/{name}.json`
 <!-- /SECTION:success-criteria -->
 ---

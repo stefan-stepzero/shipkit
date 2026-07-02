@@ -254,6 +254,7 @@ Write the verification report to `.shipkit/verification-report.json` (see agent 
 - Edge cases from spec handled
 - Feature actually solves the stated problem
 - **Fix didn't break the general case** — if a bug spec exists (`.shipkit/specs/active/bug-*.json`), check that the fix handles the reported case WITHOUT regressing the happy path or other documented edge cases. Read `fix.robustness.findings` for what was considered.
+- **Green-but-mock** — a surface the spec declares **live** (in `functionalSurface` / scenarios) but that still reads mock/stub/hardcoded data is NOT done. This is a hard FAIL — see the **Data-Reality Gate** below.
 
 ### 3. Error Resilience
 - Unhandled promise rejections
@@ -510,6 +511,33 @@ Each finding MUST include evidence and an L-I-E assessment:
 
 ---
 
+## Data-Reality Gate (green-but-mock = FAIL)
+
+**This is the one hard gate in an otherwise report-only skill.** Everything else here is advisory; this produces a **FAIL verdict** the engine acts on. It enforces *frontend-implies-backend as a build gate* — the spec's no-gaps checklist declared the contracts and datastores; this confirms the built surfaces actually read them, not a mock seam.
+
+**Why:** the most expensive rework pattern is a surface that looks done — renders, passes a glance — while reading mock/stub/hardcoded data because its backing view / API / table was never wired. It "works" in the demo and breaks the moment real data flows. A green-but-mock surface is **not done**.
+
+### What to scan
+
+For every surface the spec declares **live** (present in the spec's `functionalSurface` or in a scenario's `then`, and NOT listed in `deferred` / `acceptanceCriteria.wontHave`), check the built code for mock seams:
+
+| Seam | Detection (evidence required) |
+|------|-------------------------------|
+| Hardcoded / inline mock data | `Grep: pattern="mock\|MOCK\|dummy\|sampleData\|fakeData\|placeholder\|lorem\|hardcoded\|stub"` in the surface's files; a component rendering a literal array/object instead of a fetch/query |
+| Unwired "TODO: wire live" | `Grep: pattern="TODO.*(wire\|live\|real data\|hook up\|replace mock)\|FIXME.*data\|// mock"` on a spec-declared-live surface |
+| Missing backing contract/store | Surface renders a shared field but the owning view/API/table from the spec's `gapReport.sharedContracts` isn't queried anywhere → the SSOT isn't wired |
+| Stubbed fetch | A data-fetch function that `return`s a constant / commented-out real call and returns fixtures instead |
+
+### The rule
+
+- A surface the spec declares **live** that still reads mock/stub/hardcoded data → **🔴 Critical, verdict FAIL**. Report it with file:line evidence (Grep/Read output), classified `CREATED_WRONG` (built, but reading mock instead of the declared contract).
+- A mock seam on a surface the spec **explicitly defers** (`deferred` / `wontHave`) is fine → note it, don't fail.
+- Record the result on the report: `dataReality: { status: "pass" | "fail", mockSeams: [ { surface, file, line, declaredLive, evidence } ] }`. **Any `declaredLive` mock seam sets the overall verdict to FAIL** — the engine (steered mode) reads this and re-dispatches the surface to be wired to live data before it advances.
+
+This is the build-time counterpart to the spec-time no-gaps gate: the spec named the contracts; this proves the surfaces consume them.
+
+---
+
 ## Contextual Emphasis
 
 Not all dimensions every time. Emphasize based on what changed:
@@ -607,7 +635,7 @@ Every finding MUST include a compact **L-I-E** rating to help the user prioritiz
 
 - **Make architectural decisions** — reports findings, defers all fixes to user
 - **Override dismissals** — dismissed themes stay dismissed for the entire session
-- **Block commits** — informational, not a gate
+- **Block commits** — advisory, not a gate — **except the Data-Reality Gate**: a spec-declared-live surface reading mock/stub data produces a hard FAIL verdict the engine acts on (green-but-mock is not done)
 - **Fix code** — read-only reviewer, never modifies source code
 - **Run linters/tests** — this is Claude reasoning, not tooling
 - **Guarantee completeness** — best effort review
@@ -641,7 +669,7 @@ When running as part of an Agent Team:
 
 ## Context Files This Skill Writes
 
-- `verification-report.json` (run-scoped under `<runDir>/`, else `.shipkit/`) — QA verdict written on every run (summary + per-check results the engine reads in steered mode for routing decisions)
+- `verification-report.json` (run-scoped under `<runDir>/`, else `.shipkit/`) — QA verdict written on every run (summary + per-check results the engine reads in steered mode for routing decisions). Includes `dataReality: { status, mockSeams[] }` — any spec-declared-live mock seam forces the overall verdict to FAIL.
 
 ---
 
@@ -688,8 +716,9 @@ engine set a run root; `.shipkit/verification-report.json` otherwise).
 **Next:** This skill is the per-unit **review work** the engine (`shipkit-orchestrate`,
 **steered** mode) fans out — one unit per app-area / screen (frontend + backend). The
 engine reads this assessment as ground truth and surfaces it to the user to steer:
-- If **gaps found**: the engine re-dispatches the affected upstream work for revision,
-  then re-runs this reviewer against the same unit.
+- If **gaps found** (including a **Data-Reality FAIL** — a spec-declared-live surface still on
+  mock/stub data): the engine re-dispatches the affected upstream work for revision,
+  then re-runs this reviewer against the same unit. Green-but-mock does not advance.
 - If **pass**: the engine advances that unit and reports it as met against the bar.
 
 The engine (main session) owns the dispatch/reconcile loop; this skill owns the
@@ -709,5 +738,6 @@ per-unit judgment. It can also be run directly for an ad-hoc review of the curre
 - [ ] Specs/architecture read for compliance
 - [ ] All findings backed by tool evidence (Glob/Grep/Read)
 - [ ] Findings classified with L-I-E ratings
+- [ ] Data-Reality Gate run: spec-declared-live surfaces checked for mock seams; any green-but-mock surface sets verdict FAIL (`dataReality` recorded on report)
 - [ ] Final report shows: critical, should-fix, minor, dismissed
 <!-- /SECTION:success-criteria -->

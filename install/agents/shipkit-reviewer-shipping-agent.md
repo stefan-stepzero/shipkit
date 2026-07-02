@@ -123,6 +123,12 @@ Write `.shipkit/verification-report.json`:
       "fix": "Suggested fix approach"
     }
   ],
+  "dataReality": {
+    "status": "pass" | "fail",
+    "mockSeams": [
+      { "surface": "coach-dashboard", "file": "src/app/coach/page.tsx", "line": 23, "declaredLive": true, "evidence": "renders MOCK_ROWS constant; spec functionalSurface declares this surface live, backing view cohort_leaderboard_v never queried" }
+    ]
+  },
   "qaSubSkillsRun": ["ux-audit", "semantic-qa"],
   "strengths": ["What's working well"]
 }
@@ -131,6 +137,7 @@ Write `.shipkit/verification-report.json`:
 **Status rules:**
 - `"pass"` — No blockers found. Suggestions may exist but don't block shipping.
 - `"issues_found"` — At least one blocker. `issues[]` describes what's wrong.
+- **Data-Reality Gate:** any `dataReality.mockSeams[]` entry with `declaredLive: true` (a spec-declared-live surface still on mock/stub data) is a **blocker** → overall `status` MUST be `"issues_found"` and `dataReality.status` `"fail"`. Green-but-mock is not done. A mock seam on an explicitly-deferred surface does not fail.
 
 ## Constraints
 
