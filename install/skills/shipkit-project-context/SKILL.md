@@ -26,7 +26,7 @@ effort: medium
 - "What's my tech stack?"
 
 **Auto-triggered by**:
-- `shipkit-master` (when stack.json is missing or stale)
+- session start / any skill needing `stack.json` (when it is missing or stale)
 
 **First run**:
 - No `.shipkit/` directory exists
@@ -75,7 +75,7 @@ stack.json alone is NOT done — env-requirements.md and schema.json must also b
 
 **Token savings**: Cached read ~100-200 tokens vs Full scan ~1,500 tokens
 
-> **Fork context — no user prompts.** This skill is dispatched by orch-planning (or inline by other skills) and has no user channel when forked. Rescans proceed automatically whenever the freshness check flags them. If the user wants to suppress automatic rescans, they edit `.shipkit/stack.json` mtime or skip this skill in the orch roster.
+> **Fork context — no user prompts.** This skill is dispatched by a caller (the orchestration engine, session start, or another skill needing `stack.json`) and has no user channel when forked. Rescans proceed automatically whenever the freshness check flags them. If the user wants to suppress automatic rescans, they edit `.shipkit/stack.json` mtime or skip this skill in the caller's step list.
 
 ---
 
@@ -443,7 +443,8 @@ Skills that haven't migrated to JSON yet continue writing markdown. The reporter
 - `implement (no skill needed)` - References stack.json and schema.json while coding
 
 ### Triggered By
-- `/shipkit-master` - When stack.json missing or stale
+- Session start / any skill needing `stack.json` - When stack.json missing or stale
+- User (direct) - `/shipkit-project-context`
 
 ---
 

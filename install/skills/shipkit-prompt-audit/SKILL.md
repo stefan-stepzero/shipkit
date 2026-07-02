@@ -441,7 +441,7 @@ This skill follows the **Shipkit JSON artifact convention**. See `references/out
 
 | Source | When |
 |--------|------|
-| `/shipkit-master` | User asks "audit prompts", "check AI pipeline" |
+| User (direct) | User asks "audit prompts", "check AI pipeline" |
 | `/shipkit-review-shipping` | Flags AI-related code for deeper review |
 | `/shipkit-preflight` | Pre-launch check of AI features |
 

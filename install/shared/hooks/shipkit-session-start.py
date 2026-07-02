@@ -364,17 +364,17 @@ def main():
     # Collect output lines instead of printing directly
     lines = []
 
-    # Master skill must be installed.
-    master_skill = skills_dir / 'shipkit-master' / 'SKILL.md'
-    if not master_skill.exists():
+    # The engine skill (shipkit-orchestrate) is the mandatory core — must be installed.
+    engine_skill = skills_dir / 'shipkit-orchestrate' / 'SKILL.md'
+    if not engine_skill.exists():
         lines.append("Shipkit not properly installed. Run the installer again.")
         _emit_context('\n'.join(lines), project_root)
         return 0
 
     # Gate the heavy orchestration injection on an ACTIVATED Shipkit project
     # (a project with a .shipkit/ folder). This matters at user scope, where the
-    # hook fires in every project globally — we must not dump the master skill
-    # (~1500 tokens) + routing into unrelated work. A project is activated the
+    # hook fires in every project globally — we must not dump the engine skill
+    # (~1700 tokens) + routing into unrelated work. A project is activated the
     # first time any /shipkit-* skill writes into .shipkit/. Until then, emit a
     # single-line hint. At project scope the installer creates .shipkit/, so this
     # path is behavior-preserving (full context loads as before).
@@ -387,8 +387,8 @@ def main():
         _emit_context('\n'.join(lines), project_root)
         return 0
 
-    # ── Activated Shipkit project: load full orchestration context ──
-    lines.append(master_skill.read_text(encoding='utf-8'))
+    # ── Activated Shipkit project: load full orchestration context (the engine) ──
+    lines.append(engine_skill.read_text(encoding='utf-8'))
     lines.append('')
     lines.append('---')
     lines.append('')

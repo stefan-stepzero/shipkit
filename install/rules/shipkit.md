@@ -166,6 +166,12 @@ When `.shipkit/codebase-index.json` exists, the session-start hook injects a **l
 | Update CLAUDE.md with learnings | `/shipkit-claude-md` |
 | End session / checkpoint | `/shipkit-work-memory` |
 
+### Orchestration
+| When... | Use |
+|---------|-----|
+| Drive any set of steps to a ground-truth bar (custom run) | `/shipkit-orchestrate` |
+| Run the direction loop — vision → goals (interim; retires once `shipkit-direction` ships) | `/shipkit-orch-direction` |
+
 ### Execution
 | When... | Use |
 |---------|-----|

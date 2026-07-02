@@ -169,6 +169,20 @@ do not re-implement the loop.)
 
 ---
 
+<!-- SECTION:after-completion -->
+## After Completion
+
+The run reached its bar (or reported done-vs-outstanding at the slot ceiling); the ledger
+is at `<runDir>/orchestration.json`.
+
+**Next:** normally the calling phase skill continues the flow. If you invoked the engine
+directly for a build, run `/shipkit-review-shipping` to review the built work (the engine
+in steered mode, one unit per area/screen). For a custom run, act on the reconciled
+artifacts the ledger names.
+<!-- /SECTION:after-completion -->
+
+---
+
 **Remember**: the engine is the *one* completion loop. Its whole value is that "done"
 means *reconciled against ground truth*, identically across build, review, and
 direction — not the 80% that looks finished.

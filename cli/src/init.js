@@ -296,8 +296,8 @@ async function init(packageRoot, flags) {
       ui.success(`Shipkit v${version} installed to ${targetDir}`);
       console.log();
       ui.bullet('Open Claude Code in this directory to start using Shipkit');
-      ui.bullet('Run /shipkit-master to see available skills');
       ui.bullet('Run /shipkit-why-project to define your project vision');
+      ui.bullet('Then /shipkit-spec → /shipkit-plan → /shipkit-ship to build');
       console.log();
     }
     if (claudeMdPreserved) {

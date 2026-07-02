@@ -10,6 +10,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.11.0] - 2026-07-02
+
+**The orchestration rethink lands: one automation engine, thin phase callers, and the forked loop layer retired.** Shipkit's orchestration collapses from three hand-rolled forked loops into a single reusable engine (`shipkit-orchestrate`) that phase skills call, with `shipkit-ship` as the build entry point. Adds a no-gaps spec completeness gate and run-scoped transient artifacts so parallel runs don't collide. **39 skills / 9 agents** (down from 40 / 12).
+
+### Added
+- **`shipkit-orchestrate` — the core automation engine.** One reusable orchestration loop (main-session delegate → reconcile-against-ground-truth → re-dispatch → stop-at-bar) that every phase skill calls, so "done" means *reconciled against disk/git*, never a worker's self-report. Two governance modes: **autonomous** (drive-to-done, unattended) and **steered** (team-lead, surfaces to the user). Parallel fan-out via the Workflow tool with worktree isolation; Agent Teams is a documented fallback substrate (ZDR / disabled-workflows / unsupported hosts). Contract in `install/shared/references/core-automation.md`. Now the mandatory core skill.
+- **`shipkit-ship` — the BUILD entry point.** A thin caller that drives a plan to done via the engine (autonomous): partition → fan-out → reconcile → serial-integrate → stop at the bar (the spec's named functional surface + the plan's acceptance + tests green). One engine call; the loop lives in the engine.
+- **No-gaps spec completeness gate** on `shipkit-spec` — a four-dimension check (applications / datastores / contracts / integrations, with a frontend-implies-backend catch) that forces a spec to name every element it implies, so "done" can't mean green-but-not-functional.
+- **Run-scoped transient artifacts.** The engine mints a run id + run root (`.shipkit/runs/<id>/`); transient outputs (run-state, elicitation, QA reports, checkpoints) resolve under it so concurrent runs don't collide. Durable singletons stay at `.shipkit/`. Rule + lists in `install/shared/references/run-artifacts.md`.
+- **Per-stack ecosystem defaults** in `shipkit-engineering-definition` — a Step 2b "Ecosystem Audit" + `mechanism-standards.md` (mechanism→standard categories + anti-patterns) + per-stack default files (python-llm / python-api / nextjs-fullstack / react-spa).
+
+### Changed
+- **Build flow is now `spec → plan → ship → review`, each a thin engine invocation.** `shipkit-plan` hands off to `/shipkit-ship`; `shipkit-review-shipping` runs as the engine's per-unit review work in steered mode (one unit per app-area/screen). No caller re-implements the dispatch/reconcile loop.
+- **Session-start hook** now loads the `shipkit-orchestrate` engine as the orchestration context (was `shipkit-master`); the engine is the install sentinel and the mandatory core across all install profiles.
+
+### Removed
+- **Retired the forked loop-orchestrator layer:** deleted `shipkit-master`, `shipkit-orch-planning`, `shipkit-orch-shipping` skills and their 3 orchestrator agents (`orch-master`/`orch-planning`/`orch-shipping-agent`). The engine + thin callers replace them. The **direction** loop (`shipkit-orch-direction` + agent) remains for now and retires in a later release once its thin replacement ships.
+
+### Migration
+- **If you invoked the removed skills**, switch to the engine-model equivalents:
+  - `/shipkit-master` (route/orchestrate) → invoke the phase skills directly (`/shipkit-spec` → `/shipkit-plan` → `/shipkit-ship`), or `/shipkit-orchestrate` for a custom run.
+  - `/shipkit-orch-planning` (planning loop) → `/shipkit-spec` + `/shipkit-plan` (synthesis), then `/shipkit-ship`.
+  - `/shipkit-orch-shipping` (shipping loop) → `/shipkit-ship` (build) + `/shipkit-review-shipping` (review).
+- No `.shipkit/` data migration is required; existing context files are unchanged. Re-run `/shipkit-update` to pick up the new skill set.
+
+---
+
 ## [2.10.0] - 2026-06-27
 
 Two new skills and a leaner architecture log. Adds **`shipkit-architecture-map`** — a refreshable current-state map of the system (applications, datastores, contracts, integrations), distinct from the architecture *decisions* log — and **`shipkit-resource-advocate`**, powering a new **adversarial debate mode** in `shipkit-thinking-partner`. Reworks the architecture decision log so it stays lean in context. **40 skills / 12 agents.**

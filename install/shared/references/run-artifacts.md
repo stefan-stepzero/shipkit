@@ -53,7 +53,7 @@ but a reader reads the fixed path (or vice versa), the artifact silently goes mi
 | `orchestration.json` (run-state / ledger) | shipkit-orchestrate |
 | `elicitation/<skill>/questions.md`, `answers.md` | the 6 elicitive skills + engine (see `elicitation-protocol.md`) |
 | `verification-report.json` | shipkit-review-shipping |
-| `preflight.json` | shipkit-preflight (read by scale-ready, orch-shipping) |
+| `preflight.json` | shipkit-preflight (read by scale-ready) |
 | `scale-readiness.json` | shipkit-scale-ready (reads `preflight.json`) |
 | `communications/latest.html` + `communications/archive/` | shipkit-communications |
 | `semantic-qa/suites/*/outputs/run-*`, `judgments/run-*` | shipkit-semantic-qa (already per-run-timestamped; nests in the run root under the engine) |

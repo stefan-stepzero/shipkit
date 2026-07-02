@@ -180,7 +180,7 @@ All files preserved in context/ subfolder.
 ## Version Map
 | File | Version |
 |------|---------|
-| shipkit-master/SKILL.md | v1.0.0 |
+| shipkit-orchestrate/SKILL.md | v1.0.0 |
 | shipkit-spec/SKILL.md | v1.0.0 |
 | settings.json (_shipkit) | v1.0.0 |
 | CLAUDE.md | v1.0.0 (or "no markers") |

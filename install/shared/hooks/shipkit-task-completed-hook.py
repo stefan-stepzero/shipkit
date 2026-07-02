@@ -166,7 +166,7 @@ def main():
         sys.exit(0)
 
     # Agent-aware gating: only run build/test checks for shipping agent tasks.
-    # Direction and planning loops produce artifacts, not code — no build needed.
+    # Direction and planning phases produce artifacts, not code — no build needed.
     agent_type = hook_input.get("agent_type", "")
     if agent_type and "shipping" not in agent_type.lower():
         sys.exit(0)

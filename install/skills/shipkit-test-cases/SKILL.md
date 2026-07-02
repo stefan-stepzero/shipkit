@@ -468,7 +468,7 @@ This flags technical debt while still providing a workable (if fragile) selector
   • 3 files without coverage
   • 3 elements need data-testid attributes
 
-👉 Next: Run `/shipkit-ship <feature-slug>` to execute pending cases via the shipping loop, or run ad-hoc cases manually via the project's test runner
+👉 Next: Run `/shipkit-ship <feature-slug>` to execute pending cases as part of the build (the engine runs the plan's named checks), or run ad-hoc cases manually via the project's test runner
 ```
 
 ---
@@ -620,7 +620,7 @@ The `coverage.json` file follows the **Shipkit Artifact Convention** -- a standa
 
 Test cases written to `.shipkit/test-cases/` with coverage summary at `.shipkit/test-cases/coverage.json`.
 
-**Next:** Test cases are executed as part of the shipping loop — `shipkit-orch-shipping-agent` includes test execution in its phase gates via the appropriate producer agents. Run `/shipkit-ship <feature-slug>` if a plan exists, or invoke test execution manually via the project's test runner for ad-hoc cases.
+**Next:** Test cases are executed as part of the build — the `shipkit-orchestrate` engine (via `/shipkit-ship`) runs the plan's named checks, including tests, as part of the ground-truth bar. Run `/shipkit-ship <feature-slug>` if a plan exists, or invoke test execution manually via the project's test runner for ad-hoc cases.
 <!-- /SECTION:after-completion -->
 
 ---

@@ -125,7 +125,6 @@
       "WebFetch(domain:stackoverflow.com)",
       "WebFetch(domain:developer.mozilla.org)",
 
-      "Skill(shipkit-master)",
       "Skill(shipkit-project-context)",
       "Skill(shipkit-product-discovery)",
       "Skill(shipkit-spec-roadmap)",
@@ -165,8 +164,6 @@
       "Skill(shipkit-qa-visual)",
       "Skill(shipkit-orchestrate)",
       "Skill(shipkit-orch-direction)",
-      "Skill(shipkit-orch-planning)",
-      "Skill(shipkit-orch-shipping)",
       "Skill(shipkit-review-direction)",
       "Skill(shipkit-review-planning)",
       "Skill(shipkit-metrics)"
@@ -188,11 +185,8 @@
   "defaultMode": "acceptEdits",
 
   "skillOverrides": {
-    "shipkit-master": "name-only",
     "shipkit-orchestrate": "name-only",
     "shipkit-orch-direction": "name-only",
-    "shipkit-orch-planning": "name-only",
-    "shipkit-orch-shipping": "name-only",
     "shipkit-review-direction": "name-only",
     "shipkit-review-planning": "name-only",
     "shipkit-resource-advocate": "name-only"

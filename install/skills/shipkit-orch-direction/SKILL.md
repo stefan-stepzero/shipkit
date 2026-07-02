@@ -1,6 +1,6 @@
 ---
 name: shipkit-orch-direction
-description: Direction loop — defines WHY, WHAT, and strategic foundations. Dispatches producer skills and reviews coherence. Can be invoked standalone or by shipkit-master.
+description: Direction loop — defines WHY, WHAT, and strategic foundations. Dispatches producer skills and reviews coherence. Invoked standalone (retired once SS-3 ships shipkit-direction).
 context: fork
 agent: shipkit-orch-direction-agent
 effort: high

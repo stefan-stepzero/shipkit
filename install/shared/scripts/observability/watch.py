@@ -93,9 +93,6 @@ AGENT_MODEL_MAP = {
     'shipkit-architect-agent': 'opus',
     'shipkit-implementer-agent': 'opus',
     'shipkit-orch-direction-agent': 'sonnet',
-    'shipkit-orch-planning-agent': 'sonnet',
-    'shipkit-orch-shipping-agent': 'sonnet',
-    'shipkit-orch-master-agent': 'sonnet',
     'shipkit-reviewer-direction-agent': 'sonnet',
     'shipkit-reviewer-planning-agent': 'sonnet',
     'shipkit-reviewer-shipping-agent': 'sonnet',
@@ -124,10 +121,7 @@ SKILL_AGENT_MAP = {
     'shipkit-ux-audit': 'reviewer-shipping',
     'shipkit-review-direction': 'reviewer-direction',
     'shipkit-review-planning': 'reviewer-planning',
-    'shipkit-master': 'orch-master',
     'shipkit-orch-direction': 'orch-direction',
-    'shipkit-orch-planning': 'orch-planning',
-    'shipkit-orch-shipping': 'orch-shipping',
     'shipkit-thinking-partner': 'thinking-partner',
 }
 
@@ -149,8 +143,6 @@ SKILL_MODEL_MAP = {
     'shipkit-review-shipping': 'opus',
     'shipkit-preflight': 'opus',
     'shipkit-orch-direction': 'sonnet',
-    'shipkit-orch-planning': 'sonnet',
-    'shipkit-orch-shipping': 'sonnet',
     'shipkit-review-direction': 'sonnet',
     'shipkit-review-planning': 'sonnet',
 }

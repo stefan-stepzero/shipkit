@@ -268,7 +268,7 @@ Discussion output stays in conversation. Persistence is delegated to other skill
 ## When This Skill Integrates with Others
 
 ### Routes FROM
-- `/shipkit-master` → Routes thinking/discussion requests here
+- User (direct) → invoked when a decision needs thinking through
 - Any skill can suggest "think this through first" before proceeding
 
 ### Routes TO (After Discussion)

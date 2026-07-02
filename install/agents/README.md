@@ -22,16 +22,17 @@ agent: shipkit-orch-direction-agent    # spawns this agent
 
 ## Agent Taxonomy
 
-### Orchestrators (4)
+### Orchestrators (1)
 
-Loop dispatchers that check artifacts, invoke skills, and manage feedback cycles. They never produce domain artifacts.
+Orchestration now lives in the **`shipkit-orchestrate` engine** (runs inline in the main
+session; phase skills call it). The forked loop-orchestrators (master, planning, shipping)
+were retired — the engine + thin phase callers (`shipkit-ship`, review) replace them. Only
+the **direction** loop remains as a forked orchestrator, and it retires too once SS-3 ships
+`shipkit-direction`.
 
 | Agent | Scope | maxTurns |
 |-------|-------|----------|
-| **shipkit-orch-master** | Sequential dispatch: direction → planning → shipping | 200 |
-| **shipkit-orch-direction** | Strategic artifacts + coherence review cycle | 120 |
-| **shipkit-orch-planning** | Definitions/specs + alignment review cycle | 100 |
-| **shipkit-orch-shipping** | Implementation + verification + release gate | 150 |
+| **shipkit-orch-direction** | Strategic artifacts + coherence review cycle (interim — retires with SS-3) | 120 |
 
 ### Producer Workers (4)
 
@@ -83,10 +84,7 @@ Agents are installed to `.claude/agents/` when you run `/shipkit-update`:
 ```
 .claude/
 └── agents/
-    ├── shipkit-orch-master-agent.md
     ├── shipkit-orch-direction-agent.md
-    ├── shipkit-orch-planning-agent.md
-    ├── shipkit-orch-shipping-agent.md
     ├── shipkit-visionary-agent.md
     ├── shipkit-product-owner-agent.md
     ├── shipkit-architect-agent.md

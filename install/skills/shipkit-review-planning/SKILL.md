@@ -1,6 +1,6 @@
 ---
 name: shipkit-review-planning
-description: Internal reviewer — assesses planning artifact alignment. Checks definitions agree, specs cover roadmap, no gaps. Dispatched by orch-planning, not for direct use.
+description: Internal reviewer — assesses planning artifact alignment. Checks definitions agree, specs cover roadmap, no gaps. A per-unit reviewer invoked by a caller (the engine in steered mode or a direction/planning caller), not for direct use.
 user-invocable: false
 context: fork
 agent: shipkit-reviewer-planning-agent
@@ -13,7 +13,7 @@ effort: medium
 
 ## Input
 
-**Required artifacts** (the planning loop must produce all of these):
+**Required artifacts** (the planning phase must produce all of these):
 - `.shipkit/stack.json`
 - `.shipkit/codebase-index.json`
 - `.shipkit/spec-roadmap.json`
@@ -87,9 +87,12 @@ The `blocking` array drives the blocker count. `futurePhase` and `general` are i
 
 Assessment written to `.shipkit/reviews/planning-assessment.json`.
 
-**Next:** The calling orchestrator (`shipkit-orch-planning-agent`) reads this assessment:
+**Next:** The caller (the orchestration engine in steered mode, or a direction/planning
+caller) reads this assessment:
 - If **gaps found**: re-dispatches the affected upstream skills for revision, then re-runs this reviewer.
-- If **pass**: proceeds to the next loop phase (or reports completion to shipkit-orch-master-agent).
+- If **pass**: proceeds to the next step.
 
-This skill is normally invoked by the orchestrator, not called directly by the user.
+This skill is a per-unit reviewer, normally invoked by a caller, not directly by the user.
+*(Interim note: its former dispatcher `shipkit-orch-planning` was retired in SS-4; planning
+review re-wires into the engine/direction flow as that surface lands.)*
 <!-- /SECTION:after-completion -->

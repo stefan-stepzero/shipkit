@@ -576,7 +576,7 @@ Copy and track:
 **This skill loads context ON DEMAND**:
 
 1. User invokes `/shipkit-spec` or describes feature
-2. shipkit-master tells Claude to read this SKILL.md
+2. The session (or a caller) tells Claude to read this SKILL.md
 3. Claude asks 2-3 clarifying questions
 4. Claude reads stack.json + schema.json (~500 tokens)
 5. Claude optionally reads architecture.json if relevant (~300 tokens)

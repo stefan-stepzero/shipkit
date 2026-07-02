@@ -34,7 +34,7 @@
 
   "skills": {
     "mandatory": [
-      "shipkit-master"
+      "shipkit-orchestrate"
     ],
     "optional": {
       "Vision & Discovery": [
@@ -64,10 +64,7 @@
         {"name": "shipkit-work-memory", "desc": "Log progress & session state"}
       ],
       "Orchestration": [
-        {"name": "shipkit-orchestrate", "desc": "Core automation engine — main-session delegate→reconcile→re-dispatch loop to a ground-truth bar; phase skills call it (autonomous/steered modes)"},
-        {"name": "shipkit-orch-direction", "desc": "Direction loop — strategic artifacts + coherence review"},
-        {"name": "shipkit-orch-planning", "desc": "Planning loop — definitions/specs + alignment review"},
-        {"name": "shipkit-orch-shipping", "desc": "Shipping loop — implementation + verification + release gate"}
+        {"name": "shipkit-orch-direction", "desc": "Direction loop — strategic artifacts + coherence review (retired once SS-3 ships shipkit-direction)"}
       ],
       "Execution": [
         {"name": "shipkit-ship", "desc": "Build a spec'd + planned feature to done — BUILD entry point; thin caller → shipkit-orchestrate (autonomous) over the plan"},
@@ -98,10 +95,7 @@
 
   "agents": {
     "orchestrators": [
-      {"name": "shipkit-orch-master-agent", "desc": "Master loop orchestrator — sequential dispatch of direction/planning/shipping"},
-      {"name": "shipkit-orch-direction-agent", "desc": "Direction loop orchestrator — strategic artifact dispatch + review cycle"},
-      {"name": "shipkit-orch-planning-agent", "desc": "Planning loop orchestrator — definition/spec dispatch + review cycle"},
-      {"name": "shipkit-orch-shipping-agent", "desc": "Shipping loop orchestrator — implementation/verification dispatch + review cycle"}
+      {"name": "shipkit-orch-direction-agent", "desc": "Direction loop orchestrator — strategic artifact dispatch + review cycle (retired once SS-3 ships shipkit-direction)"}
     ],
     "producers": [
       {"name": "shipkit-visionary-agent", "desc": "Strategic visionary — sets stage, vision, constraints, business goals"},
