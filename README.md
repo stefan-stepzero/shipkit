@@ -2,6 +2,8 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
+**Who it's for:** the solo or small-team operator shipping real client products under time pressure. The structure and rigor pay off because these builds graduate to production — this is not weekend-throwaway scaffolding.
+
 **<!-- sync:skill_count -->39<!-- /sync:skill_count --> skills** organized for streamlined workflow:
 <!-- sync:readme_summary -->- **Vision & Discovery** (12) - why-project, product-discovery, project-context, ...
 - **Spec & Planning** (6) - spec-roadmap, spec, feedback-bug, ...

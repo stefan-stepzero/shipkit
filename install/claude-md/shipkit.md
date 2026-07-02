@@ -1,6 +1,6 @@
 # Shipkit {{SHIPKIT_VERSION}}
 
-Solo dev framework for shipping MVPs. AI-assisted, fast iteration, production-ready core paths.
+Framework for the solo / small-team operator shipping real client products under time pressure. AI-assisted, fast iteration, production-grade core paths — the rigor is justified because these builds graduate to production.
 
 <!-- Framework rules auto-loaded from .claude/rules/shipkit.md -->
 <!-- Project context auto-loaded if present. These files are created by Shipkit skills. -->
