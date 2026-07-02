@@ -2,6 +2,7 @@
 name: shipkit-engineering-goals
 description: "Derive technical performance criteria from the engineering blueprint. Writes goals/engineering.json with response times, reliability, coverage thresholds. Evaluate mode checks actuals against targets."
 argument-hint: "[goal topic | --evaluate]"
+context: fork
 agent: shipkit-architect-agent
 effort: medium
 ---
@@ -10,7 +11,11 @@ effort: medium
 
 **Purpose**: Derive measurable technical performance criteria from the engineering blueprint. Each mechanism, component, and design decision implies criteria for "how do we know this performs?" — this skill makes those criteria explicit, measurable, and trackable.
 
-**What it does**: Reads the engineering blueprint + stage context, proposes technical criteria (confirms with user via `AskUserQuestion`), writes the engineering goal file, and adds engineering criteria to existing stage gates. Runs inline to avoid hallucinating SLA targets.
+**What it does**: Reads the engineering blueprint + stage context, derives technical criteria from cited signals, writes the engineering goal file, and adds engineering criteria to existing stage gates. Most criteria are grounded from `engineering-definition.json`, `stack.json`, and stage — only hard performance targets with no signal become questions.
+
+**Protocol:** This skill follows the canonical elicitation protocol defined in `install/shared/references/elicitation-protocol.md` (the *mechanics* — marker, state files, resume).
+
+**Calibration:** Apply `install/shared/references/ground-or-ask-calibration.md` (the *intelligence* — propose vs ask). **Ground first:** this is a DERIVATION skill — most criteria flow directly from `engineering-definition.json` (mechanisms → performance/quality/reliability targets), `stack.json` (stack norms), `goals/strategic.json` (stage gates), and `goals/product.json` (outcome alignment). Cite the signal for every proposed threshold and tag it with its source. Flag low-leverage guesses (`guessed: true`). The only HIGH-LEVERAGE ungrounded fields are hard performance/reliability TARGETS where no signal (stage, stack norms, product goals) implies the number — ask those and only those. Questions are rare (often zero for a well-defined stack); if you're generating more than 2–3, re-ground first.
 
 **Output**: One JSON file:
 - `goals/engineering.json` — Technical-performance criteria (EM owns)
@@ -169,9 +174,30 @@ For each derived criterion, assign `checkability` and `verificationTool`:
 
 ---
 
-### Step 4: Finalize Criteria
+### Step 4: Ground-or-Ask Calibration + Fork Decision
 
-> **Forked producer — do not prompt.** You have no user channel inside a fork. Finalize the E-* criteria from Step 3's derivation directly and proceed to Step 5. The direction reviewer will flag any misalignment via the loop's feedback cycle. If engineering-definition.json is genuinely missing or unusable, return `gaps_found` in the artifact rather than asking the user.
+Apply `install/shared/references/ground-or-ask-calibration.md`:
+
+**Grounded criteria (almost all cases):** Performance/quality/reliability thresholds derived from mechanisms in `engineering-definition.json`, calibrated by `stack.json` norms and stage context, are **grounded** — propose them tagged with source (e.g. `source: "M-001 + MVP stage"`). Proceed directly to Step 5.
+
+**High-leverage ungrounded targets (rare):** If a hard performance or reliability target has NO signal from stage, stack norms, or product goals that implies the number — and setting it wrong is expensive to discover late (a customer-facing SLA, a contractual guarantee, a hard capacity constraint) — it is a HIGH-LEVERAGE unknown. Do not invent it.
+
+**Fork path (ungrounded high-leverage target found):**
+1. Write `.shipkit/elicitation/engineering-goals/questions.md` with the specific threshold(s) you need the user to decide (use the `questions.md` schema from `elicitation-protocol.md`). Keep it to 1–3 questions — propose your best-grounded estimate alongside each as a starting point.
+2. Write/update `.shipkit/elicitation/engineering-goals/progress.json`.
+3. Do NOT write `goals/engineering.json`. Do NOT invent the threshold.
+4. Emit the marker block as the **final lines** of your output (the `NEEDS_ELICITATION:` line must be the last non-empty line):
+   ```
+   status=paused
+   turn=1
+   questions_file=.shipkit/elicitation/engineering-goals/questions.md
+   reason=awaiting user decision on ungrounded high-leverage performance target(s)
+   NEEDS_ELICITATION:shipkit-engineering-goals
+   ```
+
+**Inline path (no ungrounded high-leverage targets):** If `AskUserQuestion` is available and you have a threshold question, you may ask it. Otherwise proceed to Step 5.
+
+If `engineering-definition.json` is genuinely missing or unusable, return `gaps_found` in the artifact rather than emitting a marker.
 
 ---
 
@@ -380,6 +406,8 @@ RECOMMENDATION:
 2. **Prerequisites** - Does the next action need a spec or plan first?
 3. **Session length** - Long session? Consider `/shipkit-work-memory` for continuity.
 
+**If `NEEDS_ELICITATION:shipkit-engineering-goals` was emitted:** The skill paused without writing `goals/engineering.json`. The main session should run `/shipkit-engineering-goals` inline (where `AskUserQuestion` is available), answer the questions in `.shipkit/elicitation/engineering-goals/questions.md`, then re-invoke the original skill or orchestrator to resume. See `install/shared/references/elicitation-protocol.md` for full handling instructions.
+
 **Suggest skill when:** User needs plans (`/shipkit-plan`), specs (`/shipkit-spec`), or verification (`/shipkit-review-shipping`).
 <!-- /SECTION:after-completion -->
 
@@ -400,6 +428,7 @@ Engineering goals artifact is complete when:
 - [ ] Summary counts match actual array length
 - [ ] File saved to `.shipkit/goals/engineering.json`
 - [ ] Strategic.json gates updated with E-* criteria (if file exists)
+- [ ] If marker emitted: `NEEDS_ELICITATION:shipkit-engineering-goals` is the final output line; goals/engineering.json was NOT written; questions.md written with specific threshold decisions needed
 <!-- /SECTION:success-criteria -->
 
 ---

@@ -170,7 +170,7 @@ When `.shipkit/codebase-index.json` exists, the session-start hook injects a **l
 | When... | Use |
 |---------|-----|
 | Drive any set of steps to a ground-truth bar (custom run) | `/shipkit-orchestrate` |
-| Run the direction loop — vision → goals (interim; retires once `shipkit-direction` ships) | `/shipkit-orch-direction` |
+| Define a project's foundation autonomously — vision → goals | `/shipkit-direction` |
 
 ### Execution
 | When... | Use |

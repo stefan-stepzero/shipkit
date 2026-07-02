@@ -17,22 +17,17 @@ Skills with `context: fork` + `agent: {agent-name}` in their frontmatter spawn t
 ```yaml
 # In a skill's frontmatter:
 context: fork
-agent: shipkit-orch-direction-agent    # spawns this agent
+agent: shipkit-visionary-agent    # spawns this agent
 ```
 
 ## Agent Taxonomy
 
-### Orchestrators (1)
+### Orchestrators (0)
 
-Orchestration now lives in the **`shipkit-orchestrate` engine** (runs inline in the main
-session; phase skills call it). The forked loop-orchestrators (master, planning, shipping)
-were retired — the engine + thin phase callers (`shipkit-ship`, review) replace them. Only
-the **direction** loop remains as a forked orchestrator, and it retires too once SS-3 ships
-`shipkit-direction`.
-
-| Agent | Scope | maxTurns |
-|-------|-------|----------|
-| **shipkit-orch-direction** | Strategic artifacts + coherence review cycle (interim — retires with SS-3) | 120 |
+Orchestration lives entirely in the **`shipkit-orchestrate` engine** (runs inline in the
+main session; phase skills call it). All forked loop-orchestrators — master, planning,
+shipping, and now **direction** — have been retired. The engine + thin phase callers
+(`shipkit-direction`, `shipkit-ship`, review) replace them. There are no orchestrator agents.
 
 ### Producer Workers (4)
 
@@ -84,7 +79,6 @@ Agents are installed to `.claude/agents/` when you run `/shipkit-update`:
 ```
 .claude/
 └── agents/
-    ├── shipkit-orch-direction-agent.md
     ├── shipkit-visionary-agent.md
     ├── shipkit-product-owner-agent.md
     ├── shipkit-architect-agent.md

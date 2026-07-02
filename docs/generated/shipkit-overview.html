@@ -625,7 +625,7 @@
                     <span class="stat-label">Skills</span>
                 </div>
                 <div class="stat">
-                    <!-- sync:html_agent_count --><span class="stat-number">9</span><!-- /sync:html_agent_count -->
+                    <!-- sync:html_agent_count --><span class="stat-number">8</span><!-- /sync:html_agent_count -->
                     <span class="stat-label">Agents</span>
                 </div>
                 <div class="stat">
@@ -736,7 +736,7 @@
                         </tr>
                         <tr>
                             <td class="trigger">Run full direction loop</td>
-                            <td><span class="skill">/shipkit-orch-direction</span></td>
+                            <td><span class="skill">/shipkit-direction</span></td>
                             <td class="creates">direction-assessment.json</td>
                         </tr>
                         <tr>
@@ -975,13 +975,13 @@
                     <tr class="category-divider"><td colspan="7">Core Orchestration (26 skills)</td></tr>
 
                     <tr>
-                        <td class="skill-cell">shipkit-orch-direction</td>
+                        <td class="skill-cell">shipkit-direction</td>
                         <td class="phase-cell">1</td>
                         <td><span class="timing-pill timing-session">per-session</span></td>
                         <td><span class="timing-pill trigger-agent">agent</span></td>
                         <td><span class="timing-pill mode-orchestrate">orchestrate</span></td>
                         <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
-                        <td class="desc-cell">Direction loop &mdash; dispatches strategic skills + coherence review cycle.</td>
+                        <td class="desc-cell">Thin engine caller (autonomous-propose) &mdash; invokes shipkit-orchestrate in direction mode.</td>
                     </tr>
                     <tr>
                         <td class="skill-cell">shipkit-review-direction</td>
@@ -1317,7 +1317,7 @@
         <!-- AGENT x SKILL MATRIX TAB -->
         <div id="matrix" class="tab-content">
             <h2 class="section-header">Agent &times; Skill Matrix</h2>
-            <p style="color: #64748b; margin-bottom: 10px;">Which agents have access to which skills. 9 agents in 3 groups: Orchestrators, Producer Workers, Judgment Workers.</p>
+            <p style="color: #64748b; margin-bottom: 10px;">Which agents have access to which skills. 8 agents in 3 groups: Orchestrators (none active), Producer Workers, Judgment Workers.</p>
 
             <div class="matrix-legend">
                 <div class="matrix-legend-item">
@@ -1343,8 +1343,7 @@
                     <thead>
                         <tr>
                             <th style="text-align: left; min-width: 200px;">Skill</th>
-                            <!-- Orchestrators (1) -->
-                            <th class="agent-header" style="background: #334155;">Orch-Direction</th>
+                            <!-- Orchestrators (0) -->
                             <!-- Producer Workers (5) -->
                             <th class="agent-header">Visionary</th>
                             <th class="agent-header">Product Owner</th>
@@ -1360,283 +1359,244 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td class="category-row" colspan="11">Mandatory (1)</td></tr>
+                        <tr><td class="category-row" colspan="10">Mandatory (1)</td></tr>
                         <tr>
                             <th>shipkit-orchestrate</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-                        <tr><td class="category-row" colspan="11">Vision &amp; Discovery (12)</td></tr>
+                        <tr><td class="category-row" colspan="10">Vision &amp; Discovery (12)</td></tr>
                         <tr>
                             <th>shipkit-why-project</th>
-                            <td class="mark-spawns">&#x25C6;</td>
                             <td class="mark-has">&#x25CF;</td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-product-discovery</th>
-                            <td class="mark-spawns">&#x25C6;</td>
                             <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-project-context</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-codebase-index</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-architecture-map</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-product-definition</th>
-                            <td class="mark-spawns">&#x25C6;</td>
                             <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-engineering-definition</th>
-                            <td class="mark-spawns">&#x25C6;</td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-design-system</th>
-                            <td class="mark-spawns">&#x25C6;</td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-stage</th>
-                            <td class="mark-spawns">&#x25C6;</td>
                             <td class="mark-has">&#x25CF;</td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-product-goals</th>
-                            <td class="mark-spawns">&#x25C6;</td>
                             <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-engineering-goals</th>
-                            <td class="mark-spawns">&#x25C6;</td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-metrics</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-                        <tr><td class="category-row" colspan="11">Spec &amp; Planning (6)</td></tr>
+                        <tr><td class="category-row" colspan="10">Spec &amp; Planning (6)</td></tr>
                         <tr>
                             <th>shipkit-spec-roadmap</th>
-                            <td></td>
                             <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-spec</th>
-                            <td></td>
                             <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-feedback-bug</th>
-                            <td></td>
                             <td></td><td class="mark-has">&#x25CF;</td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-plan</th>
-                            <td></td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-thinking-partner</th>
-                            <td></td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td><td class="mark-has">&#x25CF;</td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-resource-advocate</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td class="mark-has">&#x25CF;</td>
                             <td></td><td></td><td></td>
                             <td class="mark-auto">~</td>
                         </tr>
-                        <tr><td class="category-row" colspan="11">Knowledge &amp; Memory (2)</td></tr>
+                        <tr><td class="category-row" colspan="10">Knowledge &amp; Memory (2)</td></tr>
                         <tr>
                             <th>shipkit-claude-md</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-work-memory</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-                        <tr><td class="category-row" colspan="11">Orchestration (1)</td></tr>
+                        <tr><td class="category-row" colspan="10">Orchestration (1)</td></tr>
                         <tr>
-                            <th>shipkit-orch-direction</th>
-                            <td class="mark-has">&#x25CF;</td>
+                            <th>shipkit-direction</th>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-                        <tr><td class="category-row" colspan="11">Execution (2)</td></tr>
+                        <tr><td class="category-row" colspan="10">Execution (2)</td></tr>
                         <tr>
                             <th>shipkit-ship</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-test-cases</th>
-                            <td></td>
                             <td></td><td class="mark-has">&#x25CF;</td><td class="mark-spawns">&#x25C6;</td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-                        <tr><td class="category-row" colspan="11">Quality &amp; Communication (12)</td></tr>
+                        <tr><td class="category-row" colspan="10">Quality &amp; Communication (12)</td></tr>
                         <tr>
                             <th>shipkit-review-direction</th>
-                            <td class="mark-spawns">&#x25C6;</td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td class="mark-has">&#x25CF;</td><td></td><td></td>
                             <td class="mark-auto">~</td>
                         </tr>
                         <tr>
                             <th>shipkit-review-planning</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td class="mark-has">&#x25CF;</td><td></td>
                             <td class="mark-auto">~</td>
                         </tr>
                         <tr>
                             <th>shipkit-review-shipping</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-preflight</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-scale-ready</th>
-                            <td></td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-ux-audit</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-user-instructions</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-communications</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-prompt-audit</th>
-                            <td></td>
                             <td></td><td></td><td class="mark-has">&#x25CF;</td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-codebase-audit</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-semantic-qa</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td class="mark-spawns">&#x25C6;</td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
                         <tr>
                             <th>shipkit-qa-visual</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td class="mark-spawns">&#x25C6;</td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-                        <tr><td class="category-row" colspan="11">System (3)</td></tr>
+                        <tr><td class="category-row" colspan="10">System (3)</td></tr>
                         <tr>
                             <th>shipkit-update</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-auto">~</td>
                         </tr>
                         <tr>
                             <th>shipkit-get-skills</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-auto">~</td>
                         </tr>
                         <tr>
                             <th>shipkit-get-mcps</th>
-                            <td></td>
                             <td></td><td></td><td></td><td></td><td></td>
                             <td></td><td></td><td></td>
                             <td class="mark-auto">~</td>
@@ -1651,13 +1611,13 @@
                     <li><strong>Read across a row</strong> &mdash; see which agents can use a given skill</li>
                     <li><strong>Read down a column</strong> &mdash; see all skills available to a given agent</li>
                     <li><strong style="color: #667eea;">&#x25CF; Has</strong> &mdash; the agent's persona includes this skill in its toolkit</li>
-                    <li><strong style="color: #f59e0b;">&#x25C6; Spawns</strong> &mdash; this skill creates an instance of that agent (e.g., orch-direction spawns producer workers)</li>
+                    <li><strong style="color: #f59e0b;">&#x25C6; Spawns</strong> &mdash; this skill creates an instance of that agent (e.g., a phase caller spawns producer workers)</li>
                     <li><strong style="color: #059669;">&#x2713; Human</strong> &mdash; human can invoke directly via <code>/shipkit-*</code> slash command</li>
                     <li><strong style="color: #94a3b8;">~ Auto</strong> &mdash; automated infrastructure, not designed for direct human invocation</li>
                 </ul>
                 <h4 style="color: #475569; margin: 16px 0 8px;">Agent Groups</h4>
                 <ul style="color: #64748b; font-size: 0.9em; line-height: 2;">
-                    <li><strong>Orchestrators (1)</strong> &mdash; Orch-Direction &mdash; coordinates and dispatches (interim; the shipkit-orchestrate engine replaces the forked loops)</li>
+                    <li><strong>Orchestrators (0)</strong> &mdash; no active orchestrator agents (shipkit-orchestrate is the engine; phase callers are thin skills)</li>
                     <li><strong>Producer Workers (5)</strong> &mdash; Visionary, Product Owner, Architect, Thinking Partner, Resource Advocate &mdash; create artifacts</li>
                     <li><strong>Judgment Workers (3)</strong> &mdash; Rev-Direction, Rev-Planning, Rev-Shipping &mdash; assess coherence and quality</li>
                 </ul>
@@ -1727,7 +1687,7 @@
             </div>
 
             <div class="workflow-diagram" style="margin-top: 8px; border-left: 4px solid #f59e0b;">
-                <div style="font-size: 0.8em; color: #d97706; font-weight: 600; margin-bottom: 8px;">DIRECTION LOOP (Orch-Direction &rarr; Visionary + Rev-Direction)</div>
+                <div style="font-size: 0.8em; color: #d97706; font-weight: 600; margin-bottom: 8px;">DIRECTION LOOP (shipkit-direction &rarr; Visionary + Rev-Direction)</div>
                 <div class="workflow-steps">
                     <div class="workflow-step">
                         <div class="step-skill">/shipkit-why-project</div>
@@ -1817,15 +1777,11 @@
                 </div>
             </div>
 
-            <h2 class="section-header" style="margin-top: 40px;">Agent Ownership (9 Agents)</h2>
-            <p style="color: #64748b; margin-bottom: 16px;">The Orch-Direction orchestrator coordinates the direction loop. Producer workers create artifacts; judgment workers assess quality. The shipkit-orchestrate engine drives autonomous execution.</p>
+            <h2 class="section-header" style="margin-top: 40px;">Agent Ownership (8 Agents)</h2>
+            <p style="color: #64748b; margin-bottom: 16px;">Producer workers create artifacts; judgment workers assess quality. The shipkit-orchestrate engine drives autonomous execution.</p>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-                <div style="background: #fef3c7; padding: 16px; border-radius: 12px; border-left: 4px solid #f59e0b;">
-                    <h4 style="color: #d97706; margin: 0 0 8px;">Orch-Direction</h4>
-                    <p style="color: #475569; font-size: 0.85em; margin: 0;">Direction loop &mdash; dispatches Visionary + Rev-Direction</p>
-                    <p style="color: #94a3b8; font-size: 0.8em; margin: 4px 0 0;">shipkit-orch-direction</p>
-                </div>
+
                 <div style="background: #f0f9ff; padding: 16px; border-radius: 12px; border-left: 4px solid #667eea;">
                     <h4 style="color: #667eea; margin: 0 0 8px;">Visionary</h4>
                     <p style="color: #475569; font-size: 0.85em; margin: 0;">WHY &mdash; vision, stage, strategic goals</p>
@@ -1869,12 +1825,12 @@
             </div>
 
             <h2 class="section-header" style="margin-top: 40px;">Orchestration Loop</h2>
-            <p style="color: #64748b; margin-bottom: 16px;">Shipkit is a goal-driven system. The shipkit-orchestrate engine drives execution; the Direction loop (Orch-Direction) coordinates strategic work. Producer workers create artifacts; judgment workers assess quality.</p>
+            <p style="color: #64748b; margin-bottom: 16px;">Shipkit is a goal-driven system. The shipkit-orchestrate engine drives execution; the direction phase caller (shipkit-direction) invokes the engine for strategic work. Producer workers create artifacts; judgment workers assess quality.</p>
 
             <div style="background: #f8fafc; padding: 24px; border-radius: 12px; font-family: 'Courier New', monospace; font-size: 0.9em; line-height: 1.8; color: #334155;">
                 <div style="font-weight: bold; color: #1e293b;">shipkit-orchestrate (engine)</div>
                 <div style="padding-left: 24px;">
-                    <div style="color: #d97706;">&#x2514;&rarr; <strong>Direction Loop</strong> via Orch-Direction (why, vision, stage, goals + review-direction)</div>
+                    <div style="color: #d97706;">&#x2514;&rarr; <strong>Direction Loop</strong> via shipkit-direction (why, vision, stage, goals + review-direction)</div>
                     <div style="color: #667eea;">&#x2514;&rarr; <strong>Planning Loop</strong> (discovery, definitions, specs + review-planning)</div>
                     <div style="color: #7c3aed;">&#x2514;&rarr; <strong>Shipping Loop</strong> (plan, test-cases, verify, preflight)</div>
                 </div>

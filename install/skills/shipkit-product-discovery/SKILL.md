@@ -2,6 +2,7 @@
 name: shipkit-product-discovery
 description: "Use when defining users, personas, or user journeys. Triggers: 'who are users', 'create personas', 'user research', 'user stories'."
 argument-hint: "[persona or journey]"
+context: fork
 agent: shipkit-product-owner-agent
 effort: medium
 ---
@@ -9,6 +10,10 @@ effort: medium
 # shipkit-product-discovery - Lightweight Product Discovery
 
 **Purpose**: Combines personas, user journey mapping, and user stories into a single lightweight workflow for POC/MVP projects
+
+**Protocol:** This skill follows the canonical elicitation protocol defined in `install/shared/references/elicitation-protocol.md` (the *mechanics* — marker, state files, resume). The steps below are this skill's specific application of that protocol.
+
+**Calibration:** Apply `install/shared/references/ground-or-ask-calibration.md` (the *intelligence* — propose vs ask). **Ground first:** scan cited signals (the opening prompt, `why.json`, `README.md`, `package.json`, the codebase) before asking anything. Propose every field you can tie to a signal, tagged with its source; flag low-leverage guesses as `guessed`. **High-leverage for this skill:** who the PRIMARY personas are and their core journeys / top user needs — these define who the product is FOR and are hard to reverse. If ungrounded, ask. **Low-leverage:** secondary personas, edge-case journeys, ordering details — propose flagged defaults, don't ask. Target 2–3 questions maximum; if you're about to ask more, your grounding pass was too shallow. Never silently invent an ungrounded primary persona or core need.
 
 ---
 
@@ -47,36 +52,80 @@ effort: medium
 
 ---
 
-### Step 0b: Propose Mode (Context-Driven)
+### Step 0b: Grounding Pass (Context-Driven Propose)
 
-If `.shipkit/why.json` exists, attempt to propose personas and journeys without asking:
+**Grounding pass — run before generating any question or artifact:**
 
-1. Read `.shipkit/why.json` (target audience, problem space, vision)
-2. Read `.shipkit/goals/strategic.json` if exists (stage, constraints, what outcomes we need)
-3. Read `.shipkit/stack.json` if exists (platform constraints: web, mobile, API)
-4. Based on the target audience and problem space from why.json, propose:
-   - 2-4 personas with key attributes, needs, and pain points
-   - Core user journeys per persona
-   - User stories derived from journeys
-5. Present the proposal:
-   ```
-   Based on your project vision, here are proposed personas:
-
-   1. [Persona Name] — [role/description]
-      Needs: [key needs]
-      Pain points: [frustrations]
-
-   2. [Persona Name] — ...
-
-   ```
-6. Write `product-discovery.json` directly and present a summary
-7. The orchestrator's review cycle will catch issues — no confirmation needed
-
-If `.shipkit/why.json` does NOT exist → fall through to Step 1.
+1. Read cited signals in order: `why.json` (`targetUsers`, `problem`, `vision`), `README.md` (audience, problem, value prop), `package.json` (name, description, keywords), the opening prompt / any argument provided.
+2. For each field the artifact needs, classify:
+   - **Grounded** → propose with `source: <signal>` tag (e.g. `"source": "why.json §targetUsers"`). Do not ask.
+   - **Ungrounded + high-leverage** (who the primary personas are, their core journeys, their top needs) → add to candidate questions. These are hard to reverse.
+   - **Ungrounded + low-leverage** (secondary persona details, edge journeys) → propose with `"guessed": true`. Do not ask.
+3. **Decision gate:**
+   - **Primary persona(s) grounded** (at least one persona and their core need are supported by a signal) → proceed to write the artifact (Step 3). Do not pause; propose secondary personas as `guessed` defaults. The orchestrator's review cycle catches gaps.
+   - **Primary persona(s) ungrounded** (no signal identifies who the product is for) → you cannot safely proceed. Follow the **Elicitation Path** below.
 
 ---
 
-### Step 1: Gather Context About Users and Goals
+### Elicitation Path (Fork + Ungrounded Primary Persona)
+
+*Only reached when: (a) you are in a fork (check — is `AskUserQuestion` in your available tools? If not, you are in a fork), AND (b) the primary persona is ungrounded after the grounding pass.*
+
+**Do not invent a persona. Do not write `product-discovery.json`. Follow this path exactly:**
+
+**Write `.shipkit/elicitation/product-discovery/questions.md`** — overwrite with:
+```
+---
+skill: shipkit-product-discovery
+turn: 1
+last_updated: <ISO 8601 UTC>
+---
+
+## Turn 1
+
+1. Who are the primary users of this product? (roles, types, or a short description) (field: `personas[].name/role`)
+2. What is the core thing each primary user is trying to accomplish — their main goal or job-to-be-done? (field: `personas[].primaryIntent`)
+3. What is their biggest frustration or pain point with how they do this today? (field: `painPoints`)
+```
+
+Limit to 3 questions (the high-leverage set). Do not ask about secondary personas or edge journeys here.
+
+**Write `.shipkit/elicitation/product-discovery/progress.json`** — create or update:
+```json
+{
+  "skill": "shipkit-product-discovery",
+  "status": "in_progress",
+  "elicitation_turn": 1,
+  "started_at": "<ISO 8601 UTC>",
+  "last_updated_at": "<ISO 8601 UTC>",
+  "completed_at": null,
+  "last_elicited_at": "<ISO 8601 UTC>",
+  "total_questions_planned": 3,
+  "questions_answered": 0,
+  "confidence": "low"
+}
+```
+
+**Do NOT write `answers.md` if it already contains real answers.** Create an empty file with only the frontmatter header if the file does not yet exist.
+
+**Emit the marker as the FINAL line of your output:**
+```
+NEEDS_ELICITATION:shipkit-product-discovery
+status=paused
+turn=1
+questions_file=.shipkit/elicitation/product-discovery/questions.md
+reason=primary persona ungrounded — awaiting user answers for turn 1
+```
+
+Return immediately. Do not synthesize anything. Do not continue past this point.
+
+---
+
+### Step 1: Gather Context About Users and Goals (Inline Mode Only)
+
+**Only run this step when `AskUserQuestion` IS in your available tools** (you are running inline in the main session, not in a fork). If you are in a fork and the primary persona is ungrounded, use the Elicitation Path above instead.
+
+**Check for pre-populated answers first.** Read `.shipkit/elicitation/product-discovery/answers.md`. If it contains real answers for the primary persona fields, skip the questions below and proceed to Step 3 using those answers.
 
 **Use AskUserQuestion tool to gather requirements:**
 
@@ -95,7 +144,7 @@ options:
     description: "Generate feature requirements"
 ```
 
-**Question 2 - User Type:** (if not provided in argument)
+**Question 2 - User Type:** (if not provided in argument or signals)
 ```
 header: "Users"
 question: "Who are your primary users?"
@@ -235,6 +284,11 @@ Copy and track:
 **Archive location** (if replacing):
 - `.shipkit/archive/product-discovery/product-discovery.[timestamp].json`
 
+**Elicitation state** (persists as audit trail; run-scoped when under the orchestration engine):
+- `.shipkit/elicitation/product-discovery/questions.md` — current turn's questions
+- `.shipkit/elicitation/product-discovery/answers.md` — accumulated Q&A across turns
+- `.shipkit/elicitation/product-discovery/progress.json` — turn state + timestamps
+
 ---
 
 ## Lazy Loading Behavior
@@ -259,6 +313,8 @@ Copy and track:
 2. **Prerequisites** - Does the next action need a spec or plan first?
 3. **Session length** - Long session? Consider `/shipkit-work-memory` for continuity.
 
+**If `NEEDS_ELICITATION:shipkit-product-discovery` was emitted:** The skill paused without writing `product-discovery.json`. The main session should run `/shipkit-product-discovery` inline (where `AskUserQuestion` is available), answer the questions in `.shipkit/elicitation/product-discovery/questions.md`, then re-invoke the original skill or orchestrator to resume. See `install/shared/references/elicitation-protocol.md` for full handling instructions.
+
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 
 **Suggest skill when:** User needs to make decisions, create persistence, or check project status.
@@ -270,6 +326,7 @@ Copy and track:
 Product Discovery JSON artifact is complete when:
 - [ ] 1-3 personas with stable IDs, clear goals, and context
 - [ ] Each persona has distinct characteristics (`isPrimary` set on exactly one)
+- [ ] Every proposed value is tagged with `source: <signal>` (grounded) or `guessed: true` (low-leverage default) — no silent untagged guesses
 - [ ] Pain points extracted with severity levels and persona cross-references
 - [ ] User journeys include emotion tracking at each step
 - [ ] Journey steps reference pain point IDs where friction occurs
@@ -277,6 +334,7 @@ Product Discovery JSON artifact is complete when:
 - [ ] Summary counts match actual array lengths
 - [ ] All ID cross-references are valid (no dangling references)
 - [ ] File saved to `.shipkit/product-discovery.json`
+- [ ] If marker emitted: `NEEDS_ELICITATION:shipkit-product-discovery` is the final output line; `product-discovery.json` was NOT written; primary persona was genuinely ungrounded
 <!-- /SECTION:success-criteria -->
 ---
 

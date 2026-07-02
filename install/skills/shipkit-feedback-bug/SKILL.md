@@ -2,6 +2,7 @@
 name: shipkit-feedback-bug
 description: "Process user feedback into investigated bug specs with root cause analysis. Triggers: 'triage feedback', 'process bug reports', 'user testing feedback'."
 argument-hint: "<paste feedback or describe source>"
+context: fork
 agent: shipkit-product-owner-agent
 effort: high
 ---
@@ -9,6 +10,10 @@ effort: high
 # shipkit-feedback-bug - Feedback to Investigated Bug Specs
 
 **Purpose**: Transform raw user feedback into fully investigated bug specifications with root cause analysis, blast radius assessment, and captured learnings.
+
+**Protocol:** This skill follows the canonical elicitation protocol defined in `install/shared/references/elicitation-protocol.md` (the *mechanics* — marker, state files, resume). The fork-safe path below is this skill's specific application of that protocol.
+
+**Calibration:** Apply `install/shared/references/ground-or-ask-calibration.md` (the *intelligence* — propose vs ask). **Ground first:** the feedback text, the codebase, and `stack.json` are the cited signals. Propose the bug spec (repro steps, root cause hypothesis, severity) grounded in those signals, tagged with source; flag low-leverage guesses as `guessed`. **HIGH-LEVERAGE fields to ask** when ungrounded: reproduction steps or expected-vs-actual behavior the codebase cannot disambiguate; severity when the classification would change prioritization. Ask those rather than guessing. **Low-leverage detail** (reporter name, ancillary environment metadata that the stack implies) → propose a flagged default, no pause. **Never** silently invent an ungrounded root cause or reproduction the investigation cannot support.
 
 ---
 
@@ -85,7 +90,12 @@ After parsing feedback (Step 1) and categorizing items (Step 2), create tasks:
 
 ## Step 1: Receive & Parse Feedback
 
-**If user hasn't provided feedback**, ask:
+**Fork-safe path (check first):** Determine whether `AskUserQuestion` is in your available tools. If it is not, you are running in a fork.
+
+- **No feedback in `$ARGUMENTS` + in a fork**: You cannot ask the user. Write `.shipkit/elicitation/feedback-bug/questions.md` with the prompt for the feedback text and source (following the schema in `install/shared/references/elicitation-protocol.md`). Emit `NEEDS_ELICITATION:shipkit-feedback-bug` as the **final line** of your output. Return immediately — do not proceed, do not invent feedback.
+- **Feedback provided (via `$ARGUMENTS`) + in a fork**: Proceed with grounding. If a HIGH-LEVERAGE ambiguity surfaces during investigation (Step 3) that the codebase cannot resolve, follow the same marker path at that point.
+
+**If user hasn't provided feedback** (inline / `AskUserQuestion` available), ask:
 
 ```
 header: "Feedback"
@@ -118,7 +128,9 @@ options:
 
 ## Step 2: Categorize Each Item
 
-**Present items for user categorization:**
+**Fork-safe path (check first):** Determine whether `AskUserQuestion` is in your available tools. **In a fork (no `AskUserQuestion`), do NOT present interactive categorization** — auto-classify each item from the grounding signals (the feedback text + the codebase): map it to Bug / Feature Request / UX Issue / Won't Fix and assign a bug severity from what the signals support, tagging each classification with its basis per `ground-or-ask-calibration.md`. Only if a **high-leverage** classification is genuinely ambiguous (e.g. can't tell if it's a bug vs intended behavior, and it changes routing/priority) do you pause: write the question to `.shipkit/elicitation/feedback-bug/questions.md` and emit `NEEDS_ELICITATION:shipkit-feedback-bug` as the final line. Never prompt for categorization inside a fork.
+
+**Inline (`AskUserQuestion` available) — present items for user categorization:**
 
 ```
 [1/N] "[Brief description of the issue]"
@@ -145,6 +157,8 @@ Severity (for bugs):
 ## Step 3: Investigate Each Bug
 
 **For each confirmed bug, investigate before finalizing the spec.**
+
+**Fork + high-leverage ambiguity path:** Before diving into 3a–3e, apply the calibration gate. If you are in a fork AND encounter a HIGH-LEVERAGE ambiguity that codebase investigation cannot resolve — specifically: reproduction steps that remain genuinely unclear (the code doesn't reveal the trigger path), or expected-vs-actual behavior that cannot be inferred from the codebase — write `.shipkit/elicitation/feedback-bug/questions.md` with the specific questions (following the schema in `install/shared/references/elicitation-protocol.md`) and emit `NEEDS_ELICITATION:shipkit-feedback-bug` as the **final line**. Do not write a bug spec. Do not invent a repro. Return immediately. Inline mode (AskUserQuestion available): ask those same calibrated questions directly, then continue.
 
 ### 3a: Reproduce & Confirm
 
@@ -611,10 +625,12 @@ Triage is complete when:
 - [ ] All feedback items categorized
 - [ ] Each bug investigated (reproduced, root cause found)
 - [ ] Fix stress-tested against relevant edge case categories (robustness check)
-- [ ] Bug specs created with findings
+- [ ] Bug specs created with findings — all proposed values tagged with source or flagged `guessed`
 - [ ] Blast radius assessed
 - [ ] Feature requests noted for `/shipkit-spec`
 - [ ] Summary provided with next steps
+- [ ] If marker emitted: `NEEDS_ELICITATION:shipkit-feedback-bug` is the final output line; no bug spec was written; no root cause was invented
+- [ ] No ungrounded high-leverage root cause or reproduction was silently invented
 <!-- /SECTION:success-criteria -->
 
 ---

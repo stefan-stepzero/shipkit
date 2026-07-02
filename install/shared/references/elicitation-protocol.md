@@ -1,7 +1,7 @@
 # Elicitation Protocol (Return-Prompt-Resume)
 
-**Status:** draft (pilot phase — only `shipkit-why-project` currently uses this)
-**Spec:** `.claude/specs/return-prompt-resume.json`
+**Status:** active — used by all 6 elicitive producers (why-project, stage, product-discovery, product-goals, engineering-goals, feedback-bug), re-flipped to `context: fork` in SS-3 (autonomous-direction). Proven by the T7/T8/T9 orch-bubble rigs.
+**Pairs with:** `install/shared/references/ground-or-ask-calibration.md` (decides *what* to ask vs propose; this file is the *mechanics* of pausing/resuming).
 
 Shared protocol for Shipkit skills that need user input but run in forked contexts where `AskUserQuestion` is unavailable. Instead of hallucinating inputs the user would have provided, skills emit a structured marker and pause; the main session runs the elicitive skill inline (where it has user access), writes answers to a state file, and re-invokes the orchestrator to resume.
 
@@ -22,9 +22,9 @@ On every invocation, in order:
    - If it contains partial answers → continue from the next unanswered turn.
    - If it's absent or empty → start at turn 1.
 
-4. **Generate or advance questions.** Produce 3-5 questions for the current turn, informed by any prior answers. Keep turns short — users get overwhelmed by 20 questions at once.
+4. **Apply the calibration gate, THEN generate questions.** First run the ground-or-ask grounding pass (`install/shared/references/ground-or-ask-calibration.md`): propose every field you can tie to a cited signal, flag low-leverage guesses. **Only the genuinely-unknown, high-leverage fields become questions.** Produce that (usually small — 2-3) question set for the current turn, informed by any prior answers. Do NOT generate a question for a field a signal already grounds — that is over-asking.
 
-5. **Write state files.** Overwrite `questions.md`, append to `answers.md` (headers only, no answers yet), update `progress.json` (increment turn, refresh `last_updated_at`).
+5. **Write state files — but NOT `answers.md`.** Overwrite `questions.md` and update `progress.json` (increment turn, refresh `last_updated_at`). **Do NOT write `answers.md` from the fork** — the main session owns that file (it creates/appends it when collecting answers). Writing placeholder headers here clobbers real user answers (pre-populated or from prior turns). The fork signals *which* questions need answering via `questions.md`; it never touches `answers.md`.
 
 6. **Emit marker and return.** The final line of your output must be:
    ```

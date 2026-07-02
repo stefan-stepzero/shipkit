@@ -163,7 +163,7 @@
       "Skill(shipkit-semantic-qa)",
       "Skill(shipkit-qa-visual)",
       "Skill(shipkit-orchestrate)",
-      "Skill(shipkit-orch-direction)",
+      "Skill(shipkit-direction)",
       "Skill(shipkit-review-direction)",
       "Skill(shipkit-review-planning)",
       "Skill(shipkit-metrics)"
@@ -186,7 +186,6 @@
 
   "skillOverrides": {
     "shipkit-orchestrate": "name-only",
-    "shipkit-orch-direction": "name-only",
     "shipkit-review-direction": "name-only",
     "shipkit-review-planning": "name-only",
     "shipkit-resource-advocate": "name-only"

@@ -10,6 +10,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.12.0] - 2026-07-02
+
+**Autonomous Direction — the orchestration rethink is complete.** Direction now runs
+autonomously: a calibrated Claude proposes the whole definitional foundation from cited
+signals and asks only the few high-leverage decisions, instead of either interrogating you
+or silently inventing answers. This retires the **last** forked loop-orchestrator — Shipkit's
+orchestration is now entirely the `shipkit-orchestrate` engine + thin phase callers.
+**39 skills / 8 agents** (0 orchestrator agents).
+
+### Added
+- **`shipkit-direction` — the DIRECTION entry point.** A thin caller that drives the
+  definitional foundation (why → stage → users → product → engineering → goals) to a coherent
+  bar via the engine in **autonomous-propose** mode. Replaces the forked `shipkit-orch-direction`
+  loop. Modes: autonomous (propose + few questions — the walk-away kickoff) and interactive
+  (richer elicitation when signals are thin).
+- **Ground-or-ask calibration** (`install/shared/references/ground-or-ask-calibration.md`) — the
+  rule that makes autonomous Direction safe: every field is either grounded in a **cited signal**
+  (propose it, tagged with source) or ungrounded (ask only if **high-leverage** — expensive or
+  hard to reverse; otherwise propose a flagged default). Separates guessed / confirmed /
+  needs-your-decision. Prevents both silent hallucination of a high-leverage field and over-asking.
+
+### Changed
+- **The 6 elicitive producers return to `context: fork` + marker-bubble.** `why-project`, `stage`,
+  `product-discovery`, `product-goals`, `engineering-goals`, and `feedback-bug` now run forked and
+  emit `NEEDS_ELICITATION:<slug>` when they hit a genuine high-leverage unknown — the engine
+  bubbles the batched questions to the main session and resumes. This restores autonomous
+  Direction (the interim inline-flip had degraded it) **without** the silent-hallucination risk.
+  Empirically cleared by the T7/T8/T9 orch-bubble rigs (2-layer, 3-layer propagation, resume
+  idempotency).
+- **Direction supports autonomous + interactive modes** via the existing gated/autonomous switch.
+
+### Removed
+- **Retired the last forked loop:** deleted `shipkit-orch-direction` (→ `shipkit-direction`) and
+  `shipkit-orch-direction-agent`. **No forked loop-orchestrators or orchestrator agents remain** —
+  orchestration is inline in the engine. DOC-015 is now fully superseded by the engine model
+  (`core-automation.md` + the wiring graph are the live sources).
+
+### Migration
+- `/shipkit-orch-direction` → **`/shipkit-direction`** (same purpose, now engine-driven and
+  autonomous by default). No `.shipkit/` data migration needed; re-run `/shipkit-update` to pick
+  up the new skill set.
+
+---
+
 ## [2.11.0] - 2026-07-02
 
 **The orchestration rethink lands: one automation engine, thin phase callers, and the forked loop layer retired.** Shipkit's orchestration collapses from three hand-rolled forked loops into a single reusable engine (`shipkit-orchestrate`) that phase skills call, with `shipkit-ship` as the build entry point. Adds a no-gaps spec completeness gate and run-scoped transient artifacts so parallel runs don't collide. **39 skills / 9 agents** (down from 40 / 12).

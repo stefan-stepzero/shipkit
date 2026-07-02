@@ -64,7 +64,7 @@
         {"name": "shipkit-work-memory", "desc": "Log progress & session state"}
       ],
       "Orchestration": [
-        {"name": "shipkit-orch-direction", "desc": "Direction loop — strategic artifacts + coherence review (retired once SS-3 ships shipkit-direction)"}
+        {"name": "shipkit-direction", "desc": "Direction entry point — thin caller that drives the definitional foundation (why→goals) via the engine in autonomous-propose mode (ground-or-ask calibration)"}
       ],
       "Execution": [
         {"name": "shipkit-ship", "desc": "Build a spec'd + planned feature to done — BUILD entry point; thin caller → shipkit-orchestrate (autonomous) over the plan"},
@@ -94,9 +94,7 @@
   },
 
   "agents": {
-    "orchestrators": [
-      {"name": "shipkit-orch-direction-agent", "desc": "Direction loop orchestrator — strategic artifact dispatch + review cycle (retired once SS-3 ships shipkit-direction)"}
-    ],
+    "orchestrators": [],
     "producers": [
       {"name": "shipkit-visionary-agent", "desc": "Strategic visionary — sets stage, vision, constraints, business goals"},
       {"name": "shipkit-product-owner-agent", "desc": "Product manager — definitions, specs, feedback, product goals"},

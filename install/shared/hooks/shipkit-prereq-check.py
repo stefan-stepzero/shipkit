@@ -67,9 +67,6 @@ SKILL_PREREQUISITES = {
     'shipkit-communications': [
         ('why.json', '/shipkit-why-project'),
     ],
-    'shipkit-orch-direction': [
-        ('why.json', '/shipkit-why-project'),
-    ],
 }
 
 

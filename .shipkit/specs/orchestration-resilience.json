@@ -1,0 +1,396 @@
+{
+  "id": "SPEC-ORCH-RESILIENCE",
+  "title": "Orchestration Resilience — 12 Design Debt Fixes",
+  "status": "implemented",
+  "createdAt": "2026-03-08",
+  "updatedAt": "2026-03-09",
+  "implementedAt": "2026-03-09",
+  "author": "Stefan + Claude",
+  "summary": "Addresses 12 identified design weaknesses in the 3-loop orchestration pipeline. Grouped into 4 themes: loop control, context awareness, coordination, and governance. All fixes are prompt-level or artifact-schema changes — no Claude Code primitives need to change.",
+
+  "finalized_decisions": {
+    "issue_1": "maxReviewCycles 3/3/2 (direction/planning/shipping). Full re-review each round. Master stops on partial and presents unresolved to user.",
+    "issue_2_plus_6": "MERGED. All 3 reviewers read full why.json. Shipping reviewer gets explicit POC→MVP→Growth→Scale severity table. Direction reviewer flags stage-ambition mismatches. Planning reviewer checks spec complexity vs stage.",
+    "issue_3": "Auto mode requires why.json to exist. If missing, direction loop runs gated (forces human input), then planning+shipping go autonomous. One rule in master orch, no producer changes.",
+    "issue_4": "Planning reviewer compares spec vs plan timestamps. No per-artifact dependency headers. Direction reviewer's existing coherence check covers cross-loop staleness.",
+    "issue_5": "Shipping orch scans plans for shared files during task creation. Adds ownership notes to task descriptions + addBlockedBy sequencing. One paragraph addition, no schema changes.",
+    "issue_7": "Cross-feature integration check in planning reviewer. Always runs regardless of spec count. Checks data model, API, component, and dependency conflicts across all specs.",
+    "issue_8": "Explicit QA dispatch rules replacing discretionary dispatch. ux-audit: spec has UI criteria AND changes touch components. semantic-qa: spec involves API/LLM AND changes touch routes/prompts. qa-visual: ui-goals.json exists AND changes touch UI. Never dispatch for backend-only/config/deps/docs.",
+    "issue_9": "Artifact-existence for crash recovery (already works). completedDispatches[] added as diagnostic log only. No behavior change to recovery logic.",
+    "issue_10": "DROPPED. Reviewer coherence checks already catch stale downstream artifacts. Stale-markers mechanism is redundant — if why.json changes and product-discovery.json doesn't match, the direction reviewer flags the gap and orchestrator re-dispatches.",
+    "issue_11": "Implemented. One-liner in each loop orch prompt + master: if PreCompact warning, write orchestration.json checkpoint immediately. Fork isolation already provides main mitigation.",
+    "issue_12": "DROPPED. Framework-integrity pre-release validation is sufficient. No session-start hook warning needed. The only way to hit a broken agent ref is manually deleting an agent file."
+  },
+
+  "themes": {
+    "loop_control": {
+      "description": "Orchestrator loops lack exit conditions and mid-run state persistence",
+      "issues": [1, 9]
+    },
+    "context_awareness": {
+      "description": "Agents operate without reading stage, scope, or mode context that would change their behavior",
+      "issues": [2, 3, 6]
+    },
+    "coordination": {
+      "description": "Artifacts and teammates can conflict, go stale, or miss cross-cutting concerns",
+      "issues": [4, 5, 7, 10]
+    },
+    "governance": {
+      "description": "Reviewer scope, context budget, and runtime safety gaps",
+      "issues": [8, 11, 12]
+    }
+  },
+
+  "issues": [
+    {
+      "id": 1,
+      "title": "Review loop convergence — no attempt limit",
+      "theme": "loop_control",
+      "severity": "high",
+      "problem": "Orchestrators loop produce→review→fix indefinitely until maxTurns dies. No attempt counter, no diminishing-returns logic, no graceful exit after N failed cycles.",
+      "fix": {
+        "approach": "Add a maxReviewCycles constant to each loop orchestrator prompt. After N cycles (default: 3), stop looping and report remaining issues to master as unresolved.",
+        "changes": [
+          {
+            "file": "install/agents/shipkit-orch-direction-agent.md",
+            "change": "Add to Dispatch Cycle section: 'maxReviewCycles: 3. After 3 review→fix cycles, if reviewer still reports gaps_found, write remaining gaps to orchestration.json.unresolved[] and return to master with status: partial.'"
+          },
+          {
+            "file": "install/agents/shipkit-orch-planning-agent.md",
+            "change": "Same maxReviewCycles: 3 pattern."
+          },
+          {
+            "file": "install/agents/shipkit-orch-shipping-agent.md",
+            "change": "Same pattern. Additionally: after max cycles, present unresolved blockers to user for manual decision (fix, defer, or accept)."
+          },
+          {
+            "file": "install/agents/shipkit-orch-master-agent.md",
+            "change": "Add handling for loop returning status: partial. Options: re-enter loop with user guidance, skip to next loop with known gaps, or stop."
+          }
+        ],
+        "artifact_schema_change": {
+          "file": ".shipkit/orchestration.json",
+          "addition": "Each loop status gains 'unresolved': [] array for gaps that couldn't be closed within budget."
+        }
+      },
+      "effort": "small",
+      "risk": "low"
+    },
+
+    {
+      "id": 2,
+      "title": "Cross-loop escalation blindness",
+      "theme": "context_awareness",
+      "severity": "high",
+      "problem": "Shipping reviewer blocks on items intentionally deferred by direction (e.g. blocking on 'no auth' when stage=POC explicitly excludes it). Reviewer doesn't read why.json or stage context.",
+      "fix": {
+        "approach": "Add stage-aware context loading to all three reviewer agents. Reviewers must read .shipkit/why.json (stage field) before assessing, and calibrate blocking thresholds accordingly.",
+        "changes": [
+          {
+            "file": "install/agents/shipkit-reviewer-shipping-agent.md",
+            "change": "Add to top of Role section: 'Before reviewing, read .shipkit/why.json to understand project stage. POC stage: only block on security vulnerabilities and broken core functionality. Do NOT block on missing auth, error handling, loading states, or architecture patterns unless the spec explicitly requires them.'"
+          },
+          {
+            "file": "install/agents/shipkit-reviewer-direction-agent.md",
+            "change": "Add stage reading. Direction reviewer should check stage consistency — if stage says POC but goals say 'enterprise-ready', flag the contradiction."
+          },
+          {
+            "file": "install/agents/shipkit-reviewer-planning-agent.md",
+            "change": "Add stage reading. Planning reviewer should verify specs don't over-specify for the current stage."
+          }
+        ]
+      },
+      "effort": "small",
+      "risk": "low"
+    },
+
+    {
+      "id": 3,
+      "title": "Autonomous mode — undefined human-skip behavior",
+      "theme": "context_awareness",
+      "severity": "medium",
+      "problem": "Producer skills say 'ask 2-3 clarifying questions' but have no documented fallback when running in autonomous/yolo mode. Undefined whether they block waiting for answers, use defaults, or skip.",
+      "fix": {
+        "approach": "Define a convention: when orchestration.json.mode == 'autonomous', producer skills should infer reasonable defaults from existing context files and proceed without asking. Document this in each producer agent prompt.",
+        "changes": [
+          {
+            "file": "install/agents/shipkit-visionary-agent.md",
+            "change": "Add Autonomous Mode section: 'When running in autonomous mode (no human present): infer answers from existing .shipkit/ context. If no context exists, use conservative defaults aligned with stage. Never block waiting for human input. Note assumptions made in the artifact output.assumptions[] field.'"
+          },
+          {
+            "file": "install/agents/shipkit-product-owner-agent.md",
+            "change": "Same autonomous mode section. For discovery: generate 1 primary persona from project description. For specs: derive acceptance criteria from product-definition features."
+          },
+          {
+            "file": "install/agents/shipkit-architect-agent.md",
+            "change": "Same pattern. For engineering-definition: scan existing code (package.json, file structure) to infer stack. For plans: generate conservative single-phase plans."
+          },
+          {
+            "file": "install/agents/shipkit-orch-master-agent.md",
+            "change": "When mode is autonomous, write mode: 'autonomous' to orchestration.json so downstream agents can detect it."
+          }
+        ],
+        "artifact_schema_change": {
+          "description": "All producer artifacts gain optional 'assumptions': [] array documenting what was inferred vs. confirmed by human."
+        }
+      },
+      "effort": "medium",
+      "risk": "medium — defaults may not match user intent, but assumptions[] makes this auditable"
+    },
+
+    {
+      "id": 4,
+      "title": "Artifact staleness after direct skill invocation",
+      "theme": "coordination",
+      "severity": "medium",
+      "problem": "User runs /shipkit-spec directly (bypassing orchestration). Spec changes but dependent artifacts (plans, test-cases) still reflect the old spec. No invalidation cascade.",
+      "fix": {
+        "approach": "Add a lightweight dependency header to each artifact. When a skill writes an artifact, it records which upstream artifacts it read and their timestamps. Downstream skills check this header before proceeding. If upstream changed since the dependency was recorded, warn the user.",
+        "changes": [
+          {
+            "file": "install/skills/shipkit-plan/SKILL.md",
+            "change": "Add to output schema: '_meta.dependsOn': [{ artifact: 'specs/feature.json', readAt: 'ISO timestamp' }]. Before generating a plan, check if the spec's modifiedAt > plan's dependsOn.readAt. If so, warn: 'Spec has changed since this plan was created. Re-run /shipkit-plan to update.'"
+          },
+          {
+            "file": "install/skills/shipkit-test-cases/SKILL.md",
+            "change": "Same dependency tracking against specs and plans."
+          },
+          {
+            "file": "install/skills/shipkit-engineering-definition/SKILL.md",
+            "change": "Track dependency on product-definition.json."
+          }
+        ],
+        "convention": "All artifacts gain optional '_meta.dependsOn' array. Skills that read upstream artifacts record what they read. Skills that consume downstream artifacts check freshness. This is advisory, not blocking — a stale warning, not a hard gate."
+      },
+      "effort": "medium",
+      "risk": "low — advisory only, no blocking behavior"
+    },
+
+    {
+      "id": 5,
+      "title": "Parallel teammate file conflicts",
+      "theme": "coordination",
+      "severity": "medium",
+      "problem": "Shipping loop creates N tasks for N file clusters, but plans don't guarantee non-overlapping file ownership. Two teammates could write conflicting changes to shared files like lib/db.ts.",
+      "fix": {
+        "approach": "The shipping orchestrator must deduplicate file ownership when creating tasks. Shared files get assigned to exactly one task, with other tasks instructed to import/use the shared file rather than modify it.",
+        "changes": [
+          {
+            "file": "install/agents/shipkit-orch-shipping-agent.md",
+            "change": "Add File Ownership section to task creation: '1. Collect all files from all plan phases. 2. Identify shared files (appearing in 2+ tasks). 3. Assign each shared file to the task that creates it or modifies it most. 4. Other tasks that touch the shared file: add to task description \"Use but do not modify {file} — owned by Task N\". 5. If a shared file needs changes from multiple tasks, create a dedicated setup task that runs first (use addBlockedBy).'"
+          },
+          {
+            "file": "install/skills/shipkit-plan/SKILL.md",
+            "change": "Add to plan output: 'sharedFiles': [] array listing files that appear in multiple phases, to make ownership conflicts visible before shipping."
+          }
+        ]
+      },
+      "effort": "small",
+      "risk": "low"
+    },
+
+    {
+      "id": 6,
+      "title": "Review severity not calibrated to project stage",
+      "theme": "context_awareness",
+      "severity": "medium",
+      "problem": "Shipping reviewer checks 12 quality dimensions with same severity regardless of stage. Its personality says 'pragmatic quality standards calibrated by project stage' but has no mechanism to read the stage.",
+      "fix": {
+        "approach": "Define explicit stage→severity mappings in the reviewer prompt. This is the operational version of issue #2.",
+        "changes": [
+          {
+            "file": "install/agents/shipkit-reviewer-shipping-agent.md",
+            "change": "Add Stage Calibration section after Role:\n\n'Read .shipkit/why.json stage field. Apply these blocking rules:\n\nPOC stage — Block ONLY on:\n- Security: exposed secrets, SQL injection\n- Functionality: happy path broken\n\nMVP stage — Also block on:\n- Auth missing on protected routes\n- Input validation missing at boundaries\n- Critical error handling gaps\n\nGrowth stage — Also block on:\n- Architecture anti-patterns\n- Missing error boundaries\n- Performance regressions\n- Accessibility gaps\n\nScale stage — Full blocking on all dimensions.'"
+          }
+        ]
+      },
+      "effort": "small",
+      "risk": "low — makes existing personality claim operational"
+    },
+
+    {
+      "id": 7,
+      "title": "No cross-feature integration check",
+      "theme": "coordination",
+      "severity": "medium",
+      "problem": "Planning loop specs features individually. Two specs may make conflicting data model assumptions, API naming, or shared component decisions. No horizontal integration review.",
+      "fix": {
+        "approach": "Add a cross-feature consistency check to the planning reviewer. After individual specs pass, the reviewer reads ALL active specs together and checks for conflicts.",
+        "changes": [
+          {
+            "file": "install/agents/shipkit-reviewer-planning-agent.md",
+            "change": "Add Cross-Feature Integration section: 'After checking individual spec quality, read ALL specs in .shipkit/specs/ together. Check for:\n1. Data model conflicts — same entity named differently, conflicting field assumptions\n2. API conflicts — overlapping endpoints, inconsistent naming conventions\n3. Shared component assumptions — two specs assuming different UI patterns for same component\n4. Dependency conflicts — two specs requiring incompatible library versions\n\nReport cross-feature issues as gaps with artifact: \"cross-feature\" and list the conflicting spec pairs.'"
+          }
+        ]
+      },
+      "effort": "small",
+      "risk": "low"
+    },
+
+    {
+      "id": 8,
+      "title": "Reviewer authority creep via selective QA dispatch",
+      "theme": "governance",
+      "severity": "low",
+      "problem": "Reviewers dispatch QA sub-skills based on vibes ('when your review identifies a concern'). Selective dispatch shapes findings — always dispatching all 3 finds more issues than dispatching none.",
+      "fix": {
+        "approach": "Make QA dispatch rules explicit and stage-calibrated rather than reviewer-discretionary.",
+        "changes": [
+          {
+            "file": "install/agents/shipkit-reviewer-shipping-agent.md",
+            "change": "Replace 'Only dispatch QA sub-skills when your review identifies a concern' with explicit rules:\n\n'QA dispatch rules:\n- /shipkit-ux-audit: dispatch when spec has UI acceptance criteria AND changes touch components/pages\n- /shipkit-semantic-qa: dispatch when spec involves API responses or LLM outputs AND changes touch API routes or prompt templates\n- /shipkit-qa-visual: dispatch when .shipkit/ui-goals.json exists AND changes touch UI components\n\nNever dispatch QA sub-skills for: backend-only changes, config changes, dependency updates, documentation.'"
+          }
+        ]
+      },
+      "effort": "small",
+      "risk": "low"
+    },
+
+    {
+      "id": 9,
+      "title": "Orchestration.json not updated mid-loop",
+      "theme": "loop_control",
+      "severity": "high",
+      "problem": "Master writes orchestration.json after each loop completes, but loop orchestrators don't write during their run. A 45-minute direction loop that crashes loses all progress tracking. On resume, crash recovery is optimistic — re-checks artifacts but re-runs reviewer, potentially finding new gaps in already-passed artifacts.",
+      "fix": {
+        "approach": "Loop orchestrators write progress checkpoints to orchestration.json after each successful dispatch within the loop.",
+        "changes": [
+          {
+            "file": "install/agents/shipkit-orch-direction-agent.md",
+            "change": "Add Checkpointing section: 'After each successful skill dispatch, update .shipkit/orchestration.json:\n- loops.direction.completedDispatches[]: append skill name + timestamp\n- loops.direction.lastCheckpoint: ISO timestamp\n\nOn crash recovery: read completedDispatches[], skip skills that already produced their artifact, resume from next undispatched skill.'"
+          },
+          {
+            "file": "install/agents/shipkit-orch-planning-agent.md",
+            "change": "Same checkpointing pattern."
+          },
+          {
+            "file": "install/agents/shipkit-orch-shipping-agent.md",
+            "change": "Same pattern. Additionally checkpoint team task completion status."
+          }
+        ],
+        "artifact_schema_change": {
+          "file": ".shipkit/orchestration.json",
+          "addition": "Each loop object gains 'completedDispatches': [{ skill, timestamp }] and 'lastCheckpoint' fields."
+        }
+      },
+      "effort": "medium",
+      "risk": "low — additive schema change, backward compatible"
+    },
+
+    {
+      "id": 10,
+      "title": "Dead artifact accumulation",
+      "theme": "coordination",
+      "severity": "medium",
+      "problem": "Skills write artifacts but never delete them. Re-running /shipkit-why-project with a new vision leaves old product-discovery.json, product-definition.json etc. on disk reflecting the abandoned direction. Reviewers may pass a coherent-looking set where only why.json is current.",
+      "fix": {
+        "approach": "When a producer skill overwrites a foundational artifact, it marks downstream artifacts as potentially stale by writing a staleness marker. The loop orchestrator checks for stale markers before dispatching the reviewer.",
+        "changes": [
+          {
+            "file": "install/skills/shipkit-why-project/SKILL.md",
+            "change": "Add to output step: 'After writing why.json, if why.json already existed and the new content differs materially (different problem, audience, or approach), write .shipkit/.stale-markers.json listing downstream artifacts that may be invalidated: [vision.json, product-discovery.json, product-definition.json, engineering-definition.json, goals/]'"
+          },
+          {
+            "file": "install/skills/shipkit-product-definition/SKILL.md",
+            "change": "Same pattern: if product-definition changes, mark engineering-definition and specs/ as potentially stale."
+          },
+          {
+            "file": "install/agents/shipkit-orch-direction-agent.md",
+            "change": "Add to dispatch cycle: 'Before dispatching reviewer, check .shipkit/.stale-markers.json. If stale markers exist, re-dispatch the producer skills for those artifacts first. Delete stale markers after re-dispatch.'"
+          }
+        ],
+        "convention": ".shipkit/.stale-markers.json is ephemeral — only exists during a re-run cycle. Orchestrators consume and delete it."
+      },
+      "effort": "medium",
+      "risk": "medium — stale detection is heuristic ('differs materially'), may over-trigger"
+    },
+
+    {
+      "id": 11,
+      "title": "No backpressure from context compaction to orchestrator",
+      "theme": "governance",
+      "severity": "low",
+      "problem": "Total theoretical turn budget across all loops is 570. Context gets compacted as the pipeline runs. By shipping, the orchestrator works from heavily compressed context. PreCompact hook suggests /shipkit-work-memory but orchestrator agents don't invoke it.",
+      "fix": {
+        "approach": "This is largely mitigated by the existing architecture: each loop orchestrator runs in its own context: fork, so they don't share context pressure with the master. The real risk is within a single loop that runs many dispatches. Mitigation: ensure orchestration.json checkpointing (issue #9) captures enough state that a compacted orchestrator can resume from the JSON alone without needing conversation history.",
+        "changes": [
+          {
+            "file": "install/agents/shipkit-orch-master-agent.md",
+            "change": "Add Context Pressure note: 'Each loop dispatch uses context: fork — loop orchestrators get fresh context windows. Your own context is only consumed by reading orchestration.json and dispatching 3 skills. If you receive a PreCompact warning, write orchestration.json with current state before compaction occurs.'"
+          },
+          {
+            "file": "install/agents/shipkit-orch-direction-agent.md",
+            "change": "Add: 'If you receive a PreCompact warning mid-loop, write orchestration.json checkpoint immediately. Your completedDispatches[] array is your resume state — you don't need conversation history to continue.'"
+          }
+        ]
+      },
+      "effort": "small",
+      "risk": "low — context: fork already provides the main mitigation"
+    },
+
+    {
+      "id": 12,
+      "title": "Skill-agent coupling validated only offline",
+      "theme": "governance",
+      "severity": "low",
+      "problem": "A skill's agent: field references an agent file, but nothing validates this at runtime. A broken reference means the skill runs with default persona and full tool access instead of restricted agent.",
+      "fix": {
+        "approach": "Claude Code handles the agent: field resolution — if the file doesn't exist, the skill still runs but without the agent persona. This is a CC primitive behavior we can't change. Mitigation: strengthen the offline check and add a session-start guard.",
+        "changes": [
+          {
+            "file": "install/shared/hooks/shipkit-session-start.py",
+            "change": "Add optional agent reference check: scan installed skill SKILL.md files for agent: fields, verify each referenced agent file exists in .claude/agents/. If a broken reference is found, print a warning line in session start output. Keep it non-blocking (exit 0)."
+          },
+          {
+            "file": ".claude/skills/shipkit-framework-integrity/SKILL.md",
+            "change": "Already implemented in Agent 5 — skill→agent cross-reference validation. No change needed."
+          }
+        ],
+        "note": "This is defense-in-depth. The framework-integrity skill catches this pre-release. The session-start hook catches it post-install. Neither can fix the CC runtime behavior — they can only warn."
+      },
+      "effort": "small",
+      "risk": "low"
+    }
+  ],
+
+  "implementation_plan": {
+    "phase_1_prompt_only": {
+      "description": "Pure prompt changes — no artifact schema modifications. Lowest risk, highest immediate value.",
+      "issues": [1, 2, 6, 7, 8],
+      "files_changed": 6,
+      "estimated_scope": "Edit 4 orchestrator agents + 3 reviewer agents"
+    },
+    "phase_2_schema_additions": {
+      "description": "Additive artifact schema changes — new optional fields, backward compatible.",
+      "issues": [3, 4, 5, 9],
+      "files_changed": 10,
+      "estimated_scope": "Edit 4 orchestrator agents + 3 producer agents + 3 skills"
+    },
+    "phase_3_infrastructure": {
+      "description": "New mechanisms — stale markers, session-start checks.",
+      "issues": [10, 11, 12],
+      "files_changed": 5,
+      "estimated_scope": "Edit 2 skills + 2 orchestrator agents + session-start hook"
+    }
+  },
+
+  "acceptance_criteria": [
+    "All 4 orchestrator agents have maxReviewCycles with graceful exit",
+    "All 3 reviewer agents read .shipkit/why.json stage before assessing",
+    "All 3 producer agents have documented autonomous mode behavior",
+    "Planning reviewer checks cross-feature consistency",
+    "Shipping reviewer has explicit QA dispatch rules (not discretionary)",
+    "Shipping reviewer has stage-calibrated severity table",
+    "Shipping orchestrator deduplicates file ownership across tasks",
+    "Loop orchestrators checkpoint progress to orchestration.json after each dispatch",
+    "Foundational artifacts mark downstream as stale when they change materially",
+    "Session-start hook warns on broken skill→agent references"
+  ],
+
+  "out_of_scope": [
+    "Changing Claude Code primitives (context: fork behavior, Agent tool in forks)",
+    "Adding new skills or agents — all fixes are to existing prompts",
+    "Runtime enforcement of agent: references — CC controls this",
+    "Automatic artifact deletion — too destructive, stale markers are advisory"
+  ]
+}

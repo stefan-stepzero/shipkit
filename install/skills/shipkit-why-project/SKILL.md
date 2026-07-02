@@ -2,6 +2,7 @@
 name: shipkit-why-project
 description: "Use when defining project vision and strategic direction. Triggers: 'why this project', 'define vision', 'project goals', 'what are we building'."
 argument-hint: "[project name]"
+context: fork
 agent: shipkit-visionary-agent
 effort: medium
 ---
@@ -12,7 +13,9 @@ effort: medium
 
 **What it does**: Collects core vision inputs, generates `.shipkit/why.json`, provides strategic context for all future sessions.
 
-**Protocol:** This skill follows the canonical elicitation protocol defined in `install/shared/references/elicitation-protocol.md`. The steps below are this skill's specific application of that protocol.
+**Protocol:** This skill follows the canonical elicitation protocol defined in `install/shared/references/elicitation-protocol.md` (the *mechanics* — marker, state files, resume). The steps below are this skill's specific application of that protocol.
+
+**Calibration:** Apply `install/shared/references/ground-or-ask-calibration.md` (the *intelligence* — propose vs ask). **Ground first:** propose every vision field you can tie to a cited signal (the opening prompt, README, codebase, package.json), tagged with its source; flag low-leverage guesses as `guessed`. Only the genuinely-unknown **high-leverage** fields (who it's for, the core problem, the one-way-door constraints) become `NEEDS_ELICITATION` questions. Do not ask what a signal already answers; do not silently invent a high-leverage field. Runs autonomous (propose + few questions) by default; interactive when signals are thin.
 
 ---
 
@@ -83,7 +86,9 @@ Then:
 
 ### Step 3: Generate Questions
 
-Produce questions for the current turn. Two-turn split (recommended):
+**Apply the calibration gate FIRST (do not ask what a signal already answers).** Run the grounding pass from `ground-or-ask-calibration.md`: for each field below, check the cited signals (opening prompt, README, package.json, codebase). If a signal grounds the field → **propose it** (tagged with source), do NOT include it as a question. Only include a question for a field that is **ungrounded AND high-leverage** (`targetUsers`, `problem`, and any one-way-door constraint are the high-leverage ones; `vision`/`approach` are high-leverage only if ungrounded; the optional fields are low-leverage → propose flagged defaults, don't ask). The list below is the **full menu**; the actual turn asks only the ungrounded-high-leverage subset — often 0-3, not all 8.
+
+Produce that calibrated question set for the current turn. Two-turn split (recommended) when several core fields are genuinely ungrounded:
 
 **Turn 1** — core foundation (Q1–Q3):
 1. "Who is this project for?" (target users, audience, stakeholders) → `targetUsers`

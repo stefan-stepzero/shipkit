@@ -6,12 +6,12 @@ A focused collection of **Claude Code skills** for efficient product development
 <!-- sync:readme_summary -->- **Vision & Discovery** (12) - why-project, product-discovery, project-context, ...
 - **Spec & Planning** (6) - spec-roadmap, spec, feedback-bug, ...
 - **Knowledge & Memory** (2) - claude-md, work-memory
-- **Orchestration** (1) - orch-direction
+- **Orchestration** (1) - direction
 - **Execution** (2) - ship, test-cases
 - **Quality & Communication** (12) - review-direction, review-planning, review-shipping, ...
 - **System** (3) - update, get-skills, get-mcps<!-- /sync:readme_summary -->
 
-Plus **<!-- sync:agent_count -->9<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
+Plus **<!-- sync:agent_count -->8<!-- /sync:agent_count --> agent personas** that specialize behaviors for different workflow stages.
 
 ---
 
@@ -29,7 +29,7 @@ All skills use the `shipkit-` prefix for clarity.
 
 **Orchestration (2 skills):**
 - `shipkit-orchestrate` - Core automation engine — delegate→reconcile→re-dispatch loop to a ground-truth bar (autonomous/steered); phase skills call it
-- `shipkit-orch-direction` - Direction loop — strategic artifacts + coherence review (interim — retires once SS-3 ships `shipkit-direction`)
+- `shipkit-direction` - Direction entry point — drives the definitional foundation (why→goals) via the engine in autonomous-propose mode (ground-or-ask calibration)
 
 **Discovery & Planning (15 skills):**
 - `shipkit-why-project` - Strategic vision definition
@@ -73,12 +73,11 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-get-mcps` - Discover and install MCP servers
 
 
-### Agent Personas (<!-- sync:agent_count -->9<!-- /sync:agent_count -->)
+### Agent Personas (<!-- sync:agent_count -->8<!-- /sync:agent_count -->)
 
 <!-- sync:readme_agent_table -->**Orchestrators:**
 | Agent | Used For |
 |-------|----------|
-| `shipkit-orch-direction-agent` | Direction loop orchestrator — strategic artifact dispatch + review cycle (retired once SS-3 ships shipkit-direction) |
 
 **Producers:**
 | Agent | Used For |
@@ -128,7 +127,7 @@ python install.py --from-github
 
 The installer will:
 - Install all <!-- sync:skill_count -->39<!-- /sync:skill_count --> skills
-- Set up <!-- sync:agent_count -->9<!-- /sync:agent_count --> agent personas
+- Set up <!-- sync:agent_count -->8<!-- /sync:agent_count --> agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
 
@@ -143,7 +142,7 @@ your-project/
 │   ├── rules/
 │   │   └── shipkit.md           # Framework rules (managed by /shipkit-update)
 │   ├── skills/                  # 39 skill definitions
-│   ├── agents/                  # 9 agent personas
+│   ├── agents/                  # 8 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
     ├── specs/                   # Feature specifications
@@ -221,7 +220,7 @@ shipkit/
 │
 ├── install/                         # Everything that gets installed
 │   ├── skills/                      # <!-- sync:skill_count -->39<!-- /sync:skill_count --> shipkit-* skill definitions
-│   ├── agents/                      # <!-- sync:agent_count -->9<!-- /sync:agent_count --> shipkit-*-agent personas
+│   ├── agents/                      # <!-- sync:agent_count -->8<!-- /sync:agent_count --> shipkit-*-agent personas
 │   ├── rules/
 │   │   └── shipkit.md               # Framework rules (auto-loaded)
 │   ├── profiles/

@@ -2,6 +2,7 @@
 name: shipkit-product-goals
 description: "Derive measurable user-outcome criteria from the product blueprint. Writes goals/product.json (completion rates, UX quality, satisfaction). Evaluate mode compares actuals to targets."
 argument-hint: "[goal topic | --evaluate]"
+context: fork
 agent: shipkit-product-owner-agent
 effort: medium
 ---
@@ -10,7 +11,11 @@ effort: medium
 
 **Purpose**: Derive measurable user-outcome criteria from the product blueprint. Each feature, UX pattern, and differentiator implies criteria for "how do we know this works?" — this skill makes those criteria explicit, measurable, and trackable.
 
-**What it does**: Reads the product blueprint + discovery context + stage from strategic.json, proposes user-outcome criteria (P-*), lets user validate, appends P-* IDs to existing stage gates, then writes `goals/product.json`.
+**What it does**: Reads the product blueprint + discovery context + stage from strategic.json, proposes user-outcome criteria (P-*), appends P-* IDs to existing stage gates, then writes `goals/product.json`.
+
+**Protocol:** This skill follows the canonical elicitation protocol defined in `install/shared/references/elicitation-protocol.md` (the *mechanics* — marker, state files, resume). The steps below are this skill's specific application of that protocol.
+
+**Calibration:** Apply `install/shared/references/ground-or-ask-calibration.md` (the *intelligence* — propose vs ask). **Ground first:** This is a DERIVATION skill — the vast majority of P-* criterion fields are directly derivable from cited upstream artifacts (`product-definition.json`, `product-discovery.json`, `goals/strategic.json`). Propose every criterion you can ground, tagged with its source; flag low-leverage guesses as `guessed`. The only genuinely **high-leverage ungrounded** fields are the **concrete numeric thresholds** (e.g., "> 80% completion rate") when no signal from stage calibration, prior metrics, or product-definition implies a specific value. Ask those — and only those. Keep the question set tiny (often zero). Do not ask what a signal already answers; do not silently invent a high-leverage threshold.
 
 **Output**: One JSON file:
 - `goals/product.json` — User-outcome criteria (PM owns)
@@ -92,6 +97,15 @@ After loading context (Step 1), create tasks:
 2. If exists: archive current file to `.shipkit/.archive/goals-product.YYYY-MM-DD.json` and regenerate (fork context — no user prompt; let the reviewer catch over-eager rewrites)
 3. If legacy `.shipkit/goals.json` exists: migrate (see Migration section)
 4. If nothing exists: Skip to Step 1
+
+---
+
+### Step 0.5: Check Elicitation State (Threshold Answers)
+
+Read `.shipkit/elicitation/product-goals/answers.md` (or `<runDir>/elicitation/product-goals/answers.md` when running under the orchestration engine — see `install/shared/references/run-artifacts.md`).
+
+- **If real threshold answers are present** → use those values when proposing thresholds in Step 3. Proceed with derivation as normal.
+- **If absent or empty** → proceed; the grounding pass in Step 3 will determine whether any thresholds remain ungrounded.
 
 ---
 
@@ -181,9 +195,34 @@ For each derived criterion, assign `checkability` and `verificationTool`:
 
 ---
 
-### Step 4: Finalize Criteria
+### Step 4: Threshold Resolution — Ground or Ask
 
-> **Forked producer — do not prompt.** You are dispatched inside a fork and have no user channel. Finalize the P-* criteria from your derivation pass (Step 3) directly, write them in Step 6, and let the direction reviewer catch any miscalibration via the loop's feedback cycle. If context is genuinely insufficient (missing product-definition.json, no stage set), return a `gaps_found` signal in the artifact instead of asking the user.
+After completing Step 3 derivation, classify each proposed threshold:
+
+| Class | When | Action |
+|-------|------|--------|
+| **Grounded** | Stage calibration table, product-definition patterns, or prior metrics imply the value | Propose, tagged with source. Proceed. |
+| **Low-leverage ungrounded** | Typical industry default (e.g., "> 80% MVP completion rate"), cheap to adjust later | Flag as `guessed: true`. Proceed. |
+| **High-leverage ungrounded** | Cannot be inferred from any signal AND shapes scope or sets a hard constraint (launch gate, partner SLA, satisfaction bar that is one-way-door) | Must be asked. |
+
+**If ANY high-leverage ungrounded thresholds exist — fork path:**
+
+1. Write `.shipkit/elicitation/product-goals/questions.md` listing the specific thresholds that need values (one question per ungrounded threshold; include the derived criterion name and what the question is resolving).
+2. Write `.shipkit/elicitation/product-goals/progress.json` with `status: in_progress`.
+3. Do NOT write `goals/product.json`. Do NOT invent the threshold value.
+4. Emit the following as the **final line** of your output — nothing may follow it:
+   ```
+   NEEDS_ELICITATION:shipkit-product-goals
+   status=paused
+   questions_file=.shipkit/elicitation/product-goals/questions.md
+   reason=awaiting threshold values for high-leverage criteria
+   ```
+
+**If all thresholds are grounded or low-leverage flagged:**
+
+Proceed directly to Step 5 (Map to Gates) and write `goals/product.json` in Step 6 as normal.
+
+> **Never silently invent an ungrounded high-leverage threshold.** A guessed launch gate or SLA-bound success rate that turns out to be wrong is hard to discover late and expensive to reverse. If genuinely uncertain, emit the marker — even if the question count is just one or two.
 
 ---
 
@@ -421,6 +460,8 @@ When `.shipkit/goals.json` (single file) exists or files have `"source": "shipki
 2. **Prerequisites** - Does the next action need a spec or plan first?
 3. **Session length** - Long session? Consider `/shipkit-work-memory` for continuity.
 
+**If `NEEDS_ELICITATION:shipkit-product-goals` was emitted:** The skill paused without writing `goals/product.json`. No threshold was invented. The main session should run `/shipkit-product-goals` inline (where `AskUserQuestion` is available), answer the threshold questions in `.shipkit/elicitation/product-goals/questions.md`, then re-invoke the original skill or orchestrator to resume. See `install/shared/references/elicitation-protocol.md` for full handling instructions.
+
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 
 **Suggest skill when:** User needs engineering goals (`/shipkit-engineering-goals`), specs (`/shipkit-spec`), or verification (`/shipkit-review-shipping`).
@@ -444,6 +485,9 @@ Product goals artifact is complete when:
 - [ ] Summary counts match actual array length
 - [ ] File saved to `.shipkit/goals/product.json`
 - [ ] Strategic.json gates updated with P-* criteria (if file exists)
+- [ ] All proposed thresholds are tagged with source or `guessed: true` — no silent inventions
+- [ ] If marker emitted: `NEEDS_ELICITATION:shipkit-product-goals` is the final output line; `goals/product.json` was NOT written and no threshold was invented
+- [ ] --evaluate mode: gap report output follows the verifiable/observable split format
 <!-- /SECTION:success-criteria -->
 
 ---

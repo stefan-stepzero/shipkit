@@ -2,6 +2,7 @@
 name: shipkit-stage
 description: "Define project stage, scope constraints, and graduation criteria. Set mode configures the stage; evaluate mode assesses readiness for human approval."
 argument-hint: "[set | --evaluate]"
+context: fork
 agent: shipkit-visionary-agent
 effort: medium
 ---
@@ -10,7 +11,11 @@ effort: medium
 
 **Purpose**: Define the project stage (POC/Alpha/MVP/Scale), derive scope constraints and quality bars from that stage, set business-metric criteria (S-*), and define stage gates. Evaluate mode assesses gate readiness for human-approved graduation.
 
-**What it does**: Reads the project vision and codebase signals, proposes a stage (confirms with user via `AskUserQuestion`), derives constraints and business metrics, defines gates with S-* criteria, and writes `goals/strategic.json`. Runs inline to avoid hallucinating stage decisions. Evaluate mode is user-invoked and human-gated — it cross-references ALL goal files to build a graduation evidence table for human approval.
+**What it does**: Reads the project vision and codebase signals, grounds the stage from cited signals, derives constraints and business metrics, defines gates with S-* criteria, and writes `goals/strategic.json`. Runs in fork context — when stage is grounded by cited signals, proceeds autonomously; when stage is genuinely ungrounded, emits `NEEDS_ELICITATION:shipkit-stage` and pauses rather than guessing silently. Evaluate mode is user-invoked and human-gated — it cross-references ALL goal files to build a graduation evidence table for human approval.
+
+**Protocol:** This skill follows the canonical elicitation protocol defined in `install/shared/references/elicitation-protocol.md` (the *mechanics* — marker, state files, resume). The steps below are this skill's specific application of that protocol.
+
+**Calibration:** Apply `install/shared/references/ground-or-ask-calibration.md` (the *intelligence* — propose vs ask). **Ground first:** propose every stage field you can tie to a cited signal (the opening prompt, `why.json` stage/currentState/approach/constraints keywords, codebase maturity signals — file counts, CI/CD config, specs, tests, deployment infrastructure), tagged with its source; flag low-leverage guesses as `guessed`. For shipkit-stage the **high-leverage decisions** are: (1) **the stage itself** (POC / Alpha / MVP / Scale) when no cited signal resolves it, and (2) **graduation scope constraints** when stage is genuinely ambiguous. These set hard scope boundaries — a wrong stage silently misaligns every constraint, quality bar, and success criterion derived from it. When stage is grounded by a clear cited signal, proceed autonomously (no marker). Only emit `NEEDS_ELICITATION:shipkit-stage` when stage is genuinely ungrounded after the full inference pass (no explicit `stage` field, no unambiguous keywords, no codebase maturity signal points clearly at one stage).
 
 **Output**: One JSON file:
 - `goals/strategic.json` — Stage, constraints, stageImplications, business-metric criteria, gates
@@ -104,26 +109,81 @@ Each S-* criterion must include a rubric — bare thresholds are incomplete.
 
 ---
 
-### Step 2: Infer Stage (Propose Mode)
+### Step 2: Infer Stage (Ground-or-Ask)
 
-You MUST infer a stage. Do NOT ask the user — this is a forked producer with no user channel.
+Ground the stage from cited signals. Do NOT silently guess when signals are ambiguous — if you cannot ground the stage after the full inference pass, follow the ungrounded path below.
 
-**Inference order:**
+**Inference order (each step is a grounding attempt with a cited source):**
 
-1. **Explicit stage field in why.json.** If `why.json.stage` exists, use it. Done.
-2. **Explicit stage language in why.json.** Scan `why.json` (vision, approach, currentState, constraints, etc.) for stage keywords:
+1. **Explicit stage field in why.json.** If `why.json.stage` exists, use it. Source: `why.json.stage`. Done.
+2. **Explicit stage language in why.json.** Scan `why.json` (vision, approach, currentState, constraints, etc.) for unambiguous stage keywords. Source: `why.json <field>`.
    - POC: "proof of concept", "poc", "prototype", "weekend project", "learning exercise", "just exploring", "spike", "throwaway"
    - Alpha: "alpha", "internal testing", "testers", "early users", "core flow", "happy path"
    - MVP: "mvp", "minimum viable", "launch", "production-ready", "first customers", "beta"
    - Scale: "scale", "enterprise", "growth", "multi-tenant", "compliance", "soc2", "gdpr", "high availability"
-3. **Codebase signals** (if stage still unclear):
+3. **Codebase signals** (if stage still unclear). Source: codebase scan.
    - Zero or very few source files (<10), no specs, no tests → POC
    - Some source files, basic structure, no deployment config → Alpha
    - Significant source, CI/CD config, tests, deployment infrastructure → MVP
    - Production deploys, monitoring, auth, multi-environment → Scale
-4. **Default fallback**: If all signals are ambiguous, choose **MVP**. It's the most common stage and its constraints are moderate — the reviewer will flag if it's wrong.
+4. **Check elicitation answers.** Before concluding signals are ambiguous, read `.shipkit/elicitation/stage/answers.md`. If it contains a real answer for the stage field → use it. Source: elicitation answers.
+5. **Ungrounded path.** If all signals remain ambiguous after steps 1–4 (no explicit field, no unambiguous keywords, no clear codebase maturity indicator, no elicitation answer):
+   - **In a fork** (check: is `AskUserQuestion` absent from your available tools?): follow **Step 2a** below — write state files and emit the marker. Do NOT guess a stage. Do NOT write `goals/strategic.json`.
+   - **Inline** (has `AskUserQuestion`): ask directly — "What stage is this project at? (POC / Alpha / MVP / Scale)" — then proceed with the user's answer.
 
-Record the inference rationale in the artifact's `stageRationale` field. The reviewer reads this to decide if the inference was defensible.
+Record the inference rationale and source in the artifact's `stageRationale` field. The reviewer reads this to decide if the inference was defensible.
+
+---
+
+### Step 2a: Emit Marker (fork + ungrounded stage)
+
+*Only reached when running in a fork AND stage is genuinely ungrounded (steps 1–4 above all failed to resolve it).*
+
+Write state files per `install/shared/references/elicitation-protocol.md`:
+
+**`.shipkit/elicitation/stage/questions.md`** — overwrite with:
+```
+---
+skill: shipkit-stage
+turn: 1
+last_updated: <ISO 8601 UTC>
+---
+
+## Turn 1
+
+1. What stage is this project at? Choose the one that best fits: POC (exploring/prototyping), Alpha (internal testing, core flow), MVP (production-ready for first users), or Scale (growth/enterprise). (field: `stage`)
+2. Are there any hard scope constraints for this stage? (e.g. "AU curriculum only", "single-user only", "no paid APIs") — or skip. (field: `stageConstraints`)
+```
+
+**`.shipkit/elicitation/stage/progress.json`** — create or update:
+```json
+{
+  "skill": "shipkit-stage",
+  "status": "in_progress",
+  "elicitation_turn": 1,
+  "started_at": "<ISO 8601 UTC>",
+  "last_updated_at": "<ISO 8601 UTC>",
+  "completed_at": null,
+  "last_elicited_at": null,
+  "total_questions_planned": 2,
+  "questions_answered": 0,
+  "confidence": "low"
+}
+```
+
+Do **not** write `answers.md` from the fork — the main session creates and maintains it.
+
+Emit as the **final line** of your output:
+
+```
+NEEDS_ELICITATION:shipkit-stage
+status=paused
+turn=1
+questions_file=.shipkit/elicitation/stage/questions.md
+reason=stage is genuinely ungrounded — needs user input before deriving constraints and gates
+```
+
+Do **not** continue to Steps 3–6. Do **not** write `goals/strategic.json`. Return immediately.
 
 ---
 
@@ -352,6 +412,10 @@ When `.shipkit/goals/strategic.json` exists with `"source": "shipkit-product-goa
 **Archive location** (if replacing):
 - `.shipkit/.archive/goals-strategic.YYYY-MM-DD.json`
 
+**Elicitation state** (persists as audit trail — only written when stage is ungrounded):
+- `.shipkit/elicitation/stage/questions.md`
+- `.shipkit/elicitation/stage/progress.json`
+
 ---
 
 <!-- SECTION:after-completion -->
@@ -363,6 +427,8 @@ When `.shipkit/goals/strategic.json` exists with `"source": "shipkit-product-goa
 2. **Prerequisites** - Does the next action need a spec or plan first?
 3. **Session length** - Long session? Consider `/shipkit-work-memory` for continuity.
 
+**If `NEEDS_ELICITATION:shipkit-stage` was emitted:** The skill paused without writing `goals/strategic.json`. The main session should run `/shipkit-stage` inline (where `AskUserQuestion` is available), answer the questions in `.shipkit/elicitation/stage/questions.md`, then re-invoke the original skill or orchestrator to resume. See `install/shared/references/elicitation-protocol.md` for full handling instructions.
+
 **Natural capabilities** (no skill needed): Implementation, debugging, testing, refactoring, code documentation.
 
 **Suggest skill when:** User needs product goals (`/shipkit-product-goals`), engineering goals (`/shipkit-engineering-goals`), or specs (`/shipkit-spec`).
@@ -373,8 +439,9 @@ When `.shipkit/goals/strategic.json` exists with `"source": "shipkit-product-goa
 
 Stage artifact is complete when:
 - [ ] why.json read and vision context extracted
-- [ ] Stage inferred from why.json + codebase signals (see Step 2 inference order)
-- [ ] `stageRationale` field populated with the inference evidence
+- [ ] Stage grounded from a cited signal (why.json field, keywords, codebase maturity, or elicitation answers) — OR marker emitted if ungrounded
+- [ ] If marker emitted: `NEEDS_ELICITATION:shipkit-stage` is the final output line; `goals/strategic.json` was NOT written
+- [ ] `stageRationale` field populated with the inference evidence and source (when grounded)
 - [ ] Constraints derived from stage (no user prompt)
 - [ ] stageImplications derived (skip, focus, qualityBar)
 - [ ] S-* business-metric criteria derived from vision + stage
@@ -394,4 +461,4 @@ Stage artifact is complete when:
 
 **Backward compatibility**: Files with `source: "shipkit-product-goals"` are from the previous owner. The criteria and gate schemas are compatible; only `source`, `version`, `stageImplications`, and `derivedFrom` differ. Migration is automatic on first run.
 
-**Remember**: This skill defines the strategic frame — stage, constraints, and business metrics. In Set mode (dispatched by orch-direction) the skill runs autonomously in fork context — no user prompts, the reviewer catches misalignments. In Evaluate mode (user-invoked graduation check) stage advancement remains a human checkpoint. Other skills (product-goals, engineering-goals) append their criteria to the gates defined here.
+**Remember**: This skill defines the strategic frame — stage, constraints, and business metrics. In Set mode (dispatched by the engine via `shipkit-direction`) the skill runs in fork context — it proposes from cited signals and, for a high-leverage ungrounded stage/constraint, emits `NEEDS_ELICITATION:shipkit-stage` rather than prompting or guessing (per the calibration). In Evaluate mode (user-invoked graduation check) stage advancement remains a human checkpoint. Other skills (product-goals, engineering-goals) append their criteria to the gates defined here.

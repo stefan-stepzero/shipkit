@@ -1,6 +1,6 @@
 ---
 name: shipkit-review-direction
-description: Internal reviewer — assesses strategic artifact coherence. Checks vision/why alignment, goal completeness, stage realism. Dispatched by orch-direction, not for direct use.
+description: Internal reviewer — assesses strategic artifact coherence. Checks vision/why alignment, goal completeness, stage realism. The Direction coherence-review gate, dispatched by the engine (via shipkit-direction), not for direct use.
 user-invocable: false
 context: fork
 agent: shipkit-reviewer-direction-agent
@@ -49,7 +49,7 @@ Write `.shipkit/reviews/direction-assessment.json` with structured findings.
 
 Assessment written to `.shipkit/reviews/direction-assessment.json`.
 
-**Next:** The calling orchestrator (`shipkit-orch-direction-agent`) reads this assessment:
+**Next:** The caller — the engine in the Direction flow (via `shipkit-direction`) — reads this assessment:
 - If **gaps found**: re-dispatches the affected upstream skills for revision, then re-runs this reviewer.
 - If **pass**: proceeds to the next loop phase (or reports completion to the caller).
 
