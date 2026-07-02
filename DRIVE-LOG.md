@@ -15,3 +15,16 @@ Fidelity scorecard committed (7c85966): semantic-qa --fidelity mode + scorecard 
 
 ## Slot 4 — P4 DONE (ED↔ADR staleness, bonus)
 Retro #2 closed. Linkage reuses the existing ADR `scope: "mechanism:M-###"` join (no new link). Divergence check lives in the **session-start hook** (deterministic, no-LLM) — chosen over architecture-map because that's the surfacing point AND architecture-map deliberately doesn't read the decisions log + doesn't run at session-start (rationale in OPEN-DECISIONS Phase 4). New fn `get_ed_adr_drift_warning()`: reads `architecture-archive.json` (full bodies retain scope+status+links) vs engineering-definition mechanisms; flags a mechanism stale when a scoped ADR is superseded/dormant/deprecated or amended, UNLESS the mechanism acknowledges it via `supersededByADR`/`staleSince`. Emits one-line warning ("engineering-definition has N mechanism(s) stale vs the ADR log (M-006, …) — reconcile before building against them"), gated on both artefacts existing. Additive schema changes: `dormant` allowed ADR status; optional mechanism fields `supersededByADR`/`staleSince` (acknowledgement/suppression). Files: install/shared/hooks/shipkit-session-start.py, install/skills/shipkit-engineering-definition/SKILL.md, install/skills/shipkit-engineering-definition/references/architecture-log-schema.md, OPEN-DECISIONS.md, DRIVE-LOG.md. Hook re-parses clean (ast.parse OK); 4 synthetic cases pass (stale set correct, acknowledgement suppresses, gating returns None when artefacts absent). CLAUDE_PROJECT_DIR-relative (uses shipkit_dir, not cwd). No new skill, no count change, no wiring change. Deferred (v1): divergence section in framework-integrity/architecture-map. NOT committed — per Slot 3 convention the coordinator integrates; worktree-only, bench untouched.
+
+## Slot 4 + WRAP — DONE
+P4 ED<->ADR staleness committed (e5de4f3). WRAP: VERSION/pkg->2.13.0, CHANGELOG [2.13.0], sync-docs (39/8). Wrap gates: hooks parse OK, runtime JSON valid, installer smoke 39 PASS, validate-wiring BLOCK=0. FULL 5-agent framework-integrity intentionally deferred to BENCH INTEGRATION (the land) per multi-worktree discipline.
+
+## SCOPE RECONCILIATION (all items)
+- P0 user redefinition: DONE (781299d) [DOC-028 edit deferred to bench: gitignored, not in worktree]
+- P1 contract-first gate: DONE (0d4f8dc)
+- P2 essence capture: DONE (257f041)
+- P3 fidelity scorecard: DONE (7c85966)
+- P4 ED<->ADR staleness (bonus): DONE (e5de4f3)
+- WRAP release-prep: DONE (2.13.0)
+Bar MET: phases 0-3 on disk + committed + wrap-gates green. Slots used ~5/10 (finished under budget). Nothing pushed/merged; ready for bench to run full framework-integrity + land.
+OPEN (for bench/next): DOC-028 user-def edit; essence threshold=80 + qualityBar weight calibration (needs Project A real runs); deeper framework-integrity divergence check (P4 shipped session-start surfacing only).
