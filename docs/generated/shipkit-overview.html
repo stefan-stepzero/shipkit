@@ -621,7 +621,7 @@
             <h1>&#x1F680; Shipkit <span style="font-size: 0.5em; opacity: 0.8;">{{SHIPKIT_VERSION}}</span></h1>
             <div class="stats">
                 <div class="stat">
-                    <!-- sync:html_skill_count --><span class="stat-number">41</span><!-- /sync:html_skill_count -->
+                    <!-- sync:html_skill_count --><span class="stat-number">42</span><!-- /sync:html_skill_count -->
                     <span class="stat-label">Skills</span>
                 </div>
                 <div class="stat">
@@ -815,6 +815,11 @@
                             <td class="trigger">Production readiness audit</td>
                             <td><span class="skill">/shipkit-preflight</span></td>
                             <td class="creates">preflight.json</td>
+                        </tr>
+                        <tr>
+                            <td class="trigger">Build a spec'd + planned feature to done</td>
+                            <td><span class="skill">/shipkit-ship</span></td>
+                            <td class="creates">orchestration.json (run-scoped)</td>
                         </tr>
                         <tr>
                             <td class="trigger">Generate test case specs</td>
@@ -1149,6 +1154,15 @@
                         <td><span class="timing-pill mode-context">context-capture</span></td>
                         <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
                         <td class="desc-cell">Break spec into ordered implementation steps with file ownership and dependencies.</td>
+                    </tr>
+                    <tr>
+                        <td class="skill-cell">shipkit-ship</td>
+                        <td class="phase-cell">10</td>
+                        <td><span class="timing-pill timing-feature">per-feature</span></td>
+                        <td><span class="timing-pill trigger-user">user</span></td>
+                        <td><span class="timing-pill mode-orchestrate">orchestrate</span></td>
+                        <td><span class="timing-pill necessity-mandatory">mandatory</span></td>
+                        <td class="desc-cell">Build the plan to done &mdash; thin caller to shipkit-orchestrate (autonomous): partition &rarr; fan-out &rarr; reconcile against ground truth &rarr; serial-integrate &rarr; stop at bar.</td>
                     </tr>
                     <tr>
                         <td class="skill-cell">shipkit-test-cases</td>
@@ -1537,7 +1551,14 @@
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-                        <tr><td class="category-row" colspan="14">Orchestration (3)</td></tr>
+                        <tr><td class="category-row" colspan="14">Orchestration (4)</td></tr>
+                        <tr>
+                            <th>shipkit-orchestrate</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
                         <tr>
                             <th>shipkit-orch-direction</th>
                             <td class="mark-spawns">&#x25C6;</td><td class="mark-has">&#x25CF;</td><td></td><td></td>
@@ -1559,7 +1580,14 @@
                             <td></td><td></td><td></td>
                             <td class="mark-human">&#x2713;</td>
                         </tr>
-                        <tr><td class="category-row" colspan="14">Execution (1)</td></tr>
+                        <tr><td class="category-row" colspan="14">Execution (2)</td></tr>
+                        <tr>
+                            <th>shipkit-ship</th>
+                            <td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td><td></td><td></td>
+                            <td></td><td></td><td></td>
+                            <td class="mark-human">&#x2713;</td>
+                        </tr>
                         <tr>
                             <th>shipkit-test-cases</th>
                             <td></td><td></td><td class="mark-spawns">&#x25C6;</td><td></td>

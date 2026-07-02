@@ -641,7 +641,7 @@ When running as part of an Agent Team:
 
 ## Context Files This Skill Writes
 
-- `.shipkit/verification-report.json` — QA verdict written on every run (summary + per-check results the shipping orchestrator reads for routing decisions)
+- `verification-report.json` (run-scoped under `<runDir>/`, else `.shipkit/`) — QA verdict written on every run (summary + per-check results the engine reads in steered mode for routing decisions)
 
 ---
 
@@ -682,13 +682,18 @@ For **thorough multi-agent review**, two plugins are available:
 <!-- SECTION:after-completion -->
 ## After Completion
 
-Assessment written to `.shipkit/verification-report.json`.
+Assessment written to `verification-report.json` (run-scoped under `<runDir>/` when the
+engine set a run root; `.shipkit/verification-report.json` otherwise).
 
-**Next:** The calling orchestrator (`shipkit-orch-shipping-agent`) reads this assessment:
-- If **gaps found**: re-dispatches the affected upstream skills for revision, then re-runs this reviewer.
-- If **pass**: proceeds to the next loop phase (or reports completion to shipkit-orch-master-agent).
+**Next:** This skill is the per-unit **review work** the engine (`shipkit-orchestrate`,
+**steered** mode) fans out — one unit per app-area / screen (frontend + backend). The
+engine reads this assessment as ground truth and surfaces it to the user to steer:
+- If **gaps found**: the engine re-dispatches the affected upstream work for revision,
+  then re-runs this reviewer against the same unit.
+- If **pass**: the engine advances that unit and reports it as met against the bar.
 
-This skill is normally invoked by the orchestrator, not called directly by the user.
+The engine (main session) owns the dispatch/reconcile loop; this skill owns the
+per-unit judgment. It can also be run directly for an ad-hoc review of the current diff.
 
 **Want deeper scrutiny?** Use `/code-review` (4 agents) or `/pr-review-toolkit:review-pr` (6 agents) — requires plugins.
 <!-- /SECTION:after-completion -->

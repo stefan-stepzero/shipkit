@@ -169,6 +169,7 @@ When `.shipkit/codebase-index.json` exists, the session-start hook injects a **l
 ### Execution
 | When... | Use |
 |---------|-----|
+| Build a spec'd + planned feature to done | `/shipkit-ship` |
 | Generate test case specs | `/shipkit-test-cases` |
 
 ### Quality & Communication

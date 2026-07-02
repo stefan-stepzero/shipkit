@@ -548,7 +548,10 @@ Review Codebase Patterns table:
 - Plan location
 - Summary: X phases, Y steps, Z files to create/modify
 - Validation status (all checks passing)
-- Next action: "Ready to implement - start with Phase 1"
+- Next action: **`/shipkit-ship`** — build the plan to done (the engine drives it
+  autonomously; the plan is the step list, the spec's named surface + acceptance + green
+  tests are the bar). Plan is synthesis-only — it emits the plan and hands off; it does
+  **not** drive the build loop itself.
 
 ---
 
@@ -625,8 +628,10 @@ Copy and track:
 - `/shipkit-engineering-definition` - Engineering blueprint (mechanisms, components, past decisions)
 
 ### After This Skill
-- `implement (no skill needed)` - Executes the plan
-- `/shipkit-review-shipping` - Validates implementation matches plan
+- `/shipkit-ship` - Builds the plan to done (thin caller → `shipkit-orchestrate`
+  autonomous; partition → fan-out → reconcile → serial-integrate → stop at the bar)
+- `/shipkit-review-shipping` - Post-build review (the engine in steered mode, one unit
+  per area/screen) validates implementation matches spec + plan
 
 ---
 
@@ -675,7 +680,7 @@ Plan written to `.shipkit/plans/todo/<feature-slug>.json`.
 
 **Next:** Run `/shipkit-ship <feature-slug>` to execute the plan.
 
-This dispatches `shipkit-orch-shipping-agent`, which runs phases with gates, dispatches implementation work to the appropriate producer agents, and invokes `shipkit-review-shipping` between phases. **Do not dispatch architect or producer agents directly to execute plan phases** — that bypasses the shipping loop's review gates.
+This invokes the orchestration engine (`shipkit-orchestrate`) in autonomous mode over the plan: partition into file-ownership clusters, fan out the build, reconcile each step against ground truth, integrate serially, and stop at the bar (spec's named surface + plan acceptance + tests green). Post-build, `/shipkit-review-shipping` runs as the engine in steered mode, one unit per area/screen. **Let the engine drive the loop — don't dispatch producer agents directly to execute plan phases**, which bypasses ground-truth reconciliation.
 <!-- /SECTION:after-completion -->
 
 <!-- SECTION:success-criteria -->

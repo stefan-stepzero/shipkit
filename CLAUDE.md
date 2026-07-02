@@ -353,7 +353,7 @@ Before publishing changes to GitHub:
 **Read DOC-015 (`docs/development/system-design/DOC-015-orchestration-pipeline.json`) before modifying agents, skills, or the orchestration pipeline.** It is the single source of truth for the 3-loop architecture, agent taxonomy, skill types, naming conventions, and artifact flow.
 
 ### Quick Reference
-- **40 skills** (29 user-invocable + 11 infrastructure) — see `install/profiles/shipkit.manifest.json`
+- **42 skills** (30 user-invocable + 12 infrastructure) — see `install/profiles/shipkit.manifest.json`
 - **12 agents** (4 orchestrators, 5 producers, 3 reviewers) — see `install/agents/`
 - **DOC-025 Wiring Graph** — machine-readable dispatch chains, artifact flow, tool restrictions
 

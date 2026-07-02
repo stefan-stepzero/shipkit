@@ -70,6 +70,7 @@
         {"name": "shipkit-orch-shipping", "desc": "Shipping loop — implementation + verification + release gate"}
       ],
       "Execution": [
+        {"name": "shipkit-ship", "desc": "Build a spec'd + planned feature to done — BUILD entry point; thin caller → shipkit-orchestrate (autonomous) over the plan"},
         {"name": "shipkit-test-cases", "desc": "Generate code-anchored test cases"}
       ],
       "Quality & Communication": [

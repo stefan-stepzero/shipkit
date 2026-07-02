@@ -2,12 +2,12 @@
 
 A focused collection of **Claude Code skills** for efficient product development, from discovery to shipped code.
 
-**<!-- sync:skill_count -->41<!-- /sync:skill_count --> skills** organized for streamlined workflow:
+**<!-- sync:skill_count -->42<!-- /sync:skill_count --> skills** organized for streamlined workflow:
 <!-- sync:readme_summary -->- **Vision & Discovery** (12) - why-project, product-discovery, project-context, ...
 - **Spec & Planning** (6) - spec-roadmap, spec, feedback-bug, ...
 - **Knowledge & Memory** (2) - claude-md, work-memory
 - **Orchestration** (4) - orchestrate, orch-direction, orch-planning, ...
-- **Execution** (1) - test-cases
+- **Execution** (2) - ship, test-cases
 - **Quality & Communication** (12) - review-direction, review-planning, review-shipping, ...
 - **System** (3) - update, get-skills, get-mcps<!-- /sync:readme_summary -->
 
@@ -17,7 +17,7 @@ Plus **<!-- sync:agent_count -->12<!-- /sync:agent_count --> agent personas** th
 
 ## What's Inside
 
-### Skills (<!-- sync:skill_count -->41<!-- /sync:skill_count --> total)
+### Skills (<!-- sync:skill_count -->42<!-- /sync:skill_count --> total)
 
 All skills use the `shipkit-` prefix for clarity.
 
@@ -51,7 +51,8 @@ All skills use the `shipkit-` prefix for clarity.
 - `shipkit-thinking-partner` - Think through decisions with cognitive frameworks (interactive + adversarial debate modes)
 - `shipkit-resource-advocate` - Infrastructure: single-resource advocate dispatched by thinking-partner's adversarial debate (not user-invoked)
 
-**Execution (1 skill):**
+**Execution (2 skills):**
+- `shipkit-ship` - Build a spec'd + planned feature to done (BUILD entry point; thin caller → `shipkit-orchestrate` autonomous over the plan)
 - `shipkit-test-cases` - Generate code-anchored test case specs
 
 **Quality & Documentation (13 skills):**
@@ -132,7 +133,7 @@ python install.py --from-github
 </details>
 
 The installer will:
-- Install all <!-- sync:skill_count -->41<!-- /sync:skill_count --> skills
+- Install all <!-- sync:skill_count -->42<!-- /sync:skill_count --> skills
 - Set up <!-- sync:agent_count -->12<!-- /sync:agent_count --> agent personas
 - Configure session hooks
 - Create `.shipkit/` workspace
@@ -147,7 +148,7 @@ your-project/
 │   ├── settings.json            # Permissions + hooks
 │   ├── rules/
 │   │   └── shipkit.md           # Framework rules (managed by /shipkit-update)
-│   ├── skills/                  # 41 skill definitions
+│   ├── skills/                  # 42 skill definitions
 │   ├── agents/                  # 12 agent personas
 │   └── hooks/                   # Session hooks
 └── .shipkit/                    # Your workspace
@@ -225,7 +226,7 @@ shipkit/
 │   └── src/                         # Commands, prompts, utilities
 │
 ├── install/                         # Everything that gets installed
-│   ├── skills/                      # <!-- sync:skill_count -->41<!-- /sync:skill_count --> shipkit-* skill definitions
+│   ├── skills/                      # <!-- sync:skill_count -->42<!-- /sync:skill_count --> shipkit-* skill definitions
 │   ├── agents/                      # <!-- sync:agent_count -->12<!-- /sync:agent_count --> shipkit-*-agent personas
 │   ├── rules/
 │   │   └── shipkit.md               # Framework rules (auto-loaded)
@@ -259,7 +260,7 @@ shipkit/
 ## Key Features
 
 ### Streamlined Workflow
-- <!-- sync:skill_count -->41<!-- /sync:skill_count --> focused skills
+- <!-- sync:skill_count -->42<!-- /sync:skill_count --> focused skills
 - All skills use `shipkit-` prefix for clarity
 - Context stored in single `.shipkit/` folder
 - No complex workspace structure
