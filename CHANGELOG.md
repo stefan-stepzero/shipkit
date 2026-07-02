@@ -10,6 +10,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.13.0] - 2026-07-03
+
+**The fidelity harness — capture the user's taste + differentiators as *checkable* criteria, and hold the build to them.** Grounded in a retrospective of a real 902-commit Shipkit build: almost all rework came from *contracts built before declared* and *definitional artefacts drifting stale on architecture pivots*. This release closes both, and reframes Shipkit's outcome as **fidelity — the app that ships is the app you envisioned** (complete *and* not genericized). **39 skills / 8 agents** (no count change — all additive).
+
+### Changed
+- **User redefined** to the *solo / small-team operator shipping real client products under time pressure* (not the weekend hobbyist) — rigor is justified because these builds graduate to production.
+- **No-gaps gate → contract-first.** `shipkit-spec`'s completeness gate gains a **shared-contract single-source-of-truth dimension** (every field/metric/entity used by ≥2 surfaces must name one owning table/view; independent recomputation is a violation) and **identity-contract-first** (the auth row-identity key must be declared before any schema/RLS). `gapReport` now carries `sharedContracts` / `unbackedSurfaces` / `identityContract`.
+- **`shipkit-review-shipping` gains a data-reality gate** — a spec-declared-live surface still on a mock seam / stub / "TODO wire live" is a hard FAIL (frontend-implies-backend enforced as a *build* gate, not just a spec checklist).
+- **`shipkit-product-definition` captures essence as checkable assertions** — 3–5 non-negotiable differentiators + an interaction/quality bar, each phrased as a testable assertion an evaluator can hold a built screen/behavior to (references the design system for aesthetic direction rather than duplicating it).
+- **`shipkit-semantic-qa` gains a `--fidelity` mode + scorecard** — scores a build on two *separate* axes: completeness (deterministic, from `gapReport` + the data-reality scan) and essence (LLM-judge vs the captured assertions), with a derived `fidelityVerdict` (FAITHFUL / GAP-DRIFT / TASTE-DRIFT) so good taste can't mask a green-but-mock surface. Comparative mode scores N arms on one shared rubric (the Shipkit-vs-raw fidelity delta).
+- **ED↔ADR staleness signal** — when a load-bearing ADR supersedes/retires/amends a mechanism, the `engineering-definition` mechanism is flagged stale and surfaced at **session-start** ("N mechanisms stale vs the ADR log — reconcile before building against them"), so a session never builds against a 3-week-stale definition.
+
+### Added
+- `install/skills/shipkit-semantic-qa/references/fidelity-scorecard-schema.md` — the two-axis fidelity scorecard + comparative-mode schema, with worked examples.
+
+---
+
 ## [2.12.0] - 2026-07-02
 
 **Autonomous Direction — the orchestration rethink is complete.** Direction now runs
