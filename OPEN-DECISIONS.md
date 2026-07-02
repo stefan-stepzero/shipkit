@@ -93,3 +93,46 @@ This is the artefact Project A consumes.
   essence-floor break; only nonNegotiable differentiators are the floor. If Project A shows quality-bar misses
   are as fatal as differentiator misses, promote specific `qualityBar` items to `must-pass`.
 - **partial credit** = 0.5 for the essence score. Coarse but honest; revisit if it proves too lenient.
+
+---
+
+## Phase 4 — ED↔ADR staleness signal (DECIDED)
+
+**Decision:** The divergence check lives in the **`shipkit-session-start` hook** as a small
+deterministic (no-LLM) computation — NOT in `shipkit-architecture-map`. Linkage reuses the
+existing ADR `scope: "mechanism:M-###"` field (no new join). The check reads
+`architecture-archive.json` (full ADR bodies) vs `engineering-definition.json` mechanisms and
+emits a one-line session-start warning when N mechanisms are stale.
+
+**Linkage mechanism (lean, additive):**
+- ED mechanisms already carry `M-###` ids; ADRs already carry `scope: "mechanism:M-###"`. That
+  scope IS the link — kept on the superseding/amending ADR too.
+- New allowed lean ADR status `dormant` (retired-not-replaced) alongside superseded/amended.
+- ED mechanism gains OPTIONAL `supersededByADR` / `staleSince` — an *acknowledgement* marker
+  that suppresses the flag once a session reconciles (records "the ADR log is now authority").
+- **Divergence rule:** an ED mechanism is stale when the ADR archive has a decision scoped to it
+  with status `superseded`/`dormant`/`deprecated` OR an `amendedBy` link, and the mechanism isn't
+  already acknowledged.
+
+### Options considered
+
+| Option | Verdict |
+|--------|---------|
+| **Owner = `shipkit-architecture-map`** | Rejected as owner. It explicitly does NOT read `architecture.json` (decisions-log separation of concerns), it's a heavier fork skill (full code scan), and it does NOT run at session-start — the exact moment the retro failure needs catching ("a fresh session built against a stale ED"). Wrong artefact boundary + wrong trigger. |
+| **Owner = session-start hook (CHOSEN)** | The surfacing point IS session-start, the computation is trivial arithmetic over two JSON files the hook already reads, it runs every session for free, needs no new skill and no fork dispatch, and matches the retro's "surface it at session-start" verbatim. |
+| New `shipkit-*` divergence skill | Rejected. Count churn + parallel system; the check is 40 lines of deterministic Python in a hook that already emits digests. |
+
+**Why read the archive, not the lean `architecture.json`:** the lean file's superseded-stub
+schema drops `scope`, so superseded ADRs wouldn't be attributable to a mechanism. The archive
+retains scope + status + supersession/amendment links and is dual-written on every ADR, so it's
+the authoritative source. Hook falls back to the lean file if the archive is absent (best-effort;
+only dormant/amended-active entries surface in that degraded case).
+
+**Open sub-points (non-blocking):**
+- **Deeper integration deferred:** the retro also suggested surfacing the divergence in
+  `framework-integrity` / `architecture-map` as an explicit divergence section. v1 ships only the
+  session-start surfacing (highest-leverage, the exact failure). An on-demand divergence report in
+  architecture-map is a clean future add.
+- **Amended = stale?** v1 counts an amended mechanism as stale (an amendment changed the approach,
+  so the ED text may be out of step). If this proves too noisy (amendments that don't touch the ED
+  narrative), narrow to superseded/dormant only.

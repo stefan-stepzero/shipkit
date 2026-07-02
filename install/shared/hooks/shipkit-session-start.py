@@ -254,6 +254,90 @@ def get_strategic_digest(shipkit_dir: Path) -> str | None:
     return block
 
 
+def _mechanism_ids_from_scope(scope) -> list:
+    """Extract mechanism ids from an ADR `scope` like 'mechanism:M-001' (or a
+    comma-list 'mechanism:M-001,M-002'). Returns [] for cross-cutting/other scopes."""
+    if isinstance(scope, str) and scope.startswith('mechanism:'):
+        return [s.strip() for s in scope[len('mechanism:'):].split(',') if s.strip()]
+    return []
+
+
+def get_ed_adr_drift_warning(shipkit_dir: Path) -> str | None:
+    """Flag engineering-definition mechanisms that a load-bearing ADR has invalidated.
+
+    The Project-B retro's #2 failure: the engineering-definition described PIN auth for
+    3 weeks while the ADR log (the only artefact that kept pace) had superseded it — and
+    nothing flagged the divergence, so new sessions built against a stale ED. This is the
+    deterministic (no-LLM) divergence check: compare ED mechanisms (`M-###`) against the
+    ADR log's superseded/dormant/amended decisions scoped to a mechanism, and surface the
+    count/list at session-start so a fresh session reconciles before building.
+
+    Linkage convention (see engineering-definition/references/architecture-log-schema.md):
+    an ADR scoped to a mechanism carries `scope: "mechanism:M-###"`. When such an ADR is
+    superseded/dormant or amends another, the corresponding ED mechanism is stale unless it
+    already acknowledges it via `supersededByADR` / `staleSince`.
+
+    Reads `architecture-archive.json` (full ADR bodies retain scope + status + links) as the
+    authoritative ADR source; falls back to the lean `architecture.json` (best-effort — the
+    lean file's superseded stubs drop scope, so only dormant/amended-active entries surface).
+    """
+    ed_file = shipkit_dir / 'engineering-definition.json'
+    if not ed_file.exists():
+        return None
+    adr_file = shipkit_dir / 'architecture-archive.json'
+    if not adr_file.exists():
+        adr_file = shipkit_dir / 'architecture.json'
+    if not adr_file.exists():
+        return None
+    try:
+        ed = json.loads(ed_file.read_text(encoding='utf-8'))
+        adr = json.loads(adr_file.read_text(encoding='utf-8'))
+    except Exception:
+        return None
+
+    mechanisms = ed.get('mechanisms', [])
+    decisions = adr.get('decisions', [])
+    if not isinstance(mechanisms, list) or not isinstance(decisions, list):
+        return None
+
+    # Map ED mechanism id -> already-acknowledged? (an explicit supersededByADR/staleSince
+    # marker means a session has reconciled it, so it is no longer an UNRESOLVED drift).
+    ed_ids = {}
+    for m in mechanisms:
+        if isinstance(m, dict) and m.get('id'):
+            ed_ids[m['id']] = bool(m.get('supersededByADR') or m.get('staleSince'))
+
+    # An ADR signals its scoped mechanism is stale when the decision was replaced
+    # (superseded), retired (dormant/deprecated), or partially changed (amended).
+    stale_statuses = {'superseded', 'dormant', 'deprecated'}
+    stale = set()
+    for d in decisions:
+        if not isinstance(d, dict):
+            continue
+        mech_ids = _mechanism_ids_from_scope(d.get('scope'))
+        if not mech_ids:
+            continue
+        status = str(d.get('status', '')).lower()
+        signals_stale = status in stale_statuses or bool(d.get('amendedBy'))
+        if not signals_stale:
+            continue
+        for mid in mech_ids:
+            if mid in ed_ids and not ed_ids[mid]:
+                stale.add(mid)
+
+    if not stale:
+        return None
+    ids = ', '.join(sorted(stale))
+    n = len(stale)
+    return (
+        f"WARNING: engineering-definition has {n} mechanism(s) stale vs the ADR log "
+        f"({ids}) — a load-bearing ADR superseded/retired/amended them but the "
+        f"engineering-definition still describes the old approach. Reconcile before "
+        f"building against them: re-run `/shipkit-engineering-definition`, or treat the "
+        f"ADR log (`architecture.json`) as the live authority."
+    )
+
+
 def get_codebase_digest(shipkit_dir: Path) -> str | None:
     """Inject a lean navigation digest from codebase-index.json — kills default-to-grep.
 
@@ -418,6 +502,12 @@ def main():
     import_warning = get_missing_import_warning(shipkit_dir)
     if import_warning:
         lines.append(import_warning)
+        lines.append('')
+
+    # ── ED↔ADR staleness: flag mechanisms a load-bearing ADR has invalidated ──
+    ed_drift = get_ed_adr_drift_warning(shipkit_dir)
+    if ed_drift:
+        lines.append(ed_drift)
         lines.append('')
 
     # ── Stage & gates: lean always-on "definition of done" ──

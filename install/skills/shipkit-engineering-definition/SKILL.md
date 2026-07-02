@@ -302,6 +302,16 @@ architecture decisions log (lean index + full archive):
 
 **On supersession** (a new ADR replaces a prior one — mark this explicitly): in the archive, add the new ADR with `supersedes` and set the prior ADR `status:"superseded"` + `supersededBy` (keeping its full body); in the lean file, add the new ADR (capped) and **collapse the prior ADR to a one-line stub**. Amended ADRs (partial change, still governing) stay active and capped — do NOT stub them.
 
+**Mechanism linkage (ED↔ADR staleness):** an ADR that governs a mechanism carries
+`scope: "mechanism:M-###"` — that id is the join back to the ED mechanism. Keep the scope on the
+superseding/amending ADR too. When an ADR **supersedes / retires (`dormant`) / amends** a
+mechanism's decision, the `shipkit-session-start` hook flags the corresponding ED mechanism as
+*stale vs the ADR log* at session-start, so a fresh session reconciles instead of building against
+a stale approach (the Project-B retro's 3-week failure). Optional mechanism fields
+`supersededByADR` / `staleSince` acknowledge a reconciliation (they suppress the flag — the ADR
+log becomes the live authority for that mechanism). Additive/non-breaking. See
+`references/architecture-log-schema.md` → **ED↔ADR staleness signal**.
+
 See [Engineering Definition JSON Schema](#engineering-definition-json-schema) below, and `references/architecture-log-schema.md` for the full convention.
 
 ---
@@ -342,6 +352,8 @@ Ready to define success criteria?
       "implementsFeatures": ["F-001", "F-002"],
       "uses": ["library-or-pattern"],
       "whyNotStandard": null,
+      "supersededByADR": null,
+      "staleSince": null,
       "designChoices": [
         { "decision": "Choice", "rationale": "Why", "alternatives": ["Rejected option"] }
       ]
