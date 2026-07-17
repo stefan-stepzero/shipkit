@@ -10,6 +10,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [2.14.0] - 2026-07-17
+
+**The fidelity measure ships as runnable tooling.** 2.13.0 defined fidelity as checkable criteria; this release makes the completeness axis *deterministic code* instead of model judgment — four CLIs packaged inside `shipkit-semantic-qa`, invoked by the skills that need them.
+
+### Added
+- **`tools/fidelity/` inside the semantic-qa skill package** — `mock-seam-detector.py`, `unbacked-surface-checker.py`, `ssot-checker.py`, and `fidelity-score.py` (+ `_smoke/` fixtures with their own fixture spec). Structure-agnostic, stdlib-only, deterministic: byte-identical output on repeated runs.
+- **Declared-surface input** — detectors cross-check against the spec's declared surfaces (`--spec`), so a mock on a `declaredLive` surface is distinguished from a mock on a deferred one, and the completeness denominator comes from *intent* (what the spec declared) rather than a code re-scan.
+
+### Changed
+- **`shipkit-semantic-qa --fidelity` now runs the CLIs** for the completeness axis instead of instructing the model to eyeball JSON artifacts; the essence axis (LLM-judge) is unchanged and composes into the same scorecard. Essence judgments are persisted to `.shipkit/semantic-qa/essence.json`.
+- **`shipkit-review-shipping`'s data-reality gate invokes the mock-seam detector** for evidence instead of relying on model grep.
+- **`fidelity-score.py` emits the shipped scorecard contract** (`fidelity-scorecard-schema.md`): `completeness.ratio = builtAndBacked/declared`, detector signals under `completeness.signals`, `essence` slot, comparative `arms[]` mode.
+
+### Fixed
+- npm tarball no longer ships `__pycache__/*.pyc` (package.json `files` negations).
+
+### Known limits (documented in the tool README and schema)
+- The completeness ratio is an **upper bound**: a declared-but-never-built surface that nothing names counts as built. `signals.declaredCoverage` lists declared elements with zero code evidence, and reports flag the bound when unresolved > 0.
+- Detector v2 precision is designed-for and fixture-demonstrated, **not yet measured** — measurement requires a codebase built through the no-gaps gate (none exists yet; v1's ~27–30% remains the only measured number).
+
+---
+
 ## [2.13.0] - 2026-07-17
 
 **The fidelity harness — capture the user's taste + differentiators as *checkable* criteria, and hold the build to them.** Grounded in a retrospective of a real 902-commit Shipkit build: almost all rework came from *contracts built before declared* and *definitional artefacts drifting stale on architecture pivots*. This release closes both, and reframes Shipkit's outcome as **fidelity — the app that ships is the app you envisioned** (complete *and* not genericized). Also ships a **context diet**: every always-loaded surface is now budgeted, deduplicated, or replaced with a pointer. **40 skills / 8 agents** (adds `shipkit-adr`).
