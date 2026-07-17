@@ -258,6 +258,57 @@ def match_element(relpath, text, element):
     return False, "low", ""
 
 
+def resolve_declared(root, declared, iter_files, read_text, relpath_of):
+    """Which declared elements have ANY code evidence at all? ADVISORY ONLY.
+
+    This is the reverse direction from classify_file, and it is the one thing the
+    contract's completeness formula structurally cannot see: that formula is
+    optimistic (builtAndBacked = declared - |notBacked|), so an element nobody
+    built and nobody flagged simply counts as built. Taken to its limit, an EMPTY
+    codebase scores ratio 1.0 "complete" - which matters most in comparative mode,
+    where it could rank a barely-built arm the winner.
+
+    So: report declared elements with zero code evidence as a lead for a human.
+
+    NOT gating, and deliberately so - "no evidence found" is exactly the
+    unprovable negative that manufactures false positives (a renamed surface, an
+    unusual data layer, a name like "web-ui" that appears nowhere). It is a
+    prompt to go look, not a finding. Read it as: 'the tool could not find these
+    - either they are missing, or they are named differently than declared.'
+    """
+    elements = declared.get("elements") or []
+    if not elements:
+        return {"resolved": 0, "unresolved": 0, "elements": []}
+
+    hits = {el["name"]: [] for el in elements}
+    for f in iter_files(root):
+        rp = relpath_of(f, root)
+        text = read_text(f)
+        for el in elements:
+            matched, conf, ev = match_element(rp, text, el)
+            if matched:
+                hits[el["name"]].append(rp)
+
+    out = []
+    for el in elements:
+        files = sorted(set(hits[el["name"]]))
+        out.append({
+            "name": el["name"],
+            "dimension": el["dimension"],
+            "kind": el["kind"],
+            "resolved": bool(files),
+            "files": files[:5],
+            "note": ("" if files else
+                     "no code evidence found - either not built, or built under a "
+                     "different name than the spec declares (ADVISORY: verify by hand)"),
+        })
+    return {
+        "resolved": sum(1 for e in out if e["resolved"]),
+        "unresolved": sum(1 for e in out if not e["resolved"]),
+        "elements": out,
+    }
+
+
 def is_deferred(relpath, declared):
     """True if this path looks like an explicitly-deferred (out-of-scope) surface."""
     ptoks = _norm_path(relpath)
