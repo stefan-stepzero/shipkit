@@ -111,9 +111,11 @@ Confirm in one line: `ADR-NNN landed: <decision> (supersedes ADR-MMM, lean 4.1 K
 ### Before This Skill
 - Nothing required — this is the moment-of-decision capture path. For deriving a full decision log from an engineering blueprint, that's `/shipkit-engineering-definition` (the primary writer), not this.
 
+<!-- SECTION:after-completion -->
 ### After This Skill
 - If the decision changes the current-state architecture, refresh `/shipkit-architecture-map`.
 - If the lean file is over budget, run the `migrate-architecture-log.py` splitter (opt-in, dry-run by default).
+<!-- /SECTION:after-completion -->
 
 ---
 

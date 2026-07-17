@@ -92,7 +92,6 @@ caller) reads this assessment:
 - If **gaps found**: re-dispatches the affected upstream skills for revision, then re-runs this reviewer.
 - If **pass**: proceeds to the next step.
 
-This skill is a per-unit reviewer, normally invoked by a caller, not directly by the user.
-*(Interim note: its former dispatcher `shipkit-orch-planning` was retired in SS-4; planning
-review re-wires into the engine/direction flow as that surface lands.)*
+This skill is a per-unit reviewer, normally invoked by a caller (the engine in steered mode
+or a direction/planning caller), not directly by the user.
 <!-- /SECTION:after-completion -->
