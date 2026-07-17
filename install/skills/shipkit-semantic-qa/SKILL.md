@@ -449,14 +449,33 @@ floorHeld    = every nonNegotiable differentiator scored PASS (any partial/fail 
 
 `floorHeld: false` with a high `essenceScore` is still **taste-drift** — report both honestly.
 
+**Write the result to `.shipkit/semantic-qa/essence.json`** — Step 5.4 reads it back to derive the verdict.
+`score` and `floorHeld` are required (the tool rejects the file without them); `results[]` carries the
+per-assertion detail through to the scorecard:
+
+```json
+{
+  "score": 72,
+  "floorHeld": false,
+  "differentiators": { "pass": 2, "partial": 1, "fail": 0 },
+  "qualityBar": { "pass": 2, "partial": 0, "fail": 1 },
+  "results": [
+    { "id": "D-003", "kind": "differentiator", "nonNegotiable": true,
+      "assertion": "Preview streams first content within 2s of any parameter change.",
+      "result": "partial",
+      "evidence": "Preview streams, but first content measured at ~4.1s — over the 2s budget." }
+  ]
+}
+```
+
 #### Step 5.4: Compose the scorecard + verdict
 
-Write the essence axis to a small JSON file, then **re-run the tool with `--essence`** so the verdict is
-derived in code from both axes. The schema says `fidelityVerdict` is derived and never entered by hand —
-that means the rule table below is documentation of what the tool does, not a procedure for you to apply:
+**Re-run the tool with `--essence`** so the verdict is derived in code from both axes. The schema says
+`fidelityVerdict` is derived and never entered by hand — that means the rule table below is documentation of
+what the tool does, not a procedure for you to apply:
 
 ```bash
-# essence.json — from Step 5.3. Must carry at least score + floorHeld.
+# .shipkit/semantic-qa/essence.json was written by Step 5.3.
 python "$FID/fidelity-score.py" . \
   --spec .shipkit/specs/shipped/*.json \
   --verification-report .shipkit/verification-report.json \
@@ -581,6 +600,7 @@ Verdict: GAP+TASTE-DRIFT
 - `outputs/`, `screenshots/` — CREATE per run (gitignored, ephemeral)
 - `judgments/` — APPEND (one per run, kept permanently)
 - `scripts/semantic-qa-{suite}.*` — CREATE on setup, user-owned after
+- `semantic-qa/essence.json` — CREATE per fidelity run (Step 5.3): the essence axis (`score` + `floorHeld` + `results[]`). Read back by Step 5.4 as `--essence` so the verdict is derived, not hand-entered.
 - `fidelity-scorecard.json` — CREATE per fidelity run (run-scoped under `<runDir>/` when the engine set a run root, else `.shipkit/`)
 
 ---
