@@ -566,8 +566,8 @@ Verdict: GAP+TASTE-DRIFT
 | `.shipkit/stack.json` | Optional: tech stack for script generation |
 | `.shipkit/specs/` | Optional: seed criteria from acceptance criteria |
 | `.shipkit/product-definition.json` | **Fidelity mode:** essence block (`nonNegotiable` differentiators + `qualityBar`) = the essence-axis criteria |
-| `.shipkit/specs/**/*.json` (`gapReport`) | **Fidelity mode:** declared surfaces + `unbackedSurfaces` for the completeness axis |
-| `verification-report.json` (`dataReality`) | **Fidelity mode:** built-and-backed / mock-seam data for the completeness axis |
+| `.shipkit/specs/**/*.json` (`functionalSurface` + `gapReport`) | **Fidelity mode:** declared surfaces (the completeness denominator) + `unbackedSurfaces`. Passed to the tool as `--spec`. |
+| `verification-report.json` (`dataReality`) | **Fidelity mode:** built-and-backed / mock-seam data for the completeness axis. Passed as `--verification-report`; authoritative when present. |
 
 ---
 
@@ -618,11 +618,12 @@ Verdict: GAP+TASTE-DRIFT
 - [ ] Summary with score and comparison presented to user
 
 **Fidelity complete when:**
-- [ ] Rubric located: essence block (product-definition), declared surfaces (`gapReport`), `dataReality` (verification-report)
-- [ ] Completeness axis computed deterministically (ratio + `byDimension`; declared-live mock seams counted as not-built)
+- [ ] Rubric located: essence block (product-definition), declared surfaces (`functionalSurface`), `dataReality` (verification-report)
+- [ ] Completeness axis produced by **running `tools/fidelity/fidelity-score.py`** with `--spec` — not computed by hand
+- [ ] `signals.declaredCoverage` checked: any `unresolved > 0` reported as "ratio is an upper bound", not glossed
 - [ ] Essence axis judged against every `nonNegotiable` differentiator + `qualityBar` assertion (`floorHeld` computed)
-- [ ] `fidelity-scorecard.json` written with both axes separate + a derived `fidelityVerdict` per arm
-- [ ] Comparative runs: both arms scored against one shared rubric + `comparison` deltas emitted
+- [ ] `fidelity-scorecard.json` written with both axes separate + `fidelityVerdict` **derived by the tool** (`--essence`), never entered by hand
+- [ ] Comparative runs: all arms scored in one invocation against one `--spec` + `comparison` deltas emitted
 <!-- /SECTION:success-criteria -->
 
 ---
@@ -647,3 +648,4 @@ This skill is a judgment gate; it does not auto-dispatch fixes.
 - `references/criteria-guide.md` — How to write effective quality criteria
 - `references/example.json` — Complete example judgment output
 - `references/fidelity-scorecard-schema.md` — **Fidelity mode:** scorecard schema (completeness + essence + comparative), formulas, verdict rule, two worked examples
+- `tools/fidelity/` — **Fidelity mode:** the deterministic producer of the completeness axis. `fidelity-score.py` emits the scorecard schema; `mock-seam-detector.py` does the declared-live cross-check (also used by `shipkit-review-shipping`'s Data-Reality Gate). See `tools/fidelity/README.md` for the formula, the known limits, and the `_smoke/` fixture.

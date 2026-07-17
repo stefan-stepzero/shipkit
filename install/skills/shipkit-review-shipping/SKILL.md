@@ -690,6 +690,7 @@ When running as part of an Agent Team:
 | `.shipkit/codebase-index.json` | Find related code |
 | `.shipkit/design-system/tokens/`, `.shipkit/design-system/PRINCIPLES.md` | Check token usage and principle compliance in UI code (optional, skip if absent) |
 | Source files | The actual code |
+| `.claude/skills/shipkit-semantic-qa/tools/fidelity/mock-seam-detector.py` | **Data-Reality Gate (optional):** declared-live mock-seam evidence. Ships with `shipkit-semantic-qa`; falls back to `~/.claude/...` at user scope. Skip the tool and Grep by hand if absent. |
 
 ---
 
