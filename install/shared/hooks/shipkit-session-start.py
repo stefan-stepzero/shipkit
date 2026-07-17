@@ -26,6 +26,31 @@ MAX_DIGEST_CHARS = 3500  # ~3-4 KB per injected digest
 # A missing one makes the `@`-import silently no-op, so the hook warns instead.
 IMPORTED_ARTIFACTS = ['architecture.json', 'stack.json', 'why.json']
 
+# Size budgets (bytes) for ALWAYS-LOADED artifacts — files whose every byte enters
+# context in EVERY session (`@`-imports + CLAUDE.md). Budgets are warning thresholds,
+# not hard failures: the hook measures each file each session and shouts when one is
+# over, at the moment the cost is being paid. ~4 bytes ≈ 1 token. Keys relative to
+# project root; remediation is per-file (how to lean THAT artifact, not generic advice).
+SIZE_BUDGETS = {
+    'CLAUDE.md': (
+        15_000,
+        "prune Project Learnings / Working Preferences; move detail to `.shipkit/` files read on demand",
+    ),
+    '.shipkit/architecture.json': (
+        10_000,
+        "run `/shipkit-adr` to stub superseded decisions, or the one-time "
+        "`migrate-architecture-log.py` splitter (full bodies belong in architecture-archive.json)",
+    ),
+    '.shipkit/stack.json': (
+        6_000,
+        "re-run `/shipkit-project-context` — the stack scan should stay a summary, not a lockfile dump",
+    ),
+    '.shipkit/why.json': (
+        6_000,
+        "trim to vision/constraints/approach; long-form product thinking belongs in product-definition.json",
+    ),
+}
+
 # The codebase index's JUDGMENT layer (framework/concepts/coreFiles) is considered
 # stale after this many days. The mechanical layer auto-refreshes on commit, so the
 # nudge keys off fullRefreshedAt — NOT file mtime, which now moves on every commit.
@@ -175,6 +200,50 @@ def get_progress_summary(project_root: Path) -> str | None:
     except Exception:
         age = get_file_age_days(progress_file)
         return f"**Last session**: {format_age(age)}"
+
+
+def format_size(num_bytes: int) -> str:
+    """Format a byte count as a human-readable size."""
+    if num_bytes < 1024:
+        return f"{num_bytes} B"
+    return f"{num_bytes / 1024:.1f} KB"
+
+
+def get_size_budget_warnings(project_root: Path) -> str | None:
+    """LOUD warning when an always-loaded artifact exceeds its size budget.
+
+    These files load into context every session; unbounded growth silently eats
+    the budget that makes every other decision possible (observed: a 150 KB
+    architecture.json). Ages are already surfaced elsewhere — this is the size half.
+    Silent when everything is within budget.
+    """
+    over = []
+    total = 0
+    for rel_path, (budget, remedy) in SIZE_BUDGETS.items():
+        f = project_root / rel_path
+        if not f.exists():
+            continue
+        try:
+            size = f.stat().st_size
+        except OSError:
+            continue
+        total += size
+        if size > budget:
+            over.append((rel_path, size, budget, remedy))
+    if not over:
+        return None
+
+    out = ["## ⚠️ CONTEXT BUDGET EXCEEDED — always-loaded files are oversized", '']
+    out.append(
+        f"These files load into context EVERY session "
+        f"(always-on total: {format_size(total)} ≈ {total // 4:,} tokens). Lean them now:"
+    )
+    out.append('')
+    for rel_path, size, budget, remedy in over:
+        out.append(
+            f"- **`{rel_path}` is {format_size(size)}** (budget {format_size(budget)}) — {remedy}"
+        )
+    return '\n'.join(out)
 
 
 def get_missing_import_warning(shipkit_dir: Path) -> str | None:
@@ -471,8 +540,15 @@ def main():
         _emit_context('\n'.join(lines), project_root)
         return 0
 
-    # ── Activated Shipkit project: load full orchestration context (the engine) ──
-    lines.append(engine_skill.read_text(encoding='utf-8'))
+    # ── Activated Shipkit project: point at the engine, don't inject its body. ──
+    # Hooks inject STATE, not instructions. The engine's full protocol (~1700 tokens)
+    # loads when the skill is invoked; its listing description already routes to it.
+    lines.append(
+        "**Shipkit active.** Engine: `/shipkit-orchestrate` — drives any set of steps to a "
+        "confirmed ground-truth bar (delegate → reconcile → re-dispatch loop).\n"
+        "Phase skills (build/review/direction) call it; invoke it directly to drive work to done.\n"
+        "Its full protocol loads on invocation — do not re-implement orchestration inline."
+    )
     lines.append('')
     lines.append('---')
     lines.append('')
@@ -510,6 +586,12 @@ def main():
         lines.append(ed_drift)
         lines.append('')
 
+    # ── Size budgets on always-loaded artifacts (loud when over, silent when fine) ──
+    size_warning = get_size_budget_warnings(project_root)
+    if size_warning:
+        lines.append(size_warning)
+        lines.append('')
+
     # ── Stage & gates: lean always-on "definition of done" ──
     strategic = get_strategic_digest(shipkit_dir)
     if strategic:
@@ -529,8 +611,8 @@ def main():
     # ── Available context files ──
     lines.append("## Available Context")
     lines.append('')
-    lines.append("| File | Status | Purpose |")
-    lines.append("|------|--------|---------|")
+    lines.append("| File | Age | Size | Purpose |")
+    lines.append("|------|-----|------|---------|")
 
     context_files = [
         ('why.json', 'Project vision & purpose'),
@@ -550,7 +632,11 @@ def main():
         file_path = shipkit_dir / filename
         if file_path.exists():
             age = format_age(get_file_age_days(file_path))
-            lines.append(f"| `{filename}` | {age} | {purpose} |")
+            try:
+                size = format_size(file_path.stat().st_size)
+            except OSError:
+                size = "?"
+            lines.append(f"| `{filename}` | {age} | {size} | {purpose} |")
             found_count += 1
 
     # Check for active specs and plans
@@ -560,9 +646,9 @@ def main():
     plan_count = len(list(plans_dir.glob('*.json'))) if plans_dir.exists() else 0
 
     if spec_count > 0:
-        lines.append(f"| `specs/active/` | {spec_count} spec(s) | Feature specifications |")
+        lines.append(f"| `specs/active/` | {spec_count} spec(s) | — | Feature specifications |")
     if plan_count > 0:
-        lines.append(f"| `plans/active/` | {plan_count} plan(s) | Implementation plans |")
+        lines.append(f"| `plans/active/` | {plan_count} plan(s) | — | Implementation plans |")
 
     # Check for goals
     goals_dir = shipkit_dir / 'goals'
@@ -570,7 +656,7 @@ def main():
         goal_files = list(goals_dir.glob('*.json'))
         if goal_files:
             names = ', '.join(f.stem for f in goal_files)
-            lines.append(f"| `goals/` | {names} | Success criteria |")
+            lines.append(f"| `goals/` | {names} | — | Success criteria |")
 
     lines.append('')
 

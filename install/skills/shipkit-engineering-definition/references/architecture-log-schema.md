@@ -5,6 +5,7 @@ This is the **single, canonical** definition of how Shipkit stores architecture 
 below. It exists once, here, and is referenced by:
 
 - `shipkit-engineering-definition` (primary writer — derives the log from the engineering definition)
+- `shipkit-adr` (lands one decision atomically at the moment it's made — archive-first dual-write)
 - `shipkit-design-system` (writes the `designSystem` summary into the lean file)
 - `shipkit-architect-agent` (writes decisions mid-team)
 

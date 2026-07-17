@@ -166,7 +166,8 @@
       "Skill(shipkit-direction)",
       "Skill(shipkit-review-direction)",
       "Skill(shipkit-review-planning)",
-      "Skill(shipkit-metrics)"
+      "Skill(shipkit-metrics)",
+      "Skill(shipkit-adr)"
     ],
 
     "deny": [

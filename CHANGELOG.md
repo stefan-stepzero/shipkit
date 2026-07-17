@@ -10,9 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
-## [2.13.0] - 2026-07-03
+## [2.13.0] - 2026-07-17
 
-**The fidelity harness — capture the user's taste + differentiators as *checkable* criteria, and hold the build to them.** Grounded in a retrospective of a real 902-commit Shipkit build: almost all rework came from *contracts built before declared* and *definitional artefacts drifting stale on architecture pivots*. This release closes both, and reframes Shipkit's outcome as **fidelity — the app that ships is the app you envisioned** (complete *and* not genericized). **39 skills / 8 agents** (no count change — all additive).
+**The fidelity harness — capture the user's taste + differentiators as *checkable* criteria, and hold the build to them.** Grounded in a retrospective of a real 902-commit Shipkit build: almost all rework came from *contracts built before declared* and *definitional artefacts drifting stale on architecture pivots*. This release closes both, and reframes Shipkit's outcome as **fidelity — the app that ships is the app you envisioned** (complete *and* not genericized). Also ships a **context diet**: every always-loaded surface is now budgeted, deduplicated, or replaced with a pointer. **40 skills / 8 agents** (adds `shipkit-adr`).
 
 ### Changed
 - **User redefined** to the *solo / small-team operator shipping real client products under time pressure* (not the weekend hobbyist) — rigor is justified because these builds graduate to production.
@@ -22,7 +22,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **`shipkit-semantic-qa` gains a `--fidelity` mode + scorecard** — scores a build on two *separate* axes: completeness (deterministic, from `gapReport` + the data-reality scan) and essence (LLM-judge vs the captured assertions), with a derived `fidelityVerdict` (FAITHFUL / GAP-DRIFT / TASTE-DRIFT) so good taste can't mask a green-but-mock surface. Comparative mode scores N arms on one shared rubric (the Shipkit-vs-raw fidelity delta).
 - **ED↔ADR staleness signal** — when a load-bearing ADR supersedes/retires/amends a mechanism, the `engineering-definition` mechanism is flagged stale and surfaced at **session-start** ("N mechanisms stale vs the ADR log — reconcile before building against them"), so a session never builds against a 3-week-stale definition.
 
+- **Session-start hook injects a 3-line engine pointer instead of the full `shipkit-orchestrate` body** (~1700 tokens saved per session in every activated project). Hooks inject state, not instructions — the engine's protocol loads on invocation.
+- **`install/rules/shipkit.md` roughly halved** (276 → 131 lines) for every consumer project: Skills Reference tables deleted (skill frontmatter descriptions are the single routing surface), generic-hygiene boilerplate cut (Working Smart, Model Budget, session-continuity/enterprise notes), Auto Memory collapsed to a conditional two-liner under Meta-Behavior.
+
 ### Added
+- **`shipkit-adr` skill** (39 → 40 skills) — lands one architecture decision atomically at the moment it's made: full entry appended to `architecture-archive.json` first, then a hard-capped lean projection into the `@`-imported `architecture.json` (decision ≤ 120 chars, one-line rationale ≤ 160 chars, superseded entries collapse to one-line stubs). Handles new / supersede / amend per the canonical dual-write convention; ID allocation scans both files so an interrupted write self-heals.
+- **Size budgets on always-loaded artifacts** — the session-start hook now measures sizes alongside ages: per-file byte budgets for `CLAUDE.md` and the three `@`-imported `.shipkit` artifacts, a loud over-budget warning with per-file remediation (silent when within budget), and a Size column in the Available Context table.
 - `install/skills/shipkit-semantic-qa/references/fidelity-scorecard-schema.md` — the two-axis fidelity scorecard + comparative-mode schema, with worked examples.
 
 ---

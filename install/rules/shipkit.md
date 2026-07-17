@@ -8,60 +8,20 @@
 2. **MVP quality** — Core paths bulletproof, everything else minimal. Ship > perfect.
 3. **Stay focused** — Do what's asked. No unsolicited refactoring or "improvements."
 4. **Ask before generating** — 2-3 clarifying questions, then build.
-5. **Skills for persistence only** — Use skills to capture decisions or create memory. Everything else, just do it.
+5. **Skills for persistence only** — Use skills to capture decisions or create memory. Everything else (implementing, debugging, testing, refactoring), just do it. Skills route by their descriptions — no lookup table needed.
 6. **Solo patterns** — No PR workflows, no "future developer" docs, no unnecessary abstraction.
 7. **Save before compact** — When you see the PreCompact warning, run `/shipkit-work-memory` to save progress.
 
 ---
 
-## Working Smart
+## Structured Artifact Updates
 
-### Decompose Before Starting
-Before diving into work, assess the task shape:
-
-| You notice... | Do this instead of working inline |
-|---|---|
-| Task touches 3+ independent files | Parallel agents, one per file/area |
-| Code changes could break things | `isolation: worktree` — review before merging |
-| Need to understand unfamiliar code | Fork an Explore agent (Haiku) before coding |
-| Generating large output (>200 lines) | Write sections to files, then combine |
-| Task will need 10+ tool calls | Fork it — keep main conversation for coordination |
-| Multiple research questions | Parallel background agents, each writes to a file |
-| Repetitive changes across many files | `/batch` — spawns parallel worktree agents |
-
-### Write to Files, Not Just Context
-Context gets compacted. Files persist. Default to disk.
-
-- **Research findings** → write to a file before acting on them
-- **Agent results** → each agent writes to a named output file, not just return text
-- **Intermediate state** → if a task has phases, write phase output to disk between phases
-- **Large generated content** → write to disk first, present summary to user
-
-### Orient Before Acting
-- **Read before editing** — always read a file before modifying it
-- **Search before creating** — Grep/Glob to check if a function, component, or pattern already exists
-- **Understand the test setup** — check for test files and test commands before implementing
-- **Check `.shipkit/` context** — architecture decisions, stack choices, and specs may already answer your question
-
-### Verify After Changing
-- **Run tests** if a test command is known (check `package.json` scripts, Makefile, etc.)
-- **Check imports** after multi-file changes — verify no broken references
-- **Spot-check output** — after generating config, data files, or code, read back a sample to verify correctness
-- **QA delegated work** — always review Sonnet/Haiku agent output before presenting as done
-
-### Structured Artifact Updates
 For updates to structured JSON artifacts (`.shipkit/progress.json`, spec/plan files, any skill-produced JSON, config files), use **targeted Edit calls — never a Python/Node script**. Each field you need to change is one Edit: one for summary fields, one to splice the new entry into an array, one to overwrite a sub-object, etc. The Edit tool handles large JSON files fine.
 
 - **Don't reach for bash heredocs with inline Python** — a classic quoting trap when the Python contains apostrophes in strings. The retreat to "write it as a script file instead" is a sign you started in the wrong place.
 - **Only write a script when you need programmatic computation across many files or values** — e.g. batch renames, bulk schema migrations, data aggregation. Splicing one value into one location is not that.
 - **Read + Write (overwrite the whole file) is the acceptable fallback** when many fields change at once, but prefer Edit first — it keeps diffs reviewable and doesn't pull the whole file into context.
 - Rule of thumb: if you can describe the change as "replace block A with block B," it's an Edit.
-
-### Model Budget
-Don't waste expensive models on cheap tasks:
-- **Haiku**: file search, codebase exploration, audit, validation, reading/summarizing
-- **Sonnet**: code changes, research, data processing, multi-step tasks
-- **Opus**: complex architecture, ambiguous design, nuanced writing — or when the user is present and expects it
 
 ---
 
@@ -130,88 +90,6 @@ When `.shipkit/codebase-index.json` exists, the session-start hook injects a **l
 
 ---
 
-## Skills Reference
-
-### Vision & Discovery
-| When... | Use |
-|---------|-----|
-| Define project vision | `/shipkit-why-project` |
-| Create personas & journeys | `/shipkit-product-discovery` |
-| Scan codebase, detect stack | `/shipkit-project-context` |
-| Index codebase for navigation | `/shipkit-codebase-index` |
-| Map current-state architecture (apps, datastores, contracts, integrations) | `/shipkit-architecture-map` |
-| Define project stage & constraints | `/shipkit-stage` |
-
-### Solution Design
-| When... | Use |
-|---------|-----|
-| Design solution blueprint | `/shipkit-product-definition` |
-| Design technical approach | `/shipkit-engineering-definition` |
-| Set up design system, tokens, brand direction | `/shipkit-design-system` |
-| Define user-outcome success criteria | `/shipkit-product-goals` |
-| Define technical performance criteria | `/shipkit-engineering-goals` |
-
-### Spec & Planning
-| When... | Use |
-|---------|-----|
-| Prioritize which specs to write first | `/shipkit-spec-roadmap` |
-| Create feature specification | `/shipkit-spec` |
-| Process feedback into investigated bug specs | `/shipkit-feedback-bug` |
-| Plan implementation steps | `/shipkit-plan` |
-| Think through decisions | `/shipkit-thinking-partner` |
-
-### Knowledge & Memory
-| When... | Use |
-|---------|-----|
-| Update CLAUDE.md with learnings | `/shipkit-claude-md` |
-| End session / checkpoint | `/shipkit-work-memory` |
-
-### Orchestration
-| When... | Use |
-|---------|-----|
-| Drive any set of steps to a ground-truth bar (custom run) | `/shipkit-orchestrate` |
-| Define a project's foundation autonomously — vision → goals | `/shipkit-direction` |
-
-### Execution
-| When... | Use |
-|---------|-----|
-| Build a spec'd + planned feature to done | `/shipkit-ship` |
-| Generate test case specs | `/shipkit-test-cases` |
-
-### Quality & Communication
-| When... | Use |
-|---------|-----|
-| Verify work before commit | `/shipkit-review-shipping` |
-| Production readiness audit | `/shipkit-preflight` |
-| Scale & enterprise readiness | `/shipkit-scale-ready` |
-| Audit LLM prompt architecture | `/shipkit-prompt-audit` |
-| Audit dead code, orphans & unwired seams | `/shipkit-codebase-audit` |
-| Audit UX patterns | `/shipkit-ux-audit` |
-| Semantic QA for API/LLM outputs | `/shipkit-semantic-qa` |
-| Track & visualize metrics | `/shipkit-metrics` |
-| Visual QA with Playwright | `/shipkit-qa-visual` |
-| Track manual tasks for user | `/shipkit-user-instructions` |
-| Create visual HTML report | `/shipkit-communications` |
-
-### System
-| When... | Use |
-|---------|-----|
-| Install or update Shipkit | `/shipkit-update` |
-| Find and install community skills | `/shipkit-get-skills` |
-| Find and install MCP servers | `/shipkit-get-mcps` |
-
-
-**No skill needed for:** implementing, debugging, testing, refactoring, documenting code.
-
-**Built-in commands:**
-- `/simplify` — Cleanup-only: reviews changed code for reuse, simplification, efficiency, and altitude issues, then applies the fixes automatically. No bug-hunting.
-- `/code-review` — Bug-hunting review. Use `--fix` to apply findings or `--comment` to post inline PR comments.
-- `/batch <instruction>` — Decomposes a large mechanical change into 5–30 independent units, spawns parallel worktree agents that each open a PR. For migrations, bulk refactors, mass renames.
-- Use `/simplify` for post-implementation cleanup. Use `/code-review` for correctness bugs. Use `/shipkit-review-shipping` for comprehensive spec-aligned review (12 quality dimensions).
-- The shipping orchestrator manages Agent Teams directly for parallel implementation.
-
----
-
 ## Meta-Behavior
 
 **When user asks to remember something** (e.g., "remember this", "save this for next time", "add to CLAUDE.md"):
@@ -224,23 +102,7 @@ When `.shipkit/codebase-index.json` exists, the session-start hook injects a **l
 
 **To remove a learning:** User says "remove the learning about X" — edit CLAUDE.md directly.
 
----
-
-## Auto Memory
-
-Claude Code maintains persistent memory across sessions in `~/.claude/projects/<project-hash>/memory/`. Key files:
-
-| File | Purpose |
-|------|---------|
-| `MEMORY.md` | Always loaded - keep concise (<200 lines) |
-| `*.md` | Additional memory files linked from MEMORY.md |
-
-**Usage:**
-- Use `/shipkit-work-memory` to save session progress
-- Manual edits to MEMORY.md persist across sessions
-- Link to other files in memory directory for detailed notes
-
-**Note:** Auto memory is separate from `.shipkit/` context files. Use `.shipkit/` for project artifacts (specs, plans, architecture), auto memory for session-to-session learnings.
+**If Claude Code auto memory is active** (`~/.claude/projects/<project-hash>/memory/`): keep `MEMORY.md` concise (<200 lines); use it for session-to-session learnings only — project artifacts (specs, plans, architecture) belong in `.shipkit/`.
 
 ---
 
@@ -252,15 +114,8 @@ If sandbox mode is enabled, `.claude/skills/` is write-protected. Shipkit instal
 
 ---
 
-## Operating Environment
+## Parallel sessions & the integration bench (opt-in)
 
-### Session continuity
-Sessions are stored locally (`~/.claude/projects/<project>/`) with ~30-day retention. Use `--continue` / `--resume` to pick up prior work, `--fork-session` to branch, and `/compact` / `/export` to manage context. In dev containers, persist `~/.claude/` and the project's `.shipkit/` across rebuilds so session history and artifacts survive.
-
-### Enterprise & managed settings
-Shipkit targets solo / MVP development, not enterprise rollout. If your organisation enforces managed settings or Zero-Data-Retention, some Claude Code features (e.g. dynamic workflows) may be disabled — Shipkit's core is local skills and keeps working regardless. Broader enterprise / ZDR support is out of scope for now.
-
-### Parallel sessions & the integration bench (opt-in)
 **Skip this entire section unless you run multiple Claude Code sessions concurrently across git worktrees of one repo.** Single-session work: your checkout is your normal workspace — commit, branch, and merge in it freely; none of the below applies.
 
 When you *do* fan out into parallel worktree sessions, designate the **primary checkout as the integration bench**: the one tree where branches get merged and integrated, never worked on directly by a spawned session. A session must first determine whether it is the bench or a linked worktree before running any git command:
