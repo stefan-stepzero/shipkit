@@ -471,8 +471,15 @@ def main():
         _emit_context('\n'.join(lines), project_root)
         return 0
 
-    # ── Activated Shipkit project: load full orchestration context (the engine) ──
-    lines.append(engine_skill.read_text(encoding='utf-8'))
+    # ── Activated Shipkit project: point at the engine, don't inject its body. ──
+    # Hooks inject STATE, not instructions. The engine's full protocol (~1700 tokens)
+    # loads when the skill is invoked; its listing description already routes to it.
+    lines.append(
+        "**Shipkit active.** Engine: `/shipkit-orchestrate` — drives any set of steps to a "
+        "confirmed ground-truth bar (delegate → reconcile → re-dispatch loop).\n"
+        "Phase skills (build/review/direction) call it; invoke it directly to drive work to done.\n"
+        "Its full protocol loads on invocation — do not re-implement orchestration inline."
+    )
     lines.append('')
     lines.append('---')
     lines.append('')
