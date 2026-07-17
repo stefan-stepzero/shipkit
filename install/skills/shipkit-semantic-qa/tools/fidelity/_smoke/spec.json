@@ -1,0 +1,64 @@
+{
+  "$schema": "shipkit-artifact",
+  "type": "spec",
+  "version": "1.0",
+  "id": "SMOKE-001",
+  "title": "Smoke fixture spec — declares the _smoke surfaces live",
+  "_comment": [
+    "FIXTURE, not a real spec. It exists so the declared-live cross-check can be",
+    "smoke-tested without a real project. It mirrors the retro failure shape:",
+    "staff-dashboard is declared LIVE but ships on mock data (GATING), exec-view",
+    "renders with no backing source, cohort_leaderboard_v is declared but never",
+    "queried, and the students table is genuinely wired.",
+    "",
+    "The fixture deliberately exercises all three cross-check paths:",
+    "  GATING     StaffDashboard.tsx  - declared live + mock seams -> fails the gate",
+    "  DEFERRED   PredictivePacing.tsx - matches deferred[].element 'predictive",
+    "             pacing' -> suppressed, must NOT fail despite high-conf seams",
+    "  FAIL-OPEN  scratch/ExperimentPanel.tsx - declared nowhere -> advisory only",
+    "",
+    "Expected on this tree: 12 high-confidence seams, only 4 of them GATING. The",
+    "other 8 are the v1 false-positive class the declared cross-check removes."
+  ],
+
+  "functionalSurface": {
+    "applications": [
+      { "name": "staff-dashboard", "kind": "frontend", "verdict": "COVERED",
+        "evidence": "fixture: the mock-backed dashboard surface" },
+      { "name": "exec-view", "kind": "frontend", "verdict": "COVERED",
+        "evidence": "fixture: renders metrics with no backing source" },
+      { "name": "coach-leaderboard", "kind": "service", "verdict": "COVERED",
+        "evidence": "fixture: recomputes grade_band (SSOT risk)" }
+    ],
+    "datastores": [
+      { "name": "cohort_leaderboard_v", "kind": "view", "verdict": "COVERED",
+        "evidence": "fixture: declared backing view; the dashboard never queries it" },
+      { "name": "students", "kind": "table", "verdict": "COVERED",
+        "evidence": "fixture: genuinely queried by pages/index.tsx" }
+    ],
+    "contracts": [
+      { "name": "GET /api/cohort/{id}/leaderboard", "kind": "rest-endpoint", "verdict": "COVERED",
+        "evidence": "fixture: declared but no route file exists — unresolvable by design" }
+    ],
+    "integrations": [
+      { "name": "Supabase Auth", "kind": "auth-provider", "verdict": "COVERED",
+        "evidence": "fixture: supabase client is imported by pages/index.tsx" }
+    ]
+  },
+
+  "gapReport": {
+    "status": "clear",
+    "dimensions": { "applications": "covered", "datastores": "covered", "contracts": "covered", "integrations": "covered" },
+    "flagged": [],
+    "sharedContracts": [
+      { "field": "grade_band", "usedBy": ["staff-dashboard", "coach-leaderboard"], "owner": "cohort_leaderboard_v (view)", "status": "owned" }
+    ],
+    "unbackedSurfaces": [],
+    "architectureMapUsed": false,
+    "confidence": "reduced"
+  },
+
+  "deferred": [
+    { "dimension": "applications", "element": "predictive pacing", "reason": "fixture: out of scope — its 'coming soon' seam must not fail the gate" }
+  ]
+}

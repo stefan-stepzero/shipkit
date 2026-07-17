@@ -9,7 +9,9 @@
     "cli/",
     "install/",
     "docs/generated/shipkit-overview.html",
-    "VERSION"
+    "VERSION",
+    "!**/__pycache__",
+    "!**/*.pyc"
   ],
   "engines": {
     "node": ">=18.0.0"

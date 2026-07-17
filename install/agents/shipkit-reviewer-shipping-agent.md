@@ -139,6 +139,18 @@ Write `.shipkit/verification-report.json`:
 - `"issues_found"` — At least one blocker. `issues[]` describes what's wrong.
 - **Data-Reality Gate:** any `dataReality.mockSeams[]` entry with `declaredLive: true` (a spec-declared-live surface still on mock/stub data) is a **blocker** → overall `status` MUST be `"issues_found"` and `dataReality.status` `"fail"`. Green-but-mock is not done. A mock seam on an explicitly-deferred surface does not fail.
 
+**Finding the seams (optional tool).** Grep finds seams but cannot answer the `declaredLive` question that makes one a blocker. `mock-seam-detector.py` does that cross-check deterministically and emits this exact shape:
+
+```bash
+FID=".claude/skills/shipkit-semantic-qa/tools/fidelity"
+[ -d "$FID" ] || FID="$HOME/.claude/skills/shipkit-semantic-qa/tools/fidelity"
+python "$FID/mock-seam-detector.py" . --spec .shipkit/specs/**/*.json --declared-live-only
+```
+
+`summary.gatingSeams` is the count that blocks; deferred surfaces are suppressed for you. Two rules when using it:
+- **Confirm each seam with Read before calling it a blocker.** The tool is a regex heuristic — `declaredLive: true` narrows *where to look*; your Read is the evidence you report.
+- **It fails open.** A seam it cannot tie to a declared surface returns `declaredLive: false` — advisory, never a blocker. Do not promote those. If the tool is absent, Grep by hand per the skill's patterns.
+
 ## Constraints
 
 - Never modify code — you are read-only (reports are the only files you write)

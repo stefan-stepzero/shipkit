@@ -378,31 +378,56 @@ running this mode.
 
 | Need | Read | Extract |
 |------|------|---------|
-| Declared surfaces | `.shipkit/specs/**/*.json` → `gapReport` | `functionalSurface.*[]` with `verdict: "COVERED"`; `unbackedSurfaces[]` |
+| Declared surfaces | `.shipkit/specs/**/*.json` → `functionalSurface` (top-level, beside `gapReport`) | `functionalSurface.*[]` with `verdict: "COVERED"`; `gapReport.unbackedSurfaces[]` |
 | Built-and-backed | `verification-report.json` (from `/shipkit-review-shipping`) | `dataReality.mockSeams[]` where `declaredLive: true` |
 | Essence assertions | `.shipkit/product-definition.json` | `differentiators[]` where `nonNegotiable: true` (via `assertion`) + every `qualityBar[]` (via `assertion`) |
 
 If `verification-report.json` is missing, run `/shipkit-review-shipping` first (its Data-Reality Gate
-produces `dataReality`) — the completeness axis depends on it. If the essence block is missing (`qualityBar`
-absent or no `assertion` fields), run `/shipkit-product-definition` to capture it — this mode scores against
-essence, it does not invent it.
+produces `dataReality`) — the completeness axis is more accurate with it. If the essence block is missing
+(`qualityBar` absent or no `assertion` fields), run `/shipkit-product-definition` to capture it — this mode
+scores against essence, it does not invent it.
 
-#### Step 5.2: Completeness axis (deterministic)
+#### Step 5.2: Completeness axis (run the tool — do not compute this by hand)
 
-Compute the ratio by arithmetic over the two artefacts — no model judgement. Formula in
-`references/fidelity-scorecard-schema.md § Axis 1`:
+**The completeness axis is deterministic arithmetic, so it is a CLI, not a judgement.** `tools/fidelity/`
+ships with this skill and emits `references/fidelity-scorecard-schema.md` verbatim. Run it. Do not
+re-implement the formula in prose — a model re-deriving arithmetic is exactly how this axis drifts.
 
+Resolve the tool path (it lives beside this SKILL.md, so it follows the install scope):
+
+```bash
+# Project-scope install first, then user-scope. Use whichever exists.
+FID=".claude/skills/shipkit-semantic-qa/tools/fidelity"
+[ -d "$FID" ] || FID="$HOME/.claude/skills/shipkit-semantic-qa/tools/fidelity"
 ```
-declared        = count of functionalSurface elements with verdict == "COVERED"
-notBacked       = distinct surfaces in gapReport.unbackedSurfaces[]  OR
-                  the surface of a dataReality.mockSeams[] entry with declaredLive == true
-builtAndBacked  = declared - |notBacked|
-ratio           = builtAndBacked / declared
+
+Single arm:
+
+```bash
+python "$FID/fidelity-score.py" . \
+  --spec .shipkit/specs/shipped/*.json \
+  --verification-report .shipkit/verification-report.json \
+  --product-definition .shipkit/product-definition.json \
+  --out .shipkit/fidelity-scorecard.json \
+  --stamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  --report
 ```
 
-Break the ratio down `byDimension` (applications / datastores / contracts / integrations) so a missing
-backend contract isn't masked by a complete frontend. A declared-live surface reading mock data counts as
-**not built** (green-but-mock = not done).
+- `--spec` is the **denominator's provenance** — the declared list, not a code re-scan. Required.
+- `--verification-report` is preferred when present: review-shipping owns the Data-Reality Gate, so its
+  `dataReality.mockSeams` is authoritative and the tool will not re-scan behind it. Omit it and the tool
+  runs its own bundled `mock-seam-detector.py` instead.
+- `--stamp` is the only source of `lastUpdated`; omit it and repeated runs stay byte-identical.
+
+**Read these two fields before trusting the number:**
+
+| Field | Why it matters |
+|-------|----------------|
+| `completeness.signals` | **Advisory only** — a heuristic code-scan blend that never moves `ratio` or the verdict. Leads for a human. Do not report `signals.blendedScore` as the completeness score. |
+| `completeness.signals.declaredCoverage` | Declared surfaces with **no code evidence**. The contract's formula is optimistic (`builtAndBacked = declared − |notBacked|`), so a surface nobody built and nobody flagged still counts as **built** — an empty codebase scores `1.0`. If `unresolved > 0`, the ratio is an **upper bound**: say so, and check those surfaces by hand before calling the build complete. |
+
+The tool leaves `essence: null` and `fidelityVerdict: null` — it has no judge, and it will not guess the
+half it cannot prove. Step 5.3 fills essence; Step 5.4 derives the verdict.
 
 #### Step 5.3: Essence axis (LLM-judge)
 
@@ -424,11 +449,46 @@ floorHeld    = every nonNegotiable differentiator scored PASS (any partial/fail 
 
 `floorHeld: false` with a high `essenceScore` is still **taste-drift** — report both honestly.
 
+**Write the result to `.shipkit/semantic-qa/essence.json`** — Step 5.4 reads it back to derive the verdict.
+`score` and `floorHeld` are required (the tool rejects the file without them); `results[]` carries the
+per-assertion detail through to the scorecard:
+
+```json
+{
+  "score": 72,
+  "floorHeld": false,
+  "differentiators": { "pass": 2, "partial": 1, "fail": 0 },
+  "qualityBar": { "pass": 2, "partial": 0, "fail": 1 },
+  "results": [
+    { "id": "D-003", "kind": "differentiator", "nonNegotiable": true,
+      "assertion": "Preview streams first content within 2s of any parameter change.",
+      "result": "partial",
+      "evidence": "Preview streams, but first content measured at ~4.1s — over the 2s budget." }
+  ]
+}
+```
+
 #### Step 5.4: Compose the scorecard + verdict
 
-Write `.shipkit/fidelity-scorecard.json` (run-scoped under `<runDir>/` when the engine set a run root —
-`install/shared/references/run-artifacts.md`). Derive `fidelityVerdict` per arm from the two axes (never by
-hand):
+**Re-run the tool with `--essence`** so the verdict is derived in code from both axes. The schema says
+`fidelityVerdict` is derived and never entered by hand — that means the rule table below is documentation of
+what the tool does, not a procedure for you to apply:
+
+```bash
+# .shipkit/semantic-qa/essence.json was written by Step 5.3.
+python "$FID/fidelity-score.py" . \
+  --spec .shipkit/specs/shipped/*.json \
+  --verification-report .shipkit/verification-report.json \
+  --product-definition .shipkit/product-definition.json \
+  --essence .shipkit/semantic-qa/essence.json \
+  --out .shipkit/fidelity-scorecard.json \
+  --stamp "$(date -u +%Y-%m-%dT%H:%M:%SZ)" --report
+```
+
+The scorecard lands at `.shipkit/fidelity-scorecard.json` (run-scoped under `<runDir>/` when the engine set
+a run root — `install/shared/references/run-artifacts.md`; pass `--out <runDir>/fidelity-scorecard.json`).
+
+The rule the tool applies (`--essence-threshold` sets the `80`, recorded as `essenceThreshold`):
 
 | Verdict | Rule |
 |---------|------|
@@ -437,19 +497,37 @@ hand):
 | `TASTE-DRIFT` | `floorHeld == false` **or** `essenceScore < 80` |
 | `GAP+TASTE-DRIFT` | both |
 
+If you skip `--essence`, `fidelityVerdict` stays `null` on purpose: with completeness alone, `ratio < 1.0`
+cannot distinguish `GAP-DRIFT` from `GAP+TASTE-DRIFT`, and `ratio == 1.0` cannot distinguish `FAITHFUL` from
+`TASTE-DRIFT`. Report `completeness.verdict` (the provable half) rather than guessing the rest.
+
 #### Step 5.5: Comparative mode (two arms, one rubric)
 
 Same brief, two builds (e.g. **Shipkit-built** vs **raw-built**) scored against **one shared rubric**. The
 rubric — declared-surface list + essence assertions — is fixed from a **single source of truth** (the
 captured intent), and each arm is scored against it:
 
-- **Completeness per arm:** run review-shipping's data-reality scan against *each arm's codebase* using the
-  same declared-surface list → each arm's own `mockSeams` → its own ratio.
+- **Completeness per arm:** one tool invocation scores every arm against the same `--spec`, so the shared
+  rubric is enforced by construction rather than by care:
+
+```bash
+python "$FID/fidelity-score.py" \
+  --arm shipkit=../arm-shipkit --arm raw=../arm-raw \
+  --spec .shipkit/specs/shipped/*.json \
+  --product-definition .shipkit/product-definition.json \
+  --out .shipkit/fidelity-scorecard.json --report
+```
+
 - **Essence per arm:** run the essence judge against *each arm's shipped screens* with the identical criteria.
 
-Set `mode: "comparative"`, list both under `arms[]`, and emit a `comparison` block with the completeness /
-essence / floor deltas and the winner. The **fidelity delta** is the deliverable Project A consumes. Record
-`rubricSource` so the rubric's provenance is auditable (see the schema reference's note on rubric provenance).
+`mode`, `arms[]` and the `comparison` block (completeness / essence / floor deltas + winner) are emitted for
+you; `rubricSource` records the rubric's provenance (see the schema reference's note on rubric provenance).
+The **fidelity delta** is the deliverable Project A consumes.
+
+> **Check `declaredCoverage` on every arm before quoting a winner.** Because the completeness formula is
+> optimistic, an arm that simply *never built* a declared surface is not penalised for it — a near-empty arm
+> scores `1.0`. The tool flags this in `comparison.notes` when any arm has unresolved surfaces, and the delta
+> is only meaningful once both arms' declared surfaces are actually accounted for.
 
 #### Step 5.6: Present
 
@@ -507,8 +585,8 @@ Verdict: GAP+TASTE-DRIFT
 | `.shipkit/stack.json` | Optional: tech stack for script generation |
 | `.shipkit/specs/` | Optional: seed criteria from acceptance criteria |
 | `.shipkit/product-definition.json` | **Fidelity mode:** essence block (`nonNegotiable` differentiators + `qualityBar`) = the essence-axis criteria |
-| `.shipkit/specs/**/*.json` (`gapReport`) | **Fidelity mode:** declared surfaces + `unbackedSurfaces` for the completeness axis |
-| `verification-report.json` (`dataReality`) | **Fidelity mode:** built-and-backed / mock-seam data for the completeness axis |
+| `.shipkit/specs/**/*.json` (`functionalSurface` + `gapReport`) | **Fidelity mode:** declared surfaces (the completeness denominator) + `unbackedSurfaces`. Passed to the tool as `--spec`. |
+| `verification-report.json` (`dataReality`) | **Fidelity mode:** built-and-backed / mock-seam data for the completeness axis. Passed as `--verification-report`; authoritative when present. |
 
 ---
 
@@ -522,6 +600,7 @@ Verdict: GAP+TASTE-DRIFT
 - `outputs/`, `screenshots/` — CREATE per run (gitignored, ephemeral)
 - `judgments/` — APPEND (one per run, kept permanently)
 - `scripts/semantic-qa-{suite}.*` — CREATE on setup, user-owned after
+- `semantic-qa/essence.json` — CREATE per fidelity run (Step 5.3): the essence axis (`score` + `floorHeld` + `results[]`). Read back by Step 5.4 as `--essence` so the verdict is derived, not hand-entered.
 - `fidelity-scorecard.json` — CREATE per fidelity run (run-scoped under `<runDir>/` when the engine set a run root, else `.shipkit/`)
 
 ---
@@ -559,11 +638,12 @@ Verdict: GAP+TASTE-DRIFT
 - [ ] Summary with score and comparison presented to user
 
 **Fidelity complete when:**
-- [ ] Rubric located: essence block (product-definition), declared surfaces (`gapReport`), `dataReality` (verification-report)
-- [ ] Completeness axis computed deterministically (ratio + `byDimension`; declared-live mock seams counted as not-built)
+- [ ] Rubric located: essence block (product-definition), declared surfaces (`functionalSurface`), `dataReality` (verification-report)
+- [ ] Completeness axis produced by **running `tools/fidelity/fidelity-score.py`** with `--spec` — not computed by hand
+- [ ] `signals.declaredCoverage` checked: any `unresolved > 0` reported as "ratio is an upper bound", not glossed
 - [ ] Essence axis judged against every `nonNegotiable` differentiator + `qualityBar` assertion (`floorHeld` computed)
-- [ ] `fidelity-scorecard.json` written with both axes separate + a derived `fidelityVerdict` per arm
-- [ ] Comparative runs: both arms scored against one shared rubric + `comparison` deltas emitted
+- [ ] `fidelity-scorecard.json` written with both axes separate + `fidelityVerdict` **derived by the tool** (`--essence`), never entered by hand
+- [ ] Comparative runs: all arms scored in one invocation against one `--spec` + `comparison` deltas emitted
 <!-- /SECTION:success-criteria -->
 
 ---
@@ -588,3 +668,4 @@ This skill is a judgment gate; it does not auto-dispatch fixes.
 - `references/criteria-guide.md` — How to write effective quality criteria
 - `references/example.json` — Complete example judgment output
 - `references/fidelity-scorecard-schema.md` — **Fidelity mode:** scorecard schema (completeness + essence + comparative), formulas, verdict rule, two worked examples
+- `tools/fidelity/` — **Fidelity mode:** the deterministic producer of the completeness axis. `fidelity-score.py` emits the scorecard schema; `mock-seam-detector.py` does the declared-live cross-check (also used by `shipkit-review-shipping`'s Data-Reality Gate). See `tools/fidelity/README.md` for the formula, the known limits, and the `_smoke/` fixture.
