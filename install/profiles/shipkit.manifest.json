@@ -61,6 +61,7 @@
       ],
       "Knowledge & Memory": [
         {"name": "shipkit-claude-md", "desc": "Update CLAUDE.md with learnings"},
+        {"name": "shipkit-adr", "desc": "Land one architecture decision atomically (capped lean index + full archive)"},
         {"name": "shipkit-work-memory", "desc": "Log progress & session state"}
       ],
       "Orchestration": [
