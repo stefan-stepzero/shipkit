@@ -63,7 +63,7 @@ Report cross-feature issues as gaps with `artifact: "cross-feature"` and list th
 | `.shipkit/engineering-definition.json` | Mechanisms, components, stack choices support product features |
 | `.shipkit/specs/*.json` | Specs exist for defined features, are complete |
 | `.shipkit/spec-roadmap.json` | Roadmap covers all features, priority order makes sense |
-| `.shipkit/user-instructions.json` | User tasks identified |
+| `.shipkit/user-tasks.json` | User tasks identified |
 
 ### Also read direction artifacts for context:
 - `.shipkit/why.json` — stage constraints

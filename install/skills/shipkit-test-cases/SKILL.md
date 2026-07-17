@@ -33,7 +33,7 @@ effort: medium
 
 **Soft requirements** (helpful but not blocking):
 - `.shipkit/specs/` — Helps derive cases from requirements
-- `.shipkit/product/` — Helps infer priority from user personas
+- `.shipkit/product-discovery.json` — Helps infer priority from user personas
 
 **No hard requirements** — Can analyze code directly without specs
 
@@ -88,7 +88,7 @@ git diff --name-only HEAD~5..HEAD
 |--------|-----------------|
 | Source files | Functions, endpoints, components |
 | `.shipkit/specs/` | Requirements, acceptance criteria |
-| `.shipkit/product/` | User personas, critical journeys |
+| `.shipkit/product-discovery.json` | User personas, critical journeys |
 | Existing tests | What's already covered |
 | File paths | Priority signals (auth, payment = core) |
 
