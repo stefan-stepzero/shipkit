@@ -48,6 +48,12 @@ archive/
 # Internal development scripts (root level only)
 /scripts/
 
+# Internal framework tooling — ships nowhere; owner ruling 2026-07-17: public repo is core only
+/tools/
+
+# Integration-branch record for multi-worktree sessions (local dev state)
+.agentrc
+
 # Old test files
 tests/archive/
 
