@@ -39,6 +39,16 @@ nothing. Recall is the acceptable loss; precision is the product.
 
 Without `--spec`, `declaredLive` is `null` — *unknown*, never `false`.
 
+> **The ~27–30% figure is v1's measured precision. v2's is NOT yet measured.** The
+> mechanism is demonstrated on `_smoke/` (12 high-confidence seams → 4 gating), but
+> that is a fixture, not ground truth. Re-measuring needs a real codebase whose spec
+> carries `functionalSurface` — the only corpus with ground truth (phinma) predates
+> the no-gaps gate, so 0 of its 42 specs declare surfaces and it cannot be scored in
+> this mode. Treat "the declared cross-check fixes precision" as *designed-for and
+> fixture-demonstrated*, not *confirmed*. Hand-authoring a declared list for an
+> existing codebase would not settle it: that authors the ground truth the tool is
+> then scored against.
+
 ```
 completeness:
   declared       = functionalSurface elements, verdict COVERED  (from the SPEC)
