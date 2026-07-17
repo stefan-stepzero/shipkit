@@ -180,6 +180,11 @@ Feature specs are stored as JSON files following the Shipkit artifact convention
     "status": "clear",
     "dimensions": { "applications": "covered", "datastores": "covered", "contracts": "covered", "integrations": "covered" },
     "flagged": [],
+    "sharedContracts": [
+      { "field": "grade_band", "usedBy": ["student-view", "coach-dashboard"], "owner": "grade_band_v (view)", "status": "owned" }
+    ],
+    "unbackedSurfaces": [],
+    "identityContract": { "key": "auth.uid()", "mapsTo": "profiles.id", "declaredBeforeSchema": true },
     "architectureMapUsed": true,
     "confidence": "high"
   },
@@ -373,9 +378,12 @@ A dimension array may be empty only if the feature genuinely implies nothing in 
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `status` | enum | yes | `"clear"` (FLAGGED = 0) or `"flagged"` — **must be `clear` to save** |
+| `status` | enum | yes | `"clear"` (FLAGGED = 0, no `recomputed` shared contracts, no `unbackedSurfaces`, identity contract satisfied for auth apps) or `"flagged"` — **must be `clear` to save** |
 | `dimensions` | object | yes | Per-dimension roll-up: `covered` / `flagged` / `deferred` / `n-a` |
 | `flagged` | object[] | yes | Open gaps: `{ dimension, element, impliedBy, proposedResolution }` (empty when clear) |
+| `sharedContracts` | object[] | yes | SSOT map for fields/metrics/entities read by ≥2 surfaces: `{ field, usedBy[], owner, status: "owned" \| "recomputed" }`. Any `recomputed` → `status: "flagged"` (a shared field computed independently on multiple surfaces is a violation). Empty if nothing is shared across surfaces. |
+| `unbackedSurfaces` | object[] | yes | Surfaces reading a shared field with no declared owner: `{ surface, field, reason }` (empty when clear) |
+| `identityContract` | object | conditional | Present when the app has auth: `{ key, mapsTo, declaredBeforeSchema: boolean }`. `declaredBeforeSchema: false` → `status: "flagged"` (identity row-key must be locked before any schema/RLS). Omit for apps with no auth. |
 | `architectureMapUsed` | boolean | yes | `false` in greenfield (no `architecture-map.json`) |
 | `confidence` | enum | yes | `"high"` or `"reduced"` (greenfield / thin map) |
 
@@ -420,7 +428,7 @@ Array of strings suggesting what to do after spec is complete.
 3. **At Least One Scenario**: The `scenarios` array must have at least one entry
 4. **Must Have Criteria**: The `mustHave` array must have at least one entry
 5. **Summary Sync**: Summary counts must match actual array lengths
-6. **No-Gaps Gate**: `gapReport.status` must be `"clear"` (zero FLAGGED elements) before a spec is saved to `todo/`. Every implied application, datastore, contract, and integration is either COVERED or EXPLICITLY-DEFERRED with a reason (see `no-gaps-checklist.md`).
+6. **No-Gaps Gate**: `gapReport.status` must be `"clear"` before a spec is saved to `todo/`. This requires: zero FLAGGED elements (every implied application, datastore, contract, and integration is COVERED or EXPLICITLY-DEFERRED with a reason); no `recomputed` entries in `sharedContracts` (every field/metric/entity read by ≥2 surfaces has a single owning SSOT); empty `unbackedSurfaces`; and — if the app has auth — `identityContract.declaredBeforeSchema: true` (see `no-gaps-checklist.md`).
 
 ---
 

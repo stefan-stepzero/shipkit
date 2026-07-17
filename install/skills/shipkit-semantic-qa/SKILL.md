@@ -1,7 +1,7 @@
 ---
 name: shipkit-semantic-qa
-description: "Semantic QA — define inputs/criteria, generate test scripts, Claude judges outputs or screenshots against criteria. Triggers: 'semantic qa', 'quality check', 'visual qa', 'judge outputs', 'QA suite'."
-argument-hint: "[suite-name] [--setup|--run|--judge|--full]"
+description: "Semantic QA — define inputs/criteria, generate test scripts, Claude judges outputs or screenshots against criteria. Also scores a built app's fidelity (completeness + essence) against captured intent. Triggers: 'semantic qa', 'quality check', 'visual qa', 'judge outputs', 'QA suite', 'fidelity scorecard', 'score fidelity'."
+argument-hint: "[suite-name] [--setup|--run|--judge|--full|--fidelity]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent
 effort: medium
 ---
@@ -64,6 +64,9 @@ Determine mode from arguments and state:
 - `--run` → Run mode
 - `--judge` → Judge mode
 - `--full` → Setup (if needed) → Run → Judge
+- `--fidelity` → **Fidelity mode** — score a built app against captured intent (completeness + essence),
+  emit a fidelity scorecard. See [Step 5](#step-5-fidelity-mode---fidelity). Add a second suite/arm to
+  compare two builds under one rubric.
 
 **Suite name without flag — check state:**
 
@@ -139,6 +142,13 @@ Write criteria to `suite.json` using this format per criterion:
 - `passExample`/`failExample`: Optional anchors for ambiguous cases
 
 See `references/criteria-guide.md` for detailed guidance.
+
+**Criteria source — hand-authored vs the essence block.** By default criteria are captured from the user
+here (that's the human input this skill earns its existence on). But when you're scoring a *built app's
+fidelity to captured intent*, the criteria already exist as **checkable assertions** in the
+product-definition essence block. In that case set `criteriaSource: "essence"` in `suite.json` and derive
+criteria from `.shipkit/product-definition.json` instead of asking the user — see
+[Step 5: Fidelity Mode](#step-5-fidelity-mode---fidelity).
 
 #### Step 1.4: Define Input Library (Backend) or Component Inventory (Frontend)
 
@@ -348,12 +358,126 @@ Run Setup (if needed) → Run → Judge sequentially.
 
 ---
 
+### Step 5: Fidelity Mode (`--fidelity`)
+
+**Goal:** Score a *built* app against the *intent that was captured* — how faithfully what shipped matches
+what the user envisioned. This is the evaluation half of Shipkit's outcome (**fidelity**). It produces a
+**fidelity scorecard** (`.shipkit/fidelity-scorecard.json`) on two separate axes:
+
+- **Completeness (deterministic, no LLM)** — declared surfaces (from the spec's no-gaps `gapReport`) vs
+  built-and-backed (from review-shipping's `dataReality` mock-seam scan). A count/ratio.
+- **Essence (LLM-judge)** — the shipped UI/behaviour scored against the product-definition **essence block**
+  (each `nonNegotiable` differentiator assertion + each `qualityBar` assertion → pass / partial / fail with
+  evidence). This is the normal Judge loop with the essence block as its criteria source.
+
+The two axes are kept **separate** — never blended into one number that hides a failure. The full schema,
+formulas, verdict rule, and worked examples live in `references/fidelity-scorecard-schema.md`. Read it before
+running this mode.
+
+#### Step 5.1: Locate the rubric (captured intent)
+
+| Need | Read | Extract |
+|------|------|---------|
+| Declared surfaces | `.shipkit/specs/**/*.json` → `gapReport` | `functionalSurface.*[]` with `verdict: "COVERED"`; `unbackedSurfaces[]` |
+| Built-and-backed | `verification-report.json` (from `/shipkit-review-shipping`) | `dataReality.mockSeams[]` where `declaredLive: true` |
+| Essence assertions | `.shipkit/product-definition.json` | `differentiators[]` where `nonNegotiable: true` (via `assertion`) + every `qualityBar[]` (via `assertion`) |
+
+If `verification-report.json` is missing, run `/shipkit-review-shipping` first (its Data-Reality Gate
+produces `dataReality`) — the completeness axis depends on it. If the essence block is missing (`qualityBar`
+absent or no `assertion` fields), run `/shipkit-product-definition` to capture it — this mode scores against
+essence, it does not invent it.
+
+#### Step 5.2: Completeness axis (deterministic)
+
+Compute the ratio by arithmetic over the two artefacts — no model judgement. Formula in
+`references/fidelity-scorecard-schema.md § Axis 1`:
+
+```
+declared        = count of functionalSurface elements with verdict == "COVERED"
+notBacked       = distinct surfaces in gapReport.unbackedSurfaces[]  OR
+                  the surface of a dataReality.mockSeams[] entry with declaredLive == true
+builtAndBacked  = declared - |notBacked|
+ratio           = builtAndBacked / declared
+```
+
+Break the ratio down `byDimension` (applications / datastores / contracts / integrations) so a missing
+backend contract isn't masked by a complete frontend. A declared-live surface reading mock data counts as
+**not built** (green-but-mock = not done).
+
+#### Step 5.3: Essence axis (LLM-judge)
+
+Set up a **frontend** suite with `criteriaSource: "essence"` and derive criteria from the essence block:
+
+| Essence element | Criterion | Weight |
+|-----------------|-----------|--------|
+| `differentiators[]` with `nonNegotiable: true` | `id` = the `D-00x`, `evaluationGuide` = its `assertion`, `dimension: "differentiator"` | `must-pass` (essence **floor**) |
+| every `qualityBar[]` item | `id` = the `Q-00x`, `evaluationGuide` = its `assertion`, `dimension` = the item's `dimension` | `important` |
+
+Use `enabledBy` / `appliesTo` to route each assertion to the surface(s) to screenshot. Then run the normal
+Run → Judge loop (Steps 2–3) to score each assertion `pass` / `partial` / `fail` with evidence. Compute:
+
+```
+per-criterion credit: pass = 1.0, partial = 0.5, fail = 0
+essenceScore = weighted average in 0-100 (must-pass 3, important 2, nice-to-have 1)
+floorHeld    = every nonNegotiable differentiator scored PASS (any partial/fail → floor broken)
+```
+
+`floorHeld: false` with a high `essenceScore` is still **taste-drift** — report both honestly.
+
+#### Step 5.4: Compose the scorecard + verdict
+
+Write `.shipkit/fidelity-scorecard.json` (run-scoped under `<runDir>/` when the engine set a run root —
+`install/shared/references/run-artifacts.md`). Derive `fidelityVerdict` per arm from the two axes (never by
+hand):
+
+| Verdict | Rule |
+|---------|------|
+| `FAITHFUL` | `ratio == 1.0` **and** `floorHeld` **and** `essenceScore >= 80` |
+| `GAP-DRIFT` | `ratio < 1.0` (a declared surface missing or green-but-mock) |
+| `TASTE-DRIFT` | `floorHeld == false` **or** `essenceScore < 80` |
+| `GAP+TASTE-DRIFT` | both |
+
+#### Step 5.5: Comparative mode (two arms, one rubric)
+
+Same brief, two builds (e.g. **Shipkit-built** vs **raw-built**) scored against **one shared rubric**. The
+rubric — declared-surface list + essence assertions — is fixed from a **single source of truth** (the
+captured intent), and each arm is scored against it:
+
+- **Completeness per arm:** run review-shipping's data-reality scan against *each arm's codebase* using the
+  same declared-surface list → each arm's own `mockSeams` → its own ratio.
+- **Essence per arm:** run the essence judge against *each arm's shipped screens* with the identical criteria.
+
+Set `mode: "comparative"`, list both under `arms[]`, and emit a `comparison` block with the completeness /
+essence / floor deltas and the winner. The **fidelity delta** is the deliverable Project A consumes. Record
+`rubricSource` so the rubric's provenance is auditable (see the schema reference's note on rubric provenance).
+
+#### Step 5.6: Present
+
+```
+📐 Fidelity Scorecard — WorksheetForge (single)
+
+Completeness  5/6  (0.83)   ⚠️ gap-drift
+  • differentiated-sets-view — declared live, still on SAMPLE_SETS (mock seam)
+Essence       72 · floor NOT held   ⚠️ taste-drift
+  • D-003 streaming-preview PARTIAL — first content ~4.1s (budget 2s)
+  • Q-003 error-recovery FAIL — raw stack trace on export failure
+
+Verdict: GAP+TASTE-DRIFT
+📁 .shipkit/fidelity-scorecard.json
+```
+
+---
+
 ## When This Skill Integrates with Others
 
 ### Before This Skill
-- `/shipkit-spec` — Acceptance criteria can seed quality criteria
+- `/shipkit-spec` — Acceptance criteria can seed quality criteria; its `gapReport` (declared surfaces) is the completeness-axis rubric in fidelity mode
   - **When:** Feature has a spec with defined acceptance criteria
-  - **Why:** Derives initial criteria from existing spec
+  - **Why:** Derives initial criteria from existing spec; fidelity mode reads the no-gaps `gapReport`
+- `/shipkit-product-definition` — Produces the **essence block** (`nonNegotiable` differentiators + `qualityBar`) fidelity mode scores against
+  - **When:** Running `--fidelity` — the essence axis needs captured, checkable assertions
+- `/shipkit-review-shipping` — Its Data-Reality Gate produces `verification-report.json` `dataReality` (built-and-backed / mock seams)
+  - **When:** Running `--fidelity` — the completeness axis reads this
 - `/shipkit-project-context` — Provides stack.json for script generation
   - **When:** Need to determine API framework or test runner
 
@@ -382,6 +506,9 @@ Run Setup (if needed) → Run → Judge sequentially.
 | `.shipkit/semantic-qa/suites/{suite}/judgments/` | Previous judgments for comparison |
 | `.shipkit/stack.json` | Optional: tech stack for script generation |
 | `.shipkit/specs/` | Optional: seed criteria from acceptance criteria |
+| `.shipkit/product-definition.json` | **Fidelity mode:** essence block (`nonNegotiable` differentiators + `qualityBar`) = the essence-axis criteria |
+| `.shipkit/specs/**/*.json` (`gapReport`) | **Fidelity mode:** declared surfaces + `unbackedSurfaces` for the completeness axis |
+| `verification-report.json` (`dataReality`) | **Fidelity mode:** built-and-backed / mock-seam data for the completeness axis |
 
 ---
 
@@ -395,6 +522,7 @@ Run Setup (if needed) → Run → Judge sequentially.
 - `outputs/`, `screenshots/` — CREATE per run (gitignored, ephemeral)
 - `judgments/` — APPEND (one per run, kept permanently)
 - `scripts/semantic-qa-{suite}.*` — CREATE on setup, user-owned after
+- `fidelity-scorecard.json` — CREATE per fidelity run (run-scoped under `<runDir>/` when the engine set a run root, else `.shipkit/`)
 
 ---
 
@@ -429,6 +557,13 @@ Run Setup (if needed) → Run → Judge sequentially.
 - [ ] Each output scored against each criterion
 - [ ] Judgment report written (markdown + JSON)
 - [ ] Summary with score and comparison presented to user
+
+**Fidelity complete when:**
+- [ ] Rubric located: essence block (product-definition), declared surfaces (`gapReport`), `dataReality` (verification-report)
+- [ ] Completeness axis computed deterministically (ratio + `byDimension`; declared-live mock seams counted as not-built)
+- [ ] Essence axis judged against every `nonNegotiable` differentiator + `qualityBar` assertion (`floorHeld` computed)
+- [ ] `fidelity-scorecard.json` written with both axes separate + a derived `fidelityVerdict` per arm
+- [ ] Comparative runs: both arms scored against one shared rubric + `comparison` deltas emitted
 <!-- /SECTION:success-criteria -->
 
 ---
@@ -452,3 +587,4 @@ This skill is a judgment gate; it does not auto-dispatch fixes.
 - `references/output-schema.md` — JSON schema for judgment.json
 - `references/criteria-guide.md` — How to write effective quality criteria
 - `references/example.json` — Complete example judgment output
+- `references/fidelity-scorecard-schema.md` — **Fidelity mode:** scorecard schema (completeness + essence + comparative), formulas, verdict rule, two worked examples

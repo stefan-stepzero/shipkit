@@ -10,7 +10,7 @@ effort: medium
 
 # shipkit-product-definition — Product Blueprint
 
-Defines WHAT we build to solve discovered user needs. Reads product-discovery.json (pain points, personas, opportunities) and produces a product blueprint: features, UX patterns, and differentiators.
+Defines WHAT we build to solve discovered user needs. Reads product-discovery.json (pain points, personas, opportunities) and produces a product blueprint: features, UX patterns, differentiators, and the app's **essence** — its non-negotiable differentiators and interaction/quality bar captured as *testable assertions* a later eval can score a build against.
 
 This is the product blueprint — it defines the user-facing solution. The technical approach (mechanisms, design decisions, stack) is handled by `/shipkit-engineering-definition`. Feature phasing (what to build now vs. later) is handled by `/shipkit-product-goals` through stage gates.
 
@@ -54,12 +54,13 @@ If product-discovery.json is missing, tell the user: "Run `/shipkit-product-disc
 After reading context, create tasks:
 - `TaskCreate`: "Define features mapped to pain points"
 - `TaskCreate`: "Define 2-4 UX patterns with rationale"
-- `TaskCreate`: "Identify 1-3 differentiators"
+- `TaskCreate`: "Capture essence — 3-5 non-negotiable differentiators as testable assertions"
+- `TaskCreate`: "Capture the interaction/quality bar as testable assertions"
 - `TaskCreate`: "Write product-definition.json"
 
 `TaskUpdate` each task to `in_progress` when starting it, `completed` when done.
 
-In propose mode (Step 0c), still verify all sections are populated — features, patterns, AND differentiators. A file with only features is incomplete.
+In propose mode (Step 0c), still verify all sections are populated — features, patterns, differentiators, AND the essence block (differentiator assertions + quality bar). A file with only features is incomplete.
 
 ### Step 0: Check for Existing File
 
@@ -163,7 +164,12 @@ Aim for 2-4 patterns. Patterns can be shared across features.
 
 ---
 
-### Step 4: Identify Differentiators
+### Step 4: Capture Essence — Differentiators as Testable Assertions
+
+This is the part a downstream eval scores. **A built app is faithful when it ships this product's
+essence — its differentiators and quality bar — not the training-median generic.** So capture the
+essence as **checkable criteria, not prose**: each item must be a statement an evaluator could hold a
+built screen or behaviour to and answer *yes / no / partially*.
 
 Based on features and UX patterns, articulate what makes this product unique:
 
@@ -171,7 +177,43 @@ Based on features and UX patterns, articulate what makes this product unique:
 - What combination of features/patterns creates unique value?
 - What would be hard to replicate?
 
-Capture 1-3 differentiator statements, each tied to the features or patterns that enable it.
+Capture **3-5 non-negotiable differentiators**. For each, write BOTH:
+- **`statement`** — the human claim (what makes this unique).
+- **`assertion`** — the *testable* form: a concrete, checkable claim about the built product. Mark
+  the essence-floor ones `nonNegotiable: true`.
+
+**Making an assertion checkable** — the assertion must name an observable fact, not a feeling.
+Transform vague → checkable:
+
+| Vague (not scorable) | Checkable assertion (scorable) |
+|----------------------|--------------------------------|
+| "Adaptive difficulty is our edge" | "One creation flow produces exactly three difficulty variants (below-level / on-level / advanced) of the same worksheet **without re-entering the topic** — countable from a single flow." |
+| "Standards alignment sets us apart" | "Every generated worksheet displays the specific curriculum standard IDs it targets; no worksheet ships with an empty or generic standards field." |
+
+Tie each differentiator to the features/patterns that `enabledBy` it, as before.
+
+---
+
+### Step 4b: Capture the Interaction / Quality Bar
+
+The quality bar is the **taste** half of essence — the interaction and product-quality standard this
+app holds itself to, phrased so a reviewer can score any screen against it. Capture **3-6 quality-bar
+assertions**, each with a `dimension` (e.g. `interaction`, `feedback`, `empty-state`, `error`,
+`performance`, `accessibility`, `content`) and the surfaces it `appliesTo`.
+
+**Reference, don't duplicate, the design system.** `/shipkit-design-system` owns aesthetic *direction*
+(tokens, colour, type, principles). The quality bar here is the **product/interaction standard a build
+is scored against** — behavioural, not palette. If a design principle implies a checkable behaviour,
+restate it as an assertion (don't re-list tokens).
+
+**Worked examples** (note the shape — observable, binary-checkable, no "feels good"):
+
+- `interaction`: "Every list/table view supports keyboard-only navigation — tab to move, enter to open; no primary action requires a mouse."
+- `empty-state`: "Every empty state names the next action and links to it — no screen renders blank or a bare 'No data'."
+- `performance`: "Preview streams its first content within 2s of any parameter change; the user never sees a blank spinner for longer than 2s."
+
+Avoid unscorable words ("clean", "modern", "intuitive", "seamless") unless paired with a measurable
+spec — same discipline as the design system's banned-words rule.
 
 ---
 
@@ -195,8 +237,12 @@ Present the full product blueprint:
 1. P-001: [Name] — [description]
 2. P-002: [Name] — [description]
 
-### Differentiators
+### Essence — Differentiators (non-negotiable, testable)
 - D-001: [statement] (enabled by F-001 + P-002)
+    assertion: [checkable form an eval scores the build against]
+
+### Essence — Quality Bar
+- Q-001 [dimension]: [testable assertion] (applies to F-001)
 ```
 
 **View 2: Feature Map**
@@ -224,7 +270,7 @@ See [Product Definition JSON Schema](#product-definition-json-schema) below.
 
 ```
 Product blueprint written to .shipkit/product-definition.json
-Features: {N} | Patterns: {N} | Differentiators: {N}
+Features: {N} | Patterns: {N} | Differentiators: {N} | Quality-bar assertions: {N}
 
 Next:
   1. /shipkit-engineering-definition — Design the technical approach for these features
@@ -283,16 +329,30 @@ Ready to design the engineering approach?
     {
       "id": "D-001",
       "statement": "What makes this unique",
+      "assertion": "The testable form — a checkable claim about the built product",
+      "nonNegotiable": true,
       "enabledBy": ["F-001", "P-001"]
+    }
+  ],
+  "qualityBar": [
+    {
+      "id": "Q-001",
+      "dimension": "interaction|feedback|empty-state|error|performance|accessibility|content",
+      "assertion": "Testable interaction/quality standard the build is scored against",
+      "appliesTo": ["F-001"]
     }
   ],
   "summary": {
     "totalFeatures": 0,
     "totalPatterns": 0,
-    "totalDifferentiators": 0
+    "totalDifferentiators": 0,
+    "totalQualityBar": 0
   }
 }
 ```
+
+The **essence block** an eval scores (Phase 3 fidelity) = the `differentiators[]` items marked
+`nonNegotiable: true` (via each `assertion`) **+** every `qualityBar[]` assertion.
 
 **Full schema reference**: See `references/output-schema.md`
 **Realistic example**: See `references/example.json`
@@ -305,6 +365,7 @@ The ID-based cross-references enable these graph traversals:
 - **Feature -> Patterns**: `features[].patterns` references `uxPatterns[].id`
 - **UX Pattern -> Features**: `uxPatterns[].usedIn` references `features[].id`
 - **Differentiator -> Features/Patterns**: `differentiators[].enabledBy` references feature and pattern IDs
+- **Quality Bar -> Features**: `qualityBar[].appliesTo` references `features[].id` (or is empty for app-wide bars)
 
 ---
 
@@ -381,9 +442,11 @@ Product blueprint is complete when:
 - [ ] Features defined, each addressing at least one pain point
 - [ ] Every major pain point addressed by at least one feature
 - [ ] 2-4 UX patterns defined with rationale
-- [ ] 1-3 differentiators tied to features/patterns
+- [ ] 3-5 non-negotiable differentiators tied to features/patterns
+- [ ] Every differentiator has a testable `assertion` (checkable, not prose); essence-floor ones marked `nonNegotiable: true`
+- [ ] 3-6 quality-bar assertions, each with a `dimension` and testable `assertion` (no unscorable "feels good" language)
 - [ ] Features reference patterns by ID
-- [ ] All cross-references use stable IDs (F-001, P-001, D-001)
+- [ ] All cross-references use stable IDs (F-001, P-001, D-001, Q-001)
 - [ ] Summary counts match actual array lengths
 - [ ] File saved to `.shipkit/product-definition.json`
 <!-- /SECTION:success-criteria -->
