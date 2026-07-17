@@ -528,6 +528,32 @@ For every surface the spec declares **live** (present in the spec's `functionalS
 | Missing backing contract/store | Surface renders a shared field but the owning view/API/table from the spec's `gapReport.sharedContracts` isn't queried anywhere → the SSOT isn't wired |
 | Stubbed fetch | A data-fetch function that `return`s a constant / commented-out real call and returns fixtures instead |
 
+### Optional: get the evidence from the detector
+
+The Grep patterns above find seams; they cannot tell you whether a seam sits on a surface the spec **declares
+live** — which is the only thing that makes a seam a FAIL. `mock-seam-detector.py` does that cross-check
+deterministically, and ships with `shipkit-semantic-qa`:
+
+```bash
+FID=".claude/skills/shipkit-semantic-qa/tools/fidelity"
+[ -d "$FID" ] || FID="$HOME/.claude/skills/shipkit-semantic-qa/tools/fidelity"
+
+python "$FID/mock-seam-detector.py" . \
+  --spec .shipkit/specs/shipped/*.json --report
+```
+
+Each finding comes back with `surface` + `declaredLive`, and `summary.gatingSeams` is the count that actually
+fails this gate. Use it to *find candidates and check the declared-live question* — then confirm each one by
+Read before you fail a build on it. Two properties matter here:
+
+- **It fails open.** A seam it cannot tie to a declared surface returns `declaredLive: false` — advisory, not
+  gating. Undeclared and deferred surfaces are the false-positive class this gate must not fire on.
+- **It is a regex heuristic.** It has no opinion on whether a seam is *real*. `declaredLive: true` narrows
+  where to look; your Read is still the evidence.
+
+Findings on **deferred** surfaces are suppressed automatically (`deferred[]` / `acceptanceCriteria.wontHave`),
+matching the rule below.
+
 ### The rule
 
 - A surface the spec declares **live** that still reads mock/stub/hardcoded data → **🔴 Critical, verdict FAIL**. Report it with file:line evidence (Grep/Read output), classified `CREATED_WRONG` (built, but reading mock instead of the declared contract).

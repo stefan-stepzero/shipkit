@@ -478,7 +478,11 @@ def build_scorecard(args):
         "type": "fidelity-scorecard",
         "version": "1.0",
         "lastUpdated": args.stamp,  # null unless --stamp; never datetime.now()
-        "source": "fidelity-score.py",
+        # Artifact convention: `source` is the producing SKILL, not the binary
+        # (cf. shipkit-plan, shipkit-architecture-map). The tool is how the skill
+        # produces it, so tool provenance goes in `generator`.
+        "source": "shipkit-semantic-qa",
+        "generator": "fidelity-score.py",
         "mode": "comparative" if len(arms) > 1 else "single",
         "essenceThreshold": args.essence_threshold,
         "rubricSource": build_rubric_source(declared, args),

@@ -1,79 +1,150 @@
 # Fidelity checkers
 
-Deterministic, heuristic codebase analyzers that measure build **completeness**
-— the "the app that ships IS the app envisioned" axis of the fidelity fitness
-function (see `../../FIDELITY-MEASURE-SPEC.md`). Each is a standalone CLI: takes
-a target codebase path, emits structured JSON to stdout (default), `--report`
-for human-readable, `--help` for usage. Exit 0 on a clean run, 2 on a bad path.
-Python 3, stdlib only.
+Deterministic analyzers behind the **completeness axis** of the fidelity scorecard
+— the "the app that ships IS the app envisioned" half of Shipkit's outcome. The
+contract they serve is `../../references/fidelity-scorecard-schema.md`; the skill
+that invokes them is `shipkit-semantic-qa` (fidelity mode, SKILL.md Step 5.2).
+
+Each is a standalone CLI: target codebase path in, structured JSON to stdout
+(`--report` for human-readable, `--help` for usage). Exit 0 clean, 2 on bad input.
+Python 3, stdlib only, no network.
 
 | Tool | Detects | Emits |
 |------|---------|-------|
-| `mock-seam-detector.py` | Mock/stub seams on surfaces meant to be live: `mockData`, `USE_MOCK`, `fake*Client`, `if (mock)`, `TODO: wire`, coming-soon/placeholder flags, hardcoded return arrays. | `{file, line, seamKind, confidence, evidence}[]` + summary counts |
-| `unbacked-surface-checker.py` | UI surfaces (routes/pages, `*Dashboard`/`*Page`/`*View`) classified by data backing: **real** (real client/query/api), **mock** (mock seam), **missing** (renders data, no source). | `{surface, backing, confidence, rendersData, evidence}[]` + byBacking counts |
-| `ssot-checker.py` | Single-source-of-truth risks: a shared metric/field *computed* (derived) in >1 file — the `grade_band`×4 / mastery-metric×3 pattern from the phinma retro. | `{field, fileCount, siteCount, risk, sites[]}[]` |
-| `fidelity-score.py` | **Scorecard composer (Phase 2).** Runs the three checkers above in-process and folds them into the **completeness axis** of the fidelity scorecard, broken down `byDimension` (surfaces/seams/ssot). Essence axis (Phase 3) left as a null slot. | `fidelity-scorecard.json`: `{target, generatedAt, completeness:{score, weights, byDimension, unbackedSurfaces[], mockSeams[], ssotViolations[]}, essence:null, fidelityVerdict}` |
-| `_common.py` | Shared source-file walker (gitignore-ish: skips node_modules/.git/dist/build/etc.). Not a CLI. | — |
+| `fidelity-score.py` | **The scorecard producer.** Emits `fidelity-scorecard-schema.md` verbatim: completeness ratio from the DECLARED surface list, `byDimension`, `essence: null` slot, `arms[]` + `comparison` for comparative mode. | `fidelity-scorecard.json` |
+| `mock-seam-detector.py` | Mock/stub seams (`mockData`, `USE_MOCK`, `fake*Client`, `if (mock)`, `TODO: wire`, placeholders, hardcoded arrays) — cross-checked against the spec's declared-live surfaces via `--spec`. | `{file, line, seamKind, confidence, surface, declaredLive, evidence}[]` + summary |
+| `unbacked-surface-checker.py` | UI surfaces classified by data backing: **real** / **mock** / **missing** (renders data, no source). | `{surface, backing, confidence, rendersData, evidence}[]` |
+| `ssot-checker.py` | Single-source-of-truth risks: a shared metric/field *computed* in >1 file (the `grade_band`x4 pattern from the phinma retro). | `{field, fileCount, siteCount, risk, sites[]}[]` |
+| `_declared.py` | Loads the declared-surface list from spec artifacts and ties built files back onto it. Not a CLI. | — |
+| `_common.py` | Shared source-file walker (skips `node_modules`/`.git`/`dist`/…). Not a CLI. | — |
 
-## Scorecard composer — completeness formula
+## The denominator comes from the spec, not from a code scan
 
-`fidelity-score.py` blends three dimension scores (each in `[0,1]`) into one
-completeness read. Weights are **emitted in the JSON** (`completeness.weights`),
-never hidden:
+This is the load-bearing design decision, and it is what separates v2 from v1.
+
+A spec's `functionalSurface` is the set of things the build was **asked** to
+deliver; `deferred` / `acceptanceCriteria.wontHave` are what it was asked **not**
+to. So a mock seam only means "green-but-mock" if it sits on a surface the spec
+declares **live** — everything else is noise *by contract*, not by judgement.
+
+v1 re-scanned the codebase and invented its own denominator: every file the
+regexes tripped on became a finding, which is why it measured **~27-30% precision**
+against ground truth. v2 asks the reverse question — *given a file with a seam,
+does it belong to a declared-live surface?* — and **fails open**: no match means
+`declaredLive: false`, advisory only, never gating.
+
+Fail-open is deliberate. A false "green-but-mock" FAIL on a surface nobody
+declared burns trust in the gate, and a gate people learn to ignore catches
+nothing. Recall is the acceptable loss; precision is the product.
+
+Without `--spec`, `declaredLive` is `null` — *unknown*, never `false`.
 
 ```
-completeness = surfaces*0.70 + seams*0.15 + ssot*0.15
+completeness:
+  declared       = functionalSurface elements, verdict COVERED  (from the SPEC)
+  notBacked      = gapReport.unbackedSurfaces + mockSeams where declaredLive
+  builtAndBacked = declared - |notBacked|
+  ratio          = builtAndBacked / declared        (declared 0 -> "n/a")
 ```
 
-- **surfaces** (primary — the spec's `builtAndBacked / declaredSurfaces`):
-  `backedSurfaces / declaredDataSurfaces`, where a data surface is one the
-  unbacked-checker says should carry data (`real`/`mock`, or `missing` **with**
-  rendered data). `mock` and `missing-with-render` count as **not backed** and
-  drag the score down; low-confidence `missing` (static/layout, no data) is
-  excluded from the denominator rather than counted as a gap.
-- **seams** (risk flag): `(filesScanned − filesWithHighConfSeams) / filesScanned`.
-  Only **high-confidence** mock seams subtract; low/med seams are listed as
-  advisory but do not move the score.
-- **ssot** (risk flag): `1 / (1 + weightedViolations)`, where
-  `weightedViolations = highRisk*1.0 + medRisk*0.5` (monotonic decay).
+## Known limit: `ratio` is an upper bound
 
-**Verdict** (completeness signal only — essence is pending Phase 3):
-`FAITHFUL` if zero unbacked surfaces AND zero high-conf seams AND zero high-risk
-SSOT; otherwise `GAP-DRIFT`. Full formula also in `fidelity-score.py --help`.
+The formula subtracts only surfaces something **names**. A declared surface that
+was simply **never built** is named by neither an `unbackedSurfaces` entry nor a
+seam — so it counts as *built*. An **empty codebase scores `1.0`**.
 
-Deterministic: `generatedAt` is `null` unless `--stamp` is passed — no
-`datetime.now()` — so repeated runs on an unchanged tree are byte-identical.
+That is the price of not manufacturing findings from an unprovable negative
+("`web-ui` appears nowhere, therefore it was not built" — or it was named
+differently, or uses an unusual data layer). Instead:
+
+- `completeness.signals.declaredCoverage` lists declared elements with **no code
+  evidence**, advisory. When `unresolved > 0` the ratio is an upper bound.
+- In **comparative mode this can invert the winner** — an arm that never built a
+  surface is not penalised for it. `comparison.notes` flags it.
+
+## `completeness.signals` — advisory, never gating
+
+v1's `surfaces*0.70 + seams*0.15 + ssot*0.15` blend survives as
+`completeness.signals`, unchanged and weight-emitting, because it catches things
+the contract's formula structurally cannot. It **never** moves `ratio` or
+`fidelityVerdict`. Read it as leads for a human; do not quote `blendedScore` as
+the completeness score.
+
+On `_smoke/` the split is the whole argument: contract ratio **0.857** (one
+genuinely green-but-mock surface) vs advisory blend **0.408** (dragged by 9 seams
+on surfaces nobody declared).
+
+## Verdict: derived, never guessed
+
+`fidelity-score.py` applies the schema's rule table in code. Without `--essence`
+it emits `fidelityVerdict: null` on purpose — `ratio < 1.0` cannot distinguish
+`GAP-DRIFT` from `GAP+TASTE-DRIFT`, and `ratio == 1.0` cannot distinguish
+`FAITHFUL` from `TASTE-DRIFT`. `completeness.verdict` carries the provable half.
 
 ## Usage
 
 ```bash
-python mock-seam-detector.py <path>              # JSON to stdout
-python mock-seam-detector.py <path> --report     # human-readable
-python unbacked-surface-checker.py <path> --report
-python ssot-checker.py <path> --min-files 3      # tighten SSOT threshold
-python fidelity-score.py <path>                  # composed scorecard JSON
-python fidelity-score.py <path> --report         # human-readable scorecard
-python fidelity-score.py <path> --out fidelity-scorecard.json --stamp 2026-07-03T00:00:00Z
+# scorecard (declared list is required — it IS the denominator)
+python fidelity-score.py . --spec .shipkit/specs/shipped/*.json --report
+
+# prefer review-shipping's dataReality when it exists (it owns the gate)
+python fidelity-score.py . --spec S.json --verification-report .shipkit/verification-report.json
+
+# full verdict: both axes
+python fidelity-score.py . --spec S.json --essence essence.json --report
+
+# comparative — one rubric, many arms, enforced by construction
+python fidelity-score.py --arm shipkit=../arm-shipkit --arm raw=../arm-raw --spec S.json --report
+
+# individual checkers
+python mock-seam-detector.py . --spec S.json --report
+python mock-seam-detector.py . --spec S.json --declared-live-only
+python unbacked-surface-checker.py . --report
+python ssot-checker.py . --min-files 3
 ```
+
+Deterministic: no `datetime.now()`. `lastUpdated` is `null` unless `--stamp` is
+passed, so repeated runs on an unchanged tree are byte-identical.
 
 ## Honesty / limits
 
-These are **heuristic v1** regex analyzers, not proofs. They aim for good recall
-on the common JS/TS/Python patterns (validated against the phinma failure shapes)
-and mark confidence per finding so downstream scoring can weight them. Known
-limits, per tool `--help`:
+Regex heuristics, not proofs. Good recall on common JS/TS/Python patterns
+(validated against the phinma failure shapes); confidence marked per finding.
 
 - **mock-seam**: over-flags generic words (`stub`, `placeholder`); comment-only
-  identifier mentions are downgraded to low confidence.
+  mentions downgrade to low confidence. `--spec` is what turns it from a grep
+  into a gate.
 - **unbacked-surface**: surface detection is name/path based; "real" keys off
   common data libs (supabase, react-query, fetch, axios, prisma, trpc, swr). A
-  low-confidence `missing` (no data rendering) is likely static/layout, not a
-  true gap. A real surface on an unusual data layer may mis-classify `missing`.
-- **ssot**: matches on field **name** + derivation syntax — cannot prove two
-  computations are the same metric, and misses same-metric/different-name cases.
+  low-confidence `missing` (no data rendering) is likely static/layout. A real
+  surface on an unusual data layer may mis-classify `missing`.
+- **ssot**: matches field **name** + derivation syntax — cannot prove two
+  computations are the same metric, misses same-metric/different-name cases.
+- **`_declared` matching**: name-based. It cannot prove a file *is* a declared
+  surface, only that it carries the declared identifier. A surface renamed
+  between spec and build will not match, and will fail open.
+
+### Out of scope: the temporal blind spot
+
+These tools are **static** — they see the tree as it is now, never its history.
+The phinma root cause was a **git-timeline property**: surfaces were *built before
+their backing view existed* (mock dashboards ran 6-11 days ahead of their DB
+views). A repo that shipped mock-first and wired up later looks **identical** at
+HEAD to one built backing-first. No static analysis can separate them; catching
+declare-before-build needs a commit-timeline checker, which is a different tool.
 
 ## Fixture
 
-`_smoke/` is a tiny fixture mirroring the phinma failures (mock staff dashboard,
-unbacked exec view, `grade_band` computed twice, a real supabase page) used to
-smoke-test the checkers. Run any tool against `_smoke` to see them fire.
+`_smoke/` mirrors the phinma failure shapes, with `_smoke/spec.json` as its
+declared list. It exercises all three cross-check paths — expect **12
+high-confidence seams, only 4 gating**:
+
+| Path | File | Expected |
+|------|------|----------|
+| **GATING** | `StaffDashboard.tsx` | declared live + mock seams -> fails the gate |
+| **DEFERRED** | `PredictivePacing.tsx` | matches `deferred[]` -> suppressed despite high-conf seams |
+| **FAIL-OPEN** | `scratch/ExperimentPanel.tsx` | declared nowhere -> advisory only |
+
+```bash
+python fidelity-score.py _smoke --spec _smoke/spec.json --report
+```

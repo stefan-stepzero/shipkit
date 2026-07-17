@@ -21,16 +21,19 @@ root — see `install/shared/references/run-artifacts.md`; `.shipkit/` otherwise
 
 ## Axis 1 — Completeness (deterministic)
 
-**Declared surfaces** come from the spec's no-gaps `gapReport` / `functionalSurface`. **Built-and-backed**
-comes from review-shipping's `dataReality` mock-seam scan (the build-time counterpart of the spec-time
-no-gaps gate). No model judgement — this is arithmetic over two JSON artefacts.
+**Declared surfaces** come from the spec's `functionalSurface`. **Built-and-backed** comes from
+review-shipping's `dataReality` mock-seam scan (the build-time counterpart of the spec-time no-gaps gate).
+No model judgement — this is arithmetic over two JSON artefacts.
+
+> **This axis has a producer: `tools/fidelity/fidelity-score.py`, which ships with this skill.** It emits this
+> schema. Run it rather than re-deriving the arithmetic in prose — see SKILL.md Step 5.2.
 
 ### Inputs
 
 | Input | From | Field |
 |-------|------|-------|
-| Declared surfaces | `.shipkit/specs/**/*.json` (`gapReport`) | `functionalSurface.{applications,datastores,contracts,integrations}[]` with `verdict: "COVERED"` |
-| Unbacked shared surfaces | same spec | `gapReport.unbackedSurfaces[]` |
+| Declared surfaces | `.shipkit/specs/**/*.json` → `functionalSurface` (**top-level**, a sibling of `gapReport`) | `functionalSurface.{applications,datastores,contracts,integrations}[]` with `verdict: "COVERED"` |
+| Unbacked shared surfaces | same spec | `gapReport.unbackedSurfaces[]` — note this is **normally empty by construction**: a spec cannot be saved unless `gapReport.status` is `clear`, which requires it. It is read anyway, to cover hand-edited / in-flight / legacy specs. |
 | Mock seams on built code | `verification-report.json` (review-shipping) | `dataReality.mockSeams[]` where `declaredLive: true` |
 
 ### Formula
@@ -54,6 +57,33 @@ missing backend contract is not masked by a fully-built frontend.
 
 A **declared-live surface reading mock data counts as NOT built** — green-but-mock is not done. This is the
 same rule review-shipping's Data-Reality Gate enforces; the scorecard just aggregates it into a ratio.
+
+### Known limit: the formula is optimistic — `ratio` is an upper bound
+
+`builtAndBacked = D − |notBacked|` subtracts only surfaces something **names**: an `unbackedSurfaces[]` entry
+or a declared-live mock seam. A declared surface that was **simply never built** is named by neither, so it
+counts as *built*. Taken to its limit, an **empty codebase scores `ratio: 1.0`**.
+
+This is deliberate. The alternative — proving "declared element X exists nowhere in this codebase" from a name
+like `web-ui` — is an unprovable negative, and manufacturing findings from it is what put the v1 detectors at
+~27–30% precision. The contract buys precision with a known blind spot rather than paying for recall in false
+FAILs on surfaces nobody declared.
+
+Two consequences, and neither is optional:
+
+- **`completeness.signals.declaredCoverage`** (advisory) lists declared elements with no code evidence. When
+  `unresolved > 0`, `ratio` is an **upper bound** — report it as such and check those surfaces by hand.
+- **In comparative mode this can invert the winner.** An arm that never built a surface is not penalised for
+  it, so a barely-built arm can out-score a complete one. `comparison.notes` flags any arm with unresolved
+  surfaces; the delta is only meaningful once both arms' declared surfaces are accounted for.
+
+### `completeness.signals` — advisory, never gating
+
+The producer also emits a heuristic code-scan read (`surfaces`/`seams`/`ssot`, weights emitted) under
+`completeness.signals`. It is **not** this axis's completeness and **never** moves `ratio` or
+`fidelityVerdict`. It is kept because it catches what the contract's formula structurally cannot (a surface
+with no backing at all, duplicated truth). Read it as leads for a human. Do not report `signals.blendedScore`
+as the completeness score.
 
 ---
 
@@ -142,6 +172,7 @@ whole point: it shows how much closer to the captured intent one arm shipped tha
   "version": "1.0",
   "lastUpdated": "YYYY-MM-DDTHH:MM:SSZ",
   "source": "shipkit-semantic-qa",
+  "generator": "fidelity-score.py",
 
   "mode": "single | comparative",
   "essenceThreshold": 80,
@@ -174,7 +205,28 @@ whole point: it shows how much closer to the captured intent one arm shipped tha
           { "surface": "coach-dashboard", "field": "grade_band", "declaredLive": true,
             "evidence": "renders MOCK_ROWS; backing view cohort_leaderboard_v never queried",
             "source": "verification-report.json#dataReality" }
-        ]
+        ],
+
+        "ratioBasis": "builtAndBacked / declared",
+        "mockSeamSource": "string — which artefact the seams came from",
+        "verdict": "gap-drift | complete | n/a — the half provable without essence",
+
+        "signals": {
+          "_note": "ADVISORY heuristic code-scan. Never moves ratio or fidelityVerdict.",
+          "blendedScore": 0.41,
+          "weights": { "surfaces": 0.70, "seams": 0.15, "ssot": 0.15 },
+          "surfaces": { "score": 0.33, "findings": [] },
+          "seams": { "score": 0.5, "findings": [] },
+          "ssot": { "score": 0.67, "findings": [] },
+          "declaredCoverage": {
+            "resolved": 6, "unresolved": 1,
+            "elements": [
+              { "name": "GET /api/cohort/{id}/leaderboard", "dimension": "contracts",
+                "resolved": false, "files": [],
+                "note": "no code evidence found — not built, or built under a different name (ADVISORY)" }
+            ]
+          }
+        }
       },
 
       "essence": {
@@ -227,7 +279,13 @@ whole point: it shows how much closer to the captured intent one arm shipped tha
   `declaredLive: true`; it is copied (not recomputed) so the scorecard is self-contained and auditable.
 - `essence.results[]` is the semantic-qa judgment `evaluations`, re-keyed by essence-assertion id. The full
   per-run judgment stays at the suite's `judgments/` path; the scorecard carries the rolled-up essence result.
-- `fidelityVerdict` is derived from the two axes by the rule table above — it is never entered by hand.
+- `fidelityVerdict` is derived from the two axes by the rule table above — it is never entered by hand. It is
+  `null` when the essence axis is absent, and that is correct rather than lazy: with completeness alone,
+  `ratio < 1.0` cannot distinguish `GAP-DRIFT` from `GAP+TASTE-DRIFT`, and `ratio == 1.0` cannot distinguish
+  `FAITHFUL` from `TASTE-DRIFT`. `completeness.verdict` carries the provable half; a `verdictBasis` string
+  records why the rest was not derivable.
+- `generator` names the binary that produced the artefact; `source` stays the producing **skill**, per the
+  artifact convention.
 
 ---
 
